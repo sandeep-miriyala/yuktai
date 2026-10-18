@@ -633,7 +633,7 @@ No AI writes the code. It's pure template engineering.
 
 ## Module 6: Agentic AI Toolkit 🆕
 
-The ten v5.1 features, described in detail in [What's new in v5.1](#whats-new-in-v51-agentic-ai-toolkit).
+The ten v5.2 features, described in detail in [What's new in v5.2](#whats-new-in-v52-agentic-ai-toolkit).
 
 - **Copilot and QA:** 15 WCAG checks, plain-English explanations, safe fixes with undo, downloadable reports
 - **Forms and design review:** labels, autocomplete, error messages, focus states, hierarchy, clutter, senior-friendly tips
