@@ -153,6 +153,11 @@ export type {
   IconProps,
 } from "./icons";
 
+// ─── Agentic AI (v5.1) — ideas 1–10 ──────────────────────────────────────────
+// Copilot, page Q&A, smart grid queries, voice settings, QA report, form
+// review, page + data RAG, multi-step tasks, BI insights, design review.
+export * from "./agentic";
+
 // ─── Singleton runtime ───────────────────────────────────────────────────────
 import { Runtime } from "./runtime/runtime";
 import { aiPlugin } from "./plugins/ai";

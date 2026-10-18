@@ -1,5 +1,5 @@
 import * as react_jsx_runtime from 'react/jsx-runtime';
-import React, { ReactNode } from 'react';
+import React, { ReactNode, CSSProperties } from 'react';
 
 interface Plugin {
     name: string;
@@ -687,6 +687,544 @@ declare function CheckIcon(props: IconProps): react_jsx_runtime.JSX.Element;
 
 declare function CloseIcon(props: IconProps): react_jsx_runtime.JSX.Element;
 
+type AuditRoot = Document | Element;
+/** The label a screen reader would most likely announce for this element. */
+declare function accessibleName(el: Element): string;
+type RGBA = {
+    r: number;
+    g: number;
+    b: number;
+    a: number;
+};
+declare function parseColor(value: string | null | undefined): RGBA | null;
+declare function relativeLuminance(c: RGBA): number;
+declare function contrastRatio(fg: RGBA, bg: RGBA): number;
+
+type AuditSeverity = "critical" | "serious" | "moderate" | "minor";
+type AuditRuleId = "html-lang" | "page-title" | "image-alt" | "heading-order" | "single-h1" | "landmark-main" | "form-label" | "button-name" | "link-name" | "color-contrast" | "positive-tabindex" | "keyboard-access" | "duplicate-id" | "form-error" | "target-size";
+interface AuditIssue {
+    /** Stable within one report, e.g. "image-alt-3". */
+    id: string;
+    rule: AuditRuleId;
+    severity: AuditSeverity;
+    /** WCAG success criterion, e.g. "1.1.1", or "best practice". */
+    wcag: string;
+    message: string;
+    /** Why it matters, in plain English. */
+    why: string;
+    /** What to change. */
+    fix: string;
+    selector: string;
+    snippet: string;
+    /** True when the copilot can apply a safe fix in the browser. */
+    autoFixable: boolean;
+    element?: Element;
+}
+interface AuditCheck {
+    rule: AuditRuleId;
+    title: string;
+    passed: boolean;
+    issueCount: number;
+}
+interface AuditReport {
+    url: string;
+    title: string;
+    generatedAt: string;
+    score: number;
+    passed: boolean;
+    checks: AuditCheck[];
+    issues: AuditIssue[];
+    summary: string;
+}
+interface AuditOptions {
+    root?: AuditRoot;
+    /** Skip rules you don't need. */
+    skip?: AuditRuleId[];
+    /** Cap contrast checks on very large pages (default 600 elements). */
+    maxContrastChecks?: number;
+    /** Minimum interactive target size in CSS px (WCAG 2.5.8 uses 24). */
+    minTargetSize?: number;
+}
+interface RuleInfo {
+    title: string;
+    wcag: string;
+    severity: AuditSeverity;
+    why: string;
+}
+declare const AUDIT_RULES: Record<AuditRuleId, RuleInfo>;
+declare function runQaAudit(options?: AuditOptions): AuditReport;
+/** Markdown report you can download, paste into a ticket or attach to a PR. */
+declare function auditToMarkdown(report: AuditReport): string;
+/** JSON without DOM references, safe to store or send to a server. */
+declare function auditToJSON(report: AuditReport): string;
+
+interface CopilotFixResult {
+    issueId: string;
+    applied: boolean;
+    message: string;
+}
+interface CopilotState {
+    report: AuditReport | null;
+    watching: boolean;
+    appliedFixes: number;
+}
+interface A11yCopilotOptions extends AuditOptions {
+    /** Called after every scan (initial, manual or caused by DOM changes). */
+    onUpdate?: (state: CopilotState) => void;
+    /** Wait this long after DOM changes before rescanning (default 600ms). */
+    debounceMs?: number;
+    /** Apply every safe fix automatically after each scan (default false). */
+    autoApply?: boolean;
+    /** Language used when the page has no lang attribute (default: browser language). */
+    defaultLang?: string;
+}
+interface A11yCopilot {
+    start(): void;
+    stop(): void;
+    scan(): AuditReport;
+    explain(issueId: string): string;
+    applyFix(issueId: string): CopilotFixResult;
+    applyAllFixes(): CopilotFixResult[];
+    undoAll(): number;
+    getState(): CopilotState;
+}
+declare function createA11yCopilot(options?: A11yCopilotOptions): A11yCopilot;
+
+interface PageOutline {
+    title: string;
+    description: string;
+    language: string;
+    headings: Array<{
+        level: number;
+        text: string;
+    }>;
+    landmarks: Record<string, number>;
+    counts: {
+        links: number;
+        buttons: number;
+        images: number;
+        forms: number;
+        tables: number;
+        fields: number;
+    };
+    unlabeledFields: Array<{
+        type: string;
+        hint: string;
+        selector: string;
+    }>;
+    imagesWithoutAlt: Array<{
+        src: string;
+        selector: string;
+    }>;
+    purpose: string;
+}
+interface PageAnswer {
+    intent: PageIntent;
+    answer: string;
+    /** Elements the answer refers to, so the UI can highlight them. */
+    targets: string[];
+    suggestions: string[];
+}
+type PageIntent = "purpose" | "missing-labels" | "images" | "structure" | "forms" | "links" | "counts" | "unknown";
+declare function analyzePage(root?: AuditRoot): PageOutline;
+declare function detectPageIntent(question: string): PageIntent;
+/**
+ * Answers a question about the current page.
+ * @param summarize Optional hook (e.g. Gemini Nano or your own model) used for "purpose" questions.
+ */
+declare function askAboutPage(question: string, options?: {
+    root?: AuditRoot;
+    summarize?: (pageText: string) => Promise<string>;
+}): Promise<PageAnswer>;
+
+interface ParsedGridQuery {
+    filters: GridToolFilter[];
+    /** Free-text terms that didn't map to a column; matched across all columns. */
+    search: string[];
+    sort: GridToolSort | null;
+    limit: number | null;
+    /** Assumptions the parser made (shown to the user so they can correct it). */
+    notes: string[];
+    /** Plain-English reading of the query. */
+    explanation: string;
+}
+interface GridQueryResult<T> {
+    rows: T[];
+    ids: string[];
+    parsed: ParsedGridQuery;
+    message: string;
+}
+type Row = Record<string, unknown>;
+/** "₹10,000" → 10000, "1.5 lakh" → 150000, "2cr" → 20000000, "10k" → 10000. */
+declare function parseAmount(text: string): number | null;
+/** The column mentioned in `text` (longest name wins), or undefined. */
+declare function findMentionedColumn(text: string, columns: GridToolColumn[], kind?: GridToolColumn["type"]): GridToolColumn | undefined;
+interface ParseOptions<T = Row> {
+    /** Rows let the parser recognise values like "overdue" in a Status column. */
+    data?: T[];
+}
+declare function parseGridQuery<T = Row>(query: string, columns: GridToolColumn[], options?: ParseOptions<T>): ParsedGridQuery;
+/** Runs a parsed query over rows without touching any UI. */
+declare function executeGridQuery<T>(data: T[], columns: GridToolColumn[], parsed: ParsedGridQuery): T[];
+/**
+ * Parses and runs a natural-language query, then pushes the result into the
+ * grid through the context callbacks (filters, sort, highlight).
+ */
+declare function runGridQuery<T>(query: string, context: GridToolContext<T>, options?: {
+    apply?: boolean;
+}): GridQueryResult<T>;
+interface GridAnomaly {
+    rowId: string;
+    column: string;
+    label: string;
+    value: unknown;
+    kind: "high" | "low" | "duplicate";
+    reason: string;
+}
+/**
+ * Finds unusual rows: numeric values far outside the typical range
+ * (interquartile-range rule) and rows that duplicate another row.
+ */
+declare function detectAnomalies<T>(data: T[], columns: GridToolColumn[], options?: {
+    rowKey?: string;
+    factor?: number;
+    columns?: string[];
+}): GridAnomaly[];
+declare function summarizeRows<T>(rows: T[], columns: GridToolColumn[]): string;
+interface GridAnswer<T> {
+    kind: "query" | "anomalies" | "summary";
+    message: string;
+    ids: string[];
+    rows: T[];
+    anomalies?: GridAnomaly[];
+}
+declare function answerGridQuestion<T>(question: string, context: GridToolContext<T>): GridAnswer<T>;
+
+type GridNavAction = "next-row" | "previous-row" | "first-row" | "last-row" | "open-row";
+type VoiceA11yCommand = {
+    type: "setting";
+    patch: Partial<A11yConfig>;
+    say: string;
+} | {
+    type: "reset";
+    say: string;
+} | {
+    type: "grid";
+    action: GridNavAction;
+    say: string;
+};
+declare const FONT_STEP = 0.1;
+declare const FONT_MIN = 0.8;
+declare const FONT_MAX = 1.3;
+/**
+ * Parses a transcript into a command. `current` is needed for relative
+ * changes such as "bigger text". Returns null when nothing matched, so you
+ * can pass the transcript on to other handlers (e.g. core/ai/voice.ts).
+ */
+declare function parseVoiceA11yCommand(transcript: string, current?: Partial<A11yConfig>): VoiceA11yCommand | null;
+declare const DEFAULT_A11Y_SETTINGS: Partial<A11yConfig>;
+declare function moveGridRowFocus(action: GridNavAction, options?: {
+    root?: ParentNode;
+    rowSelector?: string;
+}): HTMLElement | null;
+interface VoiceA11yControllerOptions {
+    /** Current settings; the controller keeps its own copy after each change. */
+    initial?: Partial<A11yConfig>;
+    /**
+     * Apply new settings. Default: yuktai's wcagPlugin.execute.
+     * Pass your own to sync with WidgetPanel state or a settings store.
+     */
+    apply?: (config: A11yConfig) => unknown;
+    /** Speech recognition language, e.g. "en-IN" or "te-IN" (default "en-IN"). */
+    lang?: string;
+    /** Speak a confirmation after each command (default true). */
+    speak?: boolean;
+    /** Called for every recognised transcript, matched or not. */
+    onTranscript?: (text: string, command: VoiceA11yCommand | null) => void;
+    gridRoot?: ParentNode;
+}
+declare function createVoiceA11yController(options?: VoiceA11yControllerOptions): {
+    start: () => boolean;
+    stop: () => void;
+    /** Run a command from text (also handy for typed commands and tests). */
+    handle: (transcript: string) => Promise<VoiceA11yCommand | null>;
+    isListening: () => boolean;
+    getConfig: () => {
+        enabled: boolean;
+        highContrast?: boolean;
+        darkMode?: boolean;
+        reduceMotion?: boolean;
+        autoFix?: boolean;
+        fontSizeMultiplier?: number;
+        colorBlindMode?: ColorBlindMode;
+        keyboardHints?: boolean;
+        speechEnabled?: boolean;
+        showPreferencePanel?: boolean;
+        showAuditBadge?: boolean;
+        showSkipLinks?: boolean;
+        largeTargets?: boolean;
+        timeoutWarning?: number;
+        dyslexiaFont?: boolean;
+        localFont?: string;
+        plainEnglish?: boolean;
+        summarisePage?: boolean;
+        translateLanguage?: string;
+        voiceControl?: boolean;
+        smartLabels?: boolean;
+    };
+};
+
+type FormFindingLevel = "problem" | "improvement";
+interface FormField {
+    label: string;
+    type: string;
+    name: string;
+    required: boolean;
+    hasVisibleLabel: boolean;
+    selector: string;
+    element: Element;
+}
+interface FormFinding {
+    level: FormFindingLevel;
+    message: string;
+    suggestion: string;
+    field?: string;
+    selector?: string;
+}
+interface FormReview {
+    name: string;
+    selector: string;
+    fields: FormField[];
+    findings: FormFinding[];
+    /** 0–100, higher is easier to complete. */
+    score: number;
+    summary: string;
+}
+interface FormReviewOptions {
+    root?: AuditRoot;
+    /** Extra checks for older users: font size, field count, vague buttons (default true). */
+    seniorFriendly?: boolean;
+    /** Forms with more fields than this get a "split into steps" suggestion (default 8). */
+    maxFieldsPerStep?: number;
+}
+declare function readFormFields(form: Element): FormField[];
+declare function reviewForm(form: Element, options?: FormReviewOptions): FormReview;
+/** Reviews every <form> (and every role="form") on the page. */
+declare function reviewForms(options?: FormReviewOptions): FormReview[];
+
+interface ContextPassage {
+    id: string;
+    source: "page" | "grid" | "custom";
+    text: string;
+    /** Grid row id or page section heading. */
+    ref?: string;
+}
+interface ContextHit extends ContextPassage {
+    score: number;
+}
+interface ContextAnswer {
+    answer: string;
+    hits: ContextHit[];
+    /** True when `generate` produced the answer; false for extractive answers. */
+    generated: boolean;
+}
+/** Unicode-aware tokens: keeps Telugu/Devanagari combining marks together. */
+declare function tokenize(text: string): string[];
+declare function pagePassages(root?: AuditRoot, maxChars?: number): ContextPassage[];
+declare function gridPassages<T>(data: T[], columns: GridToolColumn[], rowKey?: string): ContextPassage[];
+interface ContextIndexOptions<T = Record<string, unknown>> {
+    /** Index the visible page text (default true). */
+    includePage?: boolean;
+    root?: AuditRoot;
+    rows?: T[];
+    columns?: GridToolColumn[];
+    rowKey?: string;
+    /** Extra documents, e.g. FAQ text or help articles. */
+    documents?: Array<{
+        id: string;
+        text: string;
+    }>;
+}
+declare function createContextIndex<T>(options?: ContextIndexOptions<T>): {
+    search: (question: string, k?: number) => ContextHit[];
+    ask: (question: string, opts?: {
+        k?: number;
+        generate?: (question: string, context: string) => Promise<string>;
+    }) => Promise<ContextAnswer>;
+    /** Call after the page or data changes. */
+    rebuild: () => void;
+    update(next: Partial<ContextIndexOptions<T>>): void;
+    size: () => number;
+};
+
+type TaskAction = "filter" | "highlight" | "sort" | "clear" | "count" | "summarize" | "anomalies" | "open" | "select";
+interface PlannedStep {
+    action: TaskAction;
+    /** The part of the instruction this step came from. */
+    text: string;
+}
+interface StepResult extends PlannedStep {
+    success: boolean;
+    message: string;
+    ids?: string[];
+}
+interface TaskRunResult {
+    steps: StepResult[];
+    before: {
+        rows: number;
+        filters: GridToolFilter[];
+    };
+    after: {
+        rows: number;
+        filters: GridToolFilter[];
+        sort: GridToolSort | null;
+        highlighted: string[];
+    };
+    /** "What changed", in plain English. */
+    summary: string;
+}
+/** Splits an instruction into ordered steps. No model needed. */
+declare function planTasks(instruction: string): PlannedStep[];
+interface RunTasksOptions {
+    /** Called after each step, so the UI can show progress. */
+    onStep?: (result: StepResult, index: number, total: number) => void;
+}
+declare function runTasks<T extends Record<string, unknown>>(instruction: string, context: GridToolContext<T>, options?: RunTasksOptions): Promise<TaskRunResult>;
+
+type Aggregation = "sum" | "avg" | "count" | "min" | "max";
+type Period = "day" | "week" | "month" | "quarter" | "year";
+interface GroupResult {
+    group: string;
+    value: number;
+    count: number;
+}
+interface PeriodChange {
+    group: string;
+    current: number;
+    previous: number;
+    change: number;
+    /** null when the previous value was 0 */
+    changePct: number | null;
+}
+interface PeriodComparison {
+    period: Period;
+    current: {
+        from: Date;
+        to: Date;
+    };
+    previous: {
+        from: Date;
+        to: Date;
+    };
+    rows: PeriodChange[];
+}
+declare function aggregate(values: number[], agg: Aggregation): number;
+/** Groups rows by a column and aggregates a metric (or counts rows). Sorted high → low. */
+declare function groupBy<T>(data: T[], groupKey: string, metricKey: string | null, agg?: Aggregation): GroupResult[];
+declare function startOfPeriod(date: Date, period: Period, weekStartsOn?: number): Date;
+declare function addPeriods(date: Date, period: Period, n: number): Date;
+interface ComparePeriodsOptions {
+    dateKey: string;
+    metricKey: string;
+    groupKey?: string;
+    agg?: Aggregation;
+    period: Period;
+    /** "Now" for the comparison (default: today). */
+    referenceDate?: Date | string;
+    /**
+     * true (default): compare the same elapsed time — e.g. Mon–Wed this week
+     * vs Mon–Wed last week — so a half-finished week doesn't look like a drop.
+     */
+    toDate?: boolean;
+    weekStartsOn?: number;
+}
+declare function comparePeriods<T>(data: T[], o: ComparePeriodsOptions): PeriodComparison;
+/** Time series: one aggregated value per period, oldest first. */
+declare function trend<T>(data: T[], dateKey: string, metricKey: string, period: Period, agg?: Aggregation): Array<{
+    start: Date;
+    value: number;
+}>;
+interface InsightAnswer {
+    kind: "period-change" | "group" | "trend" | "total" | "unknown";
+    answer: string;
+    table: Array<Record<string, string | number>>;
+}
+declare function askInsight<T>(question: string, data: T[], columns: GridToolColumn[], options?: {
+    referenceDate?: Date | string;
+}): InsightAnswer;
+
+type DesignCategory = "hierarchy" | "readability" | "interaction" | "clutter" | "consistency";
+interface DesignFinding {
+    category: DesignCategory;
+    severity: "high" | "medium" | "low";
+    message: string;
+    suggestion: string;
+    selector?: string;
+}
+interface DesignReview {
+    score: number;
+    categories: Record<DesignCategory, {
+        score: number;
+        findings: number;
+    }>;
+    findings: DesignFinding[];
+    summary: string;
+}
+interface DesignReviewOptions {
+    root?: AuditRoot;
+    /** Minimum body text size in px (default 14; 16 recommended for seniors). */
+    minFontSize?: number;
+    /** Maximum comfortable line length in characters (default 90). */
+    maxLineLength?: number;
+}
+declare function reviewDesign(options?: DesignReviewOptions): DesignReview;
+
+interface UseAgenticGridOptions<T> {
+    data: T[];
+    columns: Array<{
+        key: string;
+        label: string;
+        type?: string;
+    }>;
+    rowKey?: string;
+    /** "Now" for questions like "this week" (default: today). */
+    referenceDate?: Date | string;
+    onOpenRow?: (id: string) => void;
+}
+type AgenticAnswerKind = "query" | "anomalies" | "summary" | "insight" | "tasks";
+declare function useAgenticGrid<T extends Record<string, unknown>>(options: UseAgenticGridOptions<T>): {
+    /** Pass to <YuktaiGrid data={…}> */
+    gridData: T[];
+    /** Pass to <YuktaiGrid highlightIds={…}> */
+    highlightIds: string[];
+    filters: GridToolFilter[];
+    sort: GridToolSort | null;
+    ask: (question: string) => Promise<void>;
+    reset: () => void;
+    answer: string;
+    kind: AgenticAnswerKind | null;
+    table: Record<string, string | number>[];
+    steps: StepResult[];
+    busy: boolean;
+    visibleIds: string[];
+};
+declare function AgenticGridBar({ grid, placeholder, examples, style, }: {
+    grid: ReturnType<typeof useAgenticGrid<any>>;
+    placeholder?: string;
+    examples?: string[];
+    style?: CSSProperties;
+}): react_jsx_runtime.JSX.Element;
+type Tab = "copilot" | "qa" | "forms" | "design" | "ask" | "voice";
+interface AgenticPanelProps {
+    defaultTab?: Tab;
+    /** Speech recognition language for the Voice tab (default "en-IN"). */
+    voiceLang?: string;
+    /** Optional model hook for Ask page, e.g. Gemini Nano or your own API. */
+    generate?: (question: string, context: string) => Promise<string>;
+    style?: CSSProperties;
+}
+declare function AgenticPanel({ defaultTab, voiceLang, generate, style }: AgenticPanelProps): react_jsx_runtime.JSX.Element;
+
 declare global {
     var __yuktai_runtime__: Runtime | undefined;
 }
@@ -720,4 +1258,4 @@ declare const YuktAI: {
     scan(): A11yReport;
 };
 
-export { type A11yConfig, type A11yFix, type A11yReport, type AIFeatures, CheckIcon, ChevronLeftIcon, ChevronRightIcon, CloseIcon, type ColorBlindMode, type CreateGridToolsOptions, type FilterConfig, type FilterOperator, type GridAgentErrorCode, type GridAgentResult, type GridAgentStep, type GridAgentTool, type GridColumn, type GridInputLanguage, type GridIntent, type GridIntentContext, type GridLocale, type GridTheme, type GridTool, type GridToolColumn, type GridToolContext, type GridToolErrorCode, type GridToolFilter, type GridToolFilterOperator, type GridToolId, type GridToolLocale, type GridToolResult, type GridToolSort, type GridTranslations, IconBase, type IconProps, type IndicLanguageLocale, type PaginationConfig, Runtime, SearchIcon, type Severity, type SortConfig, type SortDirection, SortDownIcon, SortUpIcon, type UseGridOptions, type UseGridReturn, type ViewMode, type VoiceFeatures, type WebMCPState, type WebMCPStatus, YuktAI, YuktAIWrapper, type YuktAIWrapperProps, YuktaiGrid, YuktaiGridAI, type YuktaiGridAIProps, useYuktaiGridAgent as YuktaiGridAgent, type YuktaiGridAgentProps, type YuktaiGridProps, type YuktaiGridRule, type YuktaiGridRuleContext, YuktaiGridWebMCP, type YuktaiGridWebMCPProps, aiPlugin, applyGridFilters, clearFilters, clearSort, countGrid, createGridTools, YuktAIWrapper as default, filterGrid, getColumns, getRow, getRowId, highlightRows, openRow, parseGridIntent, searchGrid, selectRow, sortGrid, toGridToolColumns, useGrid, useYuktaiGridAgent, voicePlugin, wcagPlugin as wcag, wcagPlugin };
+export { type A11yConfig, type A11yCopilot, type A11yCopilotOptions, type A11yFix, type A11yReport, type AIFeatures, AUDIT_RULES, type AgenticAnswerKind, AgenticGridBar, AgenticPanel, type AgenticPanelProps, type Aggregation, type AuditCheck, type AuditIssue, type AuditOptions, type AuditReport, type AuditRoot, type AuditRuleId, type AuditSeverity, CheckIcon, ChevronLeftIcon, ChevronRightIcon, CloseIcon, type ColorBlindMode, type ComparePeriodsOptions, type ContextAnswer, type ContextHit, type ContextIndexOptions, type ContextPassage, type CopilotFixResult, type CopilotState, type CreateGridToolsOptions, DEFAULT_A11Y_SETTINGS, type DesignCategory, type DesignFinding, type DesignReview, type DesignReviewOptions, FONT_MAX, FONT_MIN, FONT_STEP, type FilterConfig, type FilterOperator, type FormField, type FormFinding, type FormFindingLevel, type FormReview, type FormReviewOptions, type GridAgentErrorCode, type GridAgentResult, type GridAgentStep, type GridAgentTool, type GridAnomaly, type GridAnswer, type GridColumn, type GridInputLanguage, type GridIntent, type GridIntentContext, type GridLocale, type GridNavAction, type GridQueryResult, type GridTheme, type GridTool, type GridToolColumn, type GridToolContext, type GridToolErrorCode, type GridToolFilter, type GridToolFilterOperator, type GridToolId, type GridToolLocale, type GridToolResult, type GridToolSort, type GridTranslations, type GroupResult, IconBase, type IconProps, type IndicLanguageLocale, type InsightAnswer, type PageAnswer, type PageIntent, type PageOutline, type PaginationConfig, type ParseOptions, type ParsedGridQuery, type Period, type PeriodChange, type PeriodComparison, type PlannedStep, type RGBA, type RunTasksOptions, Runtime, SearchIcon, type Severity, type SortConfig, type SortDirection, SortDownIcon, SortUpIcon, type StepResult, type TaskAction, type TaskRunResult, type UseAgenticGridOptions, type UseGridOptions, type UseGridReturn, type ViewMode, type VoiceA11yCommand, type VoiceA11yControllerOptions, type VoiceFeatures, type WebMCPState, type WebMCPStatus, YuktAI, YuktAIWrapper, type YuktAIWrapperProps, YuktaiGrid, YuktaiGridAI, type YuktaiGridAIProps, useYuktaiGridAgent as YuktaiGridAgent, type YuktaiGridAgentProps, type YuktaiGridProps, type YuktaiGridRule, type YuktaiGridRuleContext, YuktaiGridWebMCP, type YuktaiGridWebMCPProps, accessibleName, addPeriods, aggregate, aiPlugin, analyzePage, answerGridQuestion, applyGridFilters, askAboutPage, askInsight, auditToJSON, auditToMarkdown, clearFilters, clearSort, comparePeriods, contrastRatio, countGrid, createA11yCopilot, createContextIndex, createGridTools, createVoiceA11yController, YuktAIWrapper as default, detectAnomalies, detectPageIntent, executeGridQuery, filterGrid, findMentionedColumn, getColumns, getRow, getRowId, gridPassages, groupBy, highlightRows, moveGridRowFocus, openRow, pagePassages, parseAmount, parseColor, parseGridIntent, parseGridQuery, parseVoiceA11yCommand, planTasks, readFormFields, relativeLuminance, reviewDesign, reviewForm, reviewForms, runGridQuery, runQaAudit, runTasks, searchGrid, selectRow, sortGrid, startOfPeriod, summarizeRows, toGridToolColumns, tokenize, trend, useAgenticGrid, useGrid, useYuktaiGridAgent, voicePlugin, wcagPlugin as wcag, wcagPlugin };
