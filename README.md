@@ -1,6 +1,6 @@
 # @yuktishaalaa/yuktai
 
-> Universal Next.js plugin for accessibility, AI, and data. One install brings WCAG 2.2 auto-fix, in-browser RAG, an AI agent, code generation, and an accessible data grid with Agentic AI + WebMCP. Zero API keys, zero cost, works offline.
+> Universal Next.js plugin for accessibility, AI, and data. One install brings WCAG 2.2 auto-fix, in-browser RAG, an AI agent, code generation, an accessible data grid with Agentic AI + WebMCP, and an agentic toolkit that audits, explains and fixes pages and answers questions about your data. Zero API keys, zero cost, works offline.
 
 [![npm](https://img.shields.io/npm/v/@yuktishaalaa/yuktai)](https://www.npmjs.com/package/@yuktishaalaa/yuktai)
 [![downloads](https://img.shields.io/npm/dm/@yuktishaalaa/yuktai)](https://www.npmjs.com/package/@yuktishaalaa/yuktai)
@@ -8,7 +8,7 @@
 [![node](https://img.shields.io/badge/node-%3E%3D18-blue)](https://nodejs.org)
 [![Next.js](https://img.shields.io/badge/Next.js-13%2B-black)](https://nextjs.org)
 
-**7,000+ developers** have already installed yuktai. Built entirely in free time by [Sandeep Miriyala](https://github.com/sandeepmiriyala03).
+Built in free time by [Sandeep Miriyala](https://github.com/sandeepmiriyala03).
 
 **Live demos:**
 - Staff directory: https://aksharatantra.miriyala.in/staffdirectory
@@ -28,7 +28,7 @@ So I built yuktai, one weekend and one late night at a time.
 
 ## What's inside
 
-Five modules ship in a single npm package:
+Six modules ship in a single npm package:
 
 | Module | Features | What it does |
 |---|---|---|
@@ -37,6 +37,118 @@ Five modules ship in a single npm package:
 | **3. In-Tab RAG** | 11 | Ask questions about any page, offline, no API |
 | **4. Autonomous AI Agent** | 13 | Natural-language browser guidance |
 | **5. Vibe Coder** | 19 | Generate full Next.js projects from plain English |
+| **6. Agentic AI Toolkit** 🆕 | 10 | Accessibility copilot, QA reports, form and design review, smart grid queries, BI answers, multi-step tasks, voice settings |
+
+---
+
+## What's new in v5.1: Agentic AI Toolkit
+
+Ten agentic features, all running in the browser. No API keys, and no page or grid data leaves the device unless you plug in your own model through a `generate` or `summarize` hook.
+
+| # | Feature | What it does | Main export |
+|---|---|---|---|
+| 1 | Accessibility Copilot | Watches the page live, explains each issue in plain English, applies safe fixes and undoes them | `createA11yCopilot` |
+| 2 | Page Understanding | Answers "What does this page do?" and "Which form fields are missing labels?" | `analyzePage`, `askAboutPage` |
+| 3 | Smart Data Grid | Turns "overdue and over ₹10,000" into real filters, finds unusual rows, summarises data | `runGridQuery`, `detectAnomalies`, `summarizeRows` |
+| 4 | Voice Accessibility | "Turn on high contrast", "bigger text", "next row", plus Telugu phrases like "పెద్ద అక్షరాలు" | `createVoiceA11yController` |
+| 5 | QA Tester | 15 checks with WCAG references, a score, pass/fail, and a Markdown or JSON report | `runQaAudit`, `auditToMarkdown` |
+| 6 | Forms Agent | Reviews labels, autocomplete, error messages and senior-friendliness | `reviewForms` |
+| 7 | Page + Data RAG | Answers from page text and grid rows, Telugu-aware, offline | `createContextIndex` |
+| 8 | Multi-Step Tasks | "Show overdue, highlight the errors, then summarise what changed" | `runTasks` |
+| 9 | BI Copilot | "Which region had the highest drop in conversion this week?" | `askInsight`, `comparePeriods` |
+| 10 | Design Review | Hierarchy, readability, focus states, clutter, consistency | `reviewDesign` |
+
+### Page tools in one panel
+
+```tsx
+"use client";
+import { AgenticPanel } from "@yuktishaalaa/yuktai";
+
+export default function A11yTools() {
+  return <AgenticPanel defaultTab="copilot" voiceLang="en-IN" />;
+}
+```
+
+Tabs: **Copilot**, **QA report**, **Forms**, **Design**, **Ask page**, **Voice**. The panel marks itself with `data-yuktai-panel`, so it never audits its own UI.
+
+### Ask your grid
+
+```tsx
+"use client";
+import { YuktaiGrid, useAgenticGrid, AgenticGridBar } from "@yuktishaalaa/yuktai";
+
+const columns = [
+  { key: "name", label: "Customer" },
+  { key: "status", label: "Status" },
+  { key: "region", label: "Region" },
+  { key: "balance", label: "Balance", type: "number" as const },
+  { key: "dueDate", label: "Due date", type: "date" as const },
+];
+
+export default function Customers({ rows }: { rows: Customer[] }) {
+  const grid = useAgenticGrid({ data: rows, columns, rowKey: "id" });
+
+  return (
+    <>
+      <AgenticGridBar
+        grid={grid}
+        examples={[
+          "overdue and over ₹10,000",
+          "anything unusual?",
+          "total balance by region",
+          "show overdue, then sort by balance desc, then summarize what changed",
+        ]}
+      />
+      <YuktaiGrid
+        data={grid.gridData}
+        columns={columns}
+        rowKey="id"
+        highlightIds={grid.highlightIds}
+        autoScrollToHighlight
+      />
+    </>
+  );
+}
+```
+
+`grid.ask(text)` picks the right tool for the question:
+
+| Question type | Example | Handled by |
+|---|---|---|
+| Filters and lookups | "customer starting with A and balance between 1k and 9k" | Smart grid query |
+| Unusual data | "anything unusual?" | Outliers and duplicate rows |
+| Group and period questions | "which region had the highest drop in conversion this week?" | BI copilot |
+| Several steps | "show overdue, then highlight errors, then summarise" | Task runner, with a before/after report |
+
+Amounts like `₹10,000`, `10k`, `1.5 lakh` and `2 crore` are understood.
+
+### Use the functions directly
+
+```ts
+import { runQaAudit, auditToMarkdown, askInsight, runGridQuery } from "@yuktishaalaa/yuktai";
+
+// In the browser: accessibility QA report
+const report = runQaAudit();
+console.log(report.score, report.passed);
+const md = auditToMarkdown(report); // attach to a ticket or PR
+
+// Anywhere: data questions
+askInsight("which region had the highest drop in conversion this week", rows, columns).answer;
+runGridQuery("overdue and over 10k", { data: rows, columns }).ids;
+```
+
+### Plug in your own model (optional)
+
+Everything works offline with rules and keyword search. To get model-written answers, pass a `generate` hook, for example Gemini Nano or your own API:
+
+```tsx
+<AgenticPanel generate={async (question, context) => myModel(question, context)} />
+```
+
+### Honest limits
+
+- Questions are understood with rules, not a language model, so unusual phrasing may need rewording. The parser returns `notes` explaining any assumption it made.
+- The QA and design checks are automatic heuristics. They catch common problems but don't replace testing with real users and assistive technology.
 
 ---
 
@@ -160,6 +272,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
 That's it. Floating buttons appear on every page: ♿ opens the accessibility panel, 💬 opens "Ask this page", and the agent button opens the AI agent.
 
+To add the v5.1 agentic tools, place `<AgenticPanel />` or `useAgenticGrid` in any client component (see [What's new in v5.1](#whats-new-in-v51-agentic-ai-toolkit)).
+
 ### Wrapper props
 
 | Prop | Type | Default | Description |
@@ -278,6 +392,7 @@ export default function EmployeesPage() {
 - Keyboard navigation, ARIA grid semantics, 44×44 targets
 - English and Telugu UI
 - Embedded Grid AI Assistant with voice and chat
+- **New in v5.1:** compound natural-language questions, anomaly detection and BI answers through `useAgenticGrid`
 
 ### Grid AI Assistant
 
@@ -485,6 +600,8 @@ Retrieval-Augmented Generation running entirely in the browser. It extracts text
 
 **What I learned:** Transformers.js kept crashing on iOS Safari with out-of-memory errors. Quantization (same model, 75% smaller) fixed it. DistilBERT gave short, useless spans; `flan-t5-small` gives real sentences.
 
+**New in v5.1:** `createContextIndex` also searches grid rows (including rows on other pages of the grid) and your own documents, with keyword search that handles Telugu and Hindi script correctly.
+
 ---
 
 ## Module 4: Autonomous AI Agent
@@ -511,6 +628,19 @@ Type a business requirement and download a full Next.js 16 project as a ZIP.
 - `npm run dev` works immediately
 
 No AI writes the code. It's pure template engineering.
+
+---
+
+## Module 6: Agentic AI Toolkit 🆕
+
+The ten v5.1 features, described in detail in [What's new in v5.1](#whats-new-in-v51-agentic-ai-toolkit).
+
+- **Copilot and QA:** 15 WCAG checks, plain-English explanations, safe fixes with undo, downloadable reports
+- **Forms and design review:** labels, autocomplete, error messages, focus states, hierarchy, clutter, senior-friendly tips
+- **Data:** compound grid questions, outliers and duplicates, group-by, period comparison, trends
+- **Automation:** multi-step instructions with a before/after summary
+- **Voice:** accessibility settings and grid row navigation by voice, in English and Telugu
+- **React:** `AgenticPanel`, `AgenticGridBar`, `useAgenticGrid`
 
 ---
 
@@ -559,6 +689,7 @@ Props: `size` (default 20), `color` (default `currentColor`), `strokeWidth` (def
 - **Zero framework lock-in.** `core/renderer.ts` has no framework imports.
 - **Never reads its own UI.** Panels are marked with `data-yuktai-panel`.
 - **SSR safe.** No `window` errors on the server.
+- **Every automatic fix can be undone.** The v5.1 copilot records each change it makes.
 - **Honest limits.** Client-side pagination is for a few thousand rows; use server-side beyond that.
 
 ---
@@ -576,8 +707,9 @@ Props: `size` (default 20), `color` (default `currentColor`), `strokeWidth` (def
 
 ## Roadmap
 
+- **Shipped (v5.1):** Agentic AI Toolkit: accessibility copilot, QA reports, form and design review, smart grid queries, BI answers, multi-step tasks, page + data RAG, voice accessibility commands
 - **Shipped (v4.6.4):** YuktaiGrid Agentic AI + WebMCP, embedded Grid AI Assistant, English/Telugu UI, page-size switching, icon polish
-- **Next:** more Grid Agent tools and WebMCP capabilities, multilingual RAG (Telugu, Hindi, Tamil, Bengali)
+- **Next:** expose the v5.1 agentic tools through WebMCP, more Grid Agent tools, multilingual RAG (Telugu, Hindi, Tamil, Bengali)
 - **Later:** RTL support, richer browser-native AI, multimodal grid experiences
 
 ---
@@ -601,6 +733,6 @@ Issues and pull requests are welcome at [github.com/sandeepmiriyala03/yuktai](ht
 
 ISC © Sandeep Miriyala, [Yuktishaalaa AI Lab](https://github.com/sandeepmiriyala03)
 
-Built in free time, with help from Claude, GPT, and Gemini for learning. Every line written, every bug fixed, and every decision made by me.
+Built in free time. AI coding assistants (Claude, GPT and Gemini) helped me learn, and helped write and test parts of the code. Every design decision, review and release is mine.
 
 **Free forever. Open source. Built for every user.** 🏺

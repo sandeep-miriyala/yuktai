@@ -1,7 +1,7 @@
 {
   "name": "@yuktishaalaa/yuktai",
-  "version": "5.1.0",
-  "description": "Universal runtime accessibility plugin — auto-fixes WCAG 2.2 violations with on-device AI features. Zero API keys.",
+  "version": "5.2.0",
+  "description": "Next.js accessibility, AI and data toolkit: WCAG 2.2 auto-fix, agentic data grid, accessibility copilot, QA reports and in-browser RAG. Zero API keys.",
   "author": "Sandeep Miriyala — Yuktishaalaa AI Lab",
   "license": "ISC",
   "homepage": "https://aksharatantra.miriyala.in",
@@ -20,7 +20,11 @@
     "on-device-ai",
     "transformers",
     "rag",
-    "gemini-nano"
+    "gemini-nano",
+    "agentic-ai",
+    "data-grid",
+    "webmcp",
+    "telugu"
   ],
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -45,9 +49,7 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@ai-sdk/react": "^4.0.147",
-    "jszip": "^3.10.1",
-    "next": "^16.4.2"
+    "jszip": "^3.10.1"
   },
   "peerDependencies": {
     "react": ">=17.0.0",
