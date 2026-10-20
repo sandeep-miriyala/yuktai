@@ -4,9 +4,10 @@
 
 [![npm](https://img.shields.io/npm/v/@yuktishaalaa/yuktai)](https://www.npmjs.com/package/@yuktishaalaa/yuktai)
 [![downloads](https://img.shields.io/npm/dm/@yuktishaalaa/yuktai)](https://www.npmjs.com/package/@yuktishaalaa/yuktai)
-[![license](https://img.shields.io/badge/license-ISC-brightgreen)](./LICENSE)
+[![license](https://img.shields.io/badge/license-GPL--3.0-blue)](./LICENSE)
 [![node](https://img.shields.io/badge/node-%3E%3D18-blue)](https://nodejs.org)
 [![Next.js](https://img.shields.io/badge/Next.js-13%2B-black)](https://nextjs.org)
+[![XERJ Corpus Hub contributor](https://hub.xerj.org/contributors/sandeepmiriyala03/badge.svg)](https://hub.xerj.org/contributors/sandeepmiriyala03)
 
 Built in free time by [Sandeep Miriyala](https://github.com/sandeepmiriyala03).
 
@@ -41,7 +42,7 @@ Six modules ship in a single npm package:
 
 ---
 
-## What's new in v5.1: Agentic AI Toolkit
+## What's new in v5.2: Agentic AI Toolkit
 
 Ten agentic features, all running in the browser. No API keys, and no page or grid data leaves the device unless you plug in your own model through a `generate` or `summarize` hook.
 
@@ -149,6 +150,8 @@ Everything works offline with rules and keyword search. To get model-written ans
 
 - Questions are understood with rules, not a language model, so unusual phrasing may need rewording. The parser returns `notes` explaining any assumption it made.
 - The QA and design checks are automatic heuristics. They catch common problems but don't replace testing with real users and assistive technology.
+- Smart grid queries, page answers and BI answers are in English today. Telugu and Hindi data questions are not parsed yet; use `customRules` with your own phrases for them.
+- Voice accessibility commands understand English and Telugu, not yet Hindi or other languages.
 
 ---
 
@@ -171,7 +174,7 @@ Everything works offline with rules and keyword search. To get model-written ans
 
 | Device | Browser | Core features | AI engine |
 |---|---|---|---|
-| 🖥 Desktop | Chrome 147+ | ✅ All | Gemini Nano |
+| 🖥 Desktop | Chrome 147+ (needed only for Gemini Nano) | ✅ All | Gemini Nano |
 | 🖥 Desktop | Firefox / Edge / Safari | ✅ All | Transformers.js |
 | 📱 Android | Chrome Mobile | ✅ All | Transformers.js |
 | 📱 iOS | Safari Mobile | ✅ All | Transformers.js |
@@ -272,7 +275,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
 That's it. Floating buttons appear on every page: ♿ opens the accessibility panel, 💬 opens "Ask this page", and the agent button opens the AI agent.
 
-To add the v5.1 agentic tools, place `<AgenticPanel />` or `useAgenticGrid` in any client component (see [What's new in v5.1](#whats-new-in-v51-agentic-ai-toolkit)).
+To add the v5.2 agentic tools, place `<AgenticPanel />` or `useAgenticGrid` in any client component (see [What's new in v5.2](#whats-new-in-v52-agentic-ai-toolkit)).
 
 ### Wrapper props
 
@@ -392,7 +395,7 @@ export default function EmployeesPage() {
 - Keyboard navigation, ARIA grid semantics, 44×44 targets
 - English and Telugu UI
 - Embedded Grid AI Assistant with voice and chat
-- **New in v5.1:** compound natural-language questions, anomaly detection and BI answers through `useAgenticGrid`
+- **New in v5.2:** compound natural-language questions, anomaly detection and BI answers through `useAgenticGrid`
 
 ### Grid AI Assistant
 
@@ -405,7 +408,7 @@ Runs embedded in the grid or as a standalone component. Intent parsing runs loca
   onSearch={handleSearch}
   onSort={handleSort}
   language="te-IN" // AI UI and responses: en-US | te-IN
-  inputLanguage="te-IN" // voice input: en-US | te-IN
+  inputLanguage="te-IN" // voice input: en-IN, en-US or any of the 22 Indian languages
   embedded
 />
 ```
@@ -600,7 +603,7 @@ Retrieval-Augmented Generation running entirely in the browser. It extracts text
 
 **What I learned:** Transformers.js kept crashing on iOS Safari with out-of-memory errors. Quantization (same model, 75% smaller) fixed it. DistilBERT gave short, useless spans; `flan-t5-small` gives real sentences.
 
-**New in v5.1:** `createContextIndex` also searches grid rows (including rows on other pages of the grid) and your own documents, with keyword search that handles Telugu and Hindi script correctly.
+**New in v5.2:** `createContextIndex` also searches grid rows (including rows on other pages of the grid) and your own documents, with keyword search that handles Telugu and Hindi script correctly.
 
 ---
 
@@ -689,7 +692,7 @@ Props: `size` (default 20), `color` (default `currentColor`), `strokeWidth` (def
 - **Zero framework lock-in.** `core/renderer.ts` has no framework imports.
 - **Never reads its own UI.** Panels are marked with `data-yuktai-panel`.
 - **SSR safe.** No `window` errors on the server.
-- **Every automatic fix can be undone.** The v5.1 copilot records each change it makes.
+- **Every automatic fix can be undone.** The v5.2 copilot records each change it makes.
 - **Honest limits.** Client-side pagination is for a few thousand rows; use server-side beyond that.
 
 ---
@@ -707,9 +710,9 @@ Props: `size` (default 20), `color` (default `currentColor`), `strokeWidth` (def
 
 ## Roadmap
 
-- **Shipped (v5.1):** Agentic AI Toolkit: accessibility copilot, QA reports, form and design review, smart grid queries, BI answers, multi-step tasks, page + data RAG, voice accessibility commands
+- **Shipped (v5.2):** Agentic AI Toolkit: accessibility copilot, QA reports, form and design review, smart grid queries, BI answers, multi-step tasks, page + data RAG, voice accessibility commands
 - **Shipped (v4.6.4):** YuktaiGrid Agentic AI + WebMCP, embedded Grid AI Assistant, English/Telugu UI, page-size switching, icon polish
-- **Next:** expose the v5.1 agentic tools through WebMCP, more Grid Agent tools, multilingual RAG (Telugu, Hindi, Tamil, Bengali)
+- **Next:** expose the v5.2 agentic tools through WebMCP, more Grid Agent tools, multilingual RAG (Telugu, Hindi, Tamil, Bengali)
 - **Later:** RTL support, richer browser-native AI, multimodal grid experiences
 
 ---
@@ -731,7 +734,7 @@ Issues and pull requests are welcome at [github.com/sandeepmiriyala03/yuktai](ht
 
 ## License
 
-ISC © Sandeep Miriyala, [Yuktishaalaa AI Lab](https://github.com/sandeepmiriyala03)
+GPL-3.0 © Sandeep Miriyala, [Yuktishaalaa AI Lab](https://github.com/sandeepmiriyala03)
 
 Built in free time. AI coding assistants (Claude, GPT and Gemini) helped me learn, and helped write and test parts of the code. Every design decision, review and release is mine.
 
