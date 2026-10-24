@@ -147,7 +147,7 @@ node vanilla/build.mjs     # → vanilla/index.js and vanilla/index.min.js
 
 # End-to-end checks in real Chromium (37 checks plus axe-core)
 npm i -D playwright-core axe-core
-CHROME=/path/to/chrome node vanilla/test/browser.test.mjs
+CHROME=/path/to/chrome node vanilla/test/e2e.mjs
 ```
 
 Edit `vanilla/src/*` or `src/*`, then rebuild. Do not edit `vanilla/index.js` by hand.

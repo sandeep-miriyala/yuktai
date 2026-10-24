@@ -1,6 +1,6 @@
 # @yuktishaalaa/yuktai
 
-> Universal Next.js plugin for accessibility, AI, and data. One install brings WCAG 2.2 auto-fix, in-browser RAG, an AI agent, code generation, an accessible data grid with Agentic AI + WebMCP, and an agentic toolkit that audits, explains and fixes pages and answers questions about your data. Zero API keys, zero cost, works offline.
+> Universal accessibility, AI and data toolkit for Next.js, React **and plain HTML**. One install (or one script tag) brings WCAG 2.2 auto-fix, in-browser RAG, an AI agent, code generation, an accessible data grid with Agentic AI + WebMCP, and an agentic toolkit that audits, explains and fixes pages and answers questions about your data. Zero API keys, zero cost, works offline.
 
 [![npm](https://img.shields.io/npm/v/@yuktishaalaa/yuktai)](https://www.npmjs.com/package/@yuktishaalaa/yuktai)
 [![downloads](https://img.shields.io/npm/dm/@yuktishaalaa/yuktai)](https://www.npmjs.com/package/@yuktishaalaa/yuktai)
@@ -29,7 +29,7 @@ So I built yuktai, one weekend and one late night at a time.
 
 ## What's inside
 
-Six modules ship in a single npm package:
+Six modules ship in a single npm package, for React/Next.js and, since v5.3, for plain HTML pages with one script tag:
 
 | Module | Features | What it does |
 |---|---|---|
@@ -38,7 +38,67 @@ Six modules ship in a single npm package:
 | **3. In-Tab RAG** | 11 | Ask questions about any page, offline, no API |
 | **4. Autonomous AI Agent** | 13 | Natural-language browser guidance |
 | **5. Vibe Coder** | 19 | Generate full Next.js projects from plain English |
-| **6. Agentic AI Toolkit** 🆕 | 10 | Accessibility copilot, QA reports, form and design review, smart grid queries, BI answers, multi-step tasks, voice settings |
+| **6. Agentic AI Toolkit** | 10 | Accessibility copilot, QA reports, form and design review, smart grid queries, BI answers, multi-step tasks, voice settings |
+| **Vanilla JS build** 🆕 | All | Every module above for plain HTML, CSS and JavaScript: no React, no build step |
+
+---
+
+## What's new in v5.3: Vanilla JS (plain HTML)
+
+All of yuktai now works on any HTML page, without React or a build step. The vanilla build is bundled from the same source as the npm package, so a question gets the same answer in React and in plain HTML.
+
+```html
+<script>
+  window.YUKTAI_CONFIG = { position: "right", showPageTools: true }  // optional
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@yuktishaalaa/yuktai@5.3.0/vanilla/index.min.js"></script>
+
+<div id="staff"></div>
+<script>
+  const grid = yuktai.renderGrid("#staff", {
+    data: rows,
+    rowKey: "id",
+    columns: [
+      { key: "name", label: "Name" },
+      { key: "salary", label: "Salary", type: "number" },
+      { key: "joined", label: "Joined", type: "date" },
+    ],
+    agentic: true,          // question bar: "salary over 1 lakh", "average salary by department"
+    ai: true,               // assistant: custom rules, phrases, grid tools, voice input
+    locale: "en-IN",        // or "te-IN" for Telugu UI and messages
+    webmcp: true,
+  })
+
+  await grid.ask("salary over 1 lakh in Hyderabad")
+  yuktai.mountAgenticPanel("#tools", { defaultTab: "qa" })   // Copilot, QA, Forms, Design, Ask, Voice
+</script>
+```
+
+| React / Next.js | Vanilla JS |
+|---|---|
+| `<YuktaiGrid>` | `yuktai.renderGrid(container, options)` |
+| `useAgenticGrid` + `<AgenticGridBar>` | `yuktai.createAgenticGrid()` + `yuktai.mountAgenticGridBar()`, or `agentic: true` |
+| `useYuktaiGridAgent` | `yuktai.createGridAgent()` |
+| `<YuktaiGridWebMCP>` | `yuktai.registerWebMCP()`, or `webmcp: true` |
+| `<AgenticPanel>` | `yuktai.mountAgenticPanel()` |
+| `<YuktAIWrapper>` | Automatic floating ♿ button (and 🛠 page tools with `showPageTools: true`) |
+| Every function (`runQaAudit`, `askInsight`, `parseAmount`, …) | Same names on `window.yuktai` |
+
+**Grid features in the vanilla build:**
+- search, sort, page-size switching, row selection and CSV export (Excel-safe)
+- table, card or auto view; 5 WCAG themes; Telugu UI
+- loading and empty states; row highlighting that scrolls to the row
+- ARIA grid keyboard navigation: arrow keys, Home/End, Page Up/Down, Space to select, Enter to open
+
+**Tested** in Chromium: 37 end-to-end checks pass, with axe-core reporting 0 violations and no console errors. Open `vanilla/index.html` in the repo for a demo of every feature, including a Telugu grid. Full API: [`vanilla/README.md`](./vanilla/README.md).
+
+### Accessibility engine fixes in v5.3 (React and vanilla)
+
+- Auto-fix no longer adds an `aria-label` to form fields that already have a `<label>`. Before this, it replaced the name that screen readers announce.
+- Buttons and links hidden at scan time are no longer labelled "button" or "link".
+- `<header>` and `<footer>` inside sections and dialogs no longer become page-level banner and contentinfo landmarks.
+- The fix count only includes fixes that were actually applied.
+- Visual alert colours now meet a 4.5:1 contrast ratio.
 
 ---
 
@@ -205,7 +265,13 @@ yarn add @yuktishaalaa/yuktai
 pnpm add @yuktishaalaa/yuktai
 ```
 
-Requirements: Node.js 18+, npm 8+, Next.js 13+.
+**Plain HTML (no install)**
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/@yuktishaalaa/yuktai@5.3.0/vanilla/index.min.js"></script>
+```
+
+Requirements: Node.js 18+, npm 8+, Next.js 13+ (React builds only; the vanilla build needs only a browser).
 
 ---
 
@@ -689,7 +755,7 @@ Props: `size` (default 20), `color` (default `currentColor`), `strokeWidth` (def
 
 - **Zero API keys, zero cost, zero telemetry.** Everything runs in the browser.
 - **Zero injected ids.** Injected nodes are tracked by JavaScript references, so they never collide with your app's ids.
-- **Zero framework lock-in.** `core/renderer.ts` has no framework imports.
+- **Zero framework lock-in.** `core/renderer.ts` has no framework imports, and the vanilla build runs on any HTML page.
 - **Never reads its own UI.** Panels are marked with `data-yuktai-panel`.
 - **SSR safe.** No `window` errors on the server.
 - **Every automatic fix can be undone.** The v5.2 copilot records each change it makes.
@@ -702,6 +768,7 @@ Props: `size` (default 20), `color` (default `currentColor`), `strokeWidth` (def
 | | Supported |
 |---|---|
 | Next.js | 13, 14, 15, 16 |
+| Plain HTML | Any page, one script tag (vanilla build) |
 | React | 17, 18, 19 (19 needs `--legacy-peer-deps`) |
 | Node.js | 18+ |
 | Browsers | Chrome 90+, Firefox 90+, Safari 15+, Edge 90+, Samsung Internet 14+ |
@@ -710,6 +777,7 @@ Props: `size` (default 20), `color` (default `currentColor`), `strokeWidth` (def
 
 ## Roadmap
 
+- **Shipped (v5.3):** Vanilla JS build of every module for plain HTML pages, plus accessibility engine fixes
 - **Shipped (v5.2):** Agentic AI Toolkit: accessibility copilot, QA reports, form and design review, smart grid queries, BI answers, multi-step tasks, page + data RAG, voice accessibility commands
 - **Shipped (v4.6.4):** YuktaiGrid Agentic AI + WebMCP, embedded Grid AI Assistant, English/Telugu UI, page-size switching, icon polish
 - **Next:** expose the v5.2 agentic tools through WebMCP, more Grid Agent tools, multilingual RAG (Telugu, Hindi, Tamil, Bengali)
@@ -729,6 +797,7 @@ Issues and pull requests are welcome at [github.com/sandeepmiriyala03/yuktai](ht
 - GitHub: [sandeepmiriyala03/yuktai](https://github.com/sandeepmiriyala03/yuktai)
 - Demo: [aksharatantra.miriyala.in/staffdirectory](https://aksharatantra.miriyala.in/staffdirectory)
 - Showcase: [ratnalabala.vercel.app](https://ratnalabala.vercel.app/poems?view=grid)
+- Vanilla JS (CDN): [cdn.jsdelivr.net/npm/@yuktishaalaa/yuktai/vanilla/index.min.js](https://cdn.jsdelivr.net/npm/@yuktishaalaa/yuktai/vanilla/index.min.js)
 
 ---
 
@@ -738,4 +807,4 @@ GPL-3.0 © Sandeep Miriyala, [Yuktishaalaa AI Lab](https://github.com/sandeepmir
 
 Built in free time. AI coding assistants (Claude, GPT and Gemini) helped me learn, and helped write and test parts of the code. Every design decision, review and release is mine.
 
-**Free forever. Open source. Built for every user.** 🏺
+**Free forever. Open source. Built for every user.** 

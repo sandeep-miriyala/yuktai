@@ -1,13 +1,16 @@
 {
   "name": "@yuktishaalaa/yuktai",
-  "version": "5.2.0",
-  "description": "Next.js accessibility, AI and data toolkit: WCAG 2.2 auto-fix, agentic data grid, accessibility copilot, QA reports and in-browser RAG. Zero API keys.",
+  "version": "5.3.0",
+  "description": "Accessibility, AI and data toolkit for Next.js, React and plain HTML: WCAG 2.2 auto-fix, agentic data grid, accessibility copilot, QA reports and in-browser RAG. Zero API keys.",
   "author": "Sandeep Miriyala — Yuktishaalaa AI Lab",
   "license": "ISC",
   "homepage": "https://aksharatantra.miriyala.in",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sandeepmiriyala03/yuktai.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sandeepmiriyala03/yuktai/issues"
   },
   "keywords": [
     "accessibility",
@@ -16,6 +19,9 @@
     "aria",
     "react",
     "nextjs",
+    "vanilla-js",
+    "html",
+    "no-framework",
     "browser-ai",
     "on-device-ai",
     "transformers",
@@ -24,29 +30,41 @@
     "agentic-ai",
     "data-grid",
     "webmcp",
-    "telugu"
+    "telugu",
+    "indian-languages"
   ],
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
+  "unpkg": "vanilla/index.min.js",
+  "jsdelivr": "vanilla/index.min.js",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
-    }
+    },
+    "./vanilla": "./vanilla/index.min.js",
+    "./vanilla/index.js": "./vanilla/index.js",
+    "./vanilla/index.min.js": "./vanilla/index.min.js",
+    "./package.json": "./package.json"
   },
   "files": [
     "dist",
+    "vanilla/index.js",
+    "vanilla/index.min.js",
+    "vanilla/README.md",
     "README.md",
     "LICENSE"
   ],
   "scripts": {
     "dev": "tsup --watch",
     "build": "tsup",
+    "build:vanilla": "node vanilla/build.mjs",
+    "build:all": "npm run build && npm run build:vanilla",
     "lint": "eslint src --ext .ts,.tsx",
     "test": "vitest run",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build:all"
   },
   "dependencies": {
     "jszip": "^3.10.1"
@@ -65,8 +83,11 @@
     "@types/jszip": "^3.4.0",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
+    "axe-core": "^4.14.0",
+    "esbuild": "^0.24.0",
     "eslint": "^8.57.0",
     "happy-dom": "^15.11.7",
+    "playwright-core": "^1.64.1",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "tsup": "^8.5.1",

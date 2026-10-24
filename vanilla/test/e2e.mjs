@@ -1,5 +1,5 @@
 // End-to-end checks for the vanilla build in real Chromium.
-//   node vanilla/test/browser.test.mjs   (needs playwright-core + a Chromium; axe-core optional)
+//   node vanilla/test/e2e.mjs   (needs playwright-core + a Chromium; axe-core optional)
 import { createRequire } from "node:module"
 import { dirname, join } from "node:path"
 import { fileURLToPath, pathToFileURL } from "node:url"
