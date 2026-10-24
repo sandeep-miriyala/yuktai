@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="yuktai vanilla JS: accessible data grid you can talk to, page agents and WCAG tools for plain HTML. No framework, no API keys.">
+<title>yuktai Vanilla JS — every feature with examples</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#172033;background:#f1f5f9;font-synthesis:none}
+*{box-sizing:border-box}
+body{margin:0;line-height:1.55}
+a{color:#0f766e}
+.skip{position:absolute;left:-999px;top:0;background:#0f172a;color:#fff;padding:10px 14px;z-index:10}
+.skip:focus{left:8px;top:8px}
+header.site{background:#0f172a;color:#fff;padding:30px 0}
+.wrap{width:min(1200px,calc(100% - 32px));margin:auto}
+h1{font-size:clamp(1.6rem,3vw,2.3rem);margin:0 0 8px}
+header.site p{color:#dbeafe;max-width:860px;margin:0}
+nav.toc{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px}
+nav.toc a{color:#fff;border:1px solid #334155;border-radius:999px;padding:6px 12px;text-decoration:none;font-size:.9rem}
+nav.toc a:hover,nav.toc a:focus-visible{background:#1e293b}
+main{padding:24px 0 60px}
+section.block{margin:34px 0}
+section.block>h2{font-size:1.4rem;margin:0 0 4px}
+.lead{color:#475569;margin:0 0 14px;max-width:880px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:14px}
+.card{background:#fff;border:1px solid #dbe2ea;border-radius:13px;padding:17px}
+.card h3{font-size:1.05rem;margin:0 0 6px}
+.card p{color:#475569;margin:0 0 10px}
+.btn{display:inline-flex;align-items:center;gap:7px;min-height:44px;border:1px solid #94a3b8;border-radius:8px;background:#fff;color:#172033;padding:9px 12px;font:inherit;font-weight:650;cursor:pointer}
+.btn:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #2563eb;outline-offset:3px}
+.note{border-left:4px solid #0d9488;background:#f0fdfa;color:#134e4a;padding:12px 14px;border-radius:0 8px 8px 0;margin:16px 0}
+.warn{border-left-color:#b45309;background:#fffbeb;color:#713f12}
+.stats{display:flex;gap:10px;flex-wrap:wrap}
+.stat{padding:9px 12px;border-radius:9px;border:1px solid #99f6e4;background:#f0fdfa;color:#115e59}
+.stat strong{display:block;font-size:1.2rem}
+.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin:0 0 12px}
+.controls label{display:flex;flex-direction:column;font-size:.85rem;font-weight:600;color:#334155;gap:4px}
+.controls select{min-height:44px;padding:6px 10px;border:1px solid #94a3b8;border-radius:8px;background:#fff;font:inherit}
+.stack>*+*{margin-top:12px}
+code,pre{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+pre{white-space:pre;overflow:auto;background:#0f172a;color:#e2e8f0;padding:14px;border-radius:10px;font-size:.85rem;margin:10px 0 0}
+.out{white-space:pre-wrap;overflow-wrap:anywhere;background:#fff;border:1px solid #dbe2ea;border-radius:10px;padding:12px;min-height:60px;font-size:.85rem;max-height:420px;overflow:auto}
+.play{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:8px;margin-bottom:10px}
+.icon-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}
+.icon-card{background:#fff;border:1px solid #dbe2ea;border-radius:9px;min-height:82px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:#0f766e}
+.icon-card code{font-size:11px;color:#334155}
+.practice{background:#fff;border:2px dashed #b45309;border-radius:12px;padding:16px}
+.practice label{display:block;font-weight:600;margin-top:10px}
+.practice input,.practice select{min-height:44px;width:min(100%,360px);padding:8px;border:1px solid #94a3b8;border-radius:8px;font:inherit}
+dialog{border:1px solid #cbd5e1;border-radius:14px;padding:0;max-width:min(520px,calc(100vw - 24px));width:100%}
+dialog::backdrop{background:rgba(15,23,42,.45)}
+dialog header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid #e2e8f0}
+dialog h2{margin:0;font-size:1.1rem}
+dialog dl{display:grid;grid-template-columns:120px 1fr;gap:6px 12px;padding:16px;margin:0}
+dialog dt{color:#475569}dialog dd{margin:0;overflow-wrap:anywhere}
+footer{padding:24px 0;color:#475569;font-size:.9rem;border-top:1px solid #dbe2ea}
+@media(max-width:560px){.wrap{width:calc(100% - 20px)}header.site{padding:22px 0}.card{padding:13px}}
+</style>
+</head>
+<body>
+<header class="site">
+  <a class="skip" href="#main">Skip to main content</a>
+  <div class="wrap">
+    <h1>yuktai Vanilla JS</h1>
+    <p>The yuktai 5.2 toolkit for plain HTML: an accessible data grid you can talk to, page agents that test and explain the page, and WCAG accessibility fixes. One script file, no framework, no API keys, nothing leaves the browser.</p>
+    <nav class="toc" aria-label="Sections on this page">
+      <a href="#grid">1. Agentic grid</a>
+      <a href="#telugu">2. Telugu grid</a>
+      <a href="#standalone">3. Without a grid</a>
+      <a href="#tools">4. Page tools</a>
+      <a href="#a11y">5. Accessibility engine</a>
+      <a href="#playground">6. Core functions</a>
+      <a href="#webmcp">7. WebMCP</a>
+      <a href="#icons">8. Icons</a>
+      <a href="#api">9. API reference</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+  <div class="cards">
+    <section class="card" aria-labelledby="c1"><h2 id="c1" style="font-size:1.05rem;margin:0 0 6px">Same engine as npm</h2><p>The parser, BI answers, task runner, QA audit, copilot, form and design review are bundled from the package source, so answers match the React version.</p></section>
+    <section class="card" aria-labelledby="c2"><h2 id="c2" style="font-size:1.05rem;margin:0 0 6px">Large data example</h2><p>1,000 generated staff rows. Select rows to see the count change.</p><div class="stats"><div class="stat"><strong id="total-records">1,000</strong>Sample rows</div><div class="stat"><strong id="selected-records" aria-live="polite">0</strong>Selected rows</div></div></section>
+    <section class="card" aria-labelledby="c3"><h2 id="c3" style="font-size:1.05rem;margin:0 0 6px">Floating tools</h2><p>Bottom corner: ♿ accessibility settings and 🛠 page tools (QA, forms, design, ask, voice).</p><button class="btn" id="open-a11y" type="button">Open accessibility settings</button></section>
+  </div>
+  <div class="note"><strong>Honest limits:</strong> questions are understood with rules, not a language model, so unusual phrasing may need rewording. Telugu and Hindi data questions use custom rules. QA and design checks are heuristics: still test with a keyboard and a screen reader. WebMCP works only where the browser provides <code>document.modelContext</code>. For 100K+ rows, page on the server.</div>
+
+  <!-- 1 ─────────────────────────────────────────── -->
+  <section class="block" id="grid" aria-labelledby="h-grid">
+    <h2 id="h-grid">1. Agentic data grid</h2>
+    <p class="lead">Search, sort, page, select and export, plus two ways to ask: the <b>question bar</b> (filters, BI answers, multi-step tasks) and the <b>grid assistant</b> (custom rules → phrase parser → grid tools, with voice). Keyboard: Tab into the table, then arrow keys, Home/End, Ctrl+Home/End, Page Up/Down, Space to select, Enter to open.</p>
+    <div class="controls">
+      <label>Theme<select id="theme"><option value="default">Default</option><option value="high-contrast">High contrast</option><option value="dark">Dark</option><option value="color-blind">Colour-blind</option><option value="dyslexia">Dyslexia</option></select></label>
+      <label>View<select id="view"><option value="auto">Auto (cards on small screens)</option><option value="table">Table</option><option value="card">Cards</option></select></label>
+      <button class="btn" type="button" id="loading-demo">Show loading state (2 s)</button>
+      <button class="btn" type="button" id="reset-grid">Reset grid</button>
+    </div>
+    <div id="employee-grid"></div>
+    <p class="note" id="agent-line" role="status" aria-live="polite">Last assistant action will appear here.</p>
+  </section>
+
+  <!-- 2 ─────────────────────────────────────────── -->
+  <section class="block" id="telugu" lang="te" aria-labelledby="h-te">
+    <h2 id="h-te">2. తెలుగు గ్రిడ్ — రంగురంగుల రత్నదీపాలు</h2>
+    <p class="lead">మిరియాల రామకృష్ణ గారి 27 బాలల గేయాలు. <span lang="en">Telugu UI with <code>locale: "te-IN"</code>, Telugu tool messages, Telugu voice input and custom rules.</span> ప్రయత్నించండి: “ఎన్ని”, “పెద్ద పద్యాలు”, “పంక్తులు ప్రకారం క్రమం”, “ఫిల్టర్లు తీసేయి”, “సహాయం”.</p>
+    <div id="poems-grid"></div>
+  </section>
+
+  <!-- 3 ─────────────────────────────────────────── -->
+  <section class="block" id="standalone" aria-labelledby="h-sa">
+    <h2 id="h-sa">3. Ask questions without a grid</h2>
+    <p class="lead"><code>createAgenticGrid()</code> is the vanilla <code>useAgenticGrid</code>. Use it with any table you already have: it gives back <code>gridData</code>, <code>highlightIds</code>, the answer, a BI table and task steps.</p>
+    <div id="standalone-bar"></div>
+    <div class="out" id="standalone-table" aria-live="polite" style="margin-top:10px"></div>
+  </section>
+
+  <!-- 4 ─────────────────────────────────────────── -->
+  <section class="block" id="tools" aria-labelledby="h-tools">
+    <h2 id="h-tools">4. Page tools (AgenticPanel)</h2>
+    <p class="lead">Copilot, QA report, Forms, Design, Ask page and Voice, mounted inline with <code>yuktai.mountAgenticPanel("#page-tools")</code>. The same panel opens from the 🛠 button. The practice form below has deliberate problems for the tools to find.</p>
+    <div id="page-tools"></div>
+    <div class="practice" style="margin-top:16px">
+      <h3 style="margin:0">Practice form (deliberate problems)</h3>
+      <p class="lead" style="margin:4px 0 8px">Insert a form with one unlabeled field and an email without an autocomplete hint, then run “Forms”, “QA report” or “Ask page → Which fields have no label?”. Turn on ♿ → “Auto-fix page” to watch the engine repair new content.</p>
+      <button class="btn" type="button" id="insert-practice">Insert practice form</button>
+      <div id="practice-slot"></div>
+    </div>
+  </section>
+
+  <!-- 5 ─────────────────────────────────────────── -->
+  <section class="block" id="a11y" aria-labelledby="h-a11y">
+    <h2 id="h-a11y">5. Accessibility engine</h2>
+    <p class="lead">The ♿ button runs the yuktai engine (<code>wcagPlugin</code>): WCAG auto-fixes, high contrast, dark mode, reduced motion, 44×44 targets, colour-blind filters, dyslexia font, text size 80–130%, skip links and speak-on-focus. Choices are saved on this device.</p>
+    <div class="controls">
+      <button class="btn" type="button" data-a11y='{"highContrast":true}'>High contrast on</button>
+      <button class="btn" type="button" data-a11y='{"darkMode":true}'>Dark mode on</button>
+      <button class="btn" type="button" data-a11y='{"fontSizeMultiplier":1.2}'>Text 120%</button>
+      <button class="btn" type="button" data-a11y='{"colorBlindMode":"deuteranopia"}'>Colour-blind filter</button>
+      <button class="btn" type="button" id="a11y-reset">Reset all</button>
+    </div>
+    <pre><code>yuktai.apply({ highContrast: true, fontSizeMultiplier: 1.2 })
+yuktai.reset()
+yuktai.getSettings()   // { highContrast, darkMode, reduceMotion, largeTargets, dyslexiaFont, colorBlindMode, fontSizeMultiplier, … }</code></pre>
+  </section>
+
+  <!-- 6 ─────────────────────────────────────────── -->
+  <section class="block" id="playground" aria-labelledby="h-play">
+    <h2 id="h-play">6. Core functions (same as npm)</h2>
+    <p class="lead">Each button runs one function on the staff data and prints the real result. Open the browser console to try your own: everything is on <code>window.yuktai</code>.</p>
+    <div class="play" id="play-buttons"></div>
+    <div class="out" id="play-out" role="status" aria-live="polite">Pick a function above.</div>
+  </section>
+
+  <!-- 7 ─────────────────────────────────────────── -->
+  <section class="block" id="webmcp" aria-labelledby="h-mcp">
+    <h2 id="h-mcp">7. WebMCP status</h2>
+    <p class="lead">The staff grid registers its 11 tools for browser AI agents when the browser supports WebMCP. This shows the real status; nothing is faked.</p>
+    <p class="out" id="webmcp-status" role="status">Checking…</p>
+  </section>
+
+  <!-- 8 ─────────────────────────────────────────── -->
+  <section class="block" id="icons" aria-labelledby="h-icons">
+    <h2 id="h-icons">8. Inline SVG icons</h2>
+    <p class="lead">Bundled inside index.js; no icon font or CDN. <code>yuktai.icon("search", 24)</code> returns SVG markup (decorative), or pass a label: <code>yuktai.icon("check", 20, "Done")</code>.</p>
+    <div class="icon-grid" id="icon-list"></div>
+  </section>
+
+  <!-- 9 ─────────────────────────────────────────── -->
+  <section class="block" id="api" aria-labelledby="h-api">
+    <h2 id="h-api">9. Copy-paste examples</h2>
+<pre><code>&lt;script&gt;window.YUKTAI_CONFIG = { position: "right", showPageTools: true, voiceLang: "te-IN" }&lt;/script&gt;
+&lt;script src="./index.js"&gt;&lt;/script&gt;
+
+// Grid with everything on
+const grid = yuktai.renderGrid("#staff", {
+  data: rows,
+  rowKey: "id",
+  columns: [
+    { key: "name", label: "Name" },
+    { key: "salary", label: "Salary", type: "number", render: (v) =&gt; "₹" + Number(v).toLocaleString("en-IN") },
+    { key: "joined", label: "Joined", type: "date" },
+    { key: "status", label: "Status", type: "badge" },
+  ],
+  locale: "en-IN",            // or "te-IN" (Telugu UI and messages)
+  theme: "default",           // high-contrast | dark | color-blind | dyslexia
+  view: "auto",               // table | card | auto
+  pagination: { pageSize: 20, showSizeChanger: true, sizeOptions: [10, 20, 50, 100] },
+  agentic: { examples: ["salary over 1 lakh", "anything unusual?"] },   // question bar
+  ai: true, inputLanguage: "te-IN",                                    // assistant: chat + voice
+  customRules: [{ name: "high-earners", phrases: ["high earners", "ఎక్కువ జీతం"],
+    execute: async ({ executeTool }) =&gt; (await executeTool("filter", { key: "salary", operator: "greaterThan", value: 100000 })).message }],
+  webmcp: true, toolName: "my_staff_grid",
+  onWebMCPStatusChange: (s) =&gt; console.log(s.state),
+  onRowClick: (row) =&gt; openDetails(row),
+  onSelectionChange: (keys) =&gt; console.log(keys),
+  onAgentResult: (r) =&gt; console.log(r.message),
+})
+
+await grid.ask("salary over 1 lakh in Hyderabad")   // "… row(s) found. Showing rows where …"
+await grid.executeTool("sort", { key: "salary", direction: "desc" })
+grid.highlight(["1001", "1002"]); grid.getSelectedRows(); grid.exportCSV()
+grid.setTheme("dark"); grid.setView("card"); grid.refresh(newRows); grid.destroy()
+
+// Page agents
+yuktai.runQaAudit().score
+yuktai.auditToMarkdown(yuktai.runQaAudit())
+yuktai.reviewForms({ seniorFriendly: true })
+yuktai.reviewDesign({ minFontSize: 16 })
+await yuktai.askAboutPage("Which fields have no label?")
+const copilot = yuktai.createA11yCopilot({ onUpdate: console.log }); copilot.scan(); copilot.applyAllFixes(); copilot.undoAll()
+const voice = yuktai.createVoiceA11yController({ lang: "te-IN" }); await voice.handle("పెద్ద అక్షరాలు")
+yuktai.mountAgenticPanel("#tools", { defaultTab: "qa", voiceLang: "te-IN" })</code></pre>
+  </section>
+</main>
+
+<dialog id="row-dialog" aria-labelledby="row-dialog-title">
+  <header><h2 id="row-dialog-title">Row details</h2><button class="btn" type="button" id="row-dialog-close" aria-label="Close details">✕</button></header>
+  <dl id="row-dialog-body"></dl>
+</dialog>
+
+<footer><div class="wrap">yuktai Vanilla JS 5.2 · ISC © Sandeep Miriyala, Yuktishaalaa AI Lab · <a href="https://github.com/sandeepmiriyala03/yuktai">GitHub</a> · <a href="https://www.npmjs.com/package/@yuktishaalaa/yuktai">npm</a></div></footer>
+
+<script>
+// autoFix is off in this demo so the practice form keeps its problems for the page tools to find.
+window.YUKTAI_CONFIG = { position: "right", primaryColor: "#0f766e", title: "Accessibility", showPageTools: true, voiceLang: "en-IN", config: { autoFix: false } };
+</script>
+<script src="./index.js"></script>
+<script>
+(function () {
+  "use strict";
+  var $ = function (s) { return document.querySelector(s) };
+  if (!window.yuktai || typeof window.yuktai.renderGrid !== "function") {
+    $("#employee-grid").innerHTML = "<p class='note warn'><strong>index.js did not load.</strong> Put index.html and index.js in the same folder.</p>";
+    return;
+  }
+  var Y = window.yuktai;
+
+  // ── sample data: 1,000 staff rows ──
+  var first = ["Aarav","Asha","Kiran","Priya","Ravi","Meera","Arjun","Ananya","Vikram","Sana","Ishaan","Divya","Neel","Kavya","Rahul","Nisha"];
+  var last = ["Rao","Sharma","Reddy","Patel","Kumar","Das","Iyer","Singh","Nair","Verma","Gupta","Joshi"];
+  var departments = ["Engineering","Quality Assurance","Accessibility","Data","Product","Support","Security","Design"];
+  var roles = ["Developer","Senior Developer","QA Engineer","Technical Lead","Analyst","Designer","Support Engineer","Product Owner"];
+  var cities = ["Hyderabad","Bengaluru","Chennai","Pune","Remote"];
+  var statuses = ["Active","Active","Active","On leave","Contractor"];
+  var start = new Date("2021-01-04").getTime();
+  var rows = Array.from({ length: 1000 }, function (_, i) {
+    var f = first[i % first.length], l = last[(i * 7) % last.length];
+    return {
+      id: 1001 + i,
+      name: f + " " + l,
+      email: (f + "." + l + (i + 1) + "@example.test").toLowerCase(),
+      department: departments[(i * 3) % departments.length],
+      role: roles[(i * 5) % roles.length],
+      city: cities[(i * 3) % cities.length],
+      salary: i === 77 ? 520000 : 45000 + ((i * 1379) % 155000),
+      joined: new Date(start + ((i * 86400000 * 7) % (86400000 * 1900))).toISOString().slice(0, 10),
+      status: statuses[(i * 2) % statuses.length]
+    };
+  });
+  var inr = function (n) { return "₹" + Number(n).toLocaleString("en-IN") };
+  var columns = [
+    { key: "id", label: "ID", type: "number", align: "left" },
+    { key: "name", label: "Name" },
+    { key: "email", label: "Email", hiddenOnMobile: true },
+    { key: "department", label: "Department" },
+    { key: "role", label: "Role", hiddenOnMobile: true },
+    { key: "city", label: "City" },
+    { key: "salary", label: "Salary", type: "number", render: function (v) { return inr(v) } },
+    { key: "joined", label: "Joined", type: "date" },
+    { key: "status", label: "Status", type: "badge" }
+  ];
+
+  // ── row details dialog (onRowClick → "open" tool) ──
+  var dialog = $("#row-dialog");
+  function openDetails(row) {
+    var body = $("#row-dialog-body");
+    body.replaceChildren();
+    columns.forEach(function (c) {
+      var dt = document.createElement("dt"); dt.textContent = c.label;
+      var dd = document.createElement("dd"); dd.textContent = c.key === "salary" ? inr(row[c.key]) : row[c.key];
+      body.append(dt, dd);
+    });
+    $("#row-dialog-title").textContent = row.name;
+    if (dialog.showModal) dialog.showModal(); else dialog.setAttribute("open", "");
+  }
+  $("#row-dialog-close").addEventListener("click", function () { dialog.close ? dialog.close() : dialog.removeAttribute("open") });
+
+  // ── 1. agentic grid ──
+  var grid = Y.renderGrid("#employee-grid", {
+    data: rows,
+    columns: columns,
+    rowKey: "id",
+    label: "Staff directory",
+    locale: "en-IN",
+    pagination: { pageSize: 10, showSizeChanger: true, sizeOptions: [10, 25, 50, 100] },
+    agentic: {
+      title: "Ask about the staff data",
+      examples: ["salary over 1 lakh", "Engineering in Hyderabad", "anything unusual?", "average salary by department", "top 3 by salary", "show salary over 80k, then sort by salary, then summarize"]
+    },
+    ai: true,
+    inputLanguage: "en-IN",
+    assistantExamples: ["how many", "sort by salary desc", "open Ravi", "high earners", "help", "clear filters"],
+    webmcp: true,
+    toolName: "staff_grid",
+    toolDescriptions: { search: "Search staff by name, city, department or role." },
+    customRules: [
+      { name: "high-earners", phrases: ["high earners", "top people", "ఎక్కువ జీతం", "ज़्यादा वेतन"], description: "Salary over 1 lakh",
+        execute: async function (ctx) { var r = await ctx.executeTool("filter", { key: "salary", operator: "greaterThan", value: 100000 }); return r.message } },
+      { name: "help", phrases: ["help", "what can i ask", "సహాయం"],
+        execute: function () { return "You can ask: how many · search <word> · sort by <column> [desc] · open <name> · high earners · clear filters · clear sort." } }
+    ],
+    onRowClick: openDetails,
+    onSelectionChange: function (keys) { $("#selected-records").textContent = keys.length.toLocaleString("en-IN") },
+    onAgentResult: function (r) { $("#agent-line").textContent = (r.success ? "✓ " : "✗ ") + r.message + (r.tool ? " (" + r.tool + ")" : "") },
+    onWebMCPStatusChange: function (s) {
+      $("#webmcp-status").textContent = s.state === "unsupported"
+        ? "Not available in this browser: document.modelContext was not found. No tools were registered."
+        : "State: " + s.state + ". Registered: " + (s.registered.join(", ") || "none") + (s.errors.length ? ". Errors: " + s.errors.map(function (e) { return e.tool + ": " + e.message }).join("; ") : "");
+    }
+  });
+  $("#total-records").textContent = rows.length.toLocaleString("en-IN");
+  $("#theme").addEventListener("change", function (e) { grid.setTheme(e.target.value) });
+  $("#view").addEventListener("change", function (e) { grid.setView(e.target.value) });
+  $("#loading-demo").addEventListener("click", function () { grid.setLoading(true); setTimeout(function () { grid.setLoading(false) }, 2000) });
+  $("#reset-grid").addEventListener("click", function () { grid.reset(); grid.clearSort(); grid.clearSelection(); $("#selected-records").textContent = "0" });
+  if ($("#webmcp-status").textContent === "Checking…") $("#webmcp-status").textContent = grid.webmcpStatus.state;
+
+  // ── 2. Telugu grid ──
+  var poems = [{"id":1,"title":"ఆలోచన","page":9,"lines":12,"stanzas":3},{"id":2,"title":"ఎవరమ్మా","page":10,"lines":12,"stanzas":3},{"id":3,"title":"మబ్బులు","page":11,"lines":10,"stanzas":1},{"id":4,"title":"చీకటీ","page":12,"lines":16,"stanzas":4},{"id":5,"title":"చుక్క ఎగిరి వస్తున్నది!","page":13,"lines":12,"stanzas":3},{"id":6,"title":"అన్నీ ఇవి వెన్నెలలా?","page":14,"lines":12,"stanzas":3},{"id":7,"title":"తోట","page":15,"lines":12,"stanzas":3},{"id":8,"title":"ఎగిరె పిట్టలు!","page":16,"lines":12,"stanzas":4},{"id":9,"title":"తొండపాట","page":17,"lines":12,"stanzas":3},{"id":10,"title":"గారడివాడి పాము","page":18,"lines":20,"stanzas":3},{"id":11,"title":"జాలరి పాట","page":20,"lines":12,"stanzas":3},{"id":12,"title":"సాలెవాళ్ళతో","page":21,"lines":12,"stanzas":3},{"id":13,"title":"పాపం! బిచ్చగత్తె!","page":22,"lines":12,"stanzas":3},{"id":14,"title":"పంచరంగులు","page":23,"lines":25,"stanzas":5},{"id":15,"title":"ఎఱ్ఱని పూలచెట్లు","page":24,"lines":17,"stanzas":5},{"id":16,"title":"మఱపురాదు","page":25,"lines":12,"stanzas":3},{"id":17,"title":"నాల్గు దిక్కులు","page":26,"lines":44,"stanzas":11},{"id":18,"title":"అడవీ! కారడవీ!","page":28,"lines":20,"stanzas":6},{"id":19,"title":"ఉగాది","page":30,"lines":16,"stanzas":4},{"id":20,"title":"ఓహో! సముద్రమా!","page":31,"lines":35,"stanzas":7},{"id":21,"title":"ఆనందమంటే!","page":33,"lines":12,"stanzas":3},{"id":22,"title":"నీడలు","page":34,"lines":12,"stanzas":3},{"id":23,"title":"ఏం చేయాలి?","page":35,"lines":10,"stanzas":1},{"id":24,"title":"సూర్యబింబం","page":36,"lines":12,"stanzas":3},{"id":25,"title":"నిన్నా నేడూ రేపూ","page":37,"lines":14,"stanzas":4},{"id":26,"title":"రైలులోంచి","page":38,"lines":16,"stanzas":4},{"id":27,"title":"చివరకు మిగిలింది!","page":39,"lines":24,"stanzas":6}];
+  Y.renderGrid("#poems-grid", {
+    data: poems,
+    rowKey: "id",
+    label: "రంగురంగుల రత్నదీపాలు గేయాలు",
+    locale: "te-IN",
+    columns: [
+      { key: "id", label: "క్రమ సంఖ్య", type: "number", align: "left" },
+      { key: "title", label: "శీర్షిక" },
+      { key: "page", label: "పుట", type: "number" },
+      { key: "lines", label: "పంక్తులు", type: "number" },
+      { key: "stanzas", label: "చరణాలు", type: "number" }
+    ],
+    pagination: { pageSize: 10, sizeOptions: [10, 27] },
+    ai: true,
+    inputLanguage: "te-IN",
+    assistantExamples: ["ఎన్ని", "పెద్ద పద్యాలు", "పంక్తులు ప్రకారం క్రమం", "ఫిల్టర్లు తీసేయి", "సహాయం"],
+    customRules: [
+      { name: "long-poems", phrases: ["పెద్ద పద్యాలు", "పెద్ద గేయాలు", "long poems"],
+        execute: async function (ctx) { var r = await ctx.executeTool("filter", { key: "lines", operator: "greaterThan", value: 16 }); return r.message } },
+      { name: "help", phrases: ["సహాయం", "help"],
+        execute: function () { return "ఇలా అడగండి: ఎన్ని · <పదం> వెతుకు · పంక్తులు ప్రకారం క్రమం · పెద్ద పద్యాలు · ఫిల్టర్లు తీసేయి" } }
+    ]
+  });
+
+  // ── 3. standalone agentic grid ──
+  var standalone = Y.createAgenticGrid({ data: rows.slice(0, 40), columns: columns, rowKey: "id" });
+  Y.mountAgenticGridBar("#standalone-bar", standalone, { title: "Ask the first 40 rows", examples: ["salary under 60k", "total salary by city", "highest salary first", "name starts with R"] });
+  standalone.subscribe(function (s) {
+    $("#standalone-table").textContent = s.gridData.length + " row(s) in gridData (first 8):\n" +
+      s.gridData.slice(0, 8).map(function (r) { return "• " + r.id + " " + r.name + " · " + r.city + " · " + inr(r.salary) }).join("\n") +
+      (s.highlightIds.length ? "\nHighlighted: " + s.highlightIds.join(", ") : "");
+  });
+  $("#standalone-table").textContent = "Ask a question above. The rows the agent picked will be listed here.";
+
+  // ── 4. page tools inline ──
+  Y.mountAgenticPanel("#page-tools", { defaultTab: "qa", voiceLang: "en-IN", applySettings: function (c) { return Y.apply(c) }, getSettings: Y.getSettings });
+
+  $("#insert-practice").addEventListener("click", function () {
+    if ($("#practice-form")) return;
+    $("#practice-slot").innerHTML = '<form id="practice-form" onsubmit="event.preventDefault()">' +
+      '<label for="pf-name">Full name</label><input id="pf-name" name="name" autocomplete="name" required>' +
+      '<label for="pf-email">Email</label><input id="pf-email" name="email" type="email">' +
+      '<input name="phone" type="tel" placeholder="Phone number">' +
+      '<div><button class="btn" type="submit" style="margin-top:12px">Submit</button></div></form>';
+    $("#insert-practice").textContent = "Practice form inserted";
+    $("#insert-practice").disabled = true;
+  });
+
+  // ── 5. accessibility buttons ──
+  document.querySelectorAll("[data-a11y]").forEach(function (b) {
+    b.addEventListener("click", function () { Y.apply(JSON.parse(b.getAttribute("data-a11y"))) });
+  });
+  $("#a11y-reset").addEventListener("click", function () { Y.reset() });
+  $("#open-a11y").addEventListener("click", function () { Y.open() });
+
+  // ── 6. playground ──
+  var cols = Y.toGridToolColumns(columns);
+  var sample = rows.slice(0, 120);
+  var demos = [
+    ["parseAmount('1.5 lakh')", function () { return { "1.5 lakh": Y.parseAmount("1.5 lakh"), "2cr": Y.parseAmount("2cr"), "10k": Y.parseAmount("10k"), "₹10,000": Y.parseAmount("₹10,000") } }],
+    ["parseGridQuery('salary over 1 lakh in Hyderabad')", function () { var p = Y.parseGridQuery("salary over 1 lakh in Hyderabad", cols, { data: sample }); return { filters: p.filters, sort: p.sort, limit: p.limit, explanation: p.explanation, notes: p.notes } }],
+    ["executeGridQuery(top 3 by salary)", function () { var p = Y.parseGridQuery("top 3 by salary", cols, { data: sample }); return Y.executeGridQuery(sample, cols, p).map(function (r) { return r.name + " " + inr(r.salary) }) }],
+    ["detectAnomalies(rows)", function () { return Y.detectAnomalies(sample, cols, { rowKey: "id" }).slice(0, 5) }],
+    ["summarizeRows(rows)", function () { return Y.summarizeRows(sample, cols) }],
+    ["askInsight('average salary by department')", function () { var a = Y.askInsight("average salary by department", sample, cols); return { kind: a.kind, answer: a.answer, table: a.table.slice(0, 4) } }],
+    ["groupBy(rows, 'city', 'salary', 'avg')", function () { return Y.groupBy(sample, "city", "salary", "avg") }],
+    ["trend(rows, 'joined', 'salary', 'year', 'sum')", function () { return Y.trend(sample, "joined", "salary", "year", "sum") }],
+    ["planTasks('show salary over 1 lakh, then sort by joined, then summarize')", function () { return Y.planTasks("show salary over 1 lakh, then sort by joined, then summarize") }],
+    ["parseVoiceA11yCommand('make text bigger')", function () { return [Y.parseVoiceA11yCommand("make text bigger", { fontSizeMultiplier: 1 }), Y.parseVoiceA11yCommand("next row"), Y.parseVoiceA11yCommand("పెద్ద అక్షరాలు", { fontSizeMultiplier: 1 })] }],
+    ["parseGridIntent('ఉగాది వెతుకు')", function () { return [Y.parseGridIntent("ఉగాది వెతుకు", { columns: [] }), Y.parseGridIntent("sort by salary desc", { columns: cols })] }],
+    ["tokenize('తెలుగు పద్యాలు')", function () { return Y.tokenize("తెలుగు పద్యాలు and Hyderabad Engineering") }],
+    ["runQaAudit()", function () { var r = Y.runQaAudit(); return { score: r.score, summary: r.summary, first: r.issues.slice(0, 3).map(function (i) { return i.rule + ": " + i.message }) } }],
+    ["analyzePage()", function () { var o = Y.analyzePage(); return { title: o.title, language: o.language, counts: o.counts, landmarks: o.landmarks, purpose: o.purpose } }],
+    ["contrastRatio('#475569', '#ffffff')", function () { return Y.contrastRatio(Y.parseColor("#475569"), Y.parseColor("#ffffff")).toFixed(2) + ":1" }],
+    ["createContextIndex().search('Hyderabad Engineering')", function () { var ix = Y.createContextIndex({ includePage: false, rows: sample, columns: cols, rowKey: "id" }); return ix.search("Hyderabad Engineering", 3).map(function (h) { return h.ref + ": " + h.text.slice(0, 90) }) }]
+  ];
+  var box = $("#play-buttons"), out = $("#play-out");
+  demos.forEach(function (d) {
+    var b = document.createElement("button");
+    b.className = "btn"; b.type = "button"; b.textContent = d[0];
+    b.addEventListener("click", function () {
+      try {
+        var result = d[1]();
+        out.textContent = d[0] + "\n\n" + (typeof result === "string" ? result : JSON.stringify(result, null, 2));
+      } catch (e) { out.textContent = d[0] + " failed: " + e.message }
+    });
+    box.appendChild(b);
+  });
+
+  // ── 8. icons ──
+  $("#icon-list").innerHTML = Y.iconNames.map(function (n) { return '<div class="icon-card">' + Y.icon(n, 24) + "<code>" + n + "</code></div>" }).join("");
+})();
+</script>
+</body>
+</html>
