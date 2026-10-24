@@ -4799,7 +4799,66 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
     meditate: '<circle cx="12" cy="4.5" r="2.2"/><path d="M12 8c-2.2 0-3.3 1.3-3.7 3.2L7.5 16M12 8c2.2 0 3.3 1.3 3.7 3.2l.8 4.8"/><path d="M4 18c3 2 5.5 2.4 8 1.2 2.5 1.2 5 .8 8-1.2"/><path d="M7.5 16c1.4 1.4 3 2 4.5 2s3.1-.6 4.5-2"/>',
     trophy: '<path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8 21h8M9 17h6"/>',
     bulb: '<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"/>',
-    sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2.5M12 19.5V22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M2 12h2.5M19.5 12H22M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/>'
+    sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2.5M12 19.5V22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M2 12h2.5M19.5 12H22M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/>',
+    // v5.3.3 — 58 more, first used on Ratnalabala
+    delete: '<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13M9 7V4h6v3"/>',
+    robot: '<rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 8V4M9.5 4h5M2 13v3M22 13v3"/><circle cx="9" cy="14" r="1.3"/><circle cx="15" cy="14" r="1.3"/>',
+    heart: '<path d="M12 20s-7.5-4.6-9.2-9.3A4.9 4.9 0 0 1 12 6.6a4.9 4.9 0 0 1 9.2 4.1C19.5 15.4 12 20 12 20z"/>',
+    heartFilled: '<path fill="currentColor" d="M12 20s-7.5-4.6-9.2-9.3A4.9 4.9 0 0 1 12 6.6a4.9 4.9 0 0 1 9.2 4.1C19.5 15.4 12 20 12 20z"/>',
+    hub: '<circle cx="12" cy="12" r="3"/><circle cx="5" cy="5" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/><path d="m6.5 6.5 3.4 3.4M17.5 6.5l-3.4 3.4M6.5 17.5l3.4-3.4M17.5 17.5l-3.4-3.4"/>',
+    code: '<path d="m8 7-5 5 5 5M16 7l5 5-5 5M14 4l-4 16"/>',
+    text: '<path d="M3 7V5h11v2M8.5 5v14M6.5 19h4M14 12v-1.5h7V12M17.5 10.5V19M16 19h3"/>',
+    bold: '<path d="M7 4h6a4 4 0 0 1 0 8H7zM7 12h7a4 4 0 0 1 0 8H7z"/>',
+    italic: '<path d="M10 4h9M5 20h9M15 4 9 20"/>',
+    underline: '<path d="M7 4v7a5 5 0 0 0 10 0V4M5 21h14"/>',
+    alignLeft: '<path d="M4 5h16M4 9.5h9M4 14h16M4 18.5h9"/>',
+    alignCenter: '<path d="M4 5h16M7.5 9.5h9M4 14h16M7.5 18.5h9"/>',
+    alignRight: '<path d="M4 5h16M11 9.5h9M4 14h16M11 18.5h9"/>',
+    alignJustify: '<path d="M4 5h16M4 9.5h16M4 14h16M4 18.5h16"/>',
+    quote: '<path d="M4 18v-6.5A6.5 6.5 0 0 1 10.5 5M4 12h5.5v6H4zM13.5 18v-6.5A6.5 6.5 0 0 1 20 5M13.5 12H19v6h-5.5z"/>',
+    title: '<path d="M5 6V4h14v2M12 4v16M9 20h6"/>',
+    font: '<rect x="3" y="3" width="18" height="18" rx="3"/><path d="m8 17 4-10 4 10M9.4 13.5h5.2"/>',
+    spellcheck: '<path d="m3 14 4-10 4 10M4.6 10.5h4.8M11 17l3 3 7-7"/>',
+    abc: '<path d="m2 16 2.5-8L7 16M3 13.5h3M9.5 8v8h2.5a2 2 0 0 0 0-4H9.5h2a2 2 0 0 0 0-4H9.5M21 9.4a3.1 3.1 0 1 0 0 5.2"/>',
+    pageBreak: '<path d="M6 3v5h12V3M6 21v-5h12v5M3 12h3M9 12h6M18 12h3"/>',
+    link: '<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
+    style: '<rect x="3" y="3" width="7" height="18" rx="2"/><path d="m10 7.5 4.4-2.6a2 2 0 0 1 2.7.7l3.2 5.6a2 2 0 0 1-.7 2.7L10 19"/><circle cx="6.5" cy="17" r="1"/>',
+    lock: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3M12 15v2"/>',
+    unlock: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 7.6-1.8M12 15v2"/>',
+    key: '<circle cx="8" cy="15" r="4"/><path d="m11 12 9-9M17 6l3 3M14.5 8.5l2 2"/>',
+    redo: '<path d="m15 14 5-5-5-5"/><path d="M20 9H10a6 6 0 0 0 0 12h3"/>',
+    swap: '<path d="M7 4 3 8l4 4M3 8h14M17 12l4 4-4 4M21 16H7"/>',
+    shuffle: '<path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/>',
+    fullscreen: '<path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/>',
+    fullscreenExit: '<path d="M9 4v5H4M20 9h-5V4M15 20v-5h5M4 15h5v5"/>',
+    merge: '<circle cx="6" cy="5" r="2"/><circle cx="6" cy="19" r="2"/><circle cx="18" cy="12" r="2"/><path d="M6 7v10M6 7c0 4 4 5 10 5"/>',
+    join: '<circle cx="9" cy="12" r="6"/><circle cx="15" cy="12" r="6"/>',
+    touch: '<path d="M9 11V5a1.5 1.5 0 0 1 3 0v6M12 10a1.5 1.5 0 0 1 3 0v1M15 11a1.5 1.5 0 0 1 3 0v3c0 4-2.5 7-6 7-2.5 0-4-1-5.5-3.5L4.6 14a1.5 1.5 0 0 1 2.5-1.6L9 15"/>',
+    volumeOff: '<path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="m16.5 9.5 5 5M21.5 9.5l-5 5"/>',
+    musicOff: '<path d="M9 13v5M9 7V5l11-2v9"/><circle cx="6" cy="18" r="3"/><path d="M3 3l18 18"/>',
+    musicVideo: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M10.5 15V8.5l5-1V13"/><circle cx="9" cy="15" r="1.5"/><circle cx="14" cy="13" r="1.5"/>',
+    movie: '<rect x="3" y="9" width="18" height="11" rx="2"/><path d="m3.5 9-.6-3 16.6-3.4.6 3L3.5 9zM8.5 4.8l1.8 2.9M13.8 3.7l1.8 2.9"/>',
+    slideshow: '<rect x="3" y="4" width="18" height="13" rx="2"/><path d="M10 8v5l4-2.5zM8 21h8M12 17v4"/>',
+    storage: '<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/>',
+    api: '<path d="M3 17v-6a2.5 2.5 0 0 1 5 0v6M3 14h5M11 17V7h2.5a2.5 2.5 0 0 1 0 5H11M18 7h3M19.5 7v10M18 17h3"/>',
+    dataObject: '<path d="M8 4H7a2 2 0 0 0-2 2v4l-2 2 2 2v4a2 2 0 0 0 2 2h1M16 4h1a2 2 0 0 1 2 2v4l2 2-2 2v4a2 2 0 0 1-2 2h-1"/>',
+    computer: '<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>',
+    phone: '<rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10.5 18.5h3"/>',
+    cloud: '<path d="M7 19a5 5 0 0 1-.6-10A6.5 6.5 0 0 1 18.6 9.5 4.8 4.8 0 0 1 17.5 19z"/>',
+    wifi: '<path d="M2 9a15 15 0 0 1 20 0M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0M12 19.5h.01"/>',
+    wifiOff: '<path d="M2 9a15 15 0 0 1 20 0M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0M12 19.5h.01M3 3l18 18"/>',
+    searchOff: '<circle cx="11" cy="11" r="6.5"/><path d="m16 16 5 5M8.7 8.7l4.6 4.6M13.3 8.7l-4.6 4.6"/>',
+    eyeOff: '<path d="M10.6 5.1A10 10 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-2.2 3.2M6.6 6.6C3.8 8.4 2 12 2 12s3.5 7 10 7a9.7 9.7 0 0 0 5.4-1.6M9.9 9.9a3 3 0 0 0 4.2 4.2M3 3l18 18"/>',
+    bookmark: '<path d="M6 3h12v18l-6-4-6 4z"/>',
+    school: '<path d="m2 9 10-5 10 5-10 5z"/><path d="M6 11v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5M22 9v6"/>',
+    gavel: '<path d="m13 3.5 7.5 7.5M10 6.5l7.5 7.5M11.5 5l7 7-3 3-7-7zM10 11.5 3.5 18a1.4 1.4 0 0 0 2 2L12 13.5M13 21h8"/>',
+    architecture: '<circle cx="12" cy="5" r="2"/><path d="M12 3V2M11 7 5.5 21M13 7l5.5 14M8 15h8"/>',
+    brain: '<path d="M11 5.5A3 3 0 0 0 5.6 7 3 3 0 0 0 4 12a3 3 0 0 0 1.6 5A3 3 0 0 0 11 18.5zM13 5.5A3 3 0 0 1 18.4 7 3 3 0 0 1 20 12a3 3 0 0 1-1.6 5 3 3 0 0 1-5.4 1.5z"/><path d="M8 10h3M13 14h3"/>',
+    volunteer: '<path d="M12 11s-3.5-2.2-3.5-4.6a1.8 1.8 0 0 1 3.5-.7 1.8 1.8 0 0 1 3.5.7C15.5 8.8 12 11 12 11z"/><path d="M2 15h3l3.5 1.5H13a1.5 1.5 0 0 1 0 3H9.5M5 21l1.5-1.5H14l5.5-4a1.6 1.6 0 0 0-2-2.4L14 15.6"/>',
+    radio: '<circle cx="12" cy="12" r="9"/>',
+    radioChecked: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4" fill="currentColor"/>',
+    upload: '<path d="M12 15V3m-5 5 5-5 5 5M4 21h16"/>',
+    arrowDown: '<path d="M12 5v14m-6-6 6 6 6-6"/>'
   };
   var ICON_NAMES = Object.keys(ICON_PATHS);
 
@@ -4836,7 +4895,7 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
     return { variant, color, glyph, contrast };
   }
   var FILLED_GLYPH_TRANSFORM = "translate(3.6 3.6) scale(0.7)";
-  var FORCED_COLORS_CSS = "@media (forced-colors: active){.yi-bg{fill:CanvasText}.yi-glyph{stroke:Canvas}}";
+  var FORCED_COLORS_CSS = "@media (forced-colors: active){.yi-bg{fill:CanvasText}.yi-glyph{stroke:Canvas;color:Canvas}}";
   var escAttr = (v) => String(v).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
   function iconSvg(name, options = {}) {
     const paths = ICON_PATHS[name] ?? ICON_PATHS.spark;
@@ -4849,7 +4908,7 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
       return `${open}<g stroke="${escAttr(color)}" stroke-width="${sw}">${paths}</g></svg>`;
     }
     const bg = options.shape === "circle" ? `<circle class="yi-bg" cx="12" cy="12" r="12" fill="${escAttr(color)}"/>` : `<rect class="yi-bg" width="24" height="24" rx="6" fill="${escAttr(color)}"/>`;
-    return `${open}<style>${FORCED_COLORS_CSS}</style>${bg}<g class="yi-glyph" stroke="${escAttr(glyph)}" stroke-width="${sw}" transform="${FILLED_GLYPH_TRANSFORM}">${paths}</g></svg>`;
+    return `${open}<style>${FORCED_COLORS_CSS}</style>${bg}<g class="yi-glyph" color="${escAttr(glyph)}" stroke="${escAttr(glyph)}" stroke-width="${sw}" transform="${FILLED_GLYPH_TRANSFORM}">${paths}</g></svg>`;
   }
 
   // vanilla/src/dom.js

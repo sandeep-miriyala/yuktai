@@ -86,7 +86,7 @@ export function IconBase({
           ) : (
             <rect className="yi-bg" width="24" height="24" rx="6" fill={resolved.color} />
           )}
-          <g className="yi-glyph" stroke={resolved.glyph} strokeWidth={sw} transform={FILLED_GLYPH_TRANSFORM}>
+          <g className="yi-glyph" color={resolved.glyph} stroke={resolved.glyph} strokeWidth={sw} transform={FILLED_GLYPH_TRANSFORM}>
             {children}
           </g>
         </>

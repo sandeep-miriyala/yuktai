@@ -735,12 +735,12 @@ Needed only for Gemini Nano features on desktop Chrome. Mobile and other browser
 
 ## Icons
 
-74 yuktai SVG icons for Next.js and React, with no icon library needed. They are the same icons the vanilla build draws with `yuktai.icon()`.
+132 yuktai SVG icons for Next.js and React, with no icon library needed. They are the same icons the vanilla build draws with `yuktai.icon()`.
 
 ### Next.js setup
 
 ```bash
-npm install @yuktishaalaa/yuktai@5.3.2
+npm install @yuktishaalaa/yuktai@5.3.3
 ```
 
 Import from **`@yuktishaalaa/yuktai/icons`**. This entry has no hooks and no browser code, so the icons work in **Server Components** (no `"use client"` needed), in Client Components, and in the Pages Router.
@@ -768,7 +768,7 @@ export default function Page() {
 }
 ```
 
-Importing from the main entry (`@yuktishaalaa/yuktai`) still works, but the `/icons` entry is smaller (about 20 KB) and safe on the server.
+Importing from the main entry (`@yuktishaalaa/yuktai`) still works, but the `/icons` entry is smaller (about 30 KB) and safe on the server.
 
 ### Props
 
@@ -784,7 +784,7 @@ Importing from the main entry (`@yuktishaalaa/yuktai`) still works, but the `/ic
 
 Any other SVG attribute (`className`, `style`, `id`) is passed through.
 
-### All 74 icons
+### All 132 icons
 
 | Component | `name` | Component | `name` |
 |---|---|---|---|
@@ -811,6 +811,10 @@ Any other SVG attribute (`className`, `style`, `id`) is passed through.
 | `DownloadIcon` | download | | |
 
 **New in v5.3.2 (33):** `HomeIcon` (home), `MenuIcon` (menu), `BookIcon` (book), `CalendarIcon` (calendar), `ClockIcon` (clock), `PersonIcon` (person), `UsersIcon` (users), `GlobeIcon` (globe), `LampIcon` (lamp), `PlayIcon` (play), `PauseIcon` (pause), `SendIcon` (send), `ShareIcon` (share), `GiftIcon` (gift), `ImageIcon` (image), `FileIcon` (file), `ExternalIcon` (external), `ArrowUpIcon` (arrowUp), `ArrowLeftIcon` (arrowLeft), `ArrowRightIcon` (arrowRight), `HeadphonesIcon` (headphones), `MusicIcon` (music), `PinIcon` (pin), `MapIcon` (map), `PenIcon` (pen), `WalletIcon` (wallet), `InstallIcon` (install), `HelpIcon` (help), `TempleIcon` (temple), `MeditateIcon` (meditate), `TrophyIcon` (trophy), `BulbIcon` (bulb), `SunIcon` (sun).
+
+**New in v5.3.3 (58):** `DeleteIcon` (delete), `RobotIcon` (robot), `HeartIcon` (heart), `HeartFilledIcon` (heartFilled), `HubIcon` (hub), `CodeIcon` (code), `TextIcon` (text), `BoldIcon` (bold), `ItalicIcon` (italic), `UnderlineIcon` (underline), `AlignLeftIcon` (alignLeft), `AlignCenterIcon` (alignCenter), `AlignRightIcon` (alignRight), `AlignJustifyIcon` (alignJustify), `QuoteIcon` (quote), `TitleIcon` (title), `FontIcon` (font), `SpellcheckIcon` (spellcheck), `AbcIcon` (abc), `PageBreakIcon` (pageBreak), `LinkIcon` (link), `StyleIcon` (style), `LockIcon` (lock), `UnlockIcon` (unlock), `KeyIcon` (key), `RedoIcon` (redo), `SwapIcon` (swap), `ShuffleIcon` (shuffle), `FullscreenIcon` (fullscreen), `FullscreenExitIcon` (fullscreenExit), `MergeIcon` (merge), `JoinIcon` (join), `TouchIcon` (touch), `VolumeOffIcon` (volumeOff), `MusicOffIcon` (musicOff), `MusicVideoIcon` (musicVideo), `MovieIcon` (movie), `SlideshowIcon` (slideshow), `StorageIcon` (storage), `ApiIcon` (api), `DataObjectIcon` (dataObject), `ComputerIcon` (computer), `PhoneIcon` (phone), `CloudIcon` (cloud), `WifiIcon` (wifi), `WifiOffIcon` (wifiOff), `SearchOffIcon` (searchOff), `EyeOffIcon` (eyeOff), `BookmarkIcon` (bookmark), `SchoolIcon` (school), `GavelIcon` (gavel), `ArchitectureIcon` (architecture), `BrainIcon` (brain), `VolunteerIcon` (volunteer), `RadioIcon` (radio), `RadioCheckedIcon` (radioChecked), `UploadIcon` (upload), `ArrowDownIcon` (arrowDown).
+
+`heartFilled` and `radioChecked` have a filled part that follows the icon colour, also in the filled variant.
 
 `ICON_NAMES` lists every name, and the `IconName` type checks it, so `<YuktaiIcon name="mike" />` is a type error.
 
@@ -865,6 +869,7 @@ Helpers: `iconContrast(fg, bg)` returns the contrast ratio, `pickGlyphColor(bg)`
 
 | Version | What shipped |
 |---|---|
+| **v5.3.3** | 58 more icons (132 in total): delete, robot, heart, text-editor set, lock, link, storage, cloud, Wi-Fi and more, so Ratnalabala uses yuktai icons everywhere |
 | **v5.3.2** | 33 more icons (home, menu, book, calendar, sun, lamp, temple, meditate, share, play, pause and more), first used on the Sri Yagnavalkya Jayanti site in place of Font Awesome and Material Icons |
 | **v5.3.1** | **74 icons for Next.js and React** (41 in 5.3.1, 33 more in 5.3.2) from the new `@yuktishaalaa/yuktai/icons` entry, safe in Server Components; outline and filled variants with WCAG 1.4.11 contrast checks; same icons in the vanilla build |
 | | Yuktisárathi brand on the demo: navy and gold logo, W3C blue `#005A9C` for links and controls |

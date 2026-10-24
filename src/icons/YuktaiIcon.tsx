@@ -1,7 +1,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // @yuktishaalaa/yuktai · src/icons/YuktaiIcon.tsx
 //
-// 67 more yuktai icons for React / Next.js, drawn from the shared list in
+// 125 more yuktai icons for React / Next.js, drawn from the shared list in
 // paths.ts, so they match the vanilla build (yuktai.icon) exactly.
 // Same props as every yuktai icon: size, color, strokeWidth, label.
 //
@@ -230,3 +230,178 @@ export const BulbIcon = (props: IconProps) => <YuktaiIcon {...props} name="bulb"
 
 /** Sun / light mode */
 export const SunIcon = (props: IconProps) => <YuktaiIcon {...props} name="sun" />
+
+// v5.3.3 — 58 more
+/** Delete */
+export const DeleteIcon = (props: IconProps) => <YuktaiIcon {...props} name="delete" />
+
+/** Robot / AI assistant */
+export const RobotIcon = (props: IconProps) => <YuktaiIcon {...props} name="robot" />
+
+/** Heart (not liked) */
+export const HeartIcon = (props: IconProps) => <YuktaiIcon {...props} name="heart" />
+
+/** Heart (liked) */
+export const HeartFilledIcon = (props: IconProps) => <YuktaiIcon {...props} name="heartFilled" />
+
+/** Hub / network */
+export const HubIcon = (props: IconProps) => <YuktaiIcon {...props} name="hub" />
+
+/** Code */
+export const CodeIcon = (props: IconProps) => <YuktaiIcon {...props} name="code" />
+
+/** Text field */
+export const TextIcon = (props: IconProps) => <YuktaiIcon {...props} name="text" />
+
+/** Bold */
+export const BoldIcon = (props: IconProps) => <YuktaiIcon {...props} name="bold" />
+
+/** Italic */
+export const ItalicIcon = (props: IconProps) => <YuktaiIcon {...props} name="italic" />
+
+/** Underline */
+export const UnderlineIcon = (props: IconProps) => <YuktaiIcon {...props} name="underline" />
+
+/** Align left */
+export const AlignLeftIcon = (props: IconProps) => <YuktaiIcon {...props} name="alignLeft" />
+
+/** Align centre */
+export const AlignCenterIcon = (props: IconProps) => <YuktaiIcon {...props} name="alignCenter" />
+
+/** Align right */
+export const AlignRightIcon = (props: IconProps) => <YuktaiIcon {...props} name="alignRight" />
+
+/** Justify */
+export const AlignJustifyIcon = (props: IconProps) => <YuktaiIcon {...props} name="alignJustify" />
+
+/** Quote */
+export const QuoteIcon = (props: IconProps) => <YuktaiIcon {...props} name="quote" />
+
+/** Title */
+export const TitleIcon = (props: IconProps) => <YuktaiIcon {...props} name="title" />
+
+/** Font */
+export const FontIcon = (props: IconProps) => <YuktaiIcon {...props} name="font" />
+
+/** Spell check */
+export const SpellcheckIcon = (props: IconProps) => <YuktaiIcon {...props} name="spellcheck" />
+
+/** Letters (ABC) */
+export const AbcIcon = (props: IconProps) => <YuktaiIcon {...props} name="abc" />
+
+/** Page break */
+export const PageBreakIcon = (props: IconProps) => <YuktaiIcon {...props} name="pageBreak" />
+
+/** Link */
+export const LinkIcon = (props: IconProps) => <YuktaiIcon {...props} name="link" />
+
+/** Style */
+export const StyleIcon = (props: IconProps) => <YuktaiIcon {...props} name="style" />
+
+/** Lock */
+export const LockIcon = (props: IconProps) => <YuktaiIcon {...props} name="lock" />
+
+/** Unlock */
+export const UnlockIcon = (props: IconProps) => <YuktaiIcon {...props} name="unlock" />
+
+/** Key */
+export const KeyIcon = (props: IconProps) => <YuktaiIcon {...props} name="key" />
+
+/** Redo */
+export const RedoIcon = (props: IconProps) => <YuktaiIcon {...props} name="redo" />
+
+/** Swap */
+export const SwapIcon = (props: IconProps) => <YuktaiIcon {...props} name="swap" />
+
+/** Shuffle */
+export const ShuffleIcon = (props: IconProps) => <YuktaiIcon {...props} name="shuffle" />
+
+/** Full screen */
+export const FullscreenIcon = (props: IconProps) => <YuktaiIcon {...props} name="fullscreen" />
+
+/** Exit full screen */
+export const FullscreenExitIcon = (props: IconProps) => <YuktaiIcon {...props} name="fullscreenExit" />
+
+/** Merge */
+export const MergeIcon = (props: IconProps) => <YuktaiIcon {...props} name="merge" />
+
+/** Join */
+export const JoinIcon = (props: IconProps) => <YuktaiIcon {...props} name="join" />
+
+/** Tap / touch */
+export const TouchIcon = (props: IconProps) => <YuktaiIcon {...props} name="touch" />
+
+/** Sound off */
+export const VolumeOffIcon = (props: IconProps) => <YuktaiIcon {...props} name="volumeOff" />
+
+/** Music off */
+export const MusicOffIcon = (props: IconProps) => <YuktaiIcon {...props} name="musicOff" />
+
+/** Music video */
+export const MusicVideoIcon = (props: IconProps) => <YuktaiIcon {...props} name="musicVideo" />
+
+/** Movie */
+export const MovieIcon = (props: IconProps) => <YuktaiIcon {...props} name="movie" />
+
+/** Slide show */
+export const SlideshowIcon = (props: IconProps) => <YuktaiIcon {...props} name="slideshow" />
+
+/** Storage / database */
+export const StorageIcon = (props: IconProps) => <YuktaiIcon {...props} name="storage" />
+
+/** API */
+export const ApiIcon = (props: IconProps) => <YuktaiIcon {...props} name="api" />
+
+/** Data object { } */
+export const DataObjectIcon = (props: IconProps) => <YuktaiIcon {...props} name="dataObject" />
+
+/** Computer */
+export const ComputerIcon = (props: IconProps) => <YuktaiIcon {...props} name="computer" />
+
+/** Phone */
+export const PhoneIcon = (props: IconProps) => <YuktaiIcon {...props} name="phone" />
+
+/** Cloud */
+export const CloudIcon = (props: IconProps) => <YuktaiIcon {...props} name="cloud" />
+
+/** Wi-Fi */
+export const WifiIcon = (props: IconProps) => <YuktaiIcon {...props} name="wifi" />
+
+/** No Wi-Fi / offline */
+export const WifiOffIcon = (props: IconProps) => <YuktaiIcon {...props} name="wifiOff" />
+
+/** No results */
+export const SearchOffIcon = (props: IconProps) => <YuktaiIcon {...props} name="searchOff" />
+
+/** Hide */
+export const EyeOffIcon = (props: IconProps) => <YuktaiIcon {...props} name="eyeOff" />
+
+/** Bookmark */
+export const BookmarkIcon = (props: IconProps) => <YuktaiIcon {...props} name="bookmark" />
+
+/** School / learning */
+export const SchoolIcon = (props: IconProps) => <YuktaiIcon {...props} name="school" />
+
+/** Law / rules */
+export const GavelIcon = (props: IconProps) => <YuktaiIcon {...props} name="gavel" />
+
+/** Architecture / design */
+export const ArchitectureIcon = (props: IconProps) => <YuktaiIcon {...props} name="architecture" />
+
+/** Brain / thinking */
+export const BrainIcon = (props: IconProps) => <YuktaiIcon {...props} name="brain" />
+
+/** Volunteer / care */
+export const VolunteerIcon = (props: IconProps) => <YuktaiIcon {...props} name="volunteer" />
+
+/** Radio button (off) */
+export const RadioIcon = (props: IconProps) => <YuktaiIcon {...props} name="radio" />
+
+/** Radio button (on) */
+export const RadioCheckedIcon = (props: IconProps) => <YuktaiIcon {...props} name="radioChecked" />
+
+/** Upload */
+export const UploadIcon = (props: IconProps) => <YuktaiIcon {...props} name="upload" />
+
+/** Arrow down */
+export const ArrowDownIcon = (props: IconProps) => <YuktaiIcon {...props} name="arrowDown" />

@@ -78,7 +78,7 @@ export const FILLED_GLYPH_TRANSFORM = "translate(3.6 3.6) scale(0.7)"
 
 /** Forced-colours rules for the filled variant (kept inside the SVG). */
 export const FORCED_COLORS_CSS =
-  "@media (forced-colors: active){.yi-bg{fill:CanvasText}.yi-glyph{stroke:Canvas}}"
+  "@media (forced-colors: active){.yi-bg{fill:CanvasText}.yi-glyph{stroke:Canvas;color:Canvas}}"
 
 const escAttr = (v: string | number) =>
   String(v).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c] as string)
@@ -107,5 +107,5 @@ export function iconSvg(name: IconName | string, options: IconSvgOptions = {}): 
     options.shape === "circle"
       ? `<circle class="yi-bg" cx="12" cy="12" r="12" fill="${escAttr(color)}"/>`
       : `<rect class="yi-bg" width="24" height="24" rx="6" fill="${escAttr(color)}"/>`
-  return `${open}<style>${FORCED_COLORS_CSS}</style>${bg}<g class="yi-glyph" stroke="${escAttr(glyph)}" stroke-width="${sw}" transform="${FILLED_GLYPH_TRANSFORM}">${paths}</g></svg>`
+  return `${open}<style>${FORCED_COLORS_CSS}</style>${bg}<g class="yi-glyph" color="${escAttr(glyph)}" stroke="${escAttr(glyph)}" stroke-width="${sw}" transform="${FILLED_GLYPH_TRANSFORM}">${paths}</g></svg>`
 }
