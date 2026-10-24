@@ -5,6 +5,15 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="yuktai vanilla JS: accessible data grid you can talk to, page agents and WCAG tools for plain HTML. No framework, no API keys.">
 <title>yuktai Vanilla JS — every feature with examples</title>
+<meta name="theme-color" content="#0f172a">
+<meta name="application-name" content="yuktai">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="yuktai">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icons/icon.svg" type="image/svg+xml">
+<link rel="icon" href="./icons/icon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
 <style>
 :root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#172033;background:#f1f5f9;font-synthesis:none}
 *{box-sizing:border-box}
@@ -55,6 +64,12 @@ dialog h2{margin:0;font-size:1.1rem}
 dialog dl{display:grid;grid-template-columns:120px 1fr;gap:6px 12px;padding:16px;margin:0}
 dialog dt{color:#475569}dialog dd{margin:0;overflow-wrap:anywhere}
 footer{padding:24px 0;color:#475569;font-size:.9rem;border-top:1px solid #dbe2ea}
+.foot{display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding-bottom:120px}
+.foot p{margin:0}
+.badges{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.badges a{display:inline-flex;align-items:center;min-height:44px}
+.badges img{height:28px;width:auto;display:block}
+.install[hidden]{display:none}
 @media(max-width:560px){.wrap{width:calc(100% - 20px)}header.site{padding:22px 0}.card{padding:13px}}
 </style>
 </head>
@@ -63,7 +78,7 @@ footer{padding:24px 0;color:#475569;font-size:.9rem;border-top:1px solid #dbe2ea
   <a class="skip" href="#main">Skip to main content</a>
   <div class="wrap">
     <h1>yuktai Vanilla JS</h1>
-    <p>The yuktai 5.2 toolkit for plain HTML: an accessible data grid you can talk to, page agents that test and explain the page, and WCAG accessibility fixes. One script file, no framework, no API keys, nothing leaves the browser.</p>
+    <p>The yuktai 5.3 toolkit for plain HTML: an accessible data grid you can talk to, page agents that test and explain the page, and WCAG accessibility fixes. One script file, no framework, no API keys, nothing leaves the browser.</p>
     <nav class="toc" aria-label="Sections on this page">
       <a href="#grid">1. Agentic grid</a>
       <a href="#telugu">2. Telugu grid</a>
@@ -219,13 +234,42 @@ yuktai.mountAgenticPanel("#tools", { defaultTab: "qa", voiceLang: "te-IN" })</co
   <dl id="row-dialog-body"></dl>
 </dialog>
 
-<footer><div class="wrap">yuktai Vanilla JS 5.2 · ISC © Sandeep Miriyala, Yuktishaalaa AI Lab · <a href="https://github.com/sandeepmiriyala03/yuktai">GitHub</a> · <a href="https://www.npmjs.com/package/@yuktishaalaa/yuktai">npm</a></div></footer>
+<footer>
+  <div class="wrap foot">
+    <p>yuktai Vanilla JS 5.3 · ISC © Sandeep Miriyala, Yuktishaalaa AI Lab · <a href="https://github.com/sandeepmiriyala03/yuktai">GitHub</a> · <a href="https://www.npmjs.com/package/@yuktishaalaa/yuktai">npm</a></p>
+    <div class="badges">
+      <a href="https://hub.xerj.org/contributors/sandeepmiriyala03" rel="noopener" target="_blank" aria-label="XERJ Corpus Hub contributor profile of Sandeep Miriyala (opens in a new tab)">
+        <img src="https://hub.xerj.org/contributors/sandeepmiriyala03/badge.svg" alt="XERJ Corpus Hub contributor" height="28" loading="lazy" decoding="async">
+      </a>
+      <button class="btn install" type="button" id="install-app" hidden>Install app</button>
+    </div>
+  </div>
+</footer>
 
 <script>
 // autoFix is off in this demo so the practice form keeps its problems for the page tools to find.
 window.YUKTAI_CONFIG = { position: "right", primaryColor: "#0f766e", title: "Accessibility", showPageTools: true, voiceLang: "en-IN", config: { autoFix: false } };
 </script>
 <script src="./index.js"></script>
+<script>
+// PWA: offline support and "Install app" (only over https or localhost)
+(function () {
+  if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost" || location.hostname === "127.0.0.1")) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("./sw.js").catch(function (e) { console.warn("[yuktai] service worker not registered:", e.message) });
+    });
+  }
+  var deferred = null, btn = document.getElementById("install-app");
+  window.addEventListener("beforeinstallprompt", function (e) { e.preventDefault(); deferred = e; btn.hidden = false });
+  btn.addEventListener("click", async function () {
+    if (!deferred) return;
+    deferred.prompt();
+    await deferred.userChoice;
+    deferred = null; btn.hidden = true;
+  });
+  window.addEventListener("appinstalled", function () { btn.hidden = true });
+})();
+</script>
 <script>
 (function () {
   "use strict";

@@ -13,7 +13,7 @@ import { mountGridAssistant, renderGrid } from "./grid.js"
 import { mountAgenticPanel } from "./panel.js"
 import { createWidget } from "./widget.js"
 
-const VERSION = "5.2.0"
+const VERSION = "5.3.0"
 
 ;(function boot() {
   if (!isBrowser()) return
