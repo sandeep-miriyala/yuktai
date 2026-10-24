@@ -12,8 +12,11 @@
 Built in free time by [Sandeep Miriyala](https://github.com/sandeepmiriyala03).
 
 **Live demos:**
-- Staff directory: https://aksharatantra.miriyala.in/staffdirectory
+- Staff directory (Next.js): https://aksharatantra.miriyala.in/staffdirectory
+- Vanilla JS, plain HTML, installable PWA: https://sandeepmiriyala03.github.io/yuktai/vanilla/
 - Ratnalabala, a Telugu poetry app built on YuktAI Grid: https://ratnalabala.vercel.app/poems?view=grid
+
+**Recognition:** yuktai is part of the [XERJ Corpus Hub](https://hub.xerj.org). Contributor profile: [hub.xerj.org/contributors/sandeepmiriyala03](https://hub.xerj.org/contributors/sandeepmiriyala03).
 
 ---
 
@@ -39,7 +42,7 @@ Six modules ship in a single npm package, for React/Next.js and, since v5.3, for
 | **4. Autonomous AI Agent** | 13 | Natural-language browser guidance |
 | **5. Vibe Coder** | 19 | Generate full Next.js projects from plain English |
 | **6. Agentic AI Toolkit** | 10 | Accessibility copilot, QA reports, form and design review, smart grid queries, BI answers, multi-step tasks, voice settings |
-| **Vanilla JS build** 🆕 | All | Every module above for plain HTML, CSS and JavaScript: no React, no build step |
+| **Vanilla JS build** 🆕 | All | Every module above for plain HTML, CSS and JavaScript: no React, no build step, installable as a PWA |
 
 ---
 
@@ -81,7 +84,7 @@ All of yuktai now works on any HTML page, without React or a build step. The van
 | `useYuktaiGridAgent` | `yuktai.createGridAgent()` |
 | `<YuktaiGridWebMCP>` | `yuktai.registerWebMCP()`, or `webmcp: true` |
 | `<AgenticPanel>` | `yuktai.mountAgenticPanel()` |
-| `<YuktAIWrapper>` | Automatic floating ♿ button (and 🛠 page tools with `showPageTools: true`) |
+| `<YuktAIWrapper>` | Automatic floating accessibility button (and a page tools button with `showPageTools: true`) |
 | Every function (`runQaAudit`, `askInsight`, `parseAmount`, …) | Same names on `window.yuktai` |
 
 **Grid features in the vanilla build:**
@@ -90,7 +93,9 @@ All of yuktai now works on any HTML page, without React or a build step. The van
 - loading and empty states; row highlighting that scrolls to the row
 - ARIA grid keyboard navigation: arrow keys, Home/End, Page Up/Down, Space to select, Enter to open
 
-**Tested** in Chromium: 37 end-to-end checks pass, with axe-core reporting 0 violations and no console errors. Open `vanilla/index.html` in the repo for a demo of every feature, including a Telugu grid. Full API: [`vanilla/README.md`](./vanilla/README.md).
+**Live demo:** https://sandeepmiriyala03.github.io/yuktai/vanilla/. It shows every feature, including a Telugu grid of the 27 poems from *Rangu Rangula Ratnadeepalu*. It is an installable PWA that works offline after the first visit, and it uses only yuktai's own inline SVG icons and the yuktai teal palette.
+
+**Tested** in Chromium: 37 end-to-end checks pass, with axe-core reporting 0 violations and no console errors (`node vanilla/test/e2e.mjs`). Full API: [`vanilla/README.md`](./vanilla/README.md).
 
 ### Accessibility engine fixes in v5.3 (React and vanilla)
 
@@ -98,7 +103,7 @@ All of yuktai now works on any HTML page, without React or a build step. The van
 - Buttons and links hidden at scan time are no longer labelled "button" or "link".
 - `<header>` and `<footer>` inside sections and dialogs no longer become page-level banner and contentinfo landmarks.
 - The fix count only includes fixes that were actually applied.
-- Visual alert colours now meet a 4.5:1 contrast ratio.
+- Visual alert and skip-link colours use the yuktai teal palette and meet a 4.5:1 contrast ratio.
 
 ---
 
@@ -700,7 +705,7 @@ No AI writes the code. It's pure template engineering.
 
 ---
 
-## Module 6: Agentic AI Toolkit 🆕
+## Module 6: Agentic AI Toolkit
 
 The ten v5.2 features, described in detail in [What's new in v5.2](#whats-new-in-v52-agentic-ai-toolkit).
 
@@ -777,11 +782,37 @@ Props: `size` (default 20), `color` (default `currentColor`), `strokeWidth` (def
 
 ## Roadmap
 
-- **Shipped (v5.3):** Vanilla JS build of every module for plain HTML pages, plus accessibility engine fixes
-- **Shipped (v5.2):** Agentic AI Toolkit: accessibility copilot, QA reports, form and design review, smart grid queries, BI answers, multi-step tasks, page + data RAG, voice accessibility commands
-- **Shipped (v4.6.4):** YuktaiGrid Agentic AI + WebMCP, embedded Grid AI Assistant, English/Telugu UI, page-size switching, icon polish
-- **Next:** expose the v5.2 agentic tools through WebMCP, more Grid Agent tools, multilingual RAG (Telugu, Hindi, Tamil, Bengali)
-- **Later:** RTL support, richer browser-native AI, multimodal grid experiences
+### Completed
+
+| Version | What shipped |
+|---|---|
+| **v5.3** | **Vanilla JS build:** every module for plain HTML with one script tag, built from the same source as the npm package |
+| | Vanilla grid: themes, card view, Telugu UI, ARIA grid keyboard navigation, question bar, assistant with custom rules and voice, WebMCP |
+| | Vanilla page tools panel and floating accessibility button |
+| | Live demo on GitHub Pages as an installable, offline PWA with the XERJ contributor badge |
+| | Accessibility engine fixes: real labels are no longer overridden, hidden buttons are named correctly, nested landmarks, honest fix count, teal palette at 4.5:1 contrast |
+| | CDN builds on jsDelivr and unpkg; 37 end-to-end browser checks with axe-core |
+| **v5.2** | **Agentic AI Toolkit:** accessibility copilot, QA tester (15 WCAG checks), form review, design review, page understanding, page and data RAG |
+| | Smart grid queries (lakh, crore, 10k), anomaly finder, BI copilot, multi-step task runner, voice accessibility commands in English and Telugu |
+| | React: `AgenticPanel`, `AgenticGridBar`, `useAgenticGrid` |
+| **v4.6.4** | YuktaiGrid Agentic AI + WebMCP, embedded Grid AI Assistant, English and Telugu UI, page-size switching, 7 inline SVG icons |
+| **v4.x** | Accessibility engine, In-tab RAG (Gemini Nano + Transformers.js), autonomous AI agent, Vibe Coder |
+
+### Next (v5.4)
+
+- Expose the v5.2 agentic tools (QA, forms, design, page Q&A) to browser AI agents through WebMCP
+- Telugu and Hindi data questions in the smart grid parser, without needing custom rules
+- Hindi voice accessibility commands
+- More grid agent tools: group, export and compare
+- Server-side paging helpers for the vanilla grid (100K+ rows)
+
+### Later
+
+- Multilingual RAG: Telugu, Hindi, Tamil, Bengali
+- RTL layout support (Urdu, Sindhi, Kashmiri)
+- Richer browser-native AI as Chrome's built-in APIs mature
+- Multimodal grid experiences (images and charts in rows)
+- A web component build (`<yuktai-grid>`) for any framework
 
 ---
 
@@ -797,7 +828,10 @@ Issues and pull requests are welcome at [github.com/sandeepmiriyala03/yuktai](ht
 - GitHub: [sandeepmiriyala03/yuktai](https://github.com/sandeepmiriyala03/yuktai)
 - Demo: [aksharatantra.miriyala.in/staffdirectory](https://aksharatantra.miriyala.in/staffdirectory)
 - Showcase: [ratnalabala.vercel.app](https://ratnalabala.vercel.app/poems?view=grid)
+- Vanilla JS demo (PWA): [sandeepmiriyala03.github.io/yuktai/vanilla](https://sandeepmiriyala03.github.io/yuktai/vanilla/)
 - Vanilla JS (CDN): [cdn.jsdelivr.net/npm/@yuktishaalaa/yuktai/vanilla/index.min.js](https://cdn.jsdelivr.net/npm/@yuktishaalaa/yuktai/vanilla/index.min.js)
+- XERJ Corpus Hub: [hub.xerj.org](https://hub.xerj.org)
+- XERJ contributor profile: [hub.xerj.org/contributors/sandeepmiriyala03](https://hub.xerj.org/contributors/sandeepmiriyala03)
 
 ---
 
@@ -807,4 +841,4 @@ GPL-3.0 © Sandeep Miriyala, [Yuktishaalaa AI Lab](https://github.com/sandeepmir
 
 Built in free time. AI coding assistants (Claude, GPT and Gemini) helped me learn, and helped write and test parts of the code. Every design decision, review and release is mine.
 
-**Free forever. Open source. Built for every user.** 
+**Free forever. Open source. Built for every user.**
