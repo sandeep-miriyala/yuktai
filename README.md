@@ -735,12 +735,12 @@ Needed only for Gemini Nano features on desktop Chrome. Mobile and other browser
 
 ## Icons
 
-41 yuktai SVG icons for Next.js and React, with no icon library needed. They are the same icons the vanilla build draws with `yuktai.icon()`.
+74 yuktai SVG icons for Next.js and React, with no icon library needed. They are the same icons the vanilla build draws with `yuktai.icon()`.
 
 ### Next.js setup
 
 ```bash
-npm install @yuktishaalaa/yuktai@5.3.1
+npm install @yuktishaalaa/yuktai@5.3.2
 ```
 
 Import from **`@yuktishaalaa/yuktai/icons`**. This entry has no hooks and no browser code, so the icons work in **Server Components** (no `"use client"` needed), in Client Components, and in the Pages Router.
@@ -768,7 +768,7 @@ export default function Page() {
 }
 ```
 
-Importing from the main entry (`@yuktishaalaa/yuktai`) still works, but the `/icons` entry is smaller (about 14 KB) and safe on the server.
+Importing from the main entry (`@yuktishaalaa/yuktai`) still works, but the `/icons` entry is smaller (about 20 KB) and safe on the server.
 
 ### Props
 
@@ -784,7 +784,7 @@ Importing from the main entry (`@yuktishaalaa/yuktai`) still works, but the `/ic
 
 Any other SVG attribute (`className`, `style`, `id`) is passed through.
 
-### All 41 icons
+### All 74 icons
 
 | Component | `name` | Component | `name` |
 |---|---|---|---|
@@ -809,6 +809,8 @@ Any other SVG attribute (`className`, `style`, `id`) is passed through.
 | `CardsIcon` | cards | `ChatIcon` | chat |
 | `MicIcon` | mic | `StopIcon` | stop |
 | `DownloadIcon` | download | | |
+
+**New in v5.3.2 (33):** `HomeIcon` (home), `MenuIcon` (menu), `BookIcon` (book), `CalendarIcon` (calendar), `ClockIcon` (clock), `PersonIcon` (person), `UsersIcon` (users), `GlobeIcon` (globe), `LampIcon` (lamp), `PlayIcon` (play), `PauseIcon` (pause), `SendIcon` (send), `ShareIcon` (share), `GiftIcon` (gift), `ImageIcon` (image), `FileIcon` (file), `ExternalIcon` (external), `ArrowUpIcon` (arrowUp), `ArrowLeftIcon` (arrowLeft), `ArrowRightIcon` (arrowRight), `HeadphonesIcon` (headphones), `MusicIcon` (music), `PinIcon` (pin), `MapIcon` (map), `PenIcon` (pen), `WalletIcon` (wallet), `InstallIcon` (install), `HelpIcon` (help), `TempleIcon` (temple), `MeditateIcon` (meditate), `TrophyIcon` (trophy), `BulbIcon` (bulb), `SunIcon` (sun).
 
 `ICON_NAMES` lists every name, and the `IconName` type checks it, so `<YuktaiIcon name="mike" />` is a type error.
 
@@ -863,7 +865,8 @@ Helpers: `iconContrast(fg, bg)` returns the contrast ratio, `pickGlyphColor(bg)`
 
 | Version | What shipped |
 |---|---|
-| **v5.3.1** | **41 icons for Next.js and React** from the new `@yuktishaalaa/yuktai/icons` entry, safe in Server Components; outline and filled variants with WCAG 1.4.11 contrast checks; same icons in the vanilla build |
+| **v5.3.2** | 33 more icons (home, menu, book, calendar, sun, lamp, temple, meditate, share, play, pause and more), first used on the Sri Yagnavalkya Jayanti site in place of Font Awesome and Material Icons |
+| **v5.3.1** | **74 icons for Next.js and React** (41 in 5.3.1, 33 more in 5.3.2) from the new `@yuktishaalaa/yuktai/icons` entry, safe in Server Components; outline and filled variants with WCAG 1.4.11 contrast checks; same icons in the vanilla build |
 | | Yuktisárathi brand on the demo: navy and gold logo, W3C blue `#005A9C` for links and controls |
 | **v5.3** | **Vanilla JS build:** every module for plain HTML with one script tag, built from the same source as the npm package |
 | | Vanilla grid: themes, card view, Telugu UI, ARIA grid keyboard navigation, question bar, assistant with custom rules and voice, WebMCP |

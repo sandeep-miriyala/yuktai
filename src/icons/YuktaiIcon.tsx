@@ -1,7 +1,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // @yuktishaalaa/yuktai · src/icons/YuktaiIcon.tsx
 //
-// 34 more yuktai icons for React / Next.js, drawn from the shared list in
+// 67 more yuktai icons for React / Next.js, drawn from the shared list in
 // paths.ts, so they match the vanilla build (yuktai.icon) exactly.
 // Same props as every yuktai icon: size, color, strokeWidth, label.
 //
@@ -130,3 +130,103 @@ export const ToolsIcon = (props: IconProps) => <YuktaiIcon {...props} name="tool
 
 /** WebMCP / integrations */
 export const PlugIcon = (props: IconProps) => <YuktaiIcon {...props} name="plug" />
+
+// v5.3.2 — 33 more
+/** Home */
+export const HomeIcon = (props: IconProps) => <YuktaiIcon {...props} name="home" />
+
+/** Menu */
+export const MenuIcon = (props: IconProps) => <YuktaiIcon {...props} name="menu" />
+
+/** Book */
+export const BookIcon = (props: IconProps) => <YuktaiIcon {...props} name="book" />
+
+/** Calendar */
+export const CalendarIcon = (props: IconProps) => <YuktaiIcon {...props} name="calendar" />
+
+/** Clock */
+export const ClockIcon = (props: IconProps) => <YuktaiIcon {...props} name="clock" />
+
+/** Person */
+export const PersonIcon = (props: IconProps) => <YuktaiIcon {...props} name="person" />
+
+/** Group of people */
+export const UsersIcon = (props: IconProps) => <YuktaiIcon {...props} name="users" />
+
+/** Language / world */
+export const GlobeIcon = (props: IconProps) => <YuktaiIcon {...props} name="globe" />
+
+/** Oil lamp (deepam) */
+export const LampIcon = (props: IconProps) => <YuktaiIcon {...props} name="lamp" />
+
+/** Play */
+export const PlayIcon = (props: IconProps) => <YuktaiIcon {...props} name="play" />
+
+/** Pause */
+export const PauseIcon = (props: IconProps) => <YuktaiIcon {...props} name="pause" />
+
+/** Send */
+export const SendIcon = (props: IconProps) => <YuktaiIcon {...props} name="send" />
+
+/** Share */
+export const ShareIcon = (props: IconProps) => <YuktaiIcon {...props} name="share" />
+
+/** Gift */
+export const GiftIcon = (props: IconProps) => <YuktaiIcon {...props} name="gift" />
+
+/** Image */
+export const ImageIcon = (props: IconProps) => <YuktaiIcon {...props} name="image" />
+
+/** File / document */
+export const FileIcon = (props: IconProps) => <YuktaiIcon {...props} name="file" />
+
+/** Opens in a new tab */
+export const ExternalIcon = (props: IconProps) => <YuktaiIcon {...props} name="external" />
+
+/** Arrow up */
+export const ArrowUpIcon = (props: IconProps) => <YuktaiIcon {...props} name="arrowUp" />
+
+/** Arrow left */
+export const ArrowLeftIcon = (props: IconProps) => <YuktaiIcon {...props} name="arrowLeft" />
+
+/** Arrow right */
+export const ArrowRightIcon = (props: IconProps) => <YuktaiIcon {...props} name="arrowRight" />
+
+/** Headphones / listen */
+export const HeadphonesIcon = (props: IconProps) => <YuktaiIcon {...props} name="headphones" />
+
+/** Music / audio */
+export const MusicIcon = (props: IconProps) => <YuktaiIcon {...props} name="music" />
+
+/** Location pin */
+export const PinIcon = (props: IconProps) => <YuktaiIcon {...props} name="pin" />
+
+/** Map / directions */
+export const MapIcon = (props: IconProps) => <YuktaiIcon {...props} name="map" />
+
+/** Pen / write */
+export const PenIcon = (props: IconProps) => <YuktaiIcon {...props} name="pen" />
+
+/** Wallet / money */
+export const WalletIcon = (props: IconProps) => <YuktaiIcon {...props} name="wallet" />
+
+/** Install app */
+export const InstallIcon = (props: IconProps) => <YuktaiIcon {...props} name="install" />
+
+/** Help */
+export const HelpIcon = (props: IconProps) => <YuktaiIcon {...props} name="help" />
+
+/** Temple */
+export const TempleIcon = (props: IconProps) => <YuktaiIcon {...props} name="temple" />
+
+/** Meditation */
+export const MeditateIcon = (props: IconProps) => <YuktaiIcon {...props} name="meditate" />
+
+/** Trophy / result */
+export const TrophyIcon = (props: IconProps) => <YuktaiIcon {...props} name="trophy" />
+
+/** Idea / tip */
+export const BulbIcon = (props: IconProps) => <YuktaiIcon {...props} name="bulb" />
+
+/** Sun / light mode */
+export const SunIcon = (props: IconProps) => <YuktaiIcon {...props} name="sun" />
