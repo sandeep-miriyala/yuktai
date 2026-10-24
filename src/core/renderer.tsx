@@ -142,7 +142,7 @@ function showVisualAlert(message: string, type: AlertType = "info"): void {
     success: { bg: "#0a7a44", border: "#075e34", icon: "✓" },
     error:   { bg: "#b52a1c", border: "#8f2116", icon: "✕" },
     warning: { bg: "#a35f00", border: "#7a4700", icon: "⚠" },
-    info:    { bg: "#1557b0", border: "#0f4287", icon: "ℹ" },
+    info:    { bg: "#0f766e", border: "#115e59", icon: "ℹ" },  // yuktai teal
   }
   const c = colors[type]
 
@@ -245,7 +245,7 @@ function injectSkipLinks(): void {
     flex-wrap: wrap;
     gap: 4px;
     padding: 4px;
-    background: #111;
+    background: #134e4a;
     transform: translateY(-100%);
     transition: transform 0.2s ease;
     font-family: system-ui, sans-serif;
@@ -267,7 +267,7 @@ function injectSkipLinks(): void {
     link.textContent  = label
     link.style.cssText = `
       color: #fff;
-      background: #1a73e8;
+      background: #0f766e;
       padding: 8px 14px;
       border-radius: 4px;
       font-size: 13px;

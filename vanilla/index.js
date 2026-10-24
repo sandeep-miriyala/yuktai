@@ -3083,7 +3083,8 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
       success: { bg: "#0a7a44", border: "#075e34", icon: "\u2713" },
       error: { bg: "#b52a1c", border: "#8f2116", icon: "\u2715" },
       warning: { bg: "#a35f00", border: "#7a4700", icon: "\u26A0" },
-      info: { bg: "#1557b0", border: "#0f4287", icon: "\u2139" }
+      info: { bg: "#0f766e", border: "#115e59", icon: "\u2139" }
+      // yuktai teal
     };
     const c = colors[type];
     if (!_visualAlertNode) {
@@ -3170,7 +3171,7 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
     flex-wrap: wrap;
     gap: 4px;
     padding: 4px;
-    background: #111;
+    background: #134e4a;
     transform: translateY(-100%);
     transition: transform 0.2s ease;
     font-family: system-ui, sans-serif;
@@ -3188,7 +3189,7 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
       link.textContent = label;
       link.style.cssText = `
       color: #fff;
-      background: #1a73e8;
+      background: #0f766e;
       padding: 8px 14px;
       border-radius: 4px;
       font-size: 13px;
@@ -4984,7 +4985,8 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
 /* floating buttons and dialogs */
 .yv-fabs{position:fixed;bottom:max(16px,env(safe-area-inset-bottom));${side}:16px;display:flex;flex-direction:column;gap:10px;z-index:2147483000}
 .yv-fab{width:56px;height:56px;display:grid;place-items:center;border:2px solid #fff;border-radius:50%;background:var(--yv-primary);color:#fff;box-shadow:0 4px 16px rgba(0,0,0,.25);cursor:pointer}
-.yv-fab.yv-fab-alt{background:#1e293b}
+.yv-fab.yv-fab-alt{background:#fff;color:var(--yv-primary);border-color:var(--yv-primary)}
+.yv-fab:hover{filter:brightness(1.08)}
 .yv-dialog{position:fixed;bottom:max(90px,calc(env(safe-area-inset-bottom) + 84px));${side}:12px;width:min(440px,calc(100vw - 24px));max-height:calc(100dvh - 110px);overflow:auto;background:var(--yv-bg);color:var(--yv-text);border:1px solid var(--yv-border);border-radius:16px;box-shadow:0 12px 40px rgba(15,23,42,.25);z-index:2147483001;font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
 .yv-dialog.yv-wide{width:min(620px,calc(100vw - 24px))}
 .yv-dialog-head{position:sticky;top:0;z-index:1;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:14px 16px;border-bottom:1px solid var(--yv-border);background:var(--yv-bg)}

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="yuktai vanilla JS: accessible data grid you can talk to, page agents and WCAG tools for plain HTML. No framework, no API keys.">
 <title>yuktai Vanilla JS — every feature with examples</title>
-<meta name="theme-color" content="#0f172a">
+<meta name="theme-color" content="#0f766e">
 <meta name="application-name" content="yuktai">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="yuktai">
@@ -19,15 +19,15 @@
 *{box-sizing:border-box}
 body{margin:0;line-height:1.55}
 a{color:#0f766e}
-.skip{position:absolute;left:-999px;top:0;background:#0f172a;color:#fff;padding:10px 14px;z-index:10}
+.skip{position:absolute;left:-999px;top:0;background:#134e4a;color:#fff;padding:10px 14px;z-index:10}
 .skip:focus{left:8px;top:8px}
-header.site{background:#0f172a;color:#fff;padding:30px 0}
+header.site{background:linear-gradient(135deg,#134e4a,#0f766e);color:#fff;padding:30px 0}
 .wrap{width:min(1200px,calc(100% - 32px));margin:auto}
 h1{font-size:clamp(1.6rem,3vw,2.3rem);margin:0 0 8px}
-header.site p{color:#dbeafe;max-width:860px;margin:0}
+header.site p{color:#ccfbf1;max-width:860px;margin:0}
 nav.toc{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px}
-nav.toc a{color:#fff;border:1px solid #334155;border-radius:999px;padding:6px 12px;text-decoration:none;font-size:.9rem}
-nav.toc a:hover,nav.toc a:focus-visible{background:#1e293b}
+nav.toc a{color:#fff;border:1px solid #5eead4;border-radius:999px;padding:6px 12px;text-decoration:none;font-size:.9rem}
+nav.toc a:hover,nav.toc a:focus-visible{background:#115e59}
 main{padding:24px 0 60px}
 section.block{margin:34px 0}
 section.block>h2{font-size:1.4rem;margin:0 0 4px}
@@ -48,7 +48,7 @@ section.block>h2{font-size:1.4rem;margin:0 0 4px}
 .controls select{min-height:44px;padding:6px 10px;border:1px solid #94a3b8;border-radius:8px;background:#fff;font:inherit}
 .stack>*+*{margin-top:12px}
 code,pre{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
-pre{white-space:pre;overflow:auto;background:#0f172a;color:#e2e8f0;padding:14px;border-radius:10px;font-size:.85rem;margin:10px 0 0}
+pre{white-space:pre;overflow:auto;background:#0b3b37;color:#e6fffa;padding:14px;border-radius:10px;font-size:.85rem;margin:10px 0 0}
 .out{white-space:pre-wrap;overflow-wrap:anywhere;background:#fff;border:1px solid #dbe2ea;border-radius:10px;padding:12px;min-height:60px;font-size:.85rem;max-height:420px;overflow:auto}
 .play{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:8px;margin-bottom:10px}
 .icon-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}
@@ -64,12 +64,19 @@ dialog h2{margin:0;font-size:1.1rem}
 dialog dl{display:grid;grid-template-columns:120px 1fr;gap:6px 12px;padding:16px;margin:0}
 dialog dt{color:#475569}dialog dd{margin:0;overflow-wrap:anywhere}
 footer{padding:24px 0;color:#475569;font-size:.9rem;border-top:1px solid #dbe2ea}
-.foot{display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding-bottom:120px}
+.foot{display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding-bottom:90px}
 .foot p{margin:0}
 .badges{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
 .badges a{display:inline-flex;align-items:center;min-height:44px}
 .badges img{height:28px;width:auto;display:block}
-.install[hidden]{display:none}
+.badges{margin:0 0 12px}
+.install-fab{position:fixed;left:16px;bottom:max(16px,env(safe-area-inset-bottom));z-index:2147483000;display:inline-flex;align-items:center;gap:8px;min-height:56px;padding:0 20px 0 16px;border:2px solid #fff;border-radius:999px;background:#0f766e;color:#fff;font:inherit;font-weight:700;box-shadow:0 4px 16px rgba(0,0,0,.25);cursor:pointer}
+.install-fab:hover{background:#115e59}
+.yi{display:inline-flex;vertical-align:-3px;color:#0f766e}
+.card .yi,.lead .yi{margin:0 2px}
+.install-fab:focus-visible{outline:3px solid #2563eb;outline-offset:3px}
+.install-fab[hidden]{display:none}
+@media(max-width:560px){.install-fab{width:56px;padding:0;justify-content:center}.install-fab .install-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}}
 @media(max-width:560px){.wrap{width:calc(100% - 20px)}header.site{padding:22px 0}.card{padding:13px}}
 </style>
 </head>
@@ -77,6 +84,11 @@ footer{padding:24px 0;color:#475569;font-size:.9rem;border-top:1px solid #dbe2ea
 <header class="site">
   <a class="skip" href="#main">Skip to main content</a>
   <div class="wrap">
+    <div class="badges">
+      <a href="https://hub.xerj.org/contributors/sandeepmiriyala03" rel="noopener" target="_blank" aria-label="XERJ Corpus Hub contributor profile of Sandeep Miriyala (opens in a new tab)">
+        <img src="https://hub.xerj.org/contributors/sandeepmiriyala03/badge.svg" alt="XERJ Corpus Hub contributor" height="28" decoding="async">
+      </a>
+    </div>
     <h1>yuktai Vanilla JS</h1>
     <p>The yuktai 5.3 toolkit for plain HTML: an accessible data grid you can talk to, page agents that test and explain the page, and WCAG accessibility fixes. One script file, no framework, no API keys, nothing leaves the browser.</p>
     <nav class="toc" aria-label="Sections on this page">
@@ -97,7 +109,7 @@ footer{padding:24px 0;color:#475569;font-size:.9rem;border-top:1px solid #dbe2ea
   <div class="cards">
     <section class="card" aria-labelledby="c1"><h2 id="c1" style="font-size:1.05rem;margin:0 0 6px">Same engine as npm</h2><p>The parser, BI answers, task runner, QA audit, copilot, form and design review are bundled from the package source, so answers match the React version.</p></section>
     <section class="card" aria-labelledby="c2"><h2 id="c2" style="font-size:1.05rem;margin:0 0 6px">Large data example</h2><p>1,000 generated staff rows. Select rows to see the count change.</p><div class="stats"><div class="stat"><strong id="total-records">1,000</strong>Sample rows</div><div class="stat"><strong id="selected-records" aria-live="polite">0</strong>Selected rows</div></div></section>
-    <section class="card" aria-labelledby="c3"><h2 id="c3" style="font-size:1.05rem;margin:0 0 6px">Floating tools</h2><p>Bottom corner: ♿ accessibility settings and 🛠 page tools (QA, forms, design, ask, voice).</p><button class="btn" id="open-a11y" type="button">Open accessibility settings</button></section>
+    <section class="card" aria-labelledby="c3"><h2 id="c3" style="font-size:1.05rem;margin:0 0 6px">Floating tools</h2><p>Bottom corner: <span class="yi" data-icon="accessibility"></span> accessibility settings and <span class="yi" data-icon="tools"></span> page tools (QA, forms, design, ask, voice).</p><button class="btn" id="open-a11y" type="button">Open accessibility settings</button></section>
   </div>
   <div class="note"><strong>Honest limits:</strong> questions are understood with rules, not a language model, so unusual phrasing may need rewording. Telugu and Hindi data questions use custom rules. QA and design checks are heuristics: still test with a keyboard and a screen reader. WebMCP works only where the browser provides <code>document.modelContext</code>. For 100K+ rows, page on the server.</div>
 
@@ -133,11 +145,11 @@ footer{padding:24px 0;color:#475569;font-size:.9rem;border-top:1px solid #dbe2ea
   <!-- 4 ─────────────────────────────────────────── -->
   <section class="block" id="tools" aria-labelledby="h-tools">
     <h2 id="h-tools">4. Page tools (AgenticPanel)</h2>
-    <p class="lead">Copilot, QA report, Forms, Design, Ask page and Voice, mounted inline with <code>yuktai.mountAgenticPanel("#page-tools")</code>. The same panel opens from the 🛠 button. The practice form below has deliberate problems for the tools to find.</p>
+    <p class="lead">Copilot, QA report, Forms, Design, Ask page and Voice, mounted inline with <code>yuktai.mountAgenticPanel("#page-tools")</code>. The same panel opens from the <span class="yi" data-icon="tools"></span> button. The practice form below has deliberate problems for the tools to find.</p>
     <div id="page-tools"></div>
     <div class="practice" style="margin-top:16px">
       <h3 style="margin:0">Practice form (deliberate problems)</h3>
-      <p class="lead" style="margin:4px 0 8px">Insert a form with one unlabeled field and an email without an autocomplete hint, then run “Forms”, “QA report” or “Ask page → Which fields have no label?”. Turn on ♿ → “Auto-fix page” to watch the engine repair new content.</p>
+      <p class="lead" style="margin:4px 0 8px">Insert a form with one unlabeled field and an email without an autocomplete hint, then run “Forms”, “QA report” or “Ask page → Which fields have no label?”. Turn on <span class="yi" data-icon="accessibility"></span> → “Auto-fix page” to watch the engine repair new content.</p>
       <button class="btn" type="button" id="insert-practice">Insert practice form</button>
       <div id="practice-slot"></div>
     </div>
@@ -146,7 +158,7 @@ footer{padding:24px 0;color:#475569;font-size:.9rem;border-top:1px solid #dbe2ea
   <!-- 5 ─────────────────────────────────────────── -->
   <section class="block" id="a11y" aria-labelledby="h-a11y">
     <h2 id="h-a11y">5. Accessibility engine</h2>
-    <p class="lead">The ♿ button runs the yuktai engine (<code>wcagPlugin</code>): WCAG auto-fixes, high contrast, dark mode, reduced motion, 44×44 targets, colour-blind filters, dyslexia font, text size 80–130%, skip links and speak-on-focus. Choices are saved on this device.</p>
+    <p class="lead">The <span class="yi" data-icon="accessibility"></span> button runs the yuktai engine (<code>wcagPlugin</code>): WCAG auto-fixes, high contrast, dark mode, reduced motion, 44×44 targets, colour-blind filters, dyslexia font, text size 80–130%, skip links and speak-on-focus. Choices are saved on this device.</p>
     <div class="controls">
       <button class="btn" type="button" data-a11y='{"highContrast":true}'>High contrast on</button>
       <button class="btn" type="button" data-a11y='{"darkMode":true}'>Dark mode on</button>
@@ -230,21 +242,20 @@ yuktai.mountAgenticPanel("#tools", { defaultTab: "qa", voiceLang: "te-IN" })</co
 </main>
 
 <dialog id="row-dialog" aria-labelledby="row-dialog-title">
-  <header><h2 id="row-dialog-title">Row details</h2><button class="btn" type="button" id="row-dialog-close" aria-label="Close details">✕</button></header>
+  <header><h2 id="row-dialog-title">Row details</h2><button class="btn" type="button" id="row-dialog-close" aria-label="Close details"><span data-icon="close"></span></button></header>
   <dl id="row-dialog-body"></dl>
 </dialog>
 
 <footer>
   <div class="wrap foot">
     <p>yuktai Vanilla JS 5.3 · ISC © Sandeep Miriyala, Yuktishaalaa AI Lab · <a href="https://github.com/sandeepmiriyala03/yuktai">GitHub</a> · <a href="https://www.npmjs.com/package/@yuktishaalaa/yuktai">npm</a></p>
-    <div class="badges">
-      <a href="https://hub.xerj.org/contributors/sandeepmiriyala03" rel="noopener" target="_blank" aria-label="XERJ Corpus Hub contributor profile of Sandeep Miriyala (opens in a new tab)">
-        <img src="https://hub.xerj.org/contributors/sandeepmiriyala03/badge.svg" alt="XERJ Corpus Hub contributor" height="28" loading="lazy" decoding="async">
-      </a>
-      <button class="btn install" type="button" id="install-app" hidden>Install app</button>
-    </div>
   </div>
 </footer>
+
+<button class="install-fab" type="button" id="install-app" hidden aria-label="Install yuktai as an app" title="Install app">
+  <span data-icon="download" data-size="22"></span>
+  <span class="install-label">Install app</span>
+</button>
 
 <script>
 // autoFix is off in this demo so the practice form keeps its problems for the page tools to find.
@@ -459,6 +470,12 @@ window.YUKTAI_CONFIG = { position: "right", primaryColor: "#0f766e", title: "Acc
       } catch (e) { out.textContent = d[0] + " failed: " + e.message }
     });
     box.appendChild(b);
+  });
+
+  // yuktai icons everywhere on this page (no emoji, no icon font)
+  document.querySelectorAll("[data-icon]").forEach(function (el) {
+    el.innerHTML = Y.icon(el.getAttribute("data-icon"), Number(el.getAttribute("data-size")) || 18);
+    el.style.display = "inline-flex";
   });
 
   // ── 8. icons ──
