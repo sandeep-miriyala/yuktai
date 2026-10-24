@@ -49,7 +49,7 @@ function writePrefs(config) {
 export function createWidget(userConfig = {}) {
   const cfg = { position: "left", title: "Accessibility", showPageTools: false, ...userConfig }
   const side = cfg.position === "right" ? "right" : "left"
-  const primary = safeColor(cfg.primaryColor, "#0f766e")
+  const primary = safeColor(cfg.primaryColor, "#005A9C")
   const base = {
     enabled: true,
     autoFix: true,

@@ -735,24 +735,101 @@ Needed only for Gemini Nano features on desktop Chrome. Mobile and other browser
 
 ## Icons
 
-Seven custom SVG icons with no external dependency.
+41 yuktai SVG icons for Next.js and React, with no icon library needed. They are the same icons the vanilla build draws with `yuktai.icon()`.
 
-```tsx
-import {
-  SearchIcon,
-  SortUpIcon,
-  SortDownIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  CheckIcon,
-  CloseIcon,
-} from "@yuktishaalaa/yuktai";
+### Next.js setup
 
-<SearchIcon size={20} />
-<CheckIcon size={20} color="#10b981" label="Task complete" />
+```bash
+npm install @yuktishaalaa/yuktai@5.3.1
 ```
 
-Props: `size` (default 20), `color` (default `currentColor`), `strokeWidth` (default 2.5), `label` (adds ARIA; decorative if omitted).
+Import from **`@yuktishaalaa/yuktai/icons`**. This entry has no hooks and no browser code, so the icons work in **Server Components** (no `"use client"` needed), in Client Components, and in the Pages Router.
+
+```tsx
+// app/page.tsx — a Server Component
+import { MicIcon, SearchIcon, AccessibilityIcon, YuktaiIcon } from "@yuktishaalaa/yuktai/icons"
+
+export default function Page() {
+  return (
+    <>
+      {/* decorative: the button text or aria-label names it */}
+      <button type="button" aria-label="Start voice input"><MicIcon /></button>
+
+      {/* meaningful on its own: give it a label */}
+      <SearchIcon size={24} label="Search" />
+
+      {/* filled variant: blue square, glyph colour picked for contrast */}
+      <AccessibilityIcon variant="filled" color="#005A9C" size={32} label="Accessibility settings" />
+
+      {/* any icon by name */}
+      <YuktaiIcon name="wand" />
+    </>
+  )
+}
+```
+
+Importing from the main entry (`@yuktishaalaa/yuktai`) still works, but the `/icons` entry is smaller (about 14 KB) and safe on the server.
+
+### Props
+
+| Prop | Default | What it does |
+|---|---|---|
+| `size` | `20` | Width and height in pixels |
+| `color` | `currentColor` | Outline: the line colour. Filled: the background colour |
+| `variant` | `"outline"` | `"outline"` or `"filled"` |
+| `glyphColor` | auto | Filled only. White or near-black, whichever has more contrast |
+| `shape` | `"rounded"` | Filled only. `"rounded"` square or `"circle"` |
+| `strokeWidth` | `2.5` | Line thickness |
+| `label` | none | Adds `role="img"` and `aria-label`. Without it the icon is decorative (`aria-hidden`) |
+
+Any other SVG attribute (`className`, `style`, `id`) is passed through.
+
+### All 41 icons
+
+| Component | `name` | Component | `name` |
+|---|---|---|---|
+| `AccessibilityIcon` | accessibility | `CopyIcon` | copy |
+| `ContrastIcon` | contrast | `FilterIcon` | filter |
+| `MoonIcon` | moon | `CheckIcon` | check |
+| `MotionIcon` | motion | `ChevronLeftIcon` | left |
+| `ReadingIcon` | reading | `ChevronRightIcon` | right |
+| `TargetIcon` | target | `FirstIcon` | first |
+| `SpeakerIcon` | speaker | `LastIcon` | last |
+| `PaletteIcon` | palette | `SparkIcon` | spark |
+| `SkipIcon` | skip | `AlertIcon` | alert |
+| `CloseIcon` | close | `InfoIcon` | info |
+| `PlusIcon` | plus | `FormIcon` | form |
+| `MinusIcon` | minus | `EyeIcon` | eye |
+| `ResetIcon` | reset | `LayoutIcon` | layout |
+| `SearchIcon` | search | `WandIcon` | wand |
+| `SortIcon` | sort | `UndoIcon` | undo |
+| `SortUpIcon` | sortUp | `ToolsIcon` | tools |
+| `SortDownIcon` | sortDown | `PlugIcon` | plug |
+| `ChevronsIcon` | chevrons | `GridIcon` | grid |
+| `CardsIcon` | cards | `ChatIcon` | chat |
+| `MicIcon` | mic | `StopIcon` | stop |
+| `DownloadIcon` | download | | |
+
+`ICON_NAMES` lists every name, and the `IconName` type checks it, so `<YuktaiIcon name="mike" />` is a type error.
+
+### WCAG built in
+
+- **1.1.1 Non-text content:** decorative by default; pass `label` when the icon carries meaning on its own.
+- **1.4.11 Non-text contrast:** the filled variant picks a glyph colour with at least 3:1 contrast, and warns in the console if a custom `glyphColor` falls below that. For outline icons, choose a `color` with 3:1 against your background, for example W3C blue `#005A9C` on white (7.1:1).
+- **Forced colours (Windows High Contrast):** outline icons follow the text colour; filled icons switch to system colours.
+- **2.5.8 Target size:** an icon is not a target. Put it inside a `<button>` of at least 24×24 px (44×44 is better on touch screens).
+
+Helpers: `iconContrast(fg, bg)` returns the contrast ratio, `pickGlyphColor(bg)` returns the best glyph colour, and `iconSvg(name, options)` returns SVG markup as a string (for emails or `dangerouslySetInnerHTML`).
+
+### Plain HTML
+
+```html
+<span id="mic"></span>
+<script src="https://cdn.jsdelivr.net/npm/@yuktishaalaa/yuktai@5/vanilla/index.min.js"></script>
+<script>
+  document.getElementById("mic").innerHTML = yuktai.icon("mic", { size: 24, label: "Voice input" })
+</script>
+```
 
 ---
 
@@ -786,6 +863,8 @@ Props: `size` (default 20), `color` (default `currentColor`), `strokeWidth` (def
 
 | Version | What shipped |
 |---|---|
+| **v5.3.1** | **41 icons for Next.js and React** from the new `@yuktishaalaa/yuktai/icons` entry, safe in Server Components; outline and filled variants with WCAG 1.4.11 contrast checks; same icons in the vanilla build |
+| | Yuktisárathi brand on the demo: navy and gold logo, W3C blue `#005A9C` for links and controls |
 | **v5.3** | **Vanilla JS build:** every module for plain HTML with one script tag, built from the same source as the npm package |
 | | Vanilla grid: themes, card view, Telugu UI, ARIA grid keyboard navigation, question bar, assistant with custom rules and voice, WebMCP |
 | | Vanilla page tools panel and floating accessibility button |

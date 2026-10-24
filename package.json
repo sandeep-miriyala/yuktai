@@ -1,6 +1,6 @@
 {
   "name": "@yuktishaalaa/yuktai",
-  "version": "5.3.0",
+  "version": "5.3.1",
   "description": "Accessibility, AI and data toolkit for Next.js, React and plain HTML: WCAG 2.2 auto-fix, agentic data grid, accessibility copilot, QA reports and in-browser RAG. Zero API keys.",
   "author": "Sandeep Miriyala — Yuktishaalaa AI Lab",
   "license": "GPL-3.0-only",
@@ -31,11 +31,21 @@
     "data-grid",
     "webmcp",
     "telugu",
-    "indian-languages"
+    "indian-languages",
+    "icons",
+    "react-icons",
+    "svg-icons"
   ],
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "icons": [
+        "./dist/icons.d.ts"
+      ]
+    }
+  },
   "unpkg": "vanilla/index.min.js",
   "jsdelivr": "vanilla/index.min.js",
   "exports": {
@@ -43,6 +53,11 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
+    },
+    "./icons": {
+      "types": "./dist/icons.d.ts",
+      "import": "./dist/icons.mjs",
+      "require": "./dist/icons.js"
     },
     "./vanilla": "./vanilla/index.min.js",
     "./vanilla/index.js": "./vanilla/index.js",

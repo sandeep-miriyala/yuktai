@@ -21,3 +21,47 @@ export { ChevronLeftIcon }  from "./ChevronLeftIcon"
 export { ChevronRightIcon } from "./ChevronRightIcon"
 export { CheckIcon }        from "./CheckIcon"
 export { CloseIcon }        from "./CloseIcon"
+
+// v5.3.1 — 34 more icons, shared with the vanilla build
+export { ICON_PATHS, ICON_NAMES } from "./paths"
+export { iconSvg, iconContrast, pickGlyphColor, resolveIconColours, ICON_MIN_CONTRAST } from "./variant"
+export type { IconVariant, IconShape, IconSvgOptions } from "./variant"
+export type { IconName }         from "./paths"
+export { YuktaiIcon }            from "./YuktaiIcon"
+export type { YuktaiIconProps }  from "./YuktaiIcon"
+export {
+  AccessibilityIcon,
+  ContrastIcon,
+  MoonIcon,
+  MotionIcon,
+  ReadingIcon,
+  TargetIcon,
+  SpeakerIcon,
+  PaletteIcon,
+  SkipIcon,
+  PlusIcon,
+  MinusIcon,
+  ResetIcon,
+  SortIcon,
+  ChevronsIcon,
+  GridIcon,
+  CardsIcon,
+  ChatIcon,
+  MicIcon,
+  StopIcon,
+  DownloadIcon,
+  CopyIcon,
+  FilterIcon,
+  FirstIcon,
+  LastIcon,
+  SparkIcon,
+  AlertIcon,
+  InfoIcon,
+  FormIcon,
+  EyeIcon,
+  LayoutIcon,
+  WandIcon,
+  UndoIcon,
+  ToolsIcon,
+  PlugIcon,
+} from "./YuktaiIcon"

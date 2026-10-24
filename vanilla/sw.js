@@ -2,13 +2,14 @@
 // Same-origin files: served from cache at once, refreshed in the background
 // (stale-while-revalidate), so the demo works offline after the first visit.
 // Other sites (for example the XERJ badge) always go to the network.
-const CACHE = "yuktai-vanilla-v5.3.2"
+const CACHE = "yuktai-vanilla-v5.3.3"
 const CORE = [
   "./",
   "./index.html",
   "./index.js",
   "./manifest.webmanifest",
-  "./icons/icon.svg",
+  "./icons/favicon-32.png",
+  "./brand/yuktisarathi-mark.png",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
   "./icons/maskable-512.png",

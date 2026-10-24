@@ -1,5 +1,5 @@
 {
-  "name": "yuktai Vanilla JS — accessible agentic data grid",
+  "name": "yuktai by Yuktisárathi — accessible agentic web apps",
   "short_name": "yuktai",
   "description": "Accessible data grid you can talk to, page agents and WCAG tools for plain HTML. Works offline, no API keys.",
   "id": "./",
@@ -7,20 +7,65 @@
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#f1f5f9",
-  "theme_color": "#0f766e",
+  "background_color": "#001124",
+  "theme_color": "#001124",
   "lang": "en",
   "dir": "ltr",
-  "categories": ["developer", "productivity", "utilities"],
+  "categories": [
+    "developer",
+    "productivity",
+    "utilities"
+  ],
   "icons": [
-    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
-    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ],
   "shortcuts": [
-    { "name": "Agentic grid", "url": "./index.html#grid", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
-    { "name": "Telugu grid", "url": "./index.html#telugu", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
-    { "name": "Page tools", "url": "./index.html#tools", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] }
+    {
+      "name": "Agentic grid",
+      "url": "./index.html#grid",
+      "icons": [
+        {
+          "src": "icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Telugu grid",
+      "url": "./index.html#telugu",
+      "icons": [
+        {
+          "src": "icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Page tools",
+      "url": "./index.html#tools",
+      "icons": [
+        {
+          "src": "icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
   ]
 }

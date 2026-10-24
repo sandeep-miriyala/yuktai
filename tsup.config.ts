@@ -1,8 +1,10 @@
-﻿import { defineConfig } from "tsup";
+import { defineConfig } from "tsup";
 
 export default defineConfig([
   {
-    entry:    ["src/index.ts"],
+    // index: everything · icons: @yuktishaalaa/yuktai/icons (no hooks, no
+    // browser globals, so it works in Next.js Server Components too)
+    entry:    { index: "src/index.ts", icons: "src/icons/index.ts" },
     format:   ["esm", "cjs"],
     dts:      true,
     clean:    true,

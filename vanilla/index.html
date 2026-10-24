@@ -4,94 +4,134 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="yuktai vanilla JS: accessible data grid you can talk to, page agents and WCAG tools for plain HTML. No framework, no API keys.">
-<title>yuktai Vanilla JS — every feature with examples</title>
-<meta name="theme-color" content="#0f766e">
+<title>yuktai by Yuktisárathi — accessible, agentic web apps in plain HTML</title>
+<meta name="theme-color" content="#001124">
 <meta name="application-name" content="yuktai">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="yuktai">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="./manifest.webmanifest">
-<link rel="icon" href="./icons/icon.svg" type="image/svg+xml">
+<link rel="icon" href="./icons/favicon-32.png" type="image/png" sizes="32x32">
 <link rel="icon" href="./icons/icon-192.png" type="image/png" sizes="192x192">
 <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
 <style>
-:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#172033;background:#f1f5f9;font-synthesis:none}
+/* Yuktisárathi brand on W3C/WAI blue. Every pair below is checked against WCAG 2.2:
+   navy #001124 + gold #C8983A 7.2:1 · navy + white 19:1 · navy + light blue #7CC4FA 10.1:1
+   white + blue #005A9C 7.1:1 · white + dark gold #8A6A1F 5.1:1 · white + text #172033 16:1
+   Gold is only ever used on navy; on white we use dark gold. */
+:root{
+  --navy:#001124;--navy-2:#0B1E3A;--gold:#C8983A;--gold-ink:#8A6A1F;
+  --blue:#005A9C;--blue-dark:#003F6E;--blue-light:#7CC4FA;--blue-soft:#E8F1F8;
+  --text:#172033;--muted:#475569;--line:#D5DCE6;--bg:#F4F6FA;--card:#FFFFFF;
+  --focus:#005A9C;
+  font-family:system-ui,-apple-system,"Segoe UI","Noto Sans Telugu",sans-serif;color:var(--text);background:var(--bg);font-synthesis:none}
 *{box-sizing:border-box}
-body{margin:0;line-height:1.55}
-a{color:#0f766e}
-.skip{position:absolute;left:-999px;top:0;background:#134e4a;color:#fff;padding:10px 14px;z-index:10}
+body{margin:0;line-height:1.6}
+a{color:var(--blue)}
+a:hover{color:var(--blue-dark)}
+:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+.skip{position:absolute;left:-999px;top:0;background:var(--gold);color:var(--navy);font-weight:700;padding:10px 14px;z-index:10;border-radius:0 0 8px 0}
 .skip:focus{left:8px;top:8px}
-header.site{background:linear-gradient(135deg,#134e4a,#0f766e);color:#fff;padding:30px 0}
 .wrap{width:min(1200px,calc(100% - 32px));margin:auto}
-h1{font-size:clamp(1.6rem,3vw,2.3rem);margin:0 0 8px}
-header.site p{color:#ccfbf1;max-width:860px;margin:0}
-nav.toc{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px}
-nav.toc a{color:#fff;border:1px solid #5eead4;border-radius:999px;padding:6px 12px;text-decoration:none;font-size:.9rem}
-nav.toc a:hover,nav.toc a:focus-visible{background:#115e59}
-main{padding:24px 0 60px}
-section.block{margin:34px 0}
-section.block>h2{font-size:1.4rem;margin:0 0 4px}
-.lead{color:#475569;margin:0 0 14px;max-width:880px}
+
+/* header: navy with the gold logo */
+header.site{background:var(--navy);color:#fff;padding:22px 0 30px;border-bottom:4px solid var(--gold)}
+header.site :focus-visible{outline-color:var(--gold)}
+header.site a{color:var(--blue-light)}
+.hero{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:28px;align-items:center}
+.brand-line{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 10px}
+.brand-name{font-family:Georgia,"Times New Roman",serif;color:var(--gold);font-size:1.05rem;letter-spacing:.04em;margin:0}
+h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(1.9rem,4vw,2.9rem);line-height:1.15;margin:0 0 10px;color:#fff}
+h1 .gold{color:var(--gold)}
+header.site p{color:#DCE6F2;max-width:760px;margin:0}
+.motto{font-family:Georgia,"Times New Roman",serif;font-style:italic;color:var(--gold);margin:12px 0 0!important}
+.logo{width:100%;height:auto;display:block;border-radius:14px}
+nav.toc{display:flex;flex-wrap:wrap;gap:6px;margin-top:18px}
+nav.toc a{color:#fff;border:1px solid rgba(200,152,58,.7);border-radius:999px;padding:7px 13px;text-decoration:none;font-size:.9rem;min-height:36px;display:inline-flex;align-items:center}
+nav.toc a:hover,nav.toc a:focus-visible{background:var(--gold);color:var(--navy)}
+
+main{padding:28px 0 60px}
+section.block{margin:38px 0}
+section.block>h2{font-family:Georgia,"Times New Roman",serif;font-size:1.5rem;margin:0 0 4px;color:var(--navy)}
+section.block>h2::after{content:"";display:block;width:56px;height:3px;background:var(--gold);border-radius:3px;margin-top:6px}
+.lead{color:var(--muted);margin:0 0 14px;max-width:880px}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:14px}
-.card{background:#fff;border:1px solid #dbe2ea;border-radius:13px;padding:17px}
+.card{background:var(--card);border:1px solid var(--line);border-top:4px solid var(--blue);border-radius:13px;padding:17px}
 .card h3{font-size:1.05rem;margin:0 0 6px}
-.card p{color:#475569;margin:0 0 10px}
-.btn{display:inline-flex;align-items:center;gap:7px;min-height:44px;border:1px solid #94a3b8;border-radius:8px;background:#fff;color:#172033;padding:9px 12px;font:inherit;font-weight:650;cursor:pointer}
-.btn:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #2563eb;outline-offset:3px}
-.note{border-left:4px solid #0d9488;background:#f0fdfa;color:#134e4a;padding:12px 14px;border-radius:0 8px 8px 0;margin:16px 0}
-.warn{border-left-color:#b45309;background:#fffbeb;color:#713f12}
+.card p{color:var(--muted);margin:0 0 10px}
+.btn{display:inline-flex;align-items:center;gap:7px;min-height:44px;border:1px solid var(--blue);border-radius:8px;background:#fff;color:var(--blue);padding:9px 14px;font:inherit;font-weight:650;cursor:pointer}
+.btn:hover{background:var(--blue-soft)}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.note{border-left:4px solid var(--blue);background:var(--blue-soft);color:var(--navy);padding:12px 14px;border-radius:0 8px 8px 0;margin:16px 0}
+.warn{border-left-color:#B45309;background:#FFFBEB;color:#713F12}
 .stats{display:flex;gap:10px;flex-wrap:wrap}
-.stat{padding:9px 12px;border-radius:9px;border:1px solid #99f6e4;background:#f0fdfa;color:#115e59}
+.stat{padding:9px 12px;border-radius:9px;border:1px solid #BFD6EA;background:var(--blue-soft);color:var(--blue-dark)}
 .stat strong{display:block;font-size:1.2rem}
 .controls{display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin:0 0 12px}
 .controls label{display:flex;flex-direction:column;font-size:.85rem;font-weight:600;color:#334155;gap:4px}
-.controls select{min-height:44px;padding:6px 10px;border:1px solid #94a3b8;border-radius:8px;background:#fff;font:inherit}
+.controls select{min-height:44px;padding:6px 10px;border:1px solid #94A3B8;border-radius:8px;background:#fff;font:inherit}
 .stack>*+*{margin-top:12px}
 code,pre{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
-pre{white-space:pre;overflow:auto;background:#0b3b37;color:#e6fffa;padding:14px;border-radius:10px;font-size:.85rem;margin:10px 0 0}
-.out{white-space:pre-wrap;overflow-wrap:anywhere;background:#fff;border:1px solid #dbe2ea;border-radius:10px;padding:12px;min-height:60px;font-size:.85rem;max-height:420px;overflow:auto}
+pre{white-space:pre;overflow:auto;background:var(--navy);color:#E6EEF8;border-left:4px solid var(--gold);padding:14px;border-radius:10px;font-size:.85rem;margin:10px 0 0}
+.out{white-space:pre-wrap;overflow-wrap:anywhere;background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;min-height:60px;font-size:.85rem;max-height:420px;overflow:auto}
 .play{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:8px;margin-bottom:10px}
 .icon-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}
-.icon-card{background:#fff;border:1px solid #dbe2ea;border-radius:9px;min-height:82px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:#0f766e}
+.icon-card{background:#fff;border:1px solid var(--line);border-radius:9px;min-height:82px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--blue)}
 .icon-card code{font-size:11px;color:#334155}
-.practice{background:#fff;border:2px dashed #b45309;border-radius:12px;padding:16px}
+.practice{background:#fff;border:2px dashed #B45309;border-radius:12px;padding:16px}
 .practice label{display:block;font-weight:600;margin-top:10px}
-.practice input,.practice select{min-height:44px;width:min(100%,360px);padding:8px;border:1px solid #94a3b8;border-radius:8px;font:inherit}
-dialog{border:1px solid #cbd5e1;border-radius:14px;padding:0;max-width:min(520px,calc(100vw - 24px));width:100%}
-dialog::backdrop{background:rgba(15,23,42,.45)}
-dialog header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid #e2e8f0}
+.practice input,.practice select{min-height:44px;width:min(100%,360px);padding:8px;border:1px solid #94A3B8;border-radius:8px;font:inherit}
+dialog{border:1px solid #CBD5E1;border-radius:14px;padding:0;max-width:min(520px,calc(100vw - 24px));width:100%}
+dialog::backdrop{background:rgba(0,17,36,.55)}
+dialog header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid #E2E8F0}
 dialog h2{margin:0;font-size:1.1rem}
 dialog dl{display:grid;grid-template-columns:120px 1fr;gap:6px 12px;padding:16px;margin:0}
-dialog dt{color:#475569}dialog dd{margin:0;overflow-wrap:anywhere}
-footer{padding:24px 0;color:#475569;font-size:.9rem;border-top:1px solid #dbe2ea}
-.foot{display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding-bottom:90px}
+dialog dt{color:var(--muted)}dialog dd{margin:0;overflow-wrap:anywhere}
+
+/* footer: navy with gold */
+footer{background:var(--navy);color:#DCE6F2;padding:26px 0;font-size:.9rem;border-top:4px solid var(--gold)}
+footer a{color:var(--blue-light)}
+footer a:hover{color:#fff}
+footer :focus-visible{outline-color:var(--gold)}
+.foot{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-bottom:70px}
+.foot img{width:56px;height:56px;border-radius:12px}
 .foot p{margin:0}
+.foot .gold{color:var(--gold);font-family:Georgia,"Times New Roman",serif}
+
 .badges{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
 .badges a{display:inline-flex;align-items:center;min-height:44px}
 .badges img{height:28px;width:auto;display:block}
-.badges{margin:0 0 12px}
-.install-fab{position:fixed;left:16px;bottom:max(16px,env(safe-area-inset-bottom));z-index:2147483000;display:inline-flex;align-items:center;gap:8px;min-height:56px;padding:0 20px 0 16px;border:2px solid #fff;border-radius:999px;background:#0f766e;color:#fff;font:inherit;font-weight:700;box-shadow:0 4px 16px rgba(0,0,0,.25);cursor:pointer}
-.install-fab:hover{background:#115e59}
-.yi{display:inline-flex;vertical-align:-3px;color:#0f766e}
+.yi{display:inline-flex;vertical-align:-3px;color:inherit}
 .card .yi,.lead .yi{margin:0 2px}
-.install-fab:focus-visible{outline:3px solid #2563eb;outline-offset:3px}
+
+.install-fab{position:fixed;left:16px;bottom:max(16px,env(safe-area-inset-bottom));z-index:2147483000;display:inline-flex;align-items:center;gap:8px;min-height:56px;padding:0 20px 0 16px;border:2px solid var(--gold);border-radius:999px;background:var(--navy);color:#fff;font:inherit;font-weight:700;box-shadow:0 4px 16px rgba(0,0,0,.3);cursor:pointer}
+.install-fab:hover{background:var(--navy-2)}
+.install-fab:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
 .install-fab[hidden]{display:none}
-@media(max-width:560px){.install-fab{width:56px;padding:0;justify-content:center}.install-fab .install-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}}
-@media(max-width:560px){.wrap{width:calc(100% - 20px)}header.site{padding:22px 0}.card{padding:13px}}
+
+@media(max-width:820px){.hero{grid-template-columns:1fr}.hero .logo-wrap{max-width:260px;order:-1}}
+@media(max-width:560px){.wrap{width:calc(100% - 20px)}header.site{padding:16px 0 22px}.card{padding:13px}
+  .install-fab{width:56px;padding:0;justify-content:center}.install-fab .install-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
 </style>
 </head>
 <body>
 <header class="site">
   <a class="skip" href="#main">Skip to main content</a>
-  <div class="wrap">
-    <div class="badges">
+  <div class="wrap hero">
+    <div>
+      <div class="brand-line">
+        <p class="brand-name">YUKTISÁRATHI · yuktai</p>
+        <div class="badges">
       <a href="https://hub.xerj.org/contributors/sandeepmiriyala03" rel="noopener" target="_blank" aria-label="XERJ Corpus Hub contributor profile of Sandeep Miriyala (opens in a new tab)">
         <img src="https://hub.xerj.org/contributors/sandeepmiriyala03/badge.svg" alt="XERJ Corpus Hub contributor" height="28" decoding="async">
       </a>
     </div>
-    <h1>yuktai Vanilla JS</h1>
-    <p>The yuktai 5.3 toolkit for plain HTML: an accessible data grid you can talk to, page agents that test and explain the page, and WCAG accessibility fixes. One script file, no framework, no API keys, nothing leaves the browser.</p>
-    <nav class="toc" aria-label="Sections on this page">
+      </div>
+      <h1>Accessible, agentic web apps — <span class="gold">in plain HTML</span></h1>
+      <p>The yuktai 5.3 toolkit for any web page: a data grid you can talk to, page agents that test and explain the page, and accessibility fixes. One script file, no framework, no API keys, and no yuktai servers.</p>
+      <p class="motto">“Not a tool, but a torch for your inner Mahabharata.”</p>
+      <nav class="toc" aria-label="Sections on this page">
       <a href="#grid">1. Agentic grid</a>
       <a href="#telugu">2. Telugu grid</a>
       <a href="#standalone">3. Without a grid</a>
@@ -102,6 +142,10 @@ footer{padding:24px 0;color:#475569;font-size:.9rem;border-top:1px solid #dbe2ea
       <a href="#icons">8. Icons</a>
       <a href="#api">9. API reference</a>
     </nav>
+    </div>
+    <div class="logo-wrap">
+      <img class="logo" src="./brand/yuktisarathi-mark.png" width="470" height="380" alt="Yuktisárathi logo: a charioteer guiding a horse, with a glowing bulb above">
+    </div>
   </div>
 </header>
 
@@ -248,7 +292,11 @@ yuktai.mountAgenticPanel("#tools", { defaultTab: "qa", voiceLang: "te-IN" })</co
 
 <footer>
   <div class="wrap foot">
-    <p>yuktai Vanilla JS 5.3 · ISC © Sandeep Miriyala, Yuktishaalaa AI Lab · <a href="https://github.com/sandeepmiriyala03/yuktai">GitHub</a> · <a href="https://www.npmjs.com/package/@yuktishaalaa/yuktai">npm</a></p>
+    <img src="./icons/icon-192.png" alt="" width="56" height="56">
+    <div>
+      <p><span class="gold">Yuktisárathi</span> · yuktai Vanilla JS 5.3</p>
+      <p>© Sandeep Miriyala, Yuktishaalaa AI Lab · <a href="https://github.com/sandeepmiriyala03/yuktai">GitHub</a> · <a href="https://www.npmjs.com/package/@yuktishaalaa/yuktai">npm</a> · <a href="https://hub.xerj.org/contributors/sandeepmiriyala03">XERJ Corpus Hub</a></p>
+    </div>
   </div>
 </footer>
 
@@ -259,7 +307,7 @@ yuktai.mountAgenticPanel("#tools", { defaultTab: "qa", voiceLang: "te-IN" })</co
 
 <script>
 // autoFix is off in this demo so the practice form keeps its problems for the page tools to find.
-window.YUKTAI_CONFIG = { position: "right", primaryColor: "#0f766e", title: "Accessibility", showPageTools: true, voiceLang: "en-IN", config: { autoFix: false } };
+window.YUKTAI_CONFIG = { position: "right", primaryColor: "#005A9C", title: "Accessibility", showPageTools: true, voiceLang: "en-IN", config: { autoFix: false } };
 </script>
 <script src="./index.js"></script>
 <script>

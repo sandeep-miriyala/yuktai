@@ -11,6 +11,7 @@ import { mountAgenticGridBar } from "./bar.js"
 import { addStyles, icon, ICON_NAMES, isBrowser, safeColor } from "./dom.js"
 import { mountGridAssistant, renderGrid } from "./grid.js"
 import { mountAgenticPanel } from "./panel.js"
+import { iconContrast, pickGlyphColor } from "../../src/icons/variant"
 import { createWidget } from "./widget.js"
 
 const VERSION = "5.3.0"
@@ -20,7 +21,7 @@ const VERSION = "5.3.0"
   if (window.yuktai && window.yuktai.__vanillaInitialized) return
 
   const cfg = window.YUKTAI_CONFIG || {}
-  const primary = safeColor(cfg.primaryColor, "#0f766e")
+  const primary = safeColor(cfg.primaryColor, "#005A9C")
   const side = cfg.position === "right" ? "right" : "left"
   const widget = createWidget(cfg)
   const ensureStyles = () => addStyles(primary, side)
@@ -61,6 +62,8 @@ const VERSION = "5.3.0"
     // ── icons ──
     icon,
     iconNames: ICON_NAMES.slice(),
+    iconContrast,
+    pickGlyphColor,
 
     // ── everything from the package core (same code as npm) ──
     ...core,

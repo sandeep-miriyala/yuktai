@@ -3083,8 +3083,8 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
       success: { bg: "#0a7a44", border: "#075e34", icon: "\u2713" },
       error: { bg: "#b52a1c", border: "#8f2116", icon: "\u2715" },
       warning: { bg: "#a35f00", border: "#7a4700", icon: "\u26A0" },
-      info: { bg: "#0f766e", border: "#115e59", icon: "\u2139" }
-      // yuktai teal
+      info: { bg: "#005A9C", border: "#003F6E", icon: "\u2139" }
+      // W3C blue
     };
     const c = colors[type];
     if (!_visualAlertNode) {
@@ -3171,7 +3171,7 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
     flex-wrap: wrap;
     gap: 4px;
     padding: 4px;
-    background: #134e4a;
+    background: #001124;
     transform: translateY(-100%);
     transition: transform 0.2s ease;
     font-family: system-ui, sans-serif;
@@ -3189,7 +3189,7 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
       link.textContent = label;
       link.style.cssText = `
       color: #fff;
-      background: #0f766e;
+      background: #005A9C;
       padding: 8px 14px;
       border-radius: 4px;
       font-size: 13px;
@@ -4723,39 +4723,8 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
     };
   }
 
-  // vanilla/src/dom.js
-  var isBrowser2 = () => typeof window !== "undefined" && typeof document !== "undefined";
-  function esc(value) {
-    return String(value == null ? "" : value).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
-  }
-  function h(tag, attrs, ...children) {
-    const el = document.createElement(tag);
-    if (attrs) {
-      for (const [key, value] of Object.entries(attrs)) {
-        if (value == null || value === false) continue;
-        if (key.startsWith("on") && typeof value === "function") el.addEventListener(key.slice(2), value);
-        else if (key === "html") el.innerHTML = value;
-        else if (key === "text") el.textContent = value;
-        else if (value === true) el.setAttribute(key, "");
-        else el.setAttribute(key, String(value));
-      }
-    }
-    for (const child of children.flat()) {
-      if (child == null || child === false) continue;
-      el.append(child instanceof Node ? child : document.createTextNode(String(child)));
-    }
-    return el;
-  }
-  var uid = 0;
-  var nextId = (prefix = "yv") => `${prefix}-${++uid}`;
-  function safeColor(value, fallback) {
-    if (typeof value !== "string" || !isBrowser2()) return fallback;
-    const probe = document.createElement("span");
-    probe.style.color = value;
-    return probe.style.color ? value : fallback;
-  }
-  var prefersReducedMotion = () => isBrowser2() && (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches || document.documentElement.hasAttribute("data-yuktai-reduce-motion"));
-  var PATHS = {
+  // src/icons/paths.ts
+  var ICON_PATHS = {
     accessibility: '<circle cx="12" cy="4" r="2"/><path d="M4 8l8-1 8 1M12 7v5m-5 9 5-8 5 8M7 12l-2 5m12-5 2 5"/>',
     contrast: '<circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z"/>',
     moon: '<path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5z"/>',
@@ -4798,10 +4767,93 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
     tools: '<path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z"/>',
     plug: '<path d="M9 2v6M15 2v6M6 8h12v4a6 6 0 0 1-12 0zM12 18v4"/>'
   };
-  var ICON_NAMES = Object.keys(PATHS);
-  function icon(name, size = 20, label) {
-    const a11y = label ? `role="img" aria-label="${esc(label)}"` : 'aria-hidden="true" focusable="false"';
-    return `<svg ${a11y} width="${Number(size) || 20}" height="${Number(size) || 20}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${PATHS[name] || PATHS.spark}</svg>`;
+  var ICON_NAMES = Object.keys(ICON_PATHS);
+
+  // src/icons/variant.ts
+  var ICON_MIN_CONTRAST = 3;
+  var WHITE = "#ffffff";
+  var INK = "#111827";
+  function iconContrast(fg, bg) {
+    const a = parseColor(fg);
+    const b = parseColor(bg);
+    return a && b ? contrastRatio(a, b) : null;
+  }
+  function pickGlyphColor(background) {
+    const white = iconContrast(WHITE, background);
+    const ink = iconContrast(INK, background);
+    if (white === null || ink === null) return WHITE;
+    return white >= ink ? WHITE : INK;
+  }
+  var warned = /* @__PURE__ */ new Set();
+  function warnOnce(key, message) {
+    if (warned.has(key)) return;
+    warned.add(key);
+    if (typeof console !== "undefined") console.warn(`[yuktai icons] ${message}`);
+  }
+  function resolveIconColours(options = {}) {
+    const variant = options.variant === "filled" ? "filled" : "outline";
+    const color = options.color || "currentColor";
+    if (variant === "outline") return { variant, color, glyph: color, contrast: null };
+    const glyph = options.glyphColor || pickGlyphColor(color);
+    const contrast = iconContrast(glyph, color);
+    if (contrast !== null && contrast < ICON_MIN_CONTRAST) {
+      warnOnce(`${glyph}|${color}`, `glyph ${glyph} on ${color} is ${contrast}:1. WCAG 1.4.11 needs at least 3:1 for icons.`);
+    }
+    return { variant, color, glyph, contrast };
+  }
+  var FILLED_GLYPH_TRANSFORM = "translate(3.6 3.6) scale(0.7)";
+  var FORCED_COLORS_CSS = "@media (forced-colors: active){.yi-bg{fill:CanvasText}.yi-glyph{stroke:Canvas}}";
+  var escAttr = (v) => String(v).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+  function iconSvg(name, options = {}) {
+    const paths = ICON_PATHS[name] ?? ICON_PATHS.spark;
+    const size = options.size ?? 20;
+    const { variant, color, glyph } = resolveIconColours(options);
+    const sw = options.strokeWidth ?? (variant === "filled" ? 2.4 : 1.9);
+    const a11y = options.label ? `role="img" aria-label="${escAttr(options.label)}"` : 'aria-hidden="true"';
+    const open = `<svg xmlns="http://www.w3.org/2000/svg" ${a11y} focusable="false" width="${escAttr(size)}" height="${escAttr(size)}" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-variant="${variant}">`;
+    if (variant === "outline") {
+      return `${open}<g stroke="${escAttr(color)}" stroke-width="${sw}">${paths}</g></svg>`;
+    }
+    const bg = options.shape === "circle" ? `<circle class="yi-bg" cx="12" cy="12" r="12" fill="${escAttr(color)}"/>` : `<rect class="yi-bg" width="24" height="24" rx="6" fill="${escAttr(color)}"/>`;
+    return `${open}<style>${FORCED_COLORS_CSS}</style>${bg}<g class="yi-glyph" stroke="${escAttr(glyph)}" stroke-width="${sw}" transform="${FILLED_GLYPH_TRANSFORM}">${paths}</g></svg>`;
+  }
+
+  // vanilla/src/dom.js
+  var isBrowser2 = () => typeof window !== "undefined" && typeof document !== "undefined";
+  function esc(value) {
+    return String(value == null ? "" : value).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+  }
+  function h(tag, attrs, ...children) {
+    const el = document.createElement(tag);
+    if (attrs) {
+      for (const [key, value] of Object.entries(attrs)) {
+        if (value == null || value === false) continue;
+        if (key.startsWith("on") && typeof value === "function") el.addEventListener(key.slice(2), value);
+        else if (key === "html") el.innerHTML = value;
+        else if (key === "text") el.textContent = value;
+        else if (value === true) el.setAttribute(key, "");
+        else el.setAttribute(key, String(value));
+      }
+    }
+    for (const child of children.flat()) {
+      if (child == null || child === false) continue;
+      el.append(child instanceof Node ? child : document.createTextNode(String(child)));
+    }
+    return el;
+  }
+  var uid = 0;
+  var nextId = (prefix = "yv") => `${prefix}-${++uid}`;
+  function safeColor(value, fallback) {
+    if (typeof value !== "string" || !isBrowser2()) return fallback;
+    const probe = document.createElement("span");
+    probe.style.color = value;
+    return probe.style.color ? value : fallback;
+  }
+  var prefersReducedMotion = () => isBrowser2() && (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches || document.documentElement.hasAttribute("data-yuktai-reduce-motion"));
+  var ICON_NAMES2 = Object.keys(ICON_PATHS);
+  function icon(name, size = 20, label, options) {
+    const opts = typeof size === "object" && size !== null ? { ...size } : { ...options || {}, size, label };
+    return iconSvg(name, opts);
   }
   function iconEl(name, size, label) {
     const span = document.createElement("span");
@@ -4898,8 +4950,8 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
 .yv-sev-high{color:#b91c1c}.yv-sev-medium{color:#a16207}.yv-sev-low{color:#475569}
 
 /* themes (shared by grid, boxes and dialogs) */
-.yv-grid,.yv-box,.yv-dialog{--yv-bg:#fff;--yv-surface:#fff;--yv-soft:#f8fafc;--yv-head:#f8fafc;--yv-hover:#f1f5f9;--yv-text:#0f172a;--yv-muted:#475569;--yv-border:#e2e8f0;--yv-border-strong:#94a3b8;--yv-accent-bg:#ccfbf1;--yv-accent-text:#115e59;--yv-hl-bg:#fef3c7;--yv-hl-edge:#b45309;--yv-sel-bg:#f0fdfa}
-.yv-theme-dark{--yv-bg:#0f172a;--yv-surface:#111c33;--yv-soft:#16233f;--yv-head:#16233f;--yv-hover:#1e2d4d;--yv-text:#f1f5f9;--yv-muted:#cbd5e1;--yv-border:#334155;--yv-border-strong:#64748b;--yv-accent-bg:#134e4a;--yv-accent-text:#ccfbf1;--yv-hl-bg:#4a3a0c;--yv-hl-edge:#fbbf24;--yv-sel-bg:#123a3a}
+.yv-grid,.yv-box,.yv-dialog{--yv-bg:#fff;--yv-surface:#fff;--yv-soft:#f8fafc;--yv-head:#f8fafc;--yv-hover:#f1f5f9;--yv-text:#0f172a;--yv-muted:#475569;--yv-border:#e2e8f0;--yv-border-strong:#94a3b8;--yv-accent-bg:#E8F1F8;--yv-accent-text:#003F6E;--yv-hl-bg:#fef3c7;--yv-hl-edge:#b45309;--yv-sel-bg:#EEF5FB}
+.yv-theme-dark{--yv-bg:#0f172a;--yv-surface:#111c33;--yv-soft:#16233f;--yv-head:#16233f;--yv-hover:#1e2d4d;--yv-text:#f1f5f9;--yv-muted:#cbd5e1;--yv-border:#334155;--yv-border-strong:#64748b;--yv-accent-bg:#0B2A4A;--yv-accent-text:#DCEBFA;--yv-hl-bg:#4a3a0c;--yv-hl-edge:#fbbf24;--yv-sel-bg:#12304f}
 .yv-theme-high-contrast{--yv-bg:#fff;--yv-surface:#fff;--yv-soft:#fff;--yv-head:#fff;--yv-hover:#e5e5e5;--yv-text:#000;--yv-muted:#000;--yv-border:#000;--yv-border-strong:#000;--yv-accent-bg:#000;--yv-accent-text:#fff;--yv-hl-bg:#ffff00;--yv-hl-edge:#000;--yv-sel-bg:#e5e5e5}
 .yv-theme-high-contrast.yv-grid,.yv-theme-high-contrast .yv-btn,.yv-theme-high-contrast .yv-input{border-width:2px}
 .yv-theme-high-contrast .yv-btn.yv-primary{background:#000;border-color:#000}
@@ -6496,7 +6548,7 @@ ${command ? command.say : "Not a voice command. Try: make text bigger, high cont
   function createWidget(userConfig = {}) {
     const cfg = { position: "left", title: "Accessibility", showPageTools: false, ...userConfig };
     const side = cfg.position === "right" ? "right" : "left";
-    const primary = safeColor(cfg.primaryColor, "#0f766e");
+    const primary = safeColor(cfg.primaryColor, "#005A9C");
     const base = {
       enabled: true,
       autoFix: true,
@@ -6728,7 +6780,7 @@ ${command ? command.say : "Not a voice command. Try: make text bigger, high cont
     if (!isBrowser2()) return;
     if (window.yuktai && window.yuktai.__vanillaInitialized) return;
     const cfg = window.YUKTAI_CONFIG || {};
-    const primary = safeColor(cfg.primaryColor, "#0f766e");
+    const primary = safeColor(cfg.primaryColor, "#005A9C");
     const side = cfg.position === "right" ? "right" : "left";
     const widget = createWidget(cfg);
     const ensureStyles = () => addStyles(primary, side);
@@ -6767,7 +6819,9 @@ ${command ? command.say : "Not a voice command. Try: make text bigger, high cont
       //     <YuktaiGridWebMCP>
       // ── icons ──
       icon,
-      iconNames: ICON_NAMES.slice(),
+      iconNames: ICON_NAMES2.slice(),
+      iconContrast,
+      pickGlyphColor,
       // ── everything from the package core (same code as npm) ──
       ...core_exports,
       // ── v5.1 vanilla compatibility ──
