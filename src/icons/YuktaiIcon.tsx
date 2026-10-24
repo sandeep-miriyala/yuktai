@@ -1,7 +1,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // @yuktishaalaa/yuktai · src/icons/YuktaiIcon.tsx
 //
-// 125 more yuktai icons for React / Next.js, drawn from the shared list in
+// 156 more yuktai icons for React / Next.js, drawn from the shared list in
 // paths.ts, so they match the vanilla build (yuktai.icon) exactly.
 // Same props as every yuktai icon: size, color, strokeWidth, label.
 //
@@ -405,3 +405,97 @@ export const UploadIcon = (props: IconProps) => <YuktaiIcon {...props} name="upl
 
 /** Arrow down */
 export const ArrowDownIcon = (props: IconProps) => <YuktaiIcon {...props} name="arrowDown" />
+
+// v5.3.4 — 31 more
+/** Fact check / checklist */
+export const FactCheckIcon = (props: IconProps) => <YuktaiIcon {...props} name="factCheck" />
+
+/** Image search */
+export const ImageSearchIcon = (props: IconProps) => <YuktaiIcon {...props} name="imageSearch" />
+
+/** Document scanner / OCR */
+export const DocumentScannerIcon = (props: IconProps) => <YuktaiIcon {...props} name="documentScanner" />
+
+/** Dashboard */
+export const DashboardIcon = (props: IconProps) => <YuktaiIcon {...props} name="dashboard" />
+
+/** Clean up */
+export const CleaningIcon = (props: IconProps) => <YuktaiIcon {...props} name="cleaning" />
+
+/** Drag handle */
+export const DragHandleIcon = (props: IconProps) => <YuktaiIcon {...props} name="dragHandle" />
+
+/** Zoom in */
+export const ZoomInIcon = (props: IconProps) => <YuktaiIcon {...props} name="zoomIn" />
+
+/** Zoom out */
+export const ZoomOutIcon = (props: IconProps) => <YuktaiIcon {...props} name="zoomOut" />
+
+/** Insights */
+export const InsightsIcon = (props: IconProps) => <YuktaiIcon {...props} name="insights" />
+
+/** Explore / compass */
+export const ExploreIcon = (props: IconProps) => <YuktaiIcon {...props} name="explore" />
+
+/** Save */
+export const SaveIcon = (props: IconProps) => <YuktaiIcon {...props} name="save" />
+
+/** Label */
+export const LabelIcon = (props: IconProps) => <YuktaiIcon {...props} name="label" />
+
+/** Keyboard */
+export const KeyboardIcon = (props: IconProps) => <YuktaiIcon {...props} name="keyboard" />
+
+/** Trending up */
+export const TrendingUpIcon = (props: IconProps) => <YuktaiIcon {...props} name="trendingUp" />
+
+/** Trending down */
+export const TrendingDownIcon = (props: IconProps) => <YuktaiIcon {...props} name="trendingDown" />
+
+/** Birthday / cake */
+export const CakeIcon = (props: IconProps) => <YuktaiIcon {...props} name="cake" />
+
+/** Bar chart */
+export const BarChartIcon = (props: IconProps) => <YuktaiIcon {...props} name="barChart" />
+
+/** Admin */
+export const AdminIcon = (props: IconProps) => <YuktaiIcon {...props} name="admin" />
+
+/** Bug report */
+export const BugReportIcon = (props: IconProps) => <YuktaiIcon {...props} name="bugReport" />
+
+/** Sad / not happy */
+export const SentimentSadIcon = (props: IconProps) => <YuktaiIcon {...props} name="sentimentSad" />
+
+/** Integration / code snippet */
+export const IntegrationIcon = (props: IconProps) => <YuktaiIcon {...props} name="integration" />
+
+/** Namaskar (praying hands) */
+export const NamaskarIcon = (props: IconProps) => <YuktaiIcon {...props} name="namaskar" />
+
+/** Sunrise */
+export const SunriseIcon = (props: IconProps) => <YuktaiIcon {...props} name="sunrise" />
+
+/** Sunset */
+export const SunsetIcon = (props: IconProps) => <YuktaiIcon {...props} name="sunset" />
+
+/** Log in */
+export const LoginIcon = (props: IconProps) => <YuktaiIcon {...props} name="login" />
+
+/** Log out */
+export const LogoutIcon = (props: IconProps) => <YuktaiIcon {...props} name="logout" />
+
+/** Speed */
+export const SpeedIcon = (props: IconProps) => <YuktaiIcon {...props} name="speed" />
+
+/** Repeat */
+export const RepeatIcon = (props: IconProps) => <YuktaiIcon {...props} name="repeat" />
+
+/** Loading */
+export const LoaderIcon = (props: IconProps) => <YuktaiIcon {...props} name="loader" />
+
+/** Star / favourite */
+export const StarIcon = (props: IconProps) => <YuktaiIcon {...props} name="star" />
+
+/** Safe / verified */
+export const ShieldCheckIcon = (props: IconProps) => <YuktaiIcon {...props} name="shieldCheck" />

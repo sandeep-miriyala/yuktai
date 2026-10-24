@@ -735,12 +735,12 @@ Needed only for Gemini Nano features on desktop Chrome. Mobile and other browser
 
 ## Icons
 
-132 yuktai SVG icons for Next.js and React, with no icon library needed. They are the same icons the vanilla build draws with `yuktai.icon()`.
+163 yuktai SVG icons for Next.js and React, with no icon library needed. They are the same icons the vanilla build draws with `yuktai.icon()`.
 
 ### Next.js setup
 
 ```bash
-npm install @yuktishaalaa/yuktai@5.3.3
+npm install @yuktishaalaa/yuktai@5.3.4
 ```
 
 Import from **`@yuktishaalaa/yuktai/icons`**. This entry has no hooks and no browser code, so the icons work in **Server Components** (no `"use client"` needed), in Client Components, and in the Pages Router.
@@ -784,7 +784,7 @@ Importing from the main entry (`@yuktishaalaa/yuktai`) still works, but the `/ic
 
 Any other SVG attribute (`className`, `style`, `id`) is passed through.
 
-### All 132 icons
+### All 163 icons
 
 | Component | `name` | Component | `name` |
 |---|---|---|---|
@@ -813,6 +813,8 @@ Any other SVG attribute (`className`, `style`, `id`) is passed through.
 **New in v5.3.2 (33):** `HomeIcon` (home), `MenuIcon` (menu), `BookIcon` (book), `CalendarIcon` (calendar), `ClockIcon` (clock), `PersonIcon` (person), `UsersIcon` (users), `GlobeIcon` (globe), `LampIcon` (lamp), `PlayIcon` (play), `PauseIcon` (pause), `SendIcon` (send), `ShareIcon` (share), `GiftIcon` (gift), `ImageIcon` (image), `FileIcon` (file), `ExternalIcon` (external), `ArrowUpIcon` (arrowUp), `ArrowLeftIcon` (arrowLeft), `ArrowRightIcon` (arrowRight), `HeadphonesIcon` (headphones), `MusicIcon` (music), `PinIcon` (pin), `MapIcon` (map), `PenIcon` (pen), `WalletIcon` (wallet), `InstallIcon` (install), `HelpIcon` (help), `TempleIcon` (temple), `MeditateIcon` (meditate), `TrophyIcon` (trophy), `BulbIcon` (bulb), `SunIcon` (sun).
 
 **New in v5.3.3 (58):** `DeleteIcon` (delete), `RobotIcon` (robot), `HeartIcon` (heart), `HeartFilledIcon` (heartFilled), `HubIcon` (hub), `CodeIcon` (code), `TextIcon` (text), `BoldIcon` (bold), `ItalicIcon` (italic), `UnderlineIcon` (underline), `AlignLeftIcon` (alignLeft), `AlignCenterIcon` (alignCenter), `AlignRightIcon` (alignRight), `AlignJustifyIcon` (alignJustify), `QuoteIcon` (quote), `TitleIcon` (title), `FontIcon` (font), `SpellcheckIcon` (spellcheck), `AbcIcon` (abc), `PageBreakIcon` (pageBreak), `LinkIcon` (link), `StyleIcon` (style), `LockIcon` (lock), `UnlockIcon` (unlock), `KeyIcon` (key), `RedoIcon` (redo), `SwapIcon` (swap), `ShuffleIcon` (shuffle), `FullscreenIcon` (fullscreen), `FullscreenExitIcon` (fullscreenExit), `MergeIcon` (merge), `JoinIcon` (join), `TouchIcon` (touch), `VolumeOffIcon` (volumeOff), `MusicOffIcon` (musicOff), `MusicVideoIcon` (musicVideo), `MovieIcon` (movie), `SlideshowIcon` (slideshow), `StorageIcon` (storage), `ApiIcon` (api), `DataObjectIcon` (dataObject), `ComputerIcon` (computer), `PhoneIcon` (phone), `CloudIcon` (cloud), `WifiIcon` (wifi), `WifiOffIcon` (wifiOff), `SearchOffIcon` (searchOff), `EyeOffIcon` (eyeOff), `BookmarkIcon` (bookmark), `SchoolIcon` (school), `GavelIcon` (gavel), `ArchitectureIcon` (architecture), `BrainIcon` (brain), `VolunteerIcon` (volunteer), `RadioIcon` (radio), `RadioCheckedIcon` (radioChecked), `UploadIcon` (upload), `ArrowDownIcon` (arrowDown).
+
+**New in v5.3.4 (31):** `FactCheckIcon` (factCheck), `ImageSearchIcon` (imageSearch), `DocumentScannerIcon` (documentScanner), `DashboardIcon` (dashboard), `CleaningIcon` (cleaning), `DragHandleIcon` (dragHandle), `ZoomInIcon` (zoomIn), `ZoomOutIcon` (zoomOut), `InsightsIcon` (insights), `ExploreIcon` (explore), `SaveIcon` (save), `LabelIcon` (label), `KeyboardIcon` (keyboard), `TrendingUpIcon` (trendingUp), `TrendingDownIcon` (trendingDown), `CakeIcon` (cake), `BarChartIcon` (barChart), `AdminIcon` (admin), `BugReportIcon` (bugReport), `SentimentSadIcon` (sentimentSad), `IntegrationIcon` (integration), `NamaskarIcon` (namaskar), `SunriseIcon` (sunrise), `SunsetIcon` (sunset), `LoginIcon` (login), `LogoutIcon` (logout), `SpeedIcon` (speed), `RepeatIcon` (repeat), `LoaderIcon` (loader), `StarIcon` (star), `ShieldCheckIcon` (shieldCheck).
 
 `heartFilled` and `radioChecked` have a filled part that follows the icon colour, also in the filled variant.
 
@@ -869,6 +871,7 @@ Helpers: `iconContrast(fg, bg)` returns the contrast ratio, `pickGlyphColor(bg)`
 
 | Version | What shipped |
 |---|---|
+| **v5.3.4** | 31 more icons (163 in total): charts, zoom, save, login/logout, sunrise/sunset, namaskar, star, shield and more, so AIHACK and VajasaneyaSandhya use yuktai icons everywhere |
 | **v5.3.3** | 58 more icons (132 in total): delete, robot, heart, text-editor set, lock, link, storage, cloud, Wi-Fi and more, so Ratnalabala uses yuktai icons everywhere |
 | **v5.3.2** | 33 more icons (home, menu, book, calendar, sun, lamp, temple, meditate, share, play, pause and more), first used on the Sri Yagnavalkya Jayanti site in place of Font Awesome and Material Icons |
 | **v5.3.1** | **74 icons for Next.js and React** (41 in 5.3.1, 33 more in 5.3.2) from the new `@yuktishaalaa/yuktai/icons` entry, safe in Server Components; outline and filled variants with WCAG 1.4.11 contrast checks; same icons in the vanilla build |

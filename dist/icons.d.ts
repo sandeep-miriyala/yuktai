@@ -134,6 +134,37 @@ declare const ICON_PATHS: {
     readonly radioChecked: "<circle cx=\"12\" cy=\"12\" r=\"9\"/><circle cx=\"12\" cy=\"12\" r=\"4\" fill=\"currentColor\"/>";
     readonly upload: "<path d=\"M12 15V3m-5 5 5-5 5 5M4 21h16\"/>";
     readonly arrowDown: "<path d=\"M12 5v14m-6-6 6 6 6-6\"/>";
+    readonly factCheck: "<rect x=\"3\" y=\"4\" width=\"18\" height=\"16\" rx=\"2\"/><path d=\"M7 9h4M7 13h4M7 17h2M13.5 13l2 2 3.5-3.5\"/>";
+    readonly imageSearch: "<path d=\"M13 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4\"/><path d=\"m3 17 5-5 4 4\"/><circle cx=\"17\" cy=\"7\" r=\"3\"/><path d=\"m19.2 9.2 2.3 2.3\"/>";
+    readonly documentScanner: "<path d=\"M3 7V4a1 1 0 0 1 1-1h3M17 3h3a1 1 0 0 1 1 1v3M21 17v3a1 1 0 0 1-1 1h-3M7 21H4a1 1 0 0 1-1-1v-3\"/><path d=\"M7 8h10M7 12h10M7 16h6\"/>";
+    readonly dashboard: "<rect x=\"3\" y=\"3\" width=\"8\" height=\"10\" rx=\"1.5\"/><rect x=\"13\" y=\"3\" width=\"8\" height=\"6\" rx=\"1.5\"/><rect x=\"3\" y=\"15\" width=\"8\" height=\"6\" rx=\"1.5\"/><path d=\"M17 13v8M13 17h8\"/>";
+    readonly cleaning: "<path d=\"m20 3-7.5 7.5\"/><path d=\"M12.5 10.5c-2.5-1.6-6-1-7.4 1.7L3 20.5c3.2 1 7.2.4 10.2-1.6l.7-5.3c-.1-1.3-.6-2.3-1.4-3.1z\"/><path d=\"M7.5 15.5 6 20.5M10.5 15l-1 5\"/>";
+    readonly dragHandle: "<path d=\"M5 9h14M5 15h14\"/>";
+    readonly zoomIn: "<circle cx=\"11\" cy=\"11\" r=\"6.5\"/><path d=\"m16 16 5 5M8 11h6M11 8v6\"/>";
+    readonly zoomOut: "<circle cx=\"11\" cy=\"11\" r=\"6.5\"/><path d=\"m16 16 5 5M8 11h6\"/>";
+    readonly insights: "<path d=\"m3 18 5-5 4 3 6-7\"/><path d=\"M15 9h3v3\"/><path d=\"m19 2.5.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z\"/>";
+    readonly explore: "<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"m15.5 8.5-2 5-5 2 2-5z\"/>";
+    readonly save: "<path d=\"M5 3h11l5 5v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z\"/><path d=\"M7 3v5h8V3M7 21v-7h10v7\"/>";
+    readonly label: "<path d=\"M4 6h11l5 6-5 6H4z\"/>";
+    readonly keyboard: "<rect x=\"2\" y=\"6\" width=\"20\" height=\"12\" rx=\"2\"/><path d=\"M6 10h.01M10 10h.01M14 10h.01M18 10h.01M6 14h.01M18 14h.01M9 14h6\"/>";
+    readonly trendingUp: "<path d=\"m3 17 6-6 4 4 8-8\"/><path d=\"M15 7h6v6\"/>";
+    readonly trendingDown: "<path d=\"m3 7 6 6 4-4 8 8\"/><path d=\"M15 17h6v-6\"/>";
+    readonly cake: "<path d=\"M4 21h16M5 21v-7a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v7M5 16.5c1.5 1 2.5 1 3.5 0s2.5-1 3.5 0 2.5 1 3.5 0 2.5-1 3.5 0M12 12V8.5M12 6c-.9-.9-.9-2 0-3.3.9 1.3.9 2.4 0 3.3z\"/>";
+    readonly barChart: "<path d=\"M4 20h16M7 20v-6M12 20V5M17 20V10\"/>";
+    readonly admin: "<path d=\"M12 3 4 6v6c0 4.5 3.4 8 8 9 4.6-1 8-4.5 8-9V6z\"/><circle cx=\"12\" cy=\"10\" r=\"2.5\"/><path d=\"M8 16.5c1-1.8 2.4-2.5 4-2.5s3 .7 4 2.5\"/>";
+    readonly bugReport: "<rect x=\"7\" y=\"8\" width=\"10\" height=\"12\" rx=\"5\"/><path d=\"M9 8.5a3 3 0 0 1 6 0M12 12v8M7 13H3M21 13h-4M7 17l-3 1.5M17 17l3 1.5M7.5 10 5 8M16.5 10 19 8\"/>";
+    readonly sentimentSad: "<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M8 16.5c1-1.4 2.4-2 4-2s3 .6 4 2M9 9.5h.01M15 9.5h.01\"/>";
+    readonly integration: "<rect x=\"5\" y=\"4\" width=\"14\" height=\"17\" rx=\"2\"/><path d=\"M9 4V3h6v1M10 11l-2 2 2 2M14 11l2 2-2 2\"/>";
+    readonly namaskar: "<path d=\"M12 5.5V15M12 5.5c-.6-1.7-2.4-2.2-3.1-.9L7.2 11.5 4.5 14.5l3 5H10l2-3.5M12 5.5c.6-1.7 2.4-2.2 3.1-.9l1.7 6.9 2.7 3-3 5H14l-2-3.5\"/>";
+    readonly sunrise: "<path d=\"M3 19h18M7 19a5 5 0 0 1 10 0M12 3v6M9.5 5.5 12 3l2.5 2.5M4.9 11.9l1.4 1.4M19.1 11.9l-1.4 1.4M2 16h2M20 16h2\"/>";
+    readonly sunset: "<path d=\"M3 19h18M7 19a5 5 0 0 1 10 0M12 3v6M9.5 6.5 12 9l2.5-2.5M4.9 11.9l1.4 1.4M19.1 11.9l-1.4 1.4M2 16h2M20 16h2\"/>";
+    readonly login: "<path d=\"M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4M10 16l4-4-4-4M14 12H3\"/>";
+    readonly logout: "<path d=\"M10 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4M16 16l4-4-4-4M20 12H9\"/>";
+    readonly speed: "<path d=\"M4.5 18a9 9 0 1 1 15 0\"/><path d=\"m12 14 4-5\"/><circle cx=\"12\" cy=\"14\" r=\"1.2\"/>";
+    readonly repeat: "<path d=\"m17 2 3 3-3 3M4 11V9a4 4 0 0 1 4-4h12M7 22l-3-3 3-3M20 13v2a4 4 0 0 1-4 4H4\"/>";
+    readonly loader: "<path d=\"M12 3v3M12 18v3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M3 12h3M18 12h3M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1\"/>";
+    readonly star: "<path d=\"m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3l-5.6 2.9 1.1-6.2L3 9.6l6.2-.9z\"/>";
+    readonly shieldCheck: "<path d=\"M12 3 4 6v6c0 4.5 3.4 8 8 9 4.6-1 8-4.5 8-9V6z\"/><path d=\"m8.5 12 2.5 2.5 4.5-4.5\"/>";
 };
 type IconName = keyof typeof ICON_PATHS;
 declare const ICON_NAMES: IconName[];
@@ -470,5 +501,67 @@ declare const RadioCheckedIcon: (props: IconProps) => react_jsx_runtime.JSX.Elem
 declare const UploadIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
 /** Arrow down */
 declare const ArrowDownIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+/** Fact check / checklist */
+declare const FactCheckIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+/** Image search */
+declare const ImageSearchIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+/** Document scanner / OCR */
+declare const DocumentScannerIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+/** Dashboard */
+declare const DashboardIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+/** Clean up */
+declare const CleaningIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+/** Drag handle */
+declare const DragHandleIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+/** Zoom in */
+declare const ZoomInIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+/** Zoom out */
+declare const ZoomOutIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+/** Insights */
+declare const InsightsIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+/** Explore / compass */
+declare const ExploreIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+/** Save */
+declare const SaveIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+/** Label */
+declare const LabelIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+/** Keyboard */
+declare const KeyboardIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+/** Trending up */
+declare const TrendingUpIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+/** Trending down */
+declare const TrendingDownIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+/** Birthday / cake */
+declare const CakeIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+/** Bar chart */
+declare const BarChartIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+/** Admin */
+declare const AdminIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+/** Bug report */
+declare const BugReportIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+/** Sad / not happy */
+declare const SentimentSadIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+/** Integration / code snippet */
+declare const IntegrationIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+/** Namaskar (praying hands) */
+declare const NamaskarIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+/** Sunrise */
+declare const SunriseIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+/** Sunset */
+declare const SunsetIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+/** Log in */
+declare const LoginIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+/** Log out */
+declare const LogoutIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+/** Speed */
+declare const SpeedIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+/** Repeat */
+declare const RepeatIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+/** Loading */
+declare const LoaderIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+/** Star / favourite */
+declare const StarIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+/** Safe / verified */
+declare const ShieldCheckIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
 
-export { AbcIcon, AccessibilityIcon, AlertIcon, AlignCenterIcon, AlignJustifyIcon, AlignLeftIcon, AlignRightIcon, ApiIcon, ArchitectureIcon, ArrowDownIcon, ArrowLeftIcon, ArrowRightIcon, ArrowUpIcon, BoldIcon, BookIcon, BookmarkIcon, BrainIcon, BulbIcon, CalendarIcon, CardsIcon, ChatIcon, CheckIcon, ChevronLeftIcon, ChevronRightIcon, ChevronsIcon, ClockIcon, CloseIcon, CloudIcon, CodeIcon, ComputerIcon, ContrastIcon, CopyIcon, DataObjectIcon, DeleteIcon, DownloadIcon, ExternalIcon, EyeIcon, EyeOffIcon, FileIcon, FilterIcon, FirstIcon, FontIcon, FormIcon, FullscreenExitIcon, FullscreenIcon, GavelIcon, GiftIcon, GlobeIcon, GridIcon, HeadphonesIcon, HeartFilledIcon, HeartIcon, HelpIcon, HomeIcon, HubIcon, ICON_MIN_CONTRAST, ICON_NAMES, ICON_PATHS, IconBase, type IconName, type IconProps, type IconShape, type IconSvgOptions, type IconVariant, ImageIcon, InfoIcon, InstallIcon, ItalicIcon, JoinIcon, KeyIcon, LampIcon, LastIcon, LayoutIcon, LinkIcon, LockIcon, MapIcon, MeditateIcon, MenuIcon, MergeIcon, MicIcon, MinusIcon, MoonIcon, MotionIcon, MovieIcon, MusicIcon, MusicOffIcon, MusicVideoIcon, PageBreakIcon, PaletteIcon, PauseIcon, PenIcon, PersonIcon, PhoneIcon, PinIcon, PlayIcon, PlugIcon, PlusIcon, QuoteIcon, RadioCheckedIcon, RadioIcon, ReadingIcon, RedoIcon, ResetIcon, RobotIcon, SchoolIcon, SearchIcon, SearchOffIcon, SendIcon, ShareIcon, ShuffleIcon, SkipIcon, SlideshowIcon, SortDownIcon, SortIcon, SortUpIcon, SparkIcon, SpeakerIcon, SpellcheckIcon, StopIcon, StorageIcon, StyleIcon, SunIcon, SwapIcon, TargetIcon, TempleIcon, TextIcon, TitleIcon, ToolsIcon, TouchIcon, TrophyIcon, UnderlineIcon, UndoIcon, UnlockIcon, UploadIcon, UsersIcon, VolumeOffIcon, VolunteerIcon, WalletIcon, WandIcon, WifiIcon, WifiOffIcon, YuktaiIcon, type YuktaiIconProps, iconContrast, iconSvg, pickGlyphColor, resolveIconColours };
+export { AbcIcon, AccessibilityIcon, AdminIcon, AlertIcon, AlignCenterIcon, AlignJustifyIcon, AlignLeftIcon, AlignRightIcon, ApiIcon, ArchitectureIcon, ArrowDownIcon, ArrowLeftIcon, ArrowRightIcon, ArrowUpIcon, BarChartIcon, BoldIcon, BookIcon, BookmarkIcon, BrainIcon, BugReportIcon, BulbIcon, CakeIcon, CalendarIcon, CardsIcon, ChatIcon, CheckIcon, ChevronLeftIcon, ChevronRightIcon, ChevronsIcon, CleaningIcon, ClockIcon, CloseIcon, CloudIcon, CodeIcon, ComputerIcon, ContrastIcon, CopyIcon, DashboardIcon, DataObjectIcon, DeleteIcon, DocumentScannerIcon, DownloadIcon, DragHandleIcon, ExploreIcon, ExternalIcon, EyeIcon, EyeOffIcon, FactCheckIcon, FileIcon, FilterIcon, FirstIcon, FontIcon, FormIcon, FullscreenExitIcon, FullscreenIcon, GavelIcon, GiftIcon, GlobeIcon, GridIcon, HeadphonesIcon, HeartFilledIcon, HeartIcon, HelpIcon, HomeIcon, HubIcon, ICON_MIN_CONTRAST, ICON_NAMES, ICON_PATHS, IconBase, type IconName, type IconProps, type IconShape, type IconSvgOptions, type IconVariant, ImageIcon, ImageSearchIcon, InfoIcon, InsightsIcon, InstallIcon, IntegrationIcon, ItalicIcon, JoinIcon, KeyIcon, KeyboardIcon, LabelIcon, LampIcon, LastIcon, LayoutIcon, LinkIcon, LoaderIcon, LockIcon, LoginIcon, LogoutIcon, MapIcon, MeditateIcon, MenuIcon, MergeIcon, MicIcon, MinusIcon, MoonIcon, MotionIcon, MovieIcon, MusicIcon, MusicOffIcon, MusicVideoIcon, NamaskarIcon, PageBreakIcon, PaletteIcon, PauseIcon, PenIcon, PersonIcon, PhoneIcon, PinIcon, PlayIcon, PlugIcon, PlusIcon, QuoteIcon, RadioCheckedIcon, RadioIcon, ReadingIcon, RedoIcon, RepeatIcon, ResetIcon, RobotIcon, SaveIcon, SchoolIcon, SearchIcon, SearchOffIcon, SendIcon, SentimentSadIcon, ShareIcon, ShieldCheckIcon, ShuffleIcon, SkipIcon, SlideshowIcon, SortDownIcon, SortIcon, SortUpIcon, SparkIcon, SpeakerIcon, SpeedIcon, SpellcheckIcon, StarIcon, StopIcon, StorageIcon, StyleIcon, SunIcon, SunriseIcon, SunsetIcon, SwapIcon, TargetIcon, TempleIcon, TextIcon, TitleIcon, ToolsIcon, TouchIcon, TrendingDownIcon, TrendingUpIcon, TrophyIcon, UnderlineIcon, UndoIcon, UnlockIcon, UploadIcon, UsersIcon, VolumeOffIcon, VolunteerIcon, WalletIcon, WandIcon, WifiIcon, WifiOffIcon, YuktaiIcon, type YuktaiIconProps, ZoomInIcon, ZoomOutIcon, iconContrast, iconSvg, pickGlyphColor, resolveIconColours };

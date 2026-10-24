@@ -3,8 +3,8 @@ import { ICON_NAMES, ICON_PATHS } from "../paths"
 import { ICON_MIN_CONTRAST, iconContrast, iconSvg, pickGlyphColor, resolveIconColours } from "../variant"
 
 describe("icon variants (WCAG)", () => {
-  it("has 132 icons, every one with SVG shapes", () => {
-    expect(ICON_NAMES.length).toBe(132)
+  it("has 163 icons, every one with SVG shapes", () => {
+    expect(ICON_NAMES.length).toBe(163)
     ICON_NAMES.forEach((n) => expect(ICON_PATHS[n]).toMatch(/^<(path|circle|rect|ellipse)/))
   })
 
