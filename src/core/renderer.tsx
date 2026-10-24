@@ -138,10 +138,11 @@ function showVisualAlert(message: string, type: AlertType = "info"): void {
   if (typeof document === "undefined") return
 
   const colors = {
-    success: { bg: "#0f9d58", border: "#0a7a44", icon: "✓" },
-    error:   { bg: "#d93025", border: "#b52a1c", icon: "✕" },
-    warning: { bg: "#f29900", border: "#c67c00", icon: "⚠" },
-    info:    { bg: "#1a73e8", border: "#1557b0", icon: "ℹ" },
+    // White text on these backgrounds is at least 4.5:1 (WCAG 1.4.3)
+    success: { bg: "#0a7a44", border: "#075e34", icon: "✓" },
+    error:   { bg: "#b52a1c", border: "#8f2116", icon: "✕" },
+    warning: { bg: "#a35f00", border: "#7a4700", icon: "⚠" },
+    info:    { bg: "#1557b0", border: "#0f4287", icon: "ℹ" },
   }
   const c = colors[type]
 
@@ -1110,6 +1111,13 @@ function ensureColorBlindFilters(): void {
 // ─────────────────────────────────────────────────────────────────────────────
 // Score Calculator
 // ─────────────────────────────────────────────────────────────────────────────
+/** Name from content or ARIA. Uses textContent: innerText is empty for hidden elements. */
+function hasAccessibleName(el: HTMLElement): boolean {
+  if (el.getAttribute("aria-label")?.trim() || el.getAttribute("aria-labelledby") || el.getAttribute("title")?.trim()) return true
+  if (el.textContent?.trim()) return true
+  return !!el.querySelector("img[alt]:not([alt='']), svg[aria-label], svg title, [aria-label]")
+}
+
 function calculateScore(report: A11yReport): number {
   const weights = { critical: 20, serious: 10, moderate: 5, minor: 2 }
   const deduction = report.details.reduce(
@@ -1243,7 +1251,7 @@ export const wcagPlugin = {
 
       // ── Interactive ──
       if (tag === "button") {
-        if (!h.innerText?.trim() && !h.getAttribute("aria-label")) {
+        if (!hasAccessibleName(h)) {
           const label = h.getAttribute("title") || "button"
           h.setAttribute("aria-label", label)
           push(tag, `aria-label="${label}" (empty button)`, "critical", h)
@@ -1256,7 +1264,7 @@ export const wcagPlugin = {
 
       if (tag === "a") {
         const anchor = h as HTMLAnchorElement
-        if (!h.innerText?.trim() && !h.getAttribute("aria-label")) {
+        if (!hasAccessibleName(h)) {
           h.setAttribute("aria-label", h.getAttribute("title") || "link")
           push(tag, "aria-label added (empty link)", "critical", h)
         }
@@ -1269,7 +1277,11 @@ export const wcagPlugin = {
       // ── Forms ──
       if (FORM_TAGS.has(tag)) {
         const input = h as HTMLInputElement
-        if (!h.getAttribute("aria-label") && !h.getAttribute("aria-labelledby")) {
+        const hasLabel =
+          !!(input.labels && input.labels.length) ||
+          !!h.getAttribute("title") ||
+          input.type === "hidden" || input.type === "submit" || input.type === "button" || input.type === "reset"
+        if (!hasLabel && !h.getAttribute("aria-label") && !h.getAttribute("aria-labelledby")) {
           const label = h.getAttribute("placeholder") || h.getAttribute("name") || tag
           h.setAttribute("aria-label", label)
           push(tag, `aria-label="${label}"`, "serious", h)
@@ -1282,13 +1294,15 @@ export const wcagPlugin = {
         // Autocomplete
         if (tag === "input" && !input.autocomplete) {
           const n = input.name || ""
-          if (input.type === "email" || n.includes("email"))
-            input.autocomplete = "email"
-          else if (input.type === "tel" || n.includes("tel"))
-            input.autocomplete = "tel"
-          else if (input.type === "password")
-            input.autocomplete = "current-password"
-          report.fixed++
+          const hint =
+            input.type === "email" || n.includes("email") ? "email"
+            : input.type === "tel" || n.includes("tel") ? "tel"
+            : input.type === "password" ? "current-password"
+            : ""
+          if (hint) {
+            input.autocomplete = hint
+            report.fixed++
+          }
         }
       }
 
@@ -1299,7 +1313,10 @@ export const wcagPlugin = {
       }
 
       // ── Landmarks ──
-      if (LANDMARK_MAP[tag] && !h.getAttribute("role")) {
+      const nestedSection =
+        (tag === "header" || tag === "footer") &&
+        !!h.parentElement?.closest("article,aside,main,nav,section,[role='dialog'],[role='region']")
+      if (LANDMARK_MAP[tag] && !h.getAttribute("role") && !nestedSection) {
         h.setAttribute("role", LANDMARK_MAP[tag])
         push(tag, `role="${LANDMARK_MAP[tag]}"`, "minor", h)
       }
