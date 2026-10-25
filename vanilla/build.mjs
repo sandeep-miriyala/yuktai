@@ -9,9 +9,9 @@ import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
 
 const here = dirname(fileURLToPath(import.meta.url))
-const banner = `/*! yuktai vanilla 5.3.0 — accessible data grid, page agents and WCAG tools for plain HTML.
+const banner = `/*! yuktai vanilla 5.3.5 — accessible data grid, page agents and WCAG tools for plain HTML.
  *  No framework, no API keys, runs in the browser. ISC © Sandeep Miriyala, Yuktishaalaa AI Lab.
- *  Built from github.com/sandeepmiriyala03/yuktai (vanilla/src + src/agentic, src/grid, src/core). */`
+ *  Built from github.com/sandeepmiriyala03/yuktai (vanilla/src + src/agentic, src/grid, src/core; grid engine in Rust: rust/grid-core). */`
 
 const common = {
   entryPoints: [join(here, "src/index.js")],

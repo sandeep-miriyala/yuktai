@@ -16,7 +16,6 @@ import YuktaiGridAI from "./YuktaiGridAI";
 import { useYuktaiGridAgent } from "./YuktaiGridAgent";
 import YuktaiGridWebMCP from "./YuktaiGridWebMCP";
 import {
-  applyGridFilters,
   createGridTools,
   toGridToolColumns,
   type GridTool,
@@ -24,6 +23,8 @@ import {
   type GridToolResult,
   type GridToolSort,
 } from "./gridTools";
+import { useGridCore } from "./rust/useGridCore";
+import { yuktaiGridRows, yuktaiGridSearchTexts } from "./yuktaiGridRows";
 
 type Language = "en-US" | "te-IN";
 
@@ -290,6 +291,7 @@ export function YuktaiGrid<
   onWebMCPStatusChange,
   onAgentResult,
   customRules = [],
+  engine = "ts",
 }: YuktaiGridProps<T>) {
   const language: Language =
     locale === "te-IN" ? "te-IN" : "en-US";
@@ -365,81 +367,42 @@ export function YuktaiGrid<
     };
   }, [mobileBreakpoint]);
 
-  const rows = useMemo(() => {
-    let result = [...data];
+  // Optional Rust engine (engine="rust" | "auto"); null = TypeScript
+  const core = useGridCore(engine, data.length);
 
-    if (searchText.trim()) {
-      const query = searchText
-        .trim()
-        .toLowerCase();
+  // Rust keeps this grid's search text; rebuilt only when data or columns change
+  const rustSearchReady = useMemo(
+    () => (core ? core.setSearchTexts(yuktaiGridSearchTexts(data, columns)) : false),
+    [core, data, columns]
+  );
 
-      result = result.filter((row) =>
-        columns.some((column) =>
-          String(
-            row[column.key as keyof T] ?? ""
-          )
-            .toLowerCase()
-            .includes(query)
-        )
-      );
-    }
-
-    if (filters.length) {
-      result = applyGridFilters(result, toolColumns, filters);
-    }
-
-    if (sortKey) {
-      result.sort((a, b) => {
-        const av = a[sortKey as keyof T];
-        const bv = b[sortKey as keyof T];
-
-        if (av == null && bv == null) {
-          return 0;
-        }
-
-        if (av == null) {
-          return 1;
-        }
-
-        if (bv == null) {
-          return -1;
-        }
-
-        if (
-          typeof av === "number" &&
-          typeof bv === "number"
-        ) {
-          return sortDirection === "asc"
-            ? av - bv
-            : bv - av;
-        }
-
-        const comparison = String(av).localeCompare(
-          String(bv),
-          locale,
-          {
-            numeric: true,
-            sensitivity: "base",
-          }
-        );
-
-        return sortDirection === "asc"
-          ? comparison
-          : -comparison;
-      });
-    }
-
-    return result;
-  }, [
-    data,
-    columns,
-    searchText,
-    filters,
-    toolColumns,
-    sortKey,
-    sortDirection,
-    locale,
-  ]);
+  const rows = useMemo(
+    () =>
+      yuktaiGridRows({
+        data,
+        columns,
+        searchText,
+        filters,
+        toolColumns,
+        sortKey,
+        sortDirection,
+        locale,
+        core,
+        searchReady: rustSearchReady,
+      }),
+    [
+      data,
+      columns,
+      searchText,
+      filters,
+      toolColumns,
+      sortKey,
+      sortDirection,
+      locale,
+      core,
+      rustSearchReady,
+    ]
+  );
 
   const totalPages = paginationEnabled
     ? Math.max(

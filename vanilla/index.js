@@ -1,6 +1,6 @@
-/*! yuktai vanilla 5.3.0 — accessible data grid, page agents and WCAG tools for plain HTML.
+/*! yuktai vanilla 5.3.5 — accessible data grid, page agents and WCAG tools for plain HTML.
  *  No framework, no API keys, runs in the browser. ISC © Sandeep Miriyala, Yuktishaalaa AI Lab.
- *  Built from github.com/sandeepmiriyala03/yuktai (vanilla/src + src/agentic, src/grid, src/core). */
+ *  Built from github.com/sandeepmiriyala03/yuktai (vanilla/src + src/agentic, src/grid, src/core; grid engine in Rust: rust/grid-core). */
 "use strict";
 (() => {
   var __defProp = Object.defineProperty;
@@ -5283,6 +5283,346 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
     };
   }
 
+  // src/grid/rust/gridCoreWasm.ts
+  var GRID_CORE_WASM_BASE64 = [
+    "AGFzbQEAAAABYA1gA39/fwF/YAJ/fwF/YAN/f38AYAV/f39/fwBgBX9/f39/AX9gBH9/f38AYAR/f39/AX9gCH9/f39/f39/AX9g",
+    "AX8AYAABf2AHf39/f39/fwF/YAZ/f39/f38Bf2AAAAMkIwIDBAIFBQICAgIGBgYGAwcICQoFCQIBBQILBQYAAQICAgwABAUBcAEC",
+    "AgUDAQARBgkBfwFBgIDAAAsHPAUGbWVtb3J5AgAMeWtfaGVhcF9iYXNlABEJeWtfc2VhcmNoABIHeWtfc29ydAATCnlrX3ZlcnNp",
+    "b24AFAkHAQBBAQsBHQrEWiO8BgMFfwJ8BH8CQCABQQJJDQACQAJAAkACQAJAAkACQAJAAkAgACgCBCIDIAIoAgAiBCgCBCIFTw0A",
+    "IAAoAgAiBiAFTw0BIAQoAgAiByAGQQN0aisDACEIAkACQCAHIANBA3RqKwMAIgkgCWINACAIIAhiDQFBAEEAQX8gCSAIZiIKG0EB",
+    "QX4gChsgCSAIZRsiCmsgCiAEKAIILQAAG0H/AXEiCkH/AUYgAyAGSSAKGw0BDAYLIAMgBk8NBSAIIAhhDQULQQIhCkEBIQsgAUEC",
+    "Rg0GIABBCGohDEECIQoDQCADIQYgDCgCACIDIAVPDQMgBiAFTw0EIAcgBkEDdGorAwAhCAJAAkAgByADQQN0aisDACIJIAliDQAg",
+    "CCAIYg0BQQBBAEF/IAkgCGYiDRtBAUF+IA0bIAkgCGUbIg1rIA0gBCgCCC0AABtB/wFxIg1B/wFGIAMgBkkgDRtBAUYNAUEBIQsM",
+    "CQsgAyAGTw0IIAggCGENCAsgDEEEaiEMIAEgCkEBaiIKRw0AC0EBIQsMBQsgAyAFQdSEwIAAEJiAgIAAAAsgBiAFQeSEwIAAEJiA",
+    "gIAAAAsgAyAFQdSEwIAAEJiAgIAAAAsgBiAFQeSEwIAAEJiAgIAAAAtBAiEKQQAhCyABQQJGDQEgAEEIaiEMQQIhCgNAIAMhBiAM",
+    "KAIAIgMgBU8NAyAGIAVPDQQgByAGQQN0aisDACEIAkACQCAHIANBA3RqKwMAIgkgCWINACAIIAhiDQRBAEEAQX8gCSAIZiING0EB",
+    "QX4gDRsgCSAIZRsiDWsgDSAEKAIILQAAG0H/AXEiDUH/AUYgAyAGSSANG0UNAUEAIQsMBAsgAyAGTw0AIAggCGINAwsgDEEEaiEM",
+    "IAEgCkEBaiIKRw0ACwsgASEKCwJAIAogAUYNACAAIAFBACABQQFyZ0EBdEE+cyACEIGAgIAADAMLIAtFDQIgAUEBdiEGIAFBAnQg",
+    "AGpBfGohAwNAIAAoAgAhCiAAIAMoAgA2AgAgAyAKNgIAIANBfGohAyAAQQRqIQAgBkF/aiIGDQAMAwsLIAMgBUHUhMCAABCYgICA",
+    "AAALIAYgBUHkhMCAABCYgICAAAALC7YIBAh/AnwDfwF8I4CAgIAAQRBrIgUkgICAgAACQAJAIAFBIUkNACADQX9qIQMDQAJAIANB",
+    "f0cNACAAIAEgBBCJgICAAAwDCyAAIAFBA3YiBkEcbGohByAAIAZBBHRqIQgCQAJAIAFBwABJDQAgACAIIAcgBiAEEIKAgIAAIQYM",
+    "AQsCQAJAAkACQAJAAkAgACgCACIGIAQoAgAiCSgCBCIKTw0AIAgoAgAiCyAKTw0BIAkoAgAiDCALQQN0aisDACENAkACQAJAAkAg",
+    "DCAGQQN0aisDACIOIA5iIg8NACANIA1hDQFBASEQDAMLIA0gDWINAUEAIRAMAgtBAEEAQX8gDiANZiIRG0EBQX4gERsgDiANZRsi",
+    "EWsgESAJKAIILQAAG0H/AXEiEUH/AUYgBiALSSARGyEQDAELIAYgC0khEAsgBygCACIRIApPDQIgDCARQQN0aisDACESAkACQAJA",
+    "AkACQAJAAkAgDw0AIBIgEmENASAAIQYgEEUNDSANIA1iDQYMCwsgEiASYg0BIAAhBiAQDQwgDSANYQ0DDAkLQQBBAEF/IA4gEmYi",
+    "ChtBAUF+IAobIA4gEmUbIgprIAogCSgCCC0AABtB/wFxIgpB/wFGIAYgEUkgChshCgwBCyAGIBFJIQoLIAAhBiAQIApHDQkgDSAN",
+    "Yg0BIBIgEmINBwtBAEEAQX8gDSASZiIGG0EBQX4gBhsgDSASZRsiBmsgBiAJKAIILQAAG0H/AXEiBkH/AUYgCyARSSAGGyEGDAcL",
+    "IBIgEmENBAsgCyARSSEGDAULIAYgCkHUhMCAABCYgICAAAALIAsgCkHkhMCAABCYgICAAAALIBEgCkHkhMCAABCYgICAAAALQQAh",
+    "BgwBC0EBIQYLIAcgCCAQIAZzGyEGCyAGIABrIgdBAnYhBgJAAkAgAkUNAAJAAkACQCACKAIAIgggBCgCACIJKAIEIgtPDQAgACAH",
+    "aigCACIHIAtPDQEgCSgCACILIAdBA3RqKwMAIQ0CQAJAIAsgCEEDdGorAwAiEiASYg0AIA0gDWINBUEAQQBBfyASIA1mIgsbQQFB",
+    "fiALGyASIA1lGyILayALIAkoAggtAAAbQf8BcSIJQf8BRiAIIAdJIAkbDQUMAQsgCCAHTw0AIA0gDWINBAsgBSAENgIMIAAgASAG",
+    "IAVBDGoQjICAgAAiBkEBaiECIAYgAU8NAiABIAJrIQEgACACQQJ0aiEAQQAhAgwECyAIIAtB1ITAgAAQmICAgAAACyAHIAtB5ITA",
+    "gAAQmICAgAAACyACIAEgAUHEhMCAABCXgICAAAALIAAgACABIAYgBBCNgICAACIGIAIgAyAEEIGAgIAAIAEgBkF/c2ohASAAIAZB",
+    "AnRqIgJBBGohAAsgA0F/aiEDIAFBIU8NAAsLIAAgASAEEIiAgIAACyAFQRBqJICAgIAAC4kFBAR/AnwCfwF8AkAgA0H4////AXFF",
+    "DQAgACAAIANBA3YiA0EEdCIFaiAAIANBHGwiBmogAyAEEIKAgIAAIQAgASABIAVqIAEgBmogAyAEEIKAgIAAIQEgAiACIAVqIAIg",
+    "BmogAyAEEIKAgIAAIQILAkACQAJAAkACQAJAAkAgACgCACIDIAQoAgAiBCgCBCIHTw0AIAEoAgAiBSAHTw0BIAQoAgAiCCAFQQN0",
+    "aisDACEJAkACQAJAAkAgCCADQQN0aisDACIKIApiIgsNACAJIAlhDQFBASEMDAMLIAkgCWINAUEAIQwMAgtBAEEAQX8gCiAJZiIG",
+    "G0EBQX4gBhsgCiAJZRsiBmsgBiAEKAIILQAAG0H/AXEiBkH/AUYgAyAFSSAGGyEMDAELIAMgBUkhDAsgAigCACIGIAdPDQIgCCAG",
+    "QQN0aisDACENAkACQAJAAkACQAJAAkAgCw0AIA0gDWENASAMRQ0NIAkgCWINBgwLCyANIA1iDQEgDA0MIAkgCWENAwwJC0EAQQBB",
+    "fyAKIA1mIgcbQQFBfiAHGyAKIA1lGyIHayAHIAQoAggtAAAbQf8BcSIHQf8BRiADIAZJIAcbIQMMAQsgAyAGSSEDCyAMIANHDQkg",
+    "CSAJYg0BIA0gDWINBwtBAEEAQX8gCSANZiIAG0EBQX4gABsgCSANZRsiAGsgACAEKAIILQAAG0H/AXEiAEH/AUYgBSAGSSAAGyEA",
+    "DAcLIA0gDWENBAsgBSAGSSEADAULIAMgB0HUhMCAABCYgICAAAALIAUgB0HkhMCAABCYgICAAAALIAYgB0HkhMCAABCYgICAAAAL",
+    "QQAhAAwBC0EBIQALIAIgASAMIABzGyEACyAAC9wDAwR/AnwBfwJAAkAgASgCACIDIAIoAgAiAigCBCIETw0AAkAgAUF8aiIFKAIA",
+    "IgYgBE8NACACKAIAIgQgBkEDdGorAwAhBwJAAkAgBCADQQN0aisDACIIIAhiDQAgByAHYg0BQQBBAEF/IAggB2YiBBtBAUF+IAQb",
+    "IAggB2UbIgRrIAQgAigCCC0AABtB/wFxIgRB/wFGIAMgBkkgBBtBAUYNAQwECyADIAZPDQMgByAHYQ0DCyABIAY2AgACQCAFIABG",
+    "DQAgA0EDdCEJA0AgBSEGAkACQAJAIAMgAigCBCIETw0AIAZBfGoiBSgCACIBIARPDQEgAigCACIEIAFBA3RqKwMAIQcCQAJAIAQg",
+    "CWorAwAiCCAIYg0AIAcgB2INBEEAQQBBfyAIIAdmIgQbQQFBfiAEGyAIIAdlGyIEayAEIAIoAggtAAAbQf8BcSIEQf8BRiADIAFJ",
+    "IAQbQQFHDQEMBAsgAyABTw0AIAcgB2INAwsgBiEFDAQLIAMgBEHUhMCAABCYgICAAAALIAEgBEHkhMCAABCYgICAAAALIAYgATYC",
+    "ACAFIABHDQALCyAFIAM2AgAPCyAGIARB5ITAgAAQmICAgAAACyADIARB1ITAgAAQmICAgAAACwunBQMIfwJ8A38gAiABQQJ0QXxq",
+    "IgRqIQUgACAEaiEGIAAgAUEBdiIHQQJ0aiIIQXxqIQkgAygCACEDAkACQAJAAkACQANAIAgoAgAiCiADKAIEIgtPDQEgACgCACIE",
+    "IAtPDQIgAygCACILIARBA3RqKwMAIQwCQAJAAkAgCyAKQQN0aisDACINIA1iDQAgDCAMYg0BQQAhC0EAQQBBfyANIAxmIg4bQQFB",
+    "fiAOGyANIAxlGyIOayAOIAMoAggtAAAbQf8BcSIOQf8BRiAKIARJIA4bQQFGDQEMAgtBACELIAogBE8NASAMIAxhDQELQQEhCyAK",
+    "IQQLIAIgBDYCACAGKAIAIgQgAygCBCIOTw0DIAkoAgAiCiAOTw0EIAtBAnQhDiALQQFzQQJ0IQ8gAygCACILIApBA3RqKwMAIQwC",
+    "QAJAAkAgCyAEQQN0aisDACINIA1iDQAgDCAMYg0BQQAhC0EAQQBBfyANIAxmIhAbQQFBfiAQGyANIAxlGyIQayAQIAMoAggtAAAb",
+    "Qf8BcSIQQf8BRiAEIApJIBAbQQFGDQEMAgtBACELIAQgCk8NASAMIAxhDQELQQEhCyAKIQQLIAJBBGohAiAIIA5qIQggACAPaiEA",
+    "IAUgBDYCACAFQXxqIQUgCSALQQJ0IgRrIQkgBCAGakF8aiEGIAdBf2oiBw0ACyAGQQRqIQQgCUEEaiEDAkAgAUEBcUUNACACIAAg",
+    "CCAAIANJIgobKAIANgIAIAggACADT0ECdGohCCAAIApBAnRqIQALAkAgCCAERw0AIAAgA0YNBQsQoYCAgAAACyAKIAtB1ITAgAAQ",
+    "mICAgAAACyAEIAtB5ITAgAAQmICAgAAACyAEIA5B1ITAgAAQmICAgAAACyAKIA5B5ITAgAAQmICAgAAACwuDAgICfwJ8AkACQAJA",
+    "AkAgACACQQJ0aiIEKAIAIgIgAygCACIDKAIEIgVPDQAgACABQQJ0aiIBKAIAIgAgBU8NASADKAIAIgUgAEEDdGorAwAhBgJAAkAg",
+    "BSACQQN0aisDACIHIAdiDQAgBiAGYg0EQQBBAEF/IAcgBmYiBRtBAUF+IAUbIAcgBmUbIgVrIAUgAygCCC0AABtB/wFxIgNB/wFG",
+    "IAIgAEkgAxtBAUcNAQwECyACIABPDQAgBiAGYg0DCyAAIQMgAiEADAMLIAIgBUHUhMCAABCYgICAAAALIAAgBUHkhMCAABCYgICA",
+    "AAALIAIhAwsgASADNgIAIAQgADYCAAvsAgACQCABQQlJDQAgAEEAQQMgAhCFgICAACAAQQFBByACEIWAgIAAIABBAkEFIAIQhYCA",
+    "gAAgAEEEQQggAhCFgICAACAAQQBBByACEIWAgIAAIABBAkEEIAIQhYCAgAAgAEEDQQggAhCFgICAACAAQQVBBiACEIWAgIAAIABB",
+    "AEECIAIQhYCAgAAgAEEBQQMgAhCFgICAACAAQQRBBSACEIWAgIAAIABBB0EIIAIQhYCAgAAgAEEBQQQgAhCFgICAACAAQQNBBiAC",
+    "EIWAgIAAIABBBUEHIAIQhYCAgAAgAEEAQQEgAhCFgICAACAAQQJBBCACEIWAgIAAIABBA0EFIAIQhYCAgAAgAEEGQQggAhCFgICA",
+    "ACAAQQJBAyACEIWAgIAAIABBBEEFIAIQhYCAgAAgAEEGQQcgAhCFgICAACAAQQFBAiACEIWAgIAAIABBA0EEIAIQhYCAgAAgAEEF",
+    "QQYgAhCFgICAAA8LAAuEBQACQCABQQ1JDQAgAEEAQQwgAhCFgICAACAAQQFBCiACEIWAgIAAIABBAkEJIAIQhYCAgAAgAEEDQQcg",
+    "AhCFgICAACAAQQVBCyACEIWAgIAAIABBBkEIIAIQhYCAgAAgAEEBQQYgAhCFgICAACAAQQJBAyACEIWAgIAAIABBBEELIAIQhYCA",
+    "gAAgAEEHQQkgAhCFgICAACAAQQhBCiACEIWAgIAAIABBAEEEIAIQhYCAgAAgAEEBQQIgAhCFgICAACAAQQNBBiACEIWAgIAAIABB",
+    "B0EIIAIQhYCAgAAgAEEJQQogAhCFgICAACAAQQtBDCACEIWAgIAAIABBBEEGIAIQhYCAgAAgAEEFQQkgAhCFgICAACAAQQhBCyAC",
+    "EIWAgIAAIABBCkEMIAIQhYCAgAAgAEEAQQUgAhCFgICAACAAQQNBCCACEIWAgIAAIABBBEEHIAIQhYCAgAAgAEEGQQsgAhCFgICA",
+    "ACAAQQlBCiACEIWAgIAAIABBAEEBIAIQhYCAgAAgAEECQQUgAhCFgICAACAAQQZBCSACEIWAgIAAIABBB0EIIAIQhYCAgAAgAEEK",
+    "QQsgAhCFgICAACAAQQFBAyACEIWAgIAAIABBAkEEIAIQhYCAgAAgAEEFQQYgAhCFgICAACAAQQlBCiACEIWAgIAAIABBAUECIAIQ",
+    "hYCAgAAgAEEDQQQgAhCFgICAACAAQQVBByACEIWAgIAAIABBBkEIIAIQhYCAgAAgAEECQQMgAhCFgICAACAAQQRBBSACEIWAgIAA",
+    "IABBBkEHIAIQhYCAgAAgAEEIQQkgAhCFgICAACAAQQNBBCACEIWAgIAAIABBBUEGIAIQhYCAgAAPCwALlgIBB38jgICAgABBgAFr",
+    "IgMkgICAgAACQAJAIAFBAkkNACABQSBLDQEgASABQQF2IgQgAUESSSIFGyEGIAEgBGshByAAIARBAnRqIQggACEJA0ACQAJAIAZB",
+    "DEsNAEEBIQQgBkEITQ0BIAkgBiACEIaAgIAAQQkhBAwBCyAJIAYgAhCHgICAAEENIQQLIARBf2ogBk8NAgJAIAQgBkYNACAEQQJ0",
+    "IQQgBkECdCEGA0AgCSAJIARqIAIQg4CAgAAgBiAEQQRqIgRHDQALCyAFDQEgCSAARiEEIAghCSAHIQYgBA0ACyAAIAEgAyACEISA",
+    "gIAAIAFBAnQiBEUNACAAIAMgBPwKAAALIANBgAFqJICAgIAADwsAC/0EAwh/AnwBfwJAAkACQAJAAkAgAUEBdiABaiIDRQ0AIAIo",
+    "AgAhBANAAkACQCADQX9qIgMgAU8NACAAKAIAIQIgACAAIANBAnRqIgUoAgA2AgAgBSACNgIAQQAhAgwBCyADIAFrIQILAkAgAkEB",
+    "dCIGQQFyIgUgASADIAEgA0kbIgdPDQAgBCgCBCEIA0AgAiEJAkACQCAGQQJqIgIgB0kNACAFIQIMAQsgACAFQQJ0aigCACIGIAhP",
+    "DQUgACACQQJ0aigCACICIAhPDQYgBCgCACIKIAJBA3RqKwMAIQsCQAJAAkACQCAKIAZBA3RqKwMAIgwgDGINACALIAthDQFBASEC",
+    "DAMLIAsgC2INAUEAIQIMAgtBAEEAQX8gDCALZiIKG0EBQX4gChsgDCALZRsiCmsgCiAEKAIILQAAG0H/AXEiCkH/AUYgBiACSSAK",
+    "GyECDAELIAYgAkkhAgsgBSACaiECCyAAIAlBAnRqIgooAgAiBSAITw0GIAAgAkECdGoiDSgCACIGIAhPDQcgBCgCACIJIAZBA3Rq",
+    "KwMAIQsCQAJAIAkgBUEDdGorAwAiDCAMYg0AIAsgC2INAUEAQQBBfyAMIAtmIgkbQQFBfiAJGyAMIAtlGyIJayAJIAQoAggtAAAb",
+    "Qf8BcSIJQf8BRiAFIAZJIAkbQQFGDQEMAwsgBSAGTw0CIAsgC2ENAgsgDSAFNgIAIAogBjYCACACQQF0IgZBAXIiBSAHSQ0ACwsg",
+    "Aw0ACwsPCyAGIAhB1ITAgAAQmICAgAAACyACIAhB5ITAgAAQmICAgAAACyAFIAhB1ITAgAAQmICAgAAACyAGIAhB5ITAgAAQmICA",
+    "gAAAC9IIAwp/AnwDfwJAIAENAEEADwsgAigCACEEIAAoAgAhBUEAIQYgACECAkAgAEEEaiIHIAAgAUECdGoiCEF8aiIJTw0AIAMo",
+    "AgAoAgAiCigCBCEBIARBA3QhC0EAIQYgACECAkACQAJAAkADQCAEIAFPDQEgAkEEaiIMKAIAIgcgAU8NAiAKKAIAIg0gB0EDdGor",
+    "AwAhDgJAAkACQAJAIA0gC2orAwAiDyAPYiIQDQAgDiAOYQ0BQQEhEQwDCyAOIA5iDQFBACERDAILQQBBAEF/IA8gDmYiEhtBAUF+",
+    "IBIbIA8gDmUbIhJrIBIgCigCCC0AABtB/wFxIhJB/wFGIAQgB0kgEhshEQwBCyAEIAdJIRELIAIgACAGQQJ0aiISKAIANgIAIBIg",
+    "BzYCACACQQhqIgIoAgAiByABTw0DIAYgEUEBc2ohBiANIAdBA3RqKwMAIQ4CQAJAAkACQCAQDQAgDiAOYQ0BQQEhDQwDCyAOIA5i",
+    "DQFBACENDAILQQBBAEF/IA8gDmYiDRtBAUF+IA0bIA8gDmUbIg1rIA0gCigCCC0AABtB/wFxIg1B/wFGIAQgB0kgDRshDQwBCyAE",
+    "IAdJIQ0LIAwgACAGQQJ0aiISKAIANgIAIBIgBzYCACAGIA1BAXNqIQYgAkEEaiAJTw0EDAALCyAEIAFB1ITAgAAQmICAgAAACyAH",
+    "IAFB5ITAgAAQmICAgAAACyAHIAFB5ITAgAAQmICAgAAACyACQQRqIQcLAkACQAJAAkACQCAHIAhGDQAgAygCACEMIARBA3QhEgNA",
+    "IAIhDSAHIQIgBCAMKAIAIgEoAgQiCk8NAiACKAIAIgcgCk8NAyABKAIAIgogB0EDdGorAwAhDwJAAkACQAJAIAogEmorAwAiDiAO",
+    "Yg0AIA8gD2ENAUEBIQEMAwsgDyAPYg0BQQAhAQwCC0EAQQBBfyAOIA9mIgobQQFBfiAKGyAOIA9lGyIKayAKIAEoAggtAAAbQf8B",
+    "cSIBQf8BRiAEIAdJIAEbIQEMAQsgBCAHSSEBCyANIAAgBkECdGoiCigCADYCACAKIAc2AgAgBiABQQFzaiEGIAJBBGoiByAIRw0A",
+    "CyAHQXxqIQILIAQgAygCACgCACIHKAIEIgFPDQIgBSABTw0DIAcoAgAiASAFQQN0aisDACEPAkACQAJAAkAgASAEQQN0aisDACIO",
+    "IA5iDQAgDyAPYQ0BQQEhBAwDCyAPIA9iDQFBACEEDAILQQBBAEF/IA4gD2YiARtBAUF+IAEbIA4gD2UbIgFrIAEgBygCCC0AABtB",
+    "/wFxIgdB/wFGIAQgBUkgBxshBAwBCyAEIAVJIQQLIAIgACAGQQJ0aiIHKAIANgIAIAcgBTYCACAGIARBAXNqDwsgBCAKQdSEwIAA",
+    "EJiAgIAAAAsgByAKQeSEwIAAEJiAgIAAAAsgBCABQdSEwIAAEJiAgIAAAAsgBSABQeSEwIAAEJiAgIAAAAuwCAMJfwJ8An8CQCAB",
+    "DQBBAA8LIAIoAgAhBCAAKAIAIQVBACEGIAAhAgJAIABBBGoiByAAIAFBAnRqIghBfGoiCU8NACADKAIAIgooAgQhAUEAIQYgACEC",
+    "AkACQAJAAkADQCACQQRqIgsoAgAiByABTw0BIAQgAU8NAiAKKAIAIgwgBEEDdGorAwAhDQJAAkACQAJAIAwgB0EDdGorAwAiDiAO",
+    "Yg0AIA0gDWENAUEBIQ8MAwsgDSANYg0BQQAhDwwCC0EAQQBBfyAOIA1mIhAbQQFBfiAQGyAOIA1lGyIQayAQIAooAggtAAAbQf8B",
+    "cSIQQf8BRiAHIARJIBAbIQ8MAQsgByAESSEPCyACIAAgBkECdGoiECgCADYCACAQIAc2AgAgAkEIaiICKAIAIgcgAU8NAyAGIA9q",
+    "IQYCQAJAAkACQCAMIAdBA3RqKwMAIg4gDmINACANIA1hDQFBASEMDAMLIA0gDWINAUEAIQwMAgtBAEEAQX8gDiANZiIMG0EBQX4g",
+    "DBsgDiANZRsiDGsgDCAKKAIILQAAG0H/AXEiDEH/AUYgByAESSAMGyEMDAELIAcgBEkhDAsgCyAAIAZBAnRqIhAoAgA2AgAgECAH",
+    "NgIAIAYgDGohBiACQQRqIAlPDQQMAAsLIAcgAUHUhMCAABCYgICAAAALIAQgAUHkhMCAABCYgICAAAALIAcgAUHUhMCAABCYgICA",
+    "AAALIAJBBGohBwsCQAJAAkACQAJAIAcgCEYNACADKAIAIQEDQCACIQwgByICKAIAIgcgASgCBCIKTw0CIAQgCk8NAyABKAIAIgog",
+    "BEEDdGorAwAhDQJAAkACQAJAIAogB0EDdGorAwAiDiAOYg0AIA0gDWENAUEBIQoMAwsgDSANYg0BQQAhCgwCC0EAQQBBfyAOIA1m",
+    "IgobQQFBfiAKGyAOIA1lGyIKayAKIAEoAggtAAAbQf8BcSIKQf8BRiAHIARJIAobIQoMAQsgByAESSEKCyAMIAAgBkECdGoiCygC",
+    "ADYCACALIAc2AgAgBiAKaiEGIAJBBGoiByAIRw0ACyAHQXxqIQILIAUgAygCACIHKAIEIgFPDQIgBCABTw0DIAcoAgAiASAEQQN0",
+    "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",
+    "gYCAgAA2AhwgA0GBgICAADYCFCADIANBCGo2AhggAyADQQxqNgIQQaiAwIAAIANBEGogAhCVgICAAAALjwUCBn8BfiOAgICAAEEQ",
+    "ayIGJICAgIAAAkACQCABDQAgBUEBaiEHIAAoAgghCEEtIQkMAQtBK0F/IAAoAggiCEGAgIABcSIBGyEJIAFBFXYgBWohBwsCQAJA",
+    "IAhBgICABHENAEEAIQIMAQsCQAJAIANBEEkNACACIAMQloCAgAAhCgwBC0EAIQogA0UNACACIQEgAyELA0AgCiABLAAAQb9/Smoh",
+    "CiABQQFqIQEgC0F/aiILDQALCyAKIAdqIQcLAkACQAJAAkACQCAHIAAvAQwiCk8NACAIQYCAgAhxDQFBASEBIAYgACAKIAdrQQEQ",
+    "moCAgAAgBigCACIHQX9GDQQgBi8BBCELIAAgCSACIAMQm4CAgAANBCAAKAIAIgMgBCAFIAAoAgQiAigCDBGAgICAAICAgIAADQRB",
+    "ACEKIAtB//8DcSELA0AgCyAKQf//A3EiAEshASALIABNDQUgCkEBaiEKIAMgByACKAIQEYGAgIAAgICAgABFDQAMBQsLIAAgCSAC",
+    "IAMQm4CAgABFDQEMAgsgACAAKQIIIgynQYCAgP95cUGwgICAAnI2AgggACAJIAIgAxCbgICAAA0BQQEhASAGQQhqIAAgCiAHa0EB",
+    "EJqAgIAAIAYoAggiC0F/Rg0CIAYvAQwhAiAAKAIAIgcgBCAFIAAoAgQiAygCDBGAgICAAICAgIAADQJBACEKIAJB//8DcSECAkAD",
+    "QCACIApB//8DcU0NAUEBIQEgCkEBaiEKIAcgCyADKAIQEYGAgIAAgICAgABFDQAMBAsLIAAgDDcCCEEAIQEMAgsgACgCACAEIAUg",
+    "ACgCBCgCDBGAgICAAICAgIAAIQEMAQtBASEBCyAGQRBqJICAgIAAIAELuAEBA38gAiEEAkACQAJAAkAgASgCCCIFQR12QQNxDgQB",
+    "AwACAQsgAkH+/wNxQQF2IQQMAgtBACEEDAELIAJBACADQf8BcRshBAsgBUH///8AcSEFIAEoAgQhAyABKAIAIQZBACEBAkACQANA",
+    "IAFB//8DcSAEQf//A3FPDQEgAUEBaiEBIAYgBSADKAIQEYGAgIAAgICAgABFDQALQX8hBQwBCyACIARrIQELIAAgATsBBCAAIAU2",
+    "AgALUgACQCABQX9GDQAgACgCACABIAAoAgQoAhARgYCAgACAgICAAEUNAEEBDwsCQCACDQBBAA8LIAAoAgAgAiADIAAoAgQoAgwR",
+    "gICAgACAgICAAAvRAwEJfwJAAkAgAEHoB08NACAAIQMMAQsgAUF8aiEEQQAhBSAAIQYCQAJAAkACQAJAA0AgBiAGQZDOAG4iA0GQ",
+    "zgBsayIHQf//A3FB5ABuIQggAiAFaiIJQXxqIAJPDQEgBCACaiIKIAhBAXQiCy0ApIXAgAA6AAAgCUF9aiACTw0CIApBAWogC0Gl",
+    "hcCAAGotAAA6AAAgCUF+aiACTw0DIApBAmogByAIQeQAbGtBAXRB/v8HcSIILQCkhcCAADoAACAJQX9qIAJPDQQgCkEDaiAIQaWF",
+    "wIAAai0AADoAACAEQXxqIQQgBUF8aiEFIAZB/6ziBEshCSADIQYgCUUNBQwACwsgCUF8aiACQZSFwIAAEJiAgIAAAAsgCUF9aiAC",
+    "QZSFwIAAEJiAgIAAAAsgCUF+aiACQZSFwIAAEJiAgIAAAAsgCUF/aiACQZSFwIAAEJiAgIAAAAsgAiAFaiECCwJAAkAgA0EKTw0A",
+    "IAMhBgwBCyABIAJBfmoiAmogAyADQf//A3FB5ABuIgZB5ABsa0H//wNxQQF0LwCkhcCAADsAAAsCQAJAIABFDQAgBkUNAQsgASAC",
+    "QX9qIgJqIAZBAXRBHnEtAKWFwIAAOgAACyACC1EBAX8jgICAgABBEGsiAiSAgICAACABQQFBAUEAIAJBBmogACgCACACQQZqQQoQ",
+    "nICAgAAiAGpBCiAAaxCZgICAACEAIAJBEGokgICAgAAgAAthAQF/I4CAgIAAQSBrIgMkgICAgAAgAyABNgIMIAMgADYCCCADQYGA",
+    "gIAANgIcIANBgYCAgAA2AhQgAyADQQxqNgIYIAMgA0EIajYCEEGAgMCAACADQRBqIAIQlYCAgAAAC2EBAX8jgICAgABBIGsiAySA",
+    "gICAACADIAE2AgwgAyAANgIIIANBgYCAgAA2AhwgA0GBgICAADYCFCADIANBDGo2AhggAyADQQhqNgIQQd+AwIAAIANBEGogAhCV",
+    "gICAAAALYQEBfyOAgICAAEEgayIDJICAgIAAIAMgATYCDCADIAA2AgggA0GBgICAADYCHCADQYGAgIAANgIUIAMgA0EMajYCGCAD",
+    "IANBCGo2AhBBmIHAgAAgA0EQaiACEJWAgIAAAAsYAEHshsCAAEGZAUG4h8CAABCVgICAAAALSgEDf0EAIQMCQCACRQ0AAkADQCAA",
+    "LQAAIgQgAS0AACIFRw0BIABBAWohACABQQFqIQEgAkF/aiICRQ0CDAALCyAEIAVrIQMLIAMLC9IHAQBBgIDAAAvIBxZzbGljZSBp",
+    "bmRleCBzdGFydHMgYXQgwA0gYnV0IGVuZHMgYXQgwAAgaW5kZXggb3V0IG9mIGJvdW5kczogdGhlIGxlbiBpcyDAEiBidXQgdGhl",
+    "IGluZGV4IGlzIMAAEnJhbmdlIHN0YXJ0IGluZGV4IMAiIG91dCBvZiByYW5nZSBmb3Igc2xpY2Ugb2YgbGVuZ3RoIMAAEHJhbmdl",
+    "IGVuZCBpbmRleCDAIiBvdXQgb2YgcmFuZ2UgZm9yIHNsaWNlIG9mIGxlbmd0aCDAAC9yb290Ly5ydXN0dXAvdG9vbGNoYWlucy9z",
+    "dGFibGUteDg2XzY0LXVua25vd24tbGludXgtZ251L2xpYi9ydXN0bGliL3NyYy9ydXN0L2xpYnJhcnkvY29yZS9zcmMvc2xpY2Uv",
+    "c29ydC9zaGFyZWQvc21hbGxzb3J0LnJzAC9yb290Ly5ydXN0dXAvdG9vbGNoYWlucy9zdGFibGUteDg2XzY0LXVua25vd24tbGlu",
+    "dXgtZ251L2xpYi9ydXN0bGliL3NyYy9ydXN0L2xpYnJhcnkvY29yZS9zcmMvc2xpY2Uvc29ydC91bnN0YWJsZS9xdWlja3NvcnQu",
+    "cnMAL3Jvb3QvLnJ1c3R1cC90b29sY2hhaW5zL3N0YWJsZS14ODZfNjQtdW5rbm93bi1saW51eC1nbnUvbGliL3J1c3RsaWIvc3Jj",
+    "L3J1c3QvbGlicmFyeS9jb3JlL3NyYy9mbXQvbnVtLnJzAHNyYy9saWIucnMAAABNARAAfwAAADgAAAAbAAAANwIQAAoAAAAlAAAA",
+    "EgAAADcCEAAKAAAAJgAAABIAAAA3AhAACgAAAGAAAAAMAAAANwIQAAoAAABgAAAAIwAAAM0BEABpAAAAWAIAAAUAAAAwMDAxMDIw",
+    "MzA0MDUwNjA3MDgwOTEwMTExMjEzMTQxNTE2MTcxODE5MjAyMTIyMjMyNDI1MjYyNzI4MjkzMDMxMzIzMzM0MzUzNjM3MzgzOTQw",
+    "NDE0MjQzNDQ0NTQ2NDc0ODQ5NTA1MTUyNTM1NDU1NTY1NzU4NTk2MDYxNjI2MzY0NjU2NjY3Njg2OTcwNzE3MjczNzQ3NTc2Nzc3",
+    "ODc5ODA4MTgyODM4NDg1ODY4Nzg4ODk5MDkxOTI5Mzk0OTU5Njk3OTg5OXVzZXItcHJvdmlkZWQgY29tcGFyaXNvbiBmdW5jdGlv",
+    "biBkb2VzIG5vdCBjb3JyZWN0bHkgaW1wbGVtZW50IGEgdG90YWwgb3JkZXLPABAAfQAAAFYDAAAFAAAA"
+  ].join("");
+
+  // src/grid/rust/engine.ts
+  var RUST_AUTO_MIN_ROWS = 1e4;
+  var SEARCH_SEPARATOR = "\0";
+  function wantsRustEngine(engine, rowCount) {
+    return engine === "rust" || engine === "auto" && rowCount >= RUST_AUTO_MIN_ROWS;
+  }
+  var ENGINE_VERSION = 1;
+  var PAGE = 65536;
+  var compiled = null;
+  var loading = null;
+  function decodeBase64(b64) {
+    if (typeof atob === "function") {
+      const bin = atob(b64);
+      const out = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+      return out;
+    }
+    const B = globalThis.Buffer;
+    if (B) return new Uint8Array(B.from(b64, "base64"));
+    throw new Error("No base64 decoder");
+  }
+  function loadGridCore() {
+    if (compiled) return Promise.resolve(compiled);
+    if (!loading) {
+      loading = (async () => {
+        try {
+          if (typeof WebAssembly === "undefined") return null;
+          compiled = await WebAssembly.compile(decodeBase64(GRID_CORE_WASM_BASE64));
+          return compiled;
+        } catch {
+          return null;
+        }
+      })();
+    }
+    return loading;
+  }
+  function isWellFormed(s) {
+    const native = s.isWellFormed;
+    if (typeof native === "function") return native.call(s);
+    for (let i = 0; i < s.length; i++) {
+      const c = s.charCodeAt(i);
+      if (c >= 55296 && c <= 56319) {
+        const d = s.charCodeAt(i + 1);
+        if (d >= 56320 && d <= 57343) {
+          i++;
+          continue;
+        }
+        return false;
+      }
+      if (c >= 56320 && c <= 57343) return false;
+    }
+    return true;
+  }
+  var align8 = (n) => n + 7 & ~7;
+  var GridCore = class _GridCore {
+    x;
+    base;
+    encoder = new TextEncoder();
+    offsetsPtr = 0;
+    textPtr = 0;
+    textLen = 0;
+    rows = 0;
+    hasIndex = false;
+    freePtr;
+    constructor(x) {
+      this.x = x;
+      this.base = align8(x.yk_heap_base());
+      this.freePtr = this.base;
+    }
+    /** Creates an engine from a compiled module (default: the one already loaded). */
+    static create(mod = compiled) {
+      if (!mod) return null;
+      try {
+        const instance = new WebAssembly.Instance(mod, {});
+        const x = instance.exports;
+        if (x.yk_version() !== ENGINE_VERSION) return null;
+        return new _GridCore(x);
+      } catch {
+        return null;
+      }
+    }
+    ensure(end) {
+      const missing = end - this.x.memory.buffer.byteLength;
+      if (missing > 0) this.x.memory.grow(Math.ceil(missing / PAGE));
+    }
+    /**
+     * Stores one search text per row (the grid joins its columns with
+     * SEARCH_SEPARATOR). Returns false when Rust can't match TypeScript
+     * exactly for this data; the grid then searches in TypeScript.
+     */
+    setSearchTexts(texts) {
+      this.hasIndex = false;
+      this.freePtr = this.base;
+      try {
+        let maxBytes = 0;
+        for (const t of texts) {
+          if (!isWellFormed(t)) return false;
+          maxBytes += t.length * 3;
+        }
+        const rows = texts.length;
+        const offsetsPtr = this.base;
+        const textPtr = align8(offsetsPtr + (rows + 1) * 4);
+        this.ensure(textPtr + maxBytes);
+        const buffer = this.x.memory.buffer;
+        const offsets = new Uint32Array(buffer, offsetsPtr, rows + 1);
+        const bytes = new Uint8Array(buffer, textPtr, maxBytes);
+        let pos = 0;
+        for (let i = 0; i < rows; i++) {
+          offsets[i] = pos;
+          pos += this.encoder.encodeInto(texts[i], bytes.subarray(pos)).written ?? 0;
+        }
+        offsets[rows] = pos;
+        this.offsetsPtr = offsetsPtr;
+        this.textPtr = textPtr;
+        this.textLen = pos;
+        this.rows = rows;
+        this.freePtr = align8(textPtr + pos);
+        this.hasIndex = true;
+        return true;
+      } catch {
+        return false;
+      }
+    }
+    /**
+     * Positions (in the array given to setSearchTexts) of the rows whose text
+     * contains `query`, in original order. Null means "use TypeScript".
+     */
+    search(query) {
+      if (!this.hasIndex || !query || query.includes(SEARCH_SEPARATOR) || !isWellFormed(query)) return null;
+      try {
+        const q = this.encoder.encode(query);
+        const qPtr = this.freePtr;
+        const outPtr = align8(qPtr + q.length);
+        this.ensure(outPtr + this.rows * 4);
+        new Uint8Array(this.x.memory.buffer, qPtr, q.length).set(q);
+        const n = this.x.yk_search(this.textPtr, this.textLen, this.offsetsPtr, this.rows, qPtr, q.length, outPtr);
+        return new Uint32Array(this.x.memory.buffer, outPtr, n).slice();
+      } catch {
+        return null;
+      }
+    }
+    /**
+     * Row positions sorted by `keys` (NaN = empty, always last; equal keys keep
+     * their order). Null means "use TypeScript".
+     */
+    sortByKeys(keys, desc) {
+      try {
+        const n = keys.length;
+        const keysPtr = this.freePtr;
+        const outPtr = align8(keysPtr + n * 8);
+        this.ensure(outPtr + n * 4);
+        new Float64Array(this.x.memory.buffer, keysPtr, n).set(keys);
+        this.x.yk_sort(keysPtr, n, desc ? 1 : 0, outPtr);
+        return new Uint32Array(this.x.memory.buffer, outPtr, n).slice();
+      } catch {
+        return null;
+      }
+    }
+  };
+  function pickRows(rows, positions) {
+    const out = new Array(positions.length);
+    for (let i = 0; i < positions.length; i++) out[i] = rows[positions[i]];
+    return out;
+  }
+
   // vanilla/src/grid.js
   var UI = {
     en: {
@@ -5389,7 +5729,7 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
     let pageSize = Number(pagination && pagination.pageSize || opts.pageSize) || 10;
     let theme = THEMES.includes(opts.theme) ? opts.theme : "default";
     let view = ["table", "card", "auto"].includes(opts.view) ? opts.view : "auto";
-    let loading = !!opts.loading;
+    let loading2 = !!opts.loading;
     let narrow = false;
     let active = { r: 1, c: 0 };
     const selected = new Set((opts.selectedKeys || []).map(String));
@@ -5431,6 +5771,53 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
       status.textContent = "";
       statusTimer = setTimeout(() => status.textContent = text, 40);
     };
+    const engineOption = opts.engine === "rust" || opts.engine === "auto" ? opts.engine : "ts";
+    let core = null;
+    let coreLoading = null;
+    let searchIndex = { data: null, columns: null, ready: false };
+    function ensureCore() {
+      if (core || coreLoading || !wantsRustEngine(engineOption, data.length)) return coreLoading || Promise.resolve(core ? "rust" : "ts");
+      coreLoading = loadGridCore().then((mod) => {
+        core = mod ? GridCore.create(mod) : null;
+        if (core && host.isConnected) render();
+        return core ? "rust" : "ts";
+      });
+      return coreLoading;
+    }
+    function rustSearch(q) {
+      if (!core || !wantsRustEngine(engineOption, data.length)) return null;
+      if (searchIndex.data !== data || searchIndex.columns !== columns) {
+        const texts = data.map(
+          (row) => columns.map((c) => norm3(row[c.key]) + SEARCH_SEPARATOR + norm3(formatPlain(c, row[c.key]))).join(SEARCH_SEPARATOR)
+        );
+        searchIndex = { data, columns, ready: core.setSearchTexts(texts) };
+      }
+      if (!searchIndex.ready) return null;
+      const hits = core.search(q);
+      return hits ? pickRows(data, hits) : null;
+    }
+    function rustSort(rows, column, dir) {
+      if (!core || !wantsRustEngine(engineOption, data.length)) return null;
+      if (column.type !== "number" && column.type !== "date") return null;
+      const keys = new Float64Array(rows.length);
+      let lo = Infinity;
+      let hi = -Infinity;
+      for (let i = 0; i < rows.length; i++) {
+        const v = rows[i][column.key];
+        if (v == null || v === "") {
+          keys[i] = NaN;
+          continue;
+        }
+        const k = column.type === "number" ? Number(v) : new Date(v).getTime();
+        if (!Number.isFinite(k)) return null;
+        keys[i] = k;
+        if (k < lo) lo = k;
+        if (k > hi) hi = k;
+      }
+      if (lo === Infinity || !Number.isFinite(hi - lo)) return null;
+      const order = core.sortByKeys(keys, dir === "desc");
+      return order ? pickRows(rows, order) : null;
+    }
     function compare2(a, b, column, dir) {
       const av = a[column.key];
       const bv = b[column.key];
@@ -5444,23 +5831,35 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
       return dir === "desc" ? -out : out;
     }
     function viewRows() {
-      let out = applyGridFilters(data, toolColumns, filters);
-      if (query) {
-        const q = norm3(query);
-        out = out.filter((row) => columns.some((c) => norm3(row[c.key]).includes(q) || norm3(formatPlain(c, row[c.key])).includes(q)));
+      ensureCore();
+      let out;
+      const q = query ? norm3(query) : "";
+      const found = q ? rustSearch(q) : null;
+      if (found) {
+        out = applyGridFilters(found, toolColumns, filters);
+      } else {
+        out = applyGridFilters(data, toolColumns, filters);
+        if (q) out = out.filter((row) => columns.some((c) => norm3(row[c.key]).includes(q) || norm3(formatPlain(c, row[c.key])).includes(q)));
       }
       if (sort && sort.key) {
         const column = columns.find((c) => c.key === sort.key);
-        if (column) out = out.slice().sort((a, b) => compare2(a, b, column, sort.direction));
+        if (column) out = rustSort(out, column, sort.direction) || out.slice().sort((a, b) => compare2(a, b, column, sort.direction));
       }
       return out;
     }
+    let numberFormat = null;
+    let dateFormat = null;
     function formatPlain(column, value) {
       if (value == null || value === "") return "";
-      if (column.type === "number" && Number.isFinite(Number(value))) return Number(value).toLocaleString(numberLocale);
+      if (column.type === "number" && Number.isFinite(Number(value))) {
+        numberFormat = numberFormat || new Intl.NumberFormat(numberLocale);
+        return numberFormat.format(Number(value));
+      }
       if (column.type === "date") {
         const d = new Date(value);
-        return Number.isNaN(d.getTime()) ? String(value) : d.toLocaleDateString(numberLocale, { year: "numeric", month: "short", day: "numeric" });
+        if (Number.isNaN(d.getTime())) return String(value);
+        dateFormat = dateFormat || new Intl.DateTimeFormat(numberLocale, { year: "numeric", month: "short", day: "numeric" });
+        return dateFormat.format(d);
       }
       if (column.type === "boolean") return value === true || value === "true" ? t.yes : t.no;
       return String(value);
@@ -5494,15 +5893,15 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
       const { pages, start, end } = pageBounds(rows.length);
       const current = rows.slice(start, end);
       host.className = `yv-grid yv-theme-${theme}${opts.wrap ? " yv-wrap" : ""}${opts.className ? " " + opts.className : ""}`;
-      host.setAttribute("aria-busy", String(loading));
+      host.setAttribute("aria-busy", String(loading2));
       info.textContent = `${rows.length.toLocaleString(numberLocale)} ${t.rows}${selectable ? ` \xB7 ${selected.size.toLocaleString(numberLocale)} ${t.selected}` : ""}`;
       viewBtn.innerHTML = icon(isCards() ? "grid" : "cards", 18);
       viewBtn.setAttribute("aria-label", isCards() ? t.tableView : t.cardView);
       viewBtn.title = isCards() ? t.tableView : t.cardView;
       renderFilterBar();
       const hadFocus = body.contains(document.activeElement);
-      body.replaceChildren(loading ? h("div", { class: "yv-loading", role: "status" }, t.loading) : isCards() ? renderCards(current, start) : renderTable(current, start, rows.length));
-      if (hadFocus && !loading) restoreFocus();
+      body.replaceChildren(loading2 ? h("div", { class: "yv-loading", role: "status" }, t.loading) : isCards() ? renderCards(current, start) : renderTable(current, start, rows.length));
+      if (hadFocus && !loading2) restoreFocus();
       renderPager(rows.length, pages, start, end);
     }
     function renderTable(current, start, total) {
@@ -6058,6 +6457,12 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
         return api;
       },
       getSort: () => sort ? { ...sort } : null,
+      // engine: "rust" when the Rust engine is active for this grid, else "ts"
+      get engine() {
+        return core && wantsRustEngine(engineOption, data.length) ? "rust" : "ts";
+      },
+      /** Resolves "rust" or "ts" once the engine choice is settled. */
+      whenEngineReady: () => ensureCore().then(() => api.engine),
       // highlight
       highlight(list, scroll) {
         setHighlights(list, scroll === void 0 ? autoScroll : scroll);
@@ -6101,7 +6506,7 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
         return api;
       },
       setLoading(on) {
-        loading = !!on;
+        loading2 = !!on;
         render();
         return api;
       },
@@ -6900,7 +7305,7 @@ ${command ? command.say : "Not a voice command. Try: make text bigger, high cont
   }
 
   // vanilla/src/index.js
-  var VERSION = "5.3.0";
+  var VERSION = "5.3.5";
   (function boot() {
     if (!isBrowser2()) return;
     if (window.yuktai && window.yuktai.__vanillaInitialized) return;

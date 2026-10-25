@@ -26,6 +26,8 @@ import {
   toGridToolColumns,
   type GridToolFilter,
 } from "./gridTools"
+import { pickRows, SEARCH_SEPARATOR, type GridEngine } from "./rust/engine"
+import { useGridCore } from "./rust/useGridCore"
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Hook input
@@ -39,6 +41,11 @@ export interface UseGridOptions<T> {
   locale?:           string
   /** Starting filters (optional) */
   initialFilters?:   GridToolFilter[]
+  /**
+   * Search and sort engine: "ts" (default), "rust" (always) or "auto" (Rust
+   * from 10,000 rows). Same results either way; Rust is faster on big data.
+   */
+  engine?:           GridEngine
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -143,6 +150,67 @@ function compareValues(a: unknown, b: unknown, type: GridColumn["type"], locale?
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Rust engine inputs — built with the SAME helpers as the TypeScript path
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** One search text per row: each column's normalised text, joined by SEARCH_SEPARATOR. */
+export function gridSearchTexts<T extends Record<string, unknown>>(
+  data: readonly T[],
+  columns: readonly GridColumn<T>[]
+): string[] {
+  return data.map(row =>
+    columns
+      .map(col => {
+        const val = row[col.key]
+        return val === null || val === undefined ? "" : normalizeText(val)
+      })
+      .join(SEARCH_SEPARATOR)
+  )
+}
+
+/**
+ * Sort keys that give exactly the order of compareValues(), or null when the
+ * column needs TypeScript (text, booleans, mixed values …). Empty = NaN.
+ */
+export function gridSortKeys<T extends Record<string, unknown>>(
+  rows: readonly T[],
+  key: string,
+  type: GridColumn["type"]
+): Float64Array | null {
+  let anyNumber = false
+  let allNumbers = true
+  let allDates = true
+  let filled = 0
+  for (const row of rows) {
+    const v = row[key]
+    if (isEmpty(v)) continue
+    filled++
+    if (typeof v === "number") anyNumber = true
+    else allNumbers = false
+    if (!(v instanceof Date)) allDates = false
+  }
+  if (filled === 0) return null
+
+  let read: ((v: unknown) => number | null) | null = null
+  if (type === "number" || allNumbers) read = toNumber
+  else if ((type === "date" && !anyNumber) || allDates) read = toTime
+  if (!read) return null
+
+  const keys = new Float64Array(rows.length)
+  for (let i = 0; i < rows.length; i++) {
+    const v = rows[i][key]
+    if (isEmpty(v)) {
+      keys[i] = NaN
+      continue
+    }
+    const k = read(v)
+    if (k === null) return null
+    keys[i] = k
+  }
+  return keys
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Hook implementation
 // ─────────────────────────────────────────────────────────────────────────────
 export function useGrid<T extends Record<string, unknown>>(
@@ -155,7 +223,11 @@ export function useGrid<T extends Record<string, unknown>>(
     mobileBreakpoint = 768,
     locale,
     initialFilters = [],
+    engine = "ts",
   } = options
+
+  // Optional Rust engine (null = TypeScript, also while it loads)
+  const core = useGridCore(engine, data.length)
 
   const [sort, setSortState]               = useState<SortConfig | null>(null)
   const [searchQuery, setSearchQueryState] = useState("")
@@ -242,10 +314,21 @@ export function useGrid<T extends Record<string, unknown>>(
     setPage(1)
   }, [])
 
+  // Rust keeps this grid's search text; rebuilt only when data or columns change
+  const rustSearchReady = useMemo(
+    () => (core ? core.setSearchTexts(gridSearchTexts(data, columns)) : false),
+    [core, data, columns]
+  )
+
   // ── Search — across the grid's columns, Telugu-safe ──
   const searchedData = useMemo(() => {
     const q = normalizeText(searchQuery)
     if (!q) return data
+
+    if (core && rustSearchReady) {
+      const hits = core.search(q)
+      if (hits) return pickRows(data, hits)
+    }
 
     return data.filter(row =>
       columns.some(col => {
@@ -254,7 +337,7 @@ export function useGrid<T extends Record<string, unknown>>(
         return normalizeText(val).includes(q)
       })
     )
-  }, [data, searchQuery, columns])
+  }, [data, searchQuery, columns, core, rustSearchReady])
 
   // ── Filters — exactly the same rules as the filter tool ──
   const filteredData = useMemo(
@@ -269,6 +352,12 @@ export function useGrid<T extends Record<string, unknown>>(
     const column = columns.find(c => String(c.key) === sort.key)
     const direction = sort.direction === "desc" ? -1 : 1
 
+    if (core) {
+      const keys = gridSortKeys(filteredData, sort.key, column?.type)
+      const order = keys && core.sortByKeys(keys, direction === -1)
+      if (order) return pickRows(filteredData, order)
+    }
+
     return [...filteredData].sort((a, b) => {
       const aVal = a[sort.key]
       const bVal = b[sort.key]
@@ -281,7 +370,7 @@ export function useGrid<T extends Record<string, unknown>>(
 
       return direction * compareValues(aVal, bVal, column?.type, locale)
     })
-  }, [filteredData, sort, columns, locale])
+  }, [filteredData, sort, columns, locale, core])
 
   // ── Paginate ──
   const totalPages = Math.max(1, Math.ceil(sortedData.length / pageSize))

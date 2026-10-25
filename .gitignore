@@ -4,3 +4,6 @@ node_modules/
 .xerj/
 
 public/tessdata/
+
+# Rust build output
+rust/grid-core/target/

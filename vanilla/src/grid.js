@@ -18,6 +18,7 @@ import {
   toGridToolColumns,
 } from "./core.js"
 import { createAgenticGrid, createGridAgent, registerWebMCP } from "./agent.js"
+import { GridCore, loadGridCore, pickRows, SEARCH_SEPARATOR, wantsRustEngine } from "../../src/grid/rust/engine"
 import { mountAgenticGridBar } from "./bar.js"
 import { announce, csvCell, downloadText, esc, h, icon, iconEl, nextId, prefersReducedMotion } from "./dom.js"
 
@@ -188,6 +189,62 @@ export function renderGrid(container, rowsOrOptions, columnsArg, optionsArg) {
     statusTimer = setTimeout(() => (status.textContent = text), 40)
   }
 
+  // ── optional Rust engine (opts.engine: "ts" default | "rust" | "auto") ──
+  // Same results as the TypeScript path below; used only where they can't differ.
+  const engineOption = opts.engine === "rust" || opts.engine === "auto" ? opts.engine : "ts"
+  let core = null
+  let coreLoading = null
+  let searchIndex = { data: null, columns: null, ready: false }
+
+  function ensureCore() {
+    if (core || coreLoading || !wantsRustEngine(engineOption, data.length)) return coreLoading || Promise.resolve(core ? "rust" : "ts")
+    coreLoading = loadGridCore().then((mod) => {
+      core = mod ? GridCore.create(mod) : null
+      if (core && host.isConnected) render()
+      return core ? "rust" : "ts"
+    })
+    return coreLoading
+  }
+
+  // One search text per row: the same two strings the TypeScript search checks
+  function rustSearch(q) {
+    if (!core || !wantsRustEngine(engineOption, data.length)) return null
+    if (searchIndex.data !== data || searchIndex.columns !== columns) {
+      const texts = data.map((row) =>
+        columns.map((c) => norm(row[c.key]) + SEARCH_SEPARATOR + norm(formatPlain(c, row[c.key]))).join(SEARCH_SEPARATOR)
+      )
+      searchIndex = { data, columns, ready: core.setSearchTexts(texts) }
+    }
+    if (!searchIndex.ready) return null
+    const hits = core.search(q)
+    return hits ? pickRows(data, hits) : null
+  }
+
+  // Number and date columns only, and only when compare() would never fall back
+  // to text for them. Empty ("" or null) = NaN, always last.
+  function rustSort(rows, column, dir) {
+    if (!core || !wantsRustEngine(engineOption, data.length)) return null
+    if (column.type !== "number" && column.type !== "date") return null
+    const keys = new Float64Array(rows.length)
+    let lo = Infinity
+    let hi = -Infinity
+    for (let i = 0; i < rows.length; i++) {
+      const v = rows[i][column.key]
+      if (v == null || v === "") {
+        keys[i] = NaN
+        continue
+      }
+      const k = column.type === "number" ? Number(v) : new Date(v).getTime()
+      if (!Number.isFinite(k)) return null
+      keys[i] = k
+      if (k < lo) lo = k
+      if (k > hi) hi = k
+    }
+    if (lo === Infinity || !Number.isFinite(hi - lo)) return null
+    const order = core.sortByKeys(keys, dir === "desc")
+    return order ? pickRows(rows, order) : null
+  }
+
   // ── data pipeline: filters (tools) → search → sort ──
   function compare(a, b, column, dir) {
     const av = a[column.key]
@@ -203,25 +260,40 @@ export function renderGrid(container, rowsOrOptions, columnsArg, optionsArg) {
   }
 
   function viewRows() {
-    let out = applyGridFilters(data, toolColumns, filters)
-    if (query) {
-      const q = norm(query)
-      out = out.filter((row) => columns.some((c) => norm(row[c.key]).includes(q) || norm(formatPlain(c, row[c.key])).includes(q)))
+    ensureCore()
+    let out
+    const q = query ? norm(query) : ""
+    // Search and filters only remove rows, so with Rust searching first the result is the same
+    const found = q ? rustSearch(q) : null
+    if (found) {
+      out = applyGridFilters(found, toolColumns, filters)
+    } else {
+      out = applyGridFilters(data, toolColumns, filters)
+      if (q) out = out.filter((row) => columns.some((c) => norm(row[c.key]).includes(q) || norm(formatPlain(c, row[c.key])).includes(q)))
     }
     if (sort && sort.key) {
       const column = columns.find((c) => c.key === sort.key)
-      if (column) out = out.slice().sort((a, b) => compare(a, b, column, sort.direction))
+      if (column) out = rustSort(out, column, sort.direction) || out.slice().sort((a, b) => compare(a, b, column, sort.direction))
     }
     return out
   }
 
   // ── formatting ──
+  // One formatter each, reused: same output as toLocaleString / toLocaleDateString
+  // with these locales and options, without building a formatter per cell.
+  let numberFormat = null
+  let dateFormat = null
   function formatPlain(column, value) {
     if (value == null || value === "") return ""
-    if (column.type === "number" && Number.isFinite(Number(value))) return Number(value).toLocaleString(numberLocale)
+    if (column.type === "number" && Number.isFinite(Number(value))) {
+      numberFormat = numberFormat || new Intl.NumberFormat(numberLocale)
+      return numberFormat.format(Number(value))
+    }
     if (column.type === "date") {
       const d = new Date(value)
-      return Number.isNaN(d.getTime()) ? String(value) : d.toLocaleDateString(numberLocale, { year: "numeric", month: "short", day: "numeric" })
+      if (Number.isNaN(d.getTime())) return String(value)
+      dateFormat = dateFormat || new Intl.DateTimeFormat(numberLocale, { year: "numeric", month: "short", day: "numeric" })
+      return dateFormat.format(d)
     }
     if (column.type === "boolean") return value === true || value === "true" ? t.yes : t.no
     return String(value)
@@ -856,6 +928,13 @@ export function renderGrid(container, rowsOrOptions, columnsArg, optionsArg) {
       return api
     },
     getSort: () => (sort ? { ...sort } : null),
+
+    // engine: "rust" when the Rust engine is active for this grid, else "ts"
+    get engine() {
+      return core && wantsRustEngine(engineOption, data.length) ? "rust" : "ts"
+    },
+    /** Resolves "rust" or "ts" once the engine choice is settled. */
+    whenEngineReady: () => ensureCore().then(() => api.engine),
 
     // highlight
     highlight(list, scroll) {

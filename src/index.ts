@@ -34,6 +34,15 @@ export { YuktaiGrid } from "./grid/YuktaiGrid";
 
 export { useGrid } from "./grid/useGrid";
 
+// v5.3.5 — optional Rust (WebAssembly) engine for grid search and sort
+export {
+  GridCore,
+  loadGridCore,
+  wantsRustEngine,
+  RUST_AUTO_MIN_ROWS,
+} from "./grid/rust/engine";
+export type { GridEngine } from "./grid/rust/engine";
+
 export {
   default as YuktaiGridAI,
 } from "./grid/YuktaiGridAI";

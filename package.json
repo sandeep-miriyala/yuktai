@@ -1,6 +1,6 @@
 {
   "name": "@yuktishaalaa/yuktai",
-  "version": "5.3.4",
+  "version": "5.3.5",
   "description": "Accessibility, AI and data toolkit for Next.js, React and plain HTML: WCAG 2.2 auto-fix, agentic data grid, accessibility copilot, QA reports and in-browser RAG. Zero API keys.",
   "author": "Sandeep Miriyala — Yuktishaalaa AI Lab",
   "license": "GPL-3.0-only",
@@ -31,6 +31,9 @@
     "data-grid",
     "webmcp",
     "telugu",
+    "rust",
+    "webassembly",
+    "wasm",
     "indian-languages",
     "icons",
     "react-icons",
@@ -77,6 +80,8 @@
     "build": "tsup",
     "build:vanilla": "node vanilla/build.mjs",
     "build:all": "npm run build && npm run build:vanilla",
+    "build:rust": "node rust/build-wasm.mjs",
+    "test:rust": "cd rust/grid-core && cargo test",
     "lint": "eslint src --ext .ts,.tsx",
     "test": "vitest run",
     "prepublishOnly": "npm run build:all"

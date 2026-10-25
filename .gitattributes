@@ -1,0 +1,6 @@
+# Build output: generated from src/ and rust/, so GitHub's language bar
+# counts only the code we actually write (TypeScript, Rust, Vue, HTML).
+vanilla/index.js            linguist-generated=true
+vanilla/index.min.js        linguist-generated=true
+dist/**                     linguist-generated=true
+src/grid/rust/gridCoreWasm.ts linguist-generated=true

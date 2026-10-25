@@ -1,4 +1,5 @@
 import type { ReactNode } from "react"
+import type { GridEngine } from "./rust/engine"
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Grid Column
@@ -468,6 +469,22 @@ export interface YuktaiGridProps<
    * ]}
    */
   customRules?: YuktaiGridRule<T>[]
+
+  // ───────────────────────────────────────────────────────────────────────────
+  // Engine
+  // ───────────────────────────────────────────────────────────────────────────
+
+  /**
+   * Search and sort engine.
+   *
+   * - "ts" (default): TypeScript, as before
+   * - "rust": the Rust (WebAssembly) engine, about 13 KB, embedded
+   * - "auto": Rust from 10,000 rows, TypeScript below
+   *
+   * Results are identical. Rust handles search and number/date sorting;
+   * text sorting always uses TypeScript (browser locale rules for Telugu).
+   */
+  engine?: GridEngine
 
   // ───────────────────────────────────────────────────────────────────────────
   // Agent Result

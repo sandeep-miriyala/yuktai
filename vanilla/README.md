@@ -73,6 +73,7 @@ The v5.1 vanilla signature `renderGrid(container, rows, columns, options)` still
 | `customRules` | `[{ name, phrases, description, execute({ input, data, columns, executeTool }) }]`, in any language |
 | `parseIntent(text, ctx)` | Replace the built-in phrase parser |
 | `webmcp`, `toolName`, `toolDescriptions`, `onWebMCPStatusChange` | Expose the 11 grid tools to browser AI agents |
+| `engine` | `"ts"` (default), `"rust"`, or `"auto"` (Rust from 10,000 rows). Rust runs the same search and number/date sort faster; results are identical. `grid.engine` tells you which one is active, `await grid.whenEngineReady()` waits for it |
 | `referenceDate` | "Now" for "this month" questions |
 | `onRowClick(row)`, `onOpenRow(id)` | Enables the `open` tool and "open Ravi" |
 | `onSelectionChange(keys)`, `onSortChange(sort)`, `onFiltersChange(filters)`, `onAgentResult(r)` | Events |

@@ -46,6 +46,44 @@ Six modules ship in a single npm package, for React/Next.js and, since v5.3, for
 
 ---
 
+## What's new in v5.3.5: Rust grid engine (optional)
+
+The grid's existing search and number/date sorting can now run in **Rust**, compiled to WebAssembly. Nothing else changes: same rows, same order, same API. The default is still TypeScript, so existing apps behave exactly as before.
+
+```tsx
+<YuktaiGrid data={rows} columns={columns} engine="auto" />   // Rust from 10,000 rows
+```
+
+```js
+yuktai.renderGrid("#staff", { data: rows, columns, engine: "auto" })
+```
+
+| `engine` | What runs |
+|---|---|
+| `"ts"` (default) | TypeScript, unchanged |
+| `"rust"` | Rust for search and number/date sorting |
+| `"auto"` | Rust from 10,000 rows, TypeScript below |
+
+- **Same results, tested:** every grid (`<YuktaiGrid>`, `useGrid`, vanilla `renderGrid`) runs its real code with both engines on random mixed data (Telugu text, empty values, NaN, dates, duplicates) and must return identical rows. Text sorting stays in TypeScript, because Telugu order comes from the browser's locale rules.
+- **Faster on big data** (100,000 rows, Chromium, median of 7 runs):
+
+| Operation | Grid | TypeScript | Rust | Speed-up |
+|---|---|---|---|---|
+| Search "hyd" | vanilla `renderGrid` | 342 ms | 9 ms | 36× |
+| Search "సీత" | vanilla `renderGrid` | 332 ms | 9 ms | 37× |
+| Sort by date (desc) | vanilla `renderGrid` | 523 ms | 26 ms | 20× |
+| Sort by number | vanilla `renderGrid` | 43 ms | 13 ms | 3× |
+| Search "hyd" | `<YuktaiGrid>` | 25 ms | 4 ms | 6× |
+| Sort by number | `<YuktaiGrid>` | 47 ms | 14 ms | 3× |
+
+  Rust prepares the search text once per data change (about 130 ms for 100,000 rows), so every keystroke after that is fast. Run it yourself: `node vanilla/test/bench.mjs 100000`.
+- **Small and self-contained:** about 13 KB of WebAssembly, embedded in the package. No extra files, no bundler setup, no Rust needed to use it.
+- **Safe fallback:** if WebAssembly is unavailable, the grid quietly uses TypeScript.
+
+Source: [`rust/grid-core`](./rust/grid-core) (no dependencies, `no_std`). To rebuild it: `rustup target add wasm32-unknown-unknown`, then `npm run build:rust`. Rust tests: `npm run test:rust`.
+
+---
+
 ## What's new in v5.3: Vanilla JS (plain HTML)
 
 All of yuktai now works on any HTML page, without React or a build step. The vanilla build is bundled from the same source as the npm package, so a question gets the same answer in React and in plain HTML.
