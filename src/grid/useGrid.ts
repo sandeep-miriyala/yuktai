@@ -20,7 +20,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useState, useMemo, useCallback, useEffect } from "react"
-import type { GridColumn, SortConfig, PaginationConfig } from "./types"
+import type { GridColumn, GridSearchTime, SortConfig, PaginationConfig } from "./types"
 import {
   applyGridFilters,
   toGridToolColumns,
@@ -91,6 +91,9 @@ export interface UseGridReturn<T> {
 
   // Reset
   reset:          () => void
+
+  /** Last search/sort: time in ms and which engine answered (null when neither ran) */
+  searchTime:     GridSearchTime | null
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -148,6 +151,10 @@ function compareValues(a: unknown, b: unknown, type: GridColumn["type"], locale?
     numeric: true,
   })
 }
+
+type Run<T> = { rows: T[]; ms: number; engine: "rust" | "ts" | null }
+
+const now = () => (typeof performance !== "undefined" ? performance.now() : Date.now())
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Rust engine inputs — built with the SAME helpers as the TypeScript path
@@ -321,33 +328,39 @@ export function useGrid<T extends Record<string, unknown>>(
   )
 
   // ── Search — across the grid's columns, Telugu-safe ──
-  const searchedData = useMemo(() => {
+  const searchRun = useMemo((): Run<T> => {
+    const t0 = now()
     const q = normalizeText(searchQuery)
-    if (!q) return data
+    if (!q) return { rows: data, ms: 0, engine: null }
 
     if (core && rustSearchReady) {
       const hits = core.search(q)
-      if (hits) return pickRows(data, hits)
+      if (hits) return { rows: pickRows(data, hits), ms: now() - t0, engine: "rust" }
     }
 
-    return data.filter(row =>
+    const rows = data.filter(row =>
       columns.some(col => {
         const val = row[col.key]
         if (val === null || val === undefined) return false
         return normalizeText(val).includes(q)
       })
     )
+    return { rows, ms: now() - t0, engine: "ts" }
   }, [data, searchQuery, columns, core, rustSearchReady])
+  const searchedData = searchRun.rows
 
   // ── Filters — exactly the same rules as the filter tool ──
-  const filteredData = useMemo(
-    () => applyGridFilters(searchedData, toolColumns, filters),
-    [searchedData, toolColumns, filters]
-  )
+  const filterRun = useMemo(() => {
+    const t0 = now()
+    const rows = applyGridFilters(searchedData, toolColumns, filters)
+    return { rows, ms: now() - t0 }
+  }, [searchedData, toolColumns, filters])
+  const filteredData = filterRun.rows
 
   // ── Sort — empty values always last, in both directions ──
-  const sortedData = useMemo(() => {
-    if (!sort || !sort.direction) return filteredData
+  const sortRun = useMemo((): Run<T> => {
+    if (!sort || !sort.direction) return { rows: filteredData, ms: 0, engine: null }
+    const t0 = now()
 
     const column = columns.find(c => String(c.key) === sort.key)
     const direction = sort.direction === "desc" ? -1 : 1
@@ -355,10 +368,10 @@ export function useGrid<T extends Record<string, unknown>>(
     if (core) {
       const keys = gridSortKeys(filteredData, sort.key, column?.type)
       const order = keys && core.sortByKeys(keys, direction === -1)
-      if (order) return pickRows(filteredData, order)
+      if (order) return { rows: pickRows(filteredData, order), ms: now() - t0, engine: "rust" }
     }
 
-    return [...filteredData].sort((a, b) => {
+    const rows = [...filteredData].sort((a, b) => {
       const aVal = a[sort.key]
       const bVal = b[sort.key]
       const aEmpty = isEmpty(aVal)
@@ -370,7 +383,20 @@ export function useGrid<T extends Record<string, unknown>>(
 
       return direction * compareValues(aVal, bVal, column?.type, locale)
     })
+    return { rows, ms: now() - t0, engine: "ts" }
   }, [filteredData, sort, columns, locale, core])
+  const sortedData = sortRun.rows
+
+  // ── Time of the last search/sort, and which engine answered ──
+  const searchTime = useMemo((): GridSearchTime | null => {
+    if (!searchRun.engine && !sortRun.engine) return null
+    return {
+      query: searchQuery.trim(),
+      ms: searchRun.ms + filterRun.ms + sortRun.ms,
+      rows: filteredData.length,
+      engine: searchRun.engine === "rust" || sortRun.engine === "rust" ? "rust" : "ts",
+    }
+  }, [searchRun, filterRun, sortRun, searchQuery, filteredData.length])
 
   // ── Paginate ──
   const totalPages = Math.max(1, Math.ceil(sortedData.length / pageSize))
@@ -402,6 +428,7 @@ export function useGrid<T extends Record<string, unknown>>(
   return {
     displayedData,
     rows:          sortedData,
+    searchTime,
     totalCount:    data.length,
     filteredCount: sortedData.length,
 

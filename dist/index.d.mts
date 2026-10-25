@@ -158,6 +158,16 @@ declare class GridCore {
     sortByKeys(keys: Float64Array, desc: boolean): Uint32Array | null;
 }
 
+/** One search/sort run: what was searched, how long it took, which engine answered. */
+interface GridSearchTime {
+    /** The search text ("" when only sorting) */
+    query: string;
+    /** Milliseconds for search + filters + sort */
+    ms: number;
+    /** Rows after search and filters */
+    rows: number;
+    engine: "rust" | "ts";
+}
 interface GridColumn<T = Record<string, unknown>> {
     key: keyof T & string;
     label: string;
@@ -374,6 +384,13 @@ interface YuktaiGridProps<T = Record<string, unknown>> {
      */
     engine?: GridEngine;
     /**
+     * Show how long the last search/sort took and which engine answered,
+     * next to the row count, e.g. "12 rows · 0.9 ms · Rust". Default: false.
+     */
+    showSearchTime?: boolean;
+    /** Called after every search or sort with its time and engine. */
+    onSearchTime?: (info: GridSearchTime) => void;
+    /**
      * Every result from the Agent.
      */
     onAgentResult?: (result: {
@@ -383,7 +400,7 @@ interface YuktaiGridProps<T = Record<string, unknown>> {
     }) => void;
 }
 
-declare function YuktaiGrid<T extends Record<string, unknown>>({ data, columns, rowKey, view, mobileBreakpoint, theme, locale, ai, search, selectable, selectedKeys, onSelectionChange, pagination, loading, highlightIds, highlightColor, autoScrollToHighlight, onRowClick, onSortChange, empty, className, inputLanguage, toolName, toolDescriptions, webmcp, onWebMCPStatusChange, onAgentResult, customRules, engine, }: YuktaiGridProps<T>): react_jsx_runtime.JSX.Element;
+declare function YuktaiGrid<T extends Record<string, unknown>>({ data, columns, rowKey, view, mobileBreakpoint, theme, locale, ai, search, selectable, selectedKeys, onSelectionChange, pagination, loading, highlightIds, highlightColor, autoScrollToHighlight, onRowClick, onSortChange, empty, className, inputLanguage, toolName, toolDescriptions, webmcp, onWebMCPStatusChange, onAgentResult, customRules, engine, showSearchTime, onSearchTime, }: YuktaiGridProps<T>): react_jsx_runtime.JSX.Element;
 
 /**
  * gridTools — the ONE place where YuktaiGrid tools are defined.
@@ -539,6 +556,8 @@ interface UseGridReturn<T> {
     setPageSize: (s: number) => void;
     isMobile: boolean;
     reset: () => void;
+    /** Last search/sort: time in ms and which engine answered (null when neither ran) */
+    searchTime: GridSearchTime | null;
 }
 declare function useGrid<T extends Record<string, unknown>>(options: UseGridOptions<T>): UseGridReturn<T>;
 
@@ -1289,4 +1308,4 @@ declare const YuktAI: {
     scan(): A11yReport;
 };
 
-export { type A11yConfig, type A11yCopilot, type A11yCopilotOptions, type A11yFix, type A11yReport, type AIFeatures, AUDIT_RULES, type AgenticAnswerKind, AgenticGridBar, AgenticPanel, type AgenticPanelProps, type Aggregation, type AuditCheck, type AuditIssue, type AuditOptions, type AuditReport, type AuditRoot, type AuditRuleId, type AuditSeverity, type ColorBlindMode, type ComparePeriodsOptions, type ContextAnswer, type ContextHit, type ContextIndexOptions, type ContextPassage, type CopilotFixResult, type CopilotState, type CreateGridToolsOptions, DEFAULT_A11Y_SETTINGS, type DesignCategory, type DesignFinding, type DesignReview, type DesignReviewOptions, FONT_MAX, FONT_MIN, FONT_STEP, type FilterConfig, type FilterOperator, type FormField, type FormFinding, type FormFindingLevel, type FormReview, type FormReviewOptions, type GridAgentErrorCode, type GridAgentResult, type GridAgentStep, type GridAgentTool, type GridAnomaly, type GridAnswer, type GridColumn, GridCore, type GridEngine, type GridInputLanguage, type GridIntent, type GridIntentContext, type GridLocale, type GridNavAction, type GridQueryResult, type GridTheme, type GridTool, type GridToolColumn, type GridToolContext, type GridToolErrorCode, type GridToolFilter, type GridToolFilterOperator, type GridToolId, type GridToolLocale, type GridToolResult, type GridToolSort, type GridTranslations, type GroupResult, type IndicLanguageLocale, type InsightAnswer, type PageAnswer, type PageIntent, type PageOutline, type PaginationConfig, type ParseOptions, type ParsedGridQuery, type Period, type PeriodChange, type PeriodComparison, type PlannedStep, type RGBA, RUST_AUTO_MIN_ROWS, type RunTasksOptions, Runtime, type Severity, type SortConfig, type SortDirection, type StepResult, type TaskAction, type TaskRunResult, type UseAgenticGridOptions, type UseGridOptions, type UseGridReturn, type ViewMode, type VoiceA11yCommand, type VoiceA11yControllerOptions, type VoiceFeatures, type WebMCPState, type WebMCPStatus, YuktAI, YuktAIWrapper, type YuktAIWrapperProps, YuktaiGrid, YuktaiGridAI, type YuktaiGridAIProps, useYuktaiGridAgent as YuktaiGridAgent, type YuktaiGridAgentProps, type YuktaiGridProps, type YuktaiGridRule, type YuktaiGridRuleContext, YuktaiGridWebMCP, type YuktaiGridWebMCPProps, accessibleName, addPeriods, aggregate, aiPlugin, analyzePage, answerGridQuestion, applyGridFilters, askAboutPage, askInsight, auditToJSON, auditToMarkdown, clearFilters, clearSort, comparePeriods, contrastRatio, countGrid, createA11yCopilot, createContextIndex, createGridTools, createVoiceA11yController, YuktAIWrapper as default, detectAnomalies, detectPageIntent, executeGridQuery, filterGrid, findMentionedColumn, getColumns, getRow, getRowId, gridPassages, groupBy, highlightRows, loadGridCore, moveGridRowFocus, openRow, pagePassages, parseAmount, parseColor, parseGridIntent, parseGridQuery, parseVoiceA11yCommand, planTasks, readFormFields, relativeLuminance, reviewDesign, reviewForm, reviewForms, runGridQuery, runQaAudit, runTasks, searchGrid, selectRow, sortGrid, startOfPeriod, summarizeRows, toGridToolColumns, tokenize, trend, useAgenticGrid, useGrid, useYuktaiGridAgent, voicePlugin, wantsRustEngine, wcagPlugin as wcag, wcagPlugin };
+export { type A11yConfig, type A11yCopilot, type A11yCopilotOptions, type A11yFix, type A11yReport, type AIFeatures, AUDIT_RULES, type AgenticAnswerKind, AgenticGridBar, AgenticPanel, type AgenticPanelProps, type Aggregation, type AuditCheck, type AuditIssue, type AuditOptions, type AuditReport, type AuditRoot, type AuditRuleId, type AuditSeverity, type ColorBlindMode, type ComparePeriodsOptions, type ContextAnswer, type ContextHit, type ContextIndexOptions, type ContextPassage, type CopilotFixResult, type CopilotState, type CreateGridToolsOptions, DEFAULT_A11Y_SETTINGS, type DesignCategory, type DesignFinding, type DesignReview, type DesignReviewOptions, FONT_MAX, FONT_MIN, FONT_STEP, type FilterConfig, type FilterOperator, type FormField, type FormFinding, type FormFindingLevel, type FormReview, type FormReviewOptions, type GridAgentErrorCode, type GridAgentResult, type GridAgentStep, type GridAgentTool, type GridAnomaly, type GridAnswer, type GridColumn, GridCore, type GridEngine, type GridInputLanguage, type GridIntent, type GridIntentContext, type GridLocale, type GridNavAction, type GridQueryResult, type GridSearchTime, type GridTheme, type GridTool, type GridToolColumn, type GridToolContext, type GridToolErrorCode, type GridToolFilter, type GridToolFilterOperator, type GridToolId, type GridToolLocale, type GridToolResult, type GridToolSort, type GridTranslations, type GroupResult, type IndicLanguageLocale, type InsightAnswer, type PageAnswer, type PageIntent, type PageOutline, type PaginationConfig, type ParseOptions, type ParsedGridQuery, type Period, type PeriodChange, type PeriodComparison, type PlannedStep, type RGBA, RUST_AUTO_MIN_ROWS, type RunTasksOptions, Runtime, type Severity, type SortConfig, type SortDirection, type StepResult, type TaskAction, type TaskRunResult, type UseAgenticGridOptions, type UseGridOptions, type UseGridReturn, type ViewMode, type VoiceA11yCommand, type VoiceA11yControllerOptions, type VoiceFeatures, type WebMCPState, type WebMCPStatus, YuktAI, YuktAIWrapper, type YuktAIWrapperProps, YuktaiGrid, YuktaiGridAI, type YuktaiGridAIProps, useYuktaiGridAgent as YuktaiGridAgent, type YuktaiGridAgentProps, type YuktaiGridProps, type YuktaiGridRule, type YuktaiGridRuleContext, YuktaiGridWebMCP, type YuktaiGridWebMCPProps, accessibleName, addPeriods, aggregate, aiPlugin, analyzePage, answerGridQuestion, applyGridFilters, askAboutPage, askInsight, auditToJSON, auditToMarkdown, clearFilters, clearSort, comparePeriods, contrastRatio, countGrid, createA11yCopilot, createContextIndex, createGridTools, createVoiceA11yController, YuktAIWrapper as default, detectAnomalies, detectPageIntent, executeGridQuery, filterGrid, findMentionedColumn, getColumns, getRow, getRowId, gridPassages, groupBy, highlightRows, loadGridCore, moveGridRowFocus, openRow, pagePassages, parseAmount, parseColor, parseGridIntent, parseGridQuery, parseVoiceA11yCommand, planTasks, readFormFields, relativeLuminance, reviewDesign, reviewForm, reviewForms, runGridQuery, runQaAudit, runTasks, searchGrid, selectRow, sortGrid, startOfPeriod, summarizeRows, toGridToolColumns, tokenize, trend, useAgenticGrid, useGrid, useYuktaiGridAgent, voicePlugin, wantsRustEngine, wcagPlugin as wcag, wcagPlugin };

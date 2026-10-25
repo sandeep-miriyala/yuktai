@@ -80,6 +80,20 @@ yuktai.renderGrid("#staff", { data: rows, columns, engine: "auto" })
 - **Small and self-contained:** about 13 KB of WebAssembly, embedded in the package. No extra files, no bundler setup, no Rust needed to use it.
 - **Safe fallback:** if WebAssembly is unavailable, the grid quietly uses TypeScript.
 
+**Search time (v5.3.7, optional):** show how long each search or sort took and which engine answered, next to the row count, e.g. `12 rows · 0.9 ms · Rust`.
+
+```tsx
+<YuktaiGrid data={rows} columns={columns} engine="rust" showSearchTime
+  onSearchTime={({ query, ms, rows, engine }) => console.log(query, ms, rows, engine)} />
+```
+
+```js
+yuktai.renderGrid("#staff", { data: rows, columns, engine: "rust", showSearchTime: true })
+grid.getSearchTime()   // { query: "hyd", ms: 0.9, rows: 12, engine: "rust" }
+```
+
+`useGrid` returns the same object as `grid.searchTime`. The label says **TS** whenever TypeScript did the work (for example a Telugu text sort), so it is always truthful.
+
 Source: [`rust/grid-core`](./rust/grid-core) (no dependencies, `no_std`). To rebuild it: `rustup target add wasm32-unknown-unknown`, then `npm run build:rust`. Rust tests: `npm run test:rust`.
 
 ---

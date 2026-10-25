@@ -143,6 +143,7 @@ export type {
   PaginationConfig,
   GridTranslations,
   YuktaiGridProps,
+  GridSearchTime,
   YuktaiGridRule,
   YuktaiGridRuleContext,
 } from "./grid/types";

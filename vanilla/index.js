@@ -1,4 +1,4 @@
-/*! yuktai vanilla 5.3.5 — accessible data grid, page agents and WCAG tools for plain HTML.
+/*! yuktai vanilla 5.3.7 — accessible data grid, page agents and WCAG tools for plain HTML.
  *  No framework, no API keys, runs in the browser. ISC © Sandeep Miriyala, Yuktishaalaa AI Lab.
  *  Built from github.com/sandeepmiriyala03/yuktai (vanilla/src + src/agentic, src/grid, src/core; grid engine in Rust: rust/grid-core). */
 "use strict";
@@ -5617,6 +5617,10 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
       }
     }
   };
+  function formatSearchTime(ms) {
+    if (!(ms >= 0.1)) return "<0.1 ms";
+    return `${ms < 10 ? ms.toFixed(1) : Math.round(ms)} ms`;
+  }
   function pickRows(rows, positions) {
     const out = new Array(positions.length);
     for (let i = 0; i < positions.length; i++) out[i] = rows[positions[i]];
@@ -5830,21 +5834,36 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
       if (!Number.isFinite(out)) out = String(av).localeCompare(String(bv));
       return dir === "desc" ? -out : out;
     }
+    let lastSearchTime = null;
+    let lastRunKey = null;
     function viewRows() {
       ensureCore();
+      const t0 = performance.now();
+      let searchedBy = null;
+      let sortedBy = null;
       let out;
       const q = query ? norm3(query) : "";
       const found = q ? rustSearch(q) : null;
       if (found) {
+        searchedBy = "rust";
         out = applyGridFilters(found, toolColumns, filters);
       } else {
         out = applyGridFilters(data, toolColumns, filters);
-        if (q) out = out.filter((row) => columns.some((c) => norm3(row[c.key]).includes(q) || norm3(formatPlain(c, row[c.key])).includes(q)));
+        if (q) {
+          searchedBy = "ts";
+          out = out.filter((row) => columns.some((c) => norm3(row[c.key]).includes(q) || norm3(formatPlain(c, row[c.key])).includes(q)));
+        }
       }
+      const matched = out.length;
       if (sort && sort.key) {
         const column = columns.find((c) => c.key === sort.key);
-        if (column) out = rustSort(out, column, sort.direction) || out.slice().sort((a, b) => compare2(a, b, column, sort.direction));
+        if (column) {
+          const fast = rustSort(out, column, sort.direction);
+          sortedBy = fast ? "rust" : "ts";
+          out = fast || out.slice().sort((a, b) => compare2(a, b, column, sort.direction));
+        }
       }
+      lastSearchTime = searchedBy || sortedBy ? { query: q ? query : "", ms: performance.now() - t0, rows: matched, engine: searchedBy === "rust" || sortedBy === "rust" ? "rust" : "ts" } : null;
       return out;
     }
     let numberFormat = null;
@@ -5894,7 +5913,11 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
       const current = rows.slice(start, end);
       host.className = `yv-grid yv-theme-${theme}${opts.wrap ? " yv-wrap" : ""}${opts.className ? " " + opts.className : ""}`;
       host.setAttribute("aria-busy", String(loading2));
-      info.textContent = `${rows.length.toLocaleString(numberLocale)} ${t.rows}${selectable ? ` \xB7 ${selected.size.toLocaleString(numberLocale)} ${t.selected}` : ""}`;
+      info.textContent = `${rows.length.toLocaleString(numberLocale)} ${t.rows}${selectable ? ` \xB7 ${selected.size.toLocaleString(numberLocale)} ${t.selected}` : ""}${opts.showSearchTime && lastSearchTime ? ` \xB7 ${formatSearchTime(lastSearchTime.ms)} \xB7 ${lastSearchTime.engine === "rust" ? "Rust" : "TS"}` : ""}`;
+      const runKey = lastSearchTime ? [query, sort && sort.key, sort && sort.direction, filters, data] : null;
+      const changed = !runKey || !lastRunKey || runKey.some((v, i) => v !== lastRunKey[i]);
+      if (lastSearchTime && changed && typeof opts.onSearchTime === "function") opts.onSearchTime({ ...lastSearchTime });
+      lastRunKey = runKey;
       viewBtn.innerHTML = icon(isCards() ? "grid" : "cards", 18);
       viewBtn.setAttribute("aria-label", isCards() ? t.tableView : t.cardView);
       viewBtn.title = isCards() ? t.tableView : t.cardView;
@@ -6461,6 +6484,8 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
       get engine() {
         return core && wantsRustEngine(engineOption, data.length) ? "rust" : "ts";
       },
+      /** Last search/sort: { query, ms, rows, engine } or null. */
+      getSearchTime: () => lastSearchTime ? { ...lastSearchTime } : null,
       /** Resolves "rust" or "ts" once the engine choice is settled. */
       whenEngineReady: () => ensureCore().then(() => api.engine),
       // highlight
@@ -7305,7 +7330,7 @@ ${command ? command.say : "Not a voice command. Try: make text bigger, high cont
   }
 
   // vanilla/src/index.js
-  var VERSION = "5.3.5";
+  var VERSION = "5.3.7";
   (function boot() {
     if (!isBrowser2()) return;
     if (window.yuktai && window.yuktai.__vanillaInitialized) return;

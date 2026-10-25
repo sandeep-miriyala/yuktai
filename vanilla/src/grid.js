@@ -18,7 +18,7 @@ import {
   toGridToolColumns,
 } from "./core.js"
 import { createAgenticGrid, createGridAgent, registerWebMCP } from "./agent.js"
-import { GridCore, loadGridCore, pickRows, SEARCH_SEPARATOR, wantsRustEngine } from "../../src/grid/rust/engine"
+import { formatSearchTime, GridCore, loadGridCore, pickRows, SEARCH_SEPARATOR, wantsRustEngine } from "../../src/grid/rust/engine"
 import { mountAgenticGridBar } from "./bar.js"
 import { announce, csvCell, downloadText, esc, h, icon, iconEl, nextId, prefersReducedMotion } from "./dom.js"
 
@@ -259,22 +259,42 @@ export function renderGrid(container, rowsOrOptions, columnsArg, optionsArg) {
     return dir === "desc" ? -out : out
   }
 
+  // Last search/sort: { query, ms, rows, engine } or null (see opts.showSearchTime)
+  let lastSearchTime = null
+  let lastRunKey = null
+
   function viewRows() {
     ensureCore()
+    const t0 = performance.now()
+    let searchedBy = null
+    let sortedBy = null
     let out
     const q = query ? norm(query) : ""
     // Search and filters only remove rows, so with Rust searching first the result is the same
     const found = q ? rustSearch(q) : null
     if (found) {
+      searchedBy = "rust"
       out = applyGridFilters(found, toolColumns, filters)
     } else {
       out = applyGridFilters(data, toolColumns, filters)
-      if (q) out = out.filter((row) => columns.some((c) => norm(row[c.key]).includes(q) || norm(formatPlain(c, row[c.key])).includes(q)))
+      if (q) {
+        searchedBy = "ts"
+        out = out.filter((row) => columns.some((c) => norm(row[c.key]).includes(q) || norm(formatPlain(c, row[c.key])).includes(q)))
+      }
     }
+    const matched = out.length
     if (sort && sort.key) {
       const column = columns.find((c) => c.key === sort.key)
-      if (column) out = rustSort(out, column, sort.direction) || out.slice().sort((a, b) => compare(a, b, column, sort.direction))
+      if (column) {
+        const fast = rustSort(out, column, sort.direction)
+        sortedBy = fast ? "rust" : "ts"
+        out = fast || out.slice().sort((a, b) => compare(a, b, column, sort.direction))
+      }
     }
+    lastSearchTime =
+      searchedBy || sortedBy
+        ? { query: q ? query : "", ms: performance.now() - t0, rows: matched, engine: searchedBy === "rust" || sortedBy === "rust" ? "rust" : "ts" }
+        : null
     return out
   }
 
@@ -334,7 +354,14 @@ export function renderGrid(container, rowsOrOptions, columnsArg, optionsArg) {
 
     host.className = `yv-grid yv-theme-${theme}${opts.wrap ? " yv-wrap" : ""}${opts.className ? " " + opts.className : ""}`
     host.setAttribute("aria-busy", String(loading))
-    info.textContent = `${rows.length.toLocaleString(numberLocale)} ${t.rows}${selectable ? ` · ${selected.size.toLocaleString(numberLocale)} ${t.selected}` : ""}`
+    info.textContent = `${rows.length.toLocaleString(numberLocale)} ${t.rows}${selectable ? ` · ${selected.size.toLocaleString(numberLocale)} ${t.selected}` : ""}${
+      opts.showSearchTime && lastSearchTime ? ` · ${formatSearchTime(lastSearchTime.ms)} · ${lastSearchTime.engine === "rust" ? "Rust" : "TS"}` : ""
+    }`
+    // Report a run once per new search/sort/filter/data, not on every redraw
+    const runKey = lastSearchTime ? [query, sort && sort.key, sort && sort.direction, filters, data] : null
+    const changed = !runKey || !lastRunKey || runKey.some((v, i) => v !== lastRunKey[i])
+    if (lastSearchTime && changed && typeof opts.onSearchTime === "function") opts.onSearchTime({ ...lastSearchTime })
+    lastRunKey = runKey
     viewBtn.innerHTML = icon(isCards() ? "grid" : "cards", 18)
     viewBtn.setAttribute("aria-label", isCards() ? t.tableView : t.cardView)
     viewBtn.title = isCards() ? t.tableView : t.cardView
@@ -933,6 +960,8 @@ export function renderGrid(container, rowsOrOptions, columnsArg, optionsArg) {
     get engine() {
       return core && wantsRustEngine(engineOption, data.length) ? "rust" : "ts"
     },
+    /** Last search/sort: { query, ms, rows, engine } or null. */
+    getSearchTime: () => (lastSearchTime ? { ...lastSearchTime } : null),
     /** Resolves "rust" or "ts" once the engine choice is settled. */
     whenEngineReady: () => ensureCore().then(() => api.engine),
 

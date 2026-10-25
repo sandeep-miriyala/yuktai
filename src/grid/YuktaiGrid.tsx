@@ -24,7 +24,8 @@ import {
   type GridToolSort,
 } from "./gridTools";
 import { useGridCore } from "./rust/useGridCore";
-import { yuktaiGridRows, yuktaiGridSearchTexts } from "./yuktaiGridRows";
+import { engineUsed, yuktaiGridRows, yuktaiGridSearchTexts, type GridRunStats } from "./yuktaiGridRows";
+import { formatSearchTime } from "./rust/engine";
 
 type Language = "en-US" | "te-IN";
 
@@ -292,6 +293,8 @@ export function YuktaiGrid<
   onAgentResult,
   customRules = [],
   engine = "ts",
+  showSearchTime = false,
+  onSearchTime,
 }: YuktaiGridProps<T>) {
   const language: Language =
     locale === "te-IN" ? "te-IN" : "en-US";
@@ -376,9 +379,12 @@ export function YuktaiGrid<
     [core, data, columns]
   );
 
-  const rows = useMemo(
-    () =>
-      yuktaiGridRows({
+  // Rows + how long search/sort took and which engine answered
+  const run = useMemo(
+    () => {
+      const stats: GridRunStats = { search: null, sort: null };
+      const t0 = typeof performance !== "undefined" ? performance.now() : Date.now();
+      const result = yuktaiGridRows({
         data,
         columns,
         searchText,
@@ -389,7 +395,11 @@ export function YuktaiGrid<
         locale,
         core,
         searchReady: rustSearchReady,
-      }),
+        stats,
+      });
+      const ms = (typeof performance !== "undefined" ? performance.now() : Date.now()) - t0;
+      return { rows: result, ms, engine: engineUsed(stats) };
+    },
     [
       data,
       columns,
@@ -403,6 +413,14 @@ export function YuktaiGrid<
       rustSearchReady,
     ]
   );
+  const rows = run.rows;
+
+  // Report each search/sort run (only when something actually ran)
+  useEffect(() => {
+    if (!onSearchTime || !run.engine) return;
+    onSearchTime({ query: searchText.trim(), ms: run.ms, rows: run.rows.length, engine: run.engine });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [run]);
 
   const totalPages = paginationEnabled
     ? Math.max(
@@ -950,6 +968,14 @@ export function YuktaiGrid<
             {rows.length === 1
               ? t.row
               : t.rows}
+            {showSearchTime && run.engine && (
+              <span title={run.engine === "rust" ? "Rust (WebAssembly)" : "TypeScript"}>
+                {" · "}
+                {formatSearchTime(run.ms)}
+                {" · "}
+                {run.engine === "rust" ? "Rust" : "TS"}
+              </span>
+            )}
           </div>
 
           {aiEnabled && (

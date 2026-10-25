@@ -232,3 +232,92 @@ describe("vanilla renderGrid: TypeScript and Rust agree", () => {
     })
   }
 })
+
+describe("search time", () => {
+  const data = makeRows(7, 200, "numbers")
+
+  it("formats times", async () => {
+    const { formatSearchTime } = await import("../engine")
+    expect(formatSearchTime(0)).toBe("<0.1 ms")
+    expect(formatSearchTime(0.94)).toBe("0.9 ms")
+    expect(formatSearchTime(12.6)).toBe("13 ms")
+  })
+
+  it("<YuktaiGrid> pipeline reports the engine that really answered", async () => {
+    const { engineUsed } = await import("../../yuktaiGridRows")
+    const core = GridCore.create()!
+    const searchReady = core.setSearchTexts(yuktaiGridSearchTexts(data, columns))
+    const toolColumns = toGridToolColumns(columns.map((c) => ({ key: String(c.key), label: c.label, type: c.type })))
+    const base = { data, columns, filters: [], toolColumns, sortDirection: "asc" as const, locale: "te-IN", core, searchReady }
+    const stats = { search: null, sort: null } as { search: "rust" | "ts" | null; sort: "rust" | "ts" | null }
+    yuktaiGridRows({ ...base, searchText: "hyd", sortKey: "amount", stats })
+    expect(stats).toEqual({ search: "rust", sort: "rust" })
+    yuktaiGridRows({ ...base, searchText: "", sortKey: "name", stats }) // Telugu text sort → TypeScript
+    expect(stats).toEqual({ search: null, sort: "ts" })
+    expect(engineUsed(stats)).toBe("ts")
+    yuktaiGridRows({ ...base, searchText: "", stats })
+    expect(engineUsed(stats)).toBeNull()
+  })
+
+  it("useGrid returns searchTime", () => {
+    let grid: UseGridReturn<Row> | null = null
+    function Probe() {
+      grid = useGrid({ data, columns, engine: "rust", pagination: false })
+      return null
+    }
+    const root = createRoot(document.createElement("div"))
+    act(() => root.render(createElement(Probe)))
+    expect(grid!.searchTime).toBeNull()
+    act(() => grid!.setSearchQuery("hyd"))
+    expect(grid!.searchTime).toMatchObject({ query: "hyd", engine: "rust", rows: grid!.rows.length })
+    expect(grid!.searchTime!.ms).toBeGreaterThanOrEqual(0)
+    act(() => root.unmount())
+  })
+
+  it("vanilla grid shows and reports search time", async () => {
+    const el = document.createElement("div")
+    document.body.append(el)
+    const reports: { engine: string; query: string }[] = []
+    const grid = renderGrid(el, {
+      data,
+      columns: columns.map((c) => ({ key: c.key, label: c.label, type: c.type })),
+      engine: "rust",
+      showSearchTime: true,
+      onSearchTime: (r: { engine: string; query: string }) => reports.push(r),
+    })
+    await grid.whenEngineReady()
+    grid.search("hyd")
+    expect(el.querySelector(".yv-info")!.textContent).toMatch(/ms · Rust$/)
+    expect(grid.getSearchTime()).toMatchObject({ query: "hyd", engine: "rust" })
+    grid.goToPage(2) // a redraw without a new search must not report again
+    expect(reports.filter((r) => r.query === "hyd").length).toBe(1)
+    grid.destroy()
+  })
+
+  it("<YuktaiGrid> shows the time next to the row count", async () => {
+    const { YuktaiGrid } = await import("../../YuktaiGrid")
+    const seen: { engine: string }[] = []
+    const el = document.createElement("div")
+    const root = createRoot(el)
+    act(() =>
+      root.render(
+        createElement(YuktaiGrid, {
+          data,
+          columns,
+          engine: "rust",
+          showSearchTime: true,
+          onSearchTime: (r: { engine: string }) => seen.push(r),
+        } as never)
+      )
+    )
+    const input = el.querySelector("input[aria-label]") as HTMLInputElement
+    const setValue = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!
+    act(() => {
+      setValue.call(input, "hyd")
+      input.dispatchEvent(new Event("input", { bubbles: true }))
+    })
+    expect(el.textContent).toMatch(/ms · Rust/)
+    expect(seen.at(-1)?.engine).toBe("rust")
+    act(() => root.unmount())
+  })
+})

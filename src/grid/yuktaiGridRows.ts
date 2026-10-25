@@ -52,6 +52,20 @@ export interface YuktaiGridRowsInput<T> {
   core?: GridCore | null
   /** True when `core` holds yuktaiGridSearchTexts(data, columns) */
   searchReady?: boolean
+  /** Filled in with the engine that really answered search and sort */
+  stats?: GridRunStats
+}
+
+/** Which engine answered, per step (null = step not run). */
+export interface GridRunStats {
+  search: "rust" | "ts" | null
+  sort: "rust" | "ts" | null
+}
+
+/** "rust" if Rust answered any step, "ts" if only TypeScript ran, null if nothing ran. */
+export function engineUsed(stats: GridRunStats): "rust" | "ts" | null {
+  if (stats.search === "rust" || stats.sort === "rust") return "rust"
+  return stats.search || stats.sort ? "ts" : null
 }
 
 export function yuktaiGridRows<T>({
@@ -65,13 +79,19 @@ export function yuktaiGridRows<T>({
   locale,
   core = null,
   searchReady = false,
+  stats,
 }: YuktaiGridRowsInput<T>): T[] {
   let result = [...data]
+  if (stats) {
+    stats.search = null
+    stats.sort = null
+  }
 
   if (searchText.trim()) {
     const query = searchText.trim().toLowerCase()
 
     const hits = core && searchReady ? core.search(query) : null
+    if (stats) stats.search = hits ? "rust" : "ts"
     if (hits) {
       result = pickRows(data, hits)
     } else {
@@ -93,8 +113,12 @@ export function yuktaiGridRows<T>({
     if (core) {
       const keys = yuktaiGridSortKeys(result, sortKey)
       const order = keys && core.sortByKeys(keys, sortDirection !== "asc")
-      if (order) return pickRows(result, order)
+      if (order) {
+        if (stats) stats.sort = "rust"
+        return pickRows(result, order)
+      }
     }
+    if (stats) stats.sort = "ts"
 
     result.sort((a, b) => {
       const av = a[sortKey as keyof T]

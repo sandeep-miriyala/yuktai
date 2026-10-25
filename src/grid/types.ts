@@ -1,6 +1,17 @@
 import type { ReactNode } from "react"
 import type { GridEngine } from "./rust/engine"
 
+/** One search/sort run: what was searched, how long it took, which engine answered. */
+export interface GridSearchTime {
+  /** The search text ("" when only sorting) */
+  query: string
+  /** Milliseconds for search + filters + sort */
+  ms: number
+  /** Rows after search and filters */
+  rows: number
+  engine: "rust" | "ts"
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Grid Column
 // ─────────────────────────────────────────────────────────────────────────────
@@ -485,6 +496,15 @@ export interface YuktaiGridProps<
    * text sorting always uses TypeScript (browser locale rules for Telugu).
    */
   engine?: GridEngine
+
+  /**
+   * Show how long the last search/sort took and which engine answered,
+   * next to the row count, e.g. "12 rows · 0.9 ms · Rust". Default: false.
+   */
+  showSearchTime?: boolean
+
+  /** Called after every search or sort with its time and engine. */
+  onSearchTime?: (info: GridSearchTime) => void
 
   // ───────────────────────────────────────────────────────────────────────────
   // Agent Result

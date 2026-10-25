@@ -229,6 +229,12 @@ export class GridCore {
   }
 }
 
+/** "0.9 ms", "12 ms", "<0.1 ms" — for search time labels. */
+export function formatSearchTime(ms: number): string {
+  if (!(ms >= 0.1)) return "<0.1 ms"
+  return `${ms < 10 ? ms.toFixed(1) : Math.round(ms)} ms`
+}
+
 /** Picks `rows[i]` for each position, keeping the given order. */
 export function pickRows<T>(rows: readonly T[], positions: Uint32Array): T[] {
   const out = new Array<T>(positions.length)
