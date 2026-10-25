@@ -6,4 +6,4 @@ node_modules/
 public/tessdata/
 
 # Rust build output
-rust/grid-core/target/
+rust/*/target/

@@ -14,7 +14,7 @@ import { mountAgenticPanel } from "./panel.js"
 import { iconContrast, pickGlyphColor } from "../../src/icons/variant"
 import { createWidget } from "./widget.js"
 
-const VERSION = "5.3.7"
+const VERSION = "5.3.8"
 
 ;(function boot() {
   if (!isBrowser()) return

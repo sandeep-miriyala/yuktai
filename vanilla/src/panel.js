@@ -291,7 +291,7 @@ export function mountAgenticPanel(container, options = {}) {
       if (show) nodes.push(show)
       if (a.intent === "unknown") {
         // keyword search (BM25) over the page text, optional model answer
-        if (!index) index = createContextIndex({ includePage: true, documents: options.documents })
+        if (!index) index = createContextIndex({ includePage: true, documents: options.documents, engine: options.engine })
         else index.rebuild()
         const c = await index.ask(q, { generate: options.generate })
         nodes.push(h("h4", { style: "margin:12px 0 4px" }, c.generated ? "Answer (your model)" : "From the page text"), h("div", { class: "yv-answer" }, c.answer))

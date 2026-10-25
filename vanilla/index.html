@@ -294,7 +294,7 @@ yuktai.mountAgenticPanel("#tools", { defaultTab: "qa", voiceLang: "te-IN" })</co
   <div class="wrap foot">
     <img src="./icons/icon-192.png" alt="" width="56" height="56">
     <div>
-      <p><span class="gold">Yuktisárathi</span> · yuktai Vanilla JS 5.3.7</p>
+      <p><span class="gold">Yuktisárathi</span> · yuktai Vanilla JS 5.3.8</p>
       <p>© Sandeep Miriyala, Yuktishaalaa AI Lab · <a href="https://github.com/sandeepmiriyala03/yuktai">GitHub</a> · <a href="https://www.npmjs.com/package/@yuktishaalaa/yuktai">npm</a> · <a href="https://hub.xerj.org/contributors/sandeepmiriyala03">XERJ Corpus Hub</a></p>
     </div>
   </div>
@@ -466,7 +466,7 @@ window.YUKTAI_CONFIG = { position: "right", primaryColor: "#005A9C", title: "Acc
   $("#standalone-table").textContent = "Ask a question above. The rows the agent picked will be listed here.";
 
   // ── 4. page tools inline ──
-  Y.mountAgenticPanel("#page-tools", { defaultTab: "qa", voiceLang: "en-IN", applySettings: function (c) { return Y.apply(c) }, getSettings: Y.getSettings });
+  Y.mountAgenticPanel("#page-tools", { defaultTab: "qa", voiceLang: "en-IN", engine: "rust", applySettings: function (c) { return Y.apply(c) }, getSettings: Y.getSettings });
 
   $("#insert-practice").addEventListener("click", function () {
     if ($("#practice-form")) return;

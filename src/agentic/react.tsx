@@ -12,6 +12,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, 
 import { getRowId, toGridToolColumns, type GridToolContext, type GridToolFilter, type GridToolSort } from "../grid/gridTools"
 import { createA11yCopilot, type A11yCopilot, type CopilotState } from "./a11yCopilot"
 import { createContextIndex } from "./contextIndex"
+import type { GridEngine } from "../grid/rust/engine"
 import { reviewDesign, type DesignReview } from "./designReview"
 import { reviewForms, type FormReview } from "./formReview"
 import { answerGridQuestion, executeGridQuery } from "./gridQuery"
@@ -262,10 +263,12 @@ export interface AgenticPanelProps {
   voiceLang?: string
   /** Optional model hook for Ask page, e.g. Gemini Nano or your own API. */
   generate?: (question: string, context: string) => Promise<string>
+  /** Ask page search engine: "ts" (default), "rust" or "auto". Same answers; Rust is faster on long pages. */
+  engine?: GridEngine
   style?: CSSProperties
 }
 
-export function AgenticPanel({ defaultTab = "copilot", voiceLang = "en-IN", generate, style }: AgenticPanelProps) {
+export function AgenticPanel({ defaultTab = "copilot", voiceLang = "en-IN", generate, engine, style }: AgenticPanelProps) {
   const [tab, setTab] = useState<Tab>(defaultTab)
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([])
 
@@ -303,7 +306,7 @@ export function AgenticPanel({ defaultTab = "copilot", voiceLang = "en-IN", gene
         {tab === "qa" && <QaTab />}
         {tab === "forms" && <FormsTab />}
         {tab === "design" && <DesignTab />}
-        {tab === "ask" && <AskTab generate={generate} />}
+        {tab === "ask" && <AskTab generate={generate} engine={engine} />}
         {tab === "voice" && <VoiceTab lang={voiceLang} />}
       </div>
     </section>
@@ -421,8 +424,11 @@ function DesignTab() {
   )
 }
 
-function AskTab({ generate }: { generate?: AgenticPanelProps["generate"] }) {
+function AskTab({ generate, engine }: { generate?: AgenticPanelProps["generate"]; engine?: GridEngine }) {
   const [q, setQ] = useState("")
+  // One index for this tab: reused between questions, refreshed from the page each time
+  const indexRef = useRef<ReturnType<typeof createContextIndex> | null>(null)
+  const indexEngine = useRef<GridEngine | undefined>(engine)
   const [answer, setAnswer] = useState("")
   const [extra, setExtra] = useState<string[]>([])
   const submit = async (e: FormEvent) => {
@@ -434,7 +440,11 @@ function AskTab({ generate }: { generate?: AgenticPanelProps["generate"] }) {
       setExtra(page.suggestions)
       return
     }
-    const rag = await createContextIndex().ask(q, { generate })
+    if (!indexRef.current || indexEngine.current !== engine) {
+      indexRef.current = createContextIndex({ engine })
+      indexEngine.current = engine
+    } else indexRef.current.rebuild()
+    const rag = await indexRef.current.ask(q, { generate })
     setAnswer(page.intent === "purpose" && !rag.hits.length ? page.answer : rag.hits.length ? rag.answer : page.answer)
     setExtra(page.suggestions)
   }

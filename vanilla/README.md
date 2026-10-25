@@ -122,6 +122,7 @@ yuktai.registerWebMCP(tools, { onStatusChange: console.log })                   
 
 ```js
 yuktai.mountAgenticPanel("#tools", { defaultTab: "qa", voiceLang: "te-IN" })  // AgenticPanel, six tabs
+yuktai.mountAgenticPanel("#tools", { engine: "rust" })  // Ask page searches with the Rust RAG engine (same answers, faster)
 ```
 
 The panel is marked `data-yuktai-panel`, so the agents never audit their own UI.

@@ -53,7 +53,8 @@ const PAGE = 65536
 let compiled: WebAssembly.Module | null = null
 let loading: Promise<WebAssembly.Module | null> | null = null
 
-function decodeBase64(b64: string): Uint8Array {
+/** Decodes an embedded WebAssembly module (browser atob, or Node Buffer). */
+export function decodeBase64(b64: string): Uint8Array {
   if (typeof atob === "function") {
     const bin = atob(b64)
     const out = new Uint8Array(bin.length)

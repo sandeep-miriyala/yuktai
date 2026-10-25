@@ -11,6 +11,8 @@
 
 import type { GridToolColumn } from "../grid/gridTools"
 import { cleanText, queryAll, resolveRoot, type AuditRoot } from "./dom"
+import type { GridEngine } from "../grid/rust/engine"
+import { getLoadedRagCore, loadRagCore, RagCore, wantsRustRag } from "./rust/ragEngine"
 
 export interface ContextPassage {
   id: string
@@ -90,6 +92,12 @@ export interface ContextIndexOptions<T = Record<string, unknown>> {
   rowKey?: string
   /** Extra documents, e.g. FAQ text or help articles. */
   documents?: Array<{ id: string; text: string }>
+  /**
+   * Search engine: "ts" (default), "rust" (always) or "auto" (Rust from 1,000
+   * passages). Same passages, same scores, same order; Rust is faster on long
+   * pages and big grids. Works offline (the engine is embedded).
+   */
+  engine?: GridEngine
 }
 
 export function createContextIndex<T>(options: ContextIndexOptions<T> = {}) {
@@ -97,24 +105,69 @@ export function createContextIndex<T>(options: ContextIndexOptions<T> = {}) {
   let docs: string[][] = []
   let df = new Map<string, number>()
   let avgLen = 0
+  let builtKey: string | null = null
+
+  // Optional Rust engine (null = TypeScript, also while it loads)
+  let rust: RagCore | null = null
+  let rustDocs: string[][] | null = null
+  let rustReady = false
+  let rustLoading: Promise<boolean> | null = null
+
+  function ensureRust(): Promise<boolean> {
+    if (!wantsRustRag(options.engine, passages.length)) return Promise.resolve(false)
+    if (rust) return Promise.resolve(true)
+    if (!rustLoading) {
+      rustLoading = loadRagCore().then((mod) => {
+        rust = mod ? RagCore.create(mod) : null
+        return !!rust
+      })
+    }
+    return rustLoading
+  }
 
   function rebuild() {
-    passages = [
+    const next: ContextPassage[] = [
       ...(options.includePage === false ? [] : pagePassages(options.root)),
       ...(options.rows && options.columns ? gridPassages(options.rows, options.columns, options.rowKey) : []),
       ...(options.documents ?? []).map((d) => ({ id: d.id, source: "custom" as const, text: d.text })),
     ]
+    // Same passages as last time (the page didn't change)? Keep the index.
+    const key = next.map((p) => `${p.source}\u0001${p.id}\u0001${p.ref ?? ""}\u0001${p.text}`).join("\u0002")
+    if (key === builtKey) return
+    builtKey = key
+    passages = next
     docs = passages.map((p) => tokenize(p.text))
     df = new Map()
     for (const tokens of docs) for (const t of new Set(tokens)) df.set(t, (df.get(t) ?? 0) + 1)
     avgLen = docs.reduce((n, d) => n + d.length, 0) / Math.max(1, docs.length)
   }
   rebuild()
+  // Compiled already (another index loaded it)? Use Rust from the first question.
+  if (wantsRustRag(options.engine, passages.length) && getLoadedRagCore()) void ensureRust()
+
+  /** Rust search, or null to use TypeScript. Same scores, same order. */
+  function rustSearch(q: string[], k: number): ContextHit[] | null {
+    if (!rust || !wantsRustRag(options.engine, passages.length)) return null
+    if (!Number.isInteger(k) || k <= 0) return null
+    if (rustDocs !== docs) {
+      rustReady = rust.build(docs)
+      rustDocs = docs
+    }
+    if (!rustReady) return null
+    const N = docs.length
+    // idf with Math.log here, exactly as the TypeScript loop below computes it
+    const idf = q.map((term) => Math.log(1 + (N - (df.get(term) ?? 1) + 0.5) / ((df.get(term) ?? 1) + 0.5)))
+    const hits = rust.search(q, idf, avgLen || 1, k)
+    return hits ? hits.map((h) => ({ ...passages[h.doc], score: h.score })) : null
+  }
 
   /** BM25 ranking (k1 = 1.2, b = 0.75) with prefix matching for inflected words. */
   function search(question: string, k = 5): ContextHit[] {
     const q = tokenize(question)
     if (!q.length) return []
+    const fast = rustSearch(q, k)
+    if (fast) return fast
+    if (!rust) void ensureRust()
     const N = docs.length
     const scored = docs.map((tokens, i) => {
       let score = 0
@@ -138,6 +191,7 @@ export function createContextIndex<T>(options: ContextIndexOptions<T> = {}) {
     question: string,
     opts: { k?: number; generate?: (question: string, context: string) => Promise<string> } = {}
   ): Promise<ContextAnswer> {
+    await ensureRust()
     const hits = search(question, opts.k ?? 4)
     if (!hits.length) return { answer: "I couldn't find anything about that on this page or in the data.", hits, generated: false }
     if (opts.generate) {
@@ -172,5 +226,11 @@ export function createContextIndex<T>(options: ContextIndexOptions<T> = {}) {
       rebuild()
     },
     size: () => passages.length,
+    /** "rust" when the Rust engine answers searches for this index, else "ts". */
+    get engine(): "rust" | "ts" {
+      return rust && wantsRustRag(options.engine, passages.length) ? "rust" : "ts"
+    },
+    /** Resolves "rust" or "ts" once the engine is loaded (or not wanted). */
+    whenEngineReady: () => ensureRust().then((ok) => (ok ? "rust" : "ts")),
   }
 }

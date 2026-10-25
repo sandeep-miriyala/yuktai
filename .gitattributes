@@ -18,3 +18,4 @@ vanilla/index.js              linguist-generated=true
 vanilla/index.min.js          linguist-generated=true
 dist/**                       linguist-generated=true
 src/grid/rust/gridCoreWasm.ts linguist-generated=true
+src/agentic/rust/ragCoreWasm.ts linguist-generated=true

@@ -46,6 +46,44 @@ Six modules ship in a single npm package, for React/Next.js and, since v5.3, for
 
 ---
 
+## What's new in v5.3.8: Rust RAG for "Ask page" (optional)
+
+The page + data search behind **Ask page** (`createContextIndex`, used after `askAboutPage`) can now run in **Rust**. Same passages, same BM25 scores (bit for bit), same answers: only faster. Free, offline, and it works in PWAs: the engine (about 33 KB of WebAssembly) is embedded in the package.
+
+```tsx
+<AgenticPanel engine="rust" />                                  // React / Next.js: Ask page tab
+```
+
+```js
+yuktai.mountAgenticPanel("#tools", { engine: "rust" })            // plain HTML
+const index = yuktai.createContextIndex({ rows, columns, engine: "rust" })
+await index.ask("Which office handles leave requests?")
+```
+
+| `engine` | What runs |
+|---|---|
+| `"ts"` (default) | TypeScript, unchanged |
+| `"rust"` | Rust inverted index for every search |
+| `"auto"` | Rust from 1,000 passages |
+
+- **How it is faster:** TypeScript scans every word of every passage for each question. Rust builds an inverted index once and jumps straight to the passages that contain the question's words (and their longer/shorter forms, as before).
+- **Same results, tested:** TypeScript still tokenizes (Telugu-aware) and computes `idf` with `Math.log`; Rust does the counting and the BM25 arithmetic in the same order, so scores match bit for bit. Tests compare both engines on English and Telugu documents, grid rows and real page text (1,000+ searches).
+- **Measured** (Node 22, median, per question):
+
+| Content | TypeScript | Rust | Speed-up |
+|---|---|---|---|
+| Long page, 500 passages | 2.3 ms | 0.08 ms | 27× |
+| Help docs, 5,000 passages | 18.8 ms | 0.45 ms | 42× |
+| Grid, 1,00,000 rows | 46.2 ms | 3.4 ms | 14× |
+
+  Rust builds its index once per content change (240 ms for 1 lakh rows); every question after that is fast.
+- **Also faster for everyone (both engines):** asking again on an unchanged page no longer rebuilds the index (6 ms instead of 183 ms for 5,000 passages). The React Ask tab now reuses its index between questions, like the vanilla panel.
+- **PWA:** the demo's service worker cache is now `yuktai-vanilla-v5.3.8`, so installed apps pick up the new engine.
+
+Source: [`rust/rag-core`](./rust/rag-core) (no dependencies, `no_std` + `alloc`). Rust tests: `npm run test:rust`.
+
+---
+
 ## What's new in v5.3.5: Rust grid engine (optional)
 
 The grid's existing search and number/date sorting can now run in **Rust**, compiled to WebAssembly. Nothing else changes: same rows, same order, same API. The default is still TypeScript, so existing apps behave exactly as before.
