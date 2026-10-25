@@ -46,6 +46,39 @@ Six modules ship in a single npm package, for React/Next.js and, since v5.3, for
 
 ---
 
+## What's new in v5.3.9: `YuktAIWrapper` launcher, opt-in buttons, Rust Ask page
+
+Turn on only the buttons a site needs, put them behind one launcher, and let 💬 Ask page find answers with the Rust RAG first.
+
+```tsx
+"use client";
+import type { ReactNode } from "react";
+import { YuktAIWrapper } from "@yuktishaalaa/yuktai";
+
+export default function YuktaiClient({ children }: { children: ReactNode }) {
+  return (
+    <YuktAIWrapper position="left" launcher showAccessibility showRag showAgent showVibeCoder engine="rust">
+      {children}
+    </YuktAIWrapper>
+  );
+}
+```
+
+| Prop | Button |
+|---|---|
+| `launcher` | ✨ one button that shows/hides the others. Remembers the visitor's choice, closes with Esc, sets `<html data-yuktai-tools="open\|closed">` for styling |
+| `showAccessibility` | ♿ Accessibility preferences |
+| `showRag` | 💬 Ask page |
+| `showAgent` | 🤖 AI Agent |
+| `showVibeCoder` | ⚡ Vibe Coder (a developer tool; leave it off on public sites) |
+| `engine` | 💬 Ask page search: `"rust"`, `"auto"` or `"ts"` |
+
+- **Opt-in:** as soon as you set `launcher`, `showAccessibility` or `showVibeCoder`, only the buttons you turn on are shown, stacked with no gaps. Without those props the wrapper behaves exactly as before (♿ always; ⚡ with `showAgent`).
+- **💬 with `engine`:** the page RAG finds the best passages first (Rust: fast, offline, Telugu-aware) and shows them at once with "From this page" and the search time. If Gemini Nano or Transformers.js is available, the model then writes the answer from **only those passages**, instead of reading the whole page (Gemini) or embedding every chunk for each question (Transformers.js). It works even with no model at all. Without `engine`, 💬 works exactly as before.
+- **Fixes:** ⚡ Vibe Coder can now be turned off on its own (it used to follow `showAgent`); Esc now closes the Vibe Coder panel too.
+
+---
+
 ## What's new in v5.3.8: Rust RAG for "Ask page" (optional)
 
 The page + data search behind **Ask page** (`createContextIndex`, used after `askAboutPage`) can now run in **Rust**. Same passages, same BM25 scores (bit for bit), same answers: only faster. Free, offline, and it works in PWAs: the engine (about 33 KB of WebAssembly) is embedded in the package.

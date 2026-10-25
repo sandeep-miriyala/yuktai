@@ -2,15 +2,23 @@
 // src/react/YuktAIWrapper.tsx
 // yuktai v3.1.0 — Yuktishaalaa AI Lab
 //
-// Three floating buttons stacked vertically:
-//   🤖  ← Agent button (top)    — showAgent={true}
-//   💬  ← RAG button  (middle)  — showRag={true}
-//   ♿  ← A11y button (bottom)  — always shown
+// Floating buttons, stacked vertically. v5.3.9: each one is turned on by
+// the developer, and an optional launcher shows/hides them all:
 //
-// Usage:
-//   <YuktAIWrapper position="left">
-//   <YuktAIWrapper position="left" showRag={true}>
+//   <YuktAIWrapper position="left" launcher showAccessibility showRag
+//                  showAgent showVibeCoder engine="rust">
+//
+//   ✨  launcher        — launcher         (one button that opens the others)
+//   ♿  Accessibility   — showAccessibility
+//   💬  Ask page        — showRag          (engine="rust": Rust RAG finds the
+//                                           passages, then the model answers)
+//   🤖  Agent           — showAgent
+//   ⚡  Vibe Coder      — showVibeCoder
+//
+// Older usage still works exactly as before (♿ always, ⚡ with showAgent):
 //   <YuktAIWrapper position="left" showRag={true} showAgent={true}>
+// That legacy mode applies when none of showAccessibility, showVibeCoder or
+// launcher is set.
 // ─────────────────────────────────────────────────────────────────────────────
 
 "use client"
@@ -29,6 +37,8 @@ import {
   getModelLoadStatus,
 } from "../core/ai/transformers-rag"
 import CodeGenPanel from "./CodeGenPanel"
+import { createContextIndex } from "../agentic/contextIndex"
+import { formatSearchTime, type GridEngine } from "../grid/rust/engine"
 // ─────────────────────────────────────────────────────────────────────────────
 // Props
 // ─────────────────────────────────────────────────────────────────────────────
@@ -38,7 +48,22 @@ export interface YuktAIWrapperProps {
   config?:     Partial<A11yConfig>
   showRag?:    boolean   // show 💬 RAG button   — default false
   showAgent?:  boolean   // show 🤖 Agent button — default false
+  /** v5.3.9 — show ♿ Accessibility. Setting this (or showVibeCoder/launcher) switches every button to opt-in. */
+  showAccessibility?: boolean
+  /** v5.3.9 — show ⚡ Vibe Coder (a developer tool; in legacy mode it follows showAgent). */
+  showVibeCoder?: boolean
+  /** v5.3.9 — one ✨ button that shows/hides the others; remembers the choice; Esc closes. */
+  launcher?: boolean
+  /**
+   * v5.3.9 — 💬 Ask page finds passages first with the page RAG ("rust",
+   * "auto" or "ts"), shows them at once, then lets Gemini Nano /
+   * Transformers.js write the answer from only those passages.
+   * Not set: 💬 works exactly as before.
+   */
+  engine?: GridEngine
 }
+
+const LAUNCHER_KEY = "yuktai-tools-open"
 
 // ─────────────────────────────────────────────────────────────────────────────
 // detectAISupport
@@ -89,7 +114,24 @@ export function YuktAIWrapper({
   config:      configOverrides = {},
   showRag    = false,
   showAgent  = false,
+  showAccessibility,
+  showVibeCoder,
+  launcher,
+  engine,
 }: YuktAIWrapperProps) {
+
+  // ── Which buttons are on ──
+  // Legacy (none of the v5.3.9 props set): ♿ always, ⚡ with showAgent — as before.
+  // Opt-in (any of them set): only what the developer turned on.
+  const optIn   = showAccessibility !== undefined || showVibeCoder !== undefined || launcher !== undefined
+  const a11yOn  = optIn ? !!showAccessibility : true
+  const vibeOn  = optIn ? !!showVibeCoder : showAgent
+  const ragOn   = showRag
+  const agentOn = showAgent
+
+  // ── Launcher (show/hide all buttons) ──
+  const [toolsOpen, setToolsOpen] = useState(false)
+  const showButtons = !launcher || toolsOpen
 
   // ── Accessibility panel state ──
   const [panelOpen,      setPanelOpen]      = useState(false)
@@ -117,14 +159,28 @@ export function YuktAIWrapper({
   const [agentEngine,  setAgentEngine]  = useState<"gemini" | "transformers" | null>(null)
 
   // ── Button positions ──
-  // ♿ always at bottom 24px
-  // 💬 at 84px (if shown)
-  // 🤖 at 144px (if both shown), or 84px (if only agent shown)
-  const a11yBottom   = 24
-  const ragBottom    = showAgent ? 84  : 84
-  const agentBottom  = showRag   ? 144 : 84
-  const codegenBottom = 204;
-const [codegenOpen, setCodegenOpen] = useState(false);
+  // Legacy: ♿ 24 · 💬 84 · 🤖 144 (84 without 💬) · ⚡ 204, exactly as before.
+  // Opt-in: the buttons that are on, stacked from the bottom with no gaps
+  // (above the ✨ launcher when there is one), in the order ♿ 💬 🤖 ⚡.
+  const stack = (on: boolean[]) => {
+    const out: number[] = []
+    let next = launcher ? 84 : 24
+    for (const o of on) {
+      out.push(next)
+      if (o) next += 60
+    }
+    return out
+  }
+  const [a11yBottom, ragBottom, agentBottom, codegenBottom] = optIn
+    ? stack([a11yOn, ragOn, agentOn, vibeOn])
+    : [24, 84, showRag ? 144 : 84, 204]
+  const [codegenOpen, setCodegenOpen] = useState(false);
+
+  // ── 💬 retrieval-first mode (engine set) ──
+  const retrievalFirst = engine !== undefined
+  const [ragSources, setRagSources] = useState<string[]>([])
+  const [ragInfo, setRagInfo] = useState<{ ms: number; engine: "rust" | "ts"; ai: boolean } | null>(null)
+  const indexRef = React.useRef<ReturnType<typeof createContextIndex> | null>(null)
   // ─────────────────────────────────────────────────────────────────────────
   // Detect RAG engine
   // ─────────────────────────────────────────────────────────────────────────
@@ -152,7 +208,54 @@ const [codegenOpen, setCodegenOpen] = useState(false);
   // ─────────────────────────────────────────────────────────────────────────
   // RAG ask handler
   // ─────────────────────────────────────────────────────────────────────────
+  const cleanAnswer = (text: string) =>
+    text.replace(/\*\*(.*?)\*\*/g, "$1").replace(/\*(.*?)\*/g, "$1").replace(/#+\s/g, "").trim()
+
+  // engine set: find passages first (Rust/TS page RAG), show them at once,
+  // then let the model (if any) write the answer from only those passages.
+  const handleRagAskRetrieval = useCallback(async () => {
+    const question = ragQuestion.trim()
+    if (!question || ragLoading) return
+    setRagLoading(true)
+    setRagAnswer("")
+    setRagSources([])
+    setRagInfo(null)
+    try {
+      if (!indexRef.current) indexRef.current = createContextIndex({ engine })
+      else indexRef.current.rebuild()
+      await indexRef.current.whenEngineReady()
+      const t0 = performance.now()
+      const found = await indexRef.current.ask(question, { k: 4 })
+      const ms = performance.now() - t0
+      setRagAnswer(found.answer)
+      setRagSources(found.hits.slice(0, 3).map((h) => (h.text.length > 160 ? `${h.text.slice(0, 157)}…` : h.text)))
+      setRagInfo({ ms, engine: indexRef.current.engine, ai: false })
+
+      if (found.hits.length && ragEngine) {
+        const context = found.hits.map((h) => h.text).join("\n")
+        let result
+        if (ragEngine === "gemini") {
+          const { askWithContext } = await import("../core/ai/rag")
+          result = await askWithContext(question, context)
+        } else {
+          setModelStatus("loading")
+          const { answerFromContext } = await import("../core/ai/transformers-rag")
+          result = await answerFromContext(question, context)
+          setModelStatus(getModelLoadStatus()) // "ready" only if the model really loaded
+        }
+        if (result.success && result.answer) {
+          setRagAnswer(cleanAnswer(result.answer))
+          setRagInfo((info) => (info ? { ...info, ai: true } : info))
+        }
+      }
+    } catch {
+      setRagAnswer((a) => a || "⚠️ Something went wrong.")
+    }
+    setRagLoading(false)
+  }, [ragQuestion, ragLoading, ragEngine, engine])
+
   const handleRagAsk = useCallback(async () => {
+    if (retrievalFirst) return handleRagAskRetrieval()
     if (!ragQuestion.trim() || ragLoading) return
     if (!ragEngine) { setRagAnswer("⚠️ No AI engine available."); return }
 
@@ -177,7 +280,7 @@ const [codegenOpen, setCodegenOpen] = useState(false);
       )
     } catch { setRagAnswer("⚠️ Something went wrong.") }
     setRagLoading(false)
-  }, [ragQuestion, ragLoading, ragEngine])
+  }, [ragQuestion, ragLoading, ragEngine, retrievalFirst, handleRagAskRetrieval])
 
   // ─────────────────────────────────────────────────────────────────────────
   // Agent handler — reads page, guides user through task
@@ -263,19 +366,48 @@ const [codegenOpen, setCodegenOpen] = useState(false);
     setSettings(prev => ({ ...prev, [key]: val }))
   }, [])
 
-  // Escape closes all panels
+  // Escape closes the open panel; with nothing open, it closes the launcher
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        if (panelOpen)  setPanelOpen(false)
-        if (ragOpen)    setRagOpen(false)
-        if (agentOpen)  setAgentOpen(false)
-          if (codegenOpen) setCodegenOpen(false)
+      if (e.key !== "Escape") return
+      if (panelOpen || ragOpen || agentOpen || codegenOpen) {
+        setPanelOpen(false)
+        setRagOpen(false)
+        setAgentOpen(false)
+        setCodegenOpen(false)
+      } else if (launcher && toolsOpen) {
+        setToolsOpen(false)
       }
     }
     window.addEventListener("keydown", onKey)
     return () => window.removeEventListener("keydown", onKey)
-  }, [panelOpen, ragOpen, agentOpen])
+  }, [panelOpen, ragOpen, agentOpen, codegenOpen, launcher, toolsOpen])
+
+  // ── Launcher: remember open/closed, expose it for styling ──
+  useEffect(() => {
+    if (!launcher) return
+    try {
+      if (localStorage.getItem(LAUNCHER_KEY) === "1") setToolsOpen(true)
+    } catch { /* storage blocked: start closed */ }
+  }, [launcher])
+
+  useEffect(() => {
+    if (!launcher || typeof document === "undefined") return
+    document.documentElement.setAttribute("data-yuktai-tools", toolsOpen ? "open" : "closed")
+    try { localStorage.setItem(LAUNCHER_KEY, toolsOpen ? "1" : "0") } catch { /* ignore */ }
+  }, [launcher, toolsOpen])
+
+  const toggleTools = useCallback(() => {
+    setToolsOpen((open) => {
+      if (open) {
+        setPanelOpen(false)
+        setRagOpen(false)
+        setAgentOpen(false)
+        setCodegenOpen(false)
+      }
+      return !open
+    })
+  }, [])
 
   useEffect(() => {
     if (panelOpen && panelRef.current) wcagPlugin.trapFocus(panelRef.current)
@@ -310,11 +442,15 @@ const [codegenOpen, setCodegenOpen] = useState(false);
   }
 
   // ── RAG subtitle ──
-  const ragSubtitle = ragEngine === "gemini"
+  const modelSubtitle = ragEngine === "gemini"
     ? "Gemini Nano · On device"
     : ragEngine === "transformers"
     ? "Transformers.js · All devices"
     : "Detecting..."
+  const ragSubtitle = retrievalFirst
+    ? `${engine === "ts" ? "Page search" : "Rust page search"}${ragEngine === "gemini" ? " + Gemini Nano" : ragEngine === "transformers" ? " + Transformers.js" : " · On device"}`
+    : modelSubtitle
+  const canAsk = retrievalFirst || !!ragEngine
 
   const ragLoadingMsg = ragEngine === "transformers" && modelStatus === "loading"
     ? "Loading model..."
@@ -324,10 +460,36 @@ const [codegenOpen, setCodegenOpen] = useState(false);
     <>
       {children}
 
+      {/* ✨ LAUNCHER — shows/hides the other buttons */}
+      {launcher && (
+        <button
+          type="button"
+          style={fabBase(24, toolsOpen ? "#134e4a" : "#0f766e", toolsOpen)}
+          aria-expanded={toolsOpen}
+          aria-label={toolsOpen ? "Hide yuktai tools" : "Show yuktai tools"}
+          title={toolsOpen ? "Hide yuktai tools" : "yuktai tools"}
+          data-yuktai-launcher="true"
+          onClick={toggleTools}
+          onMouseEnter={hover}
+          onMouseLeave={unhover}
+        >
+          {toolsOpen ? (
+            <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+              <path d="M6 6l12 12M18 6L6 18" />
+            </svg>
+          ) : (
+            <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z" />
+              <path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z" />
+            </svg>
+          )}
+        </button>
+      )}
+
 {/* ⚡ VIBE CODER BUTTON */}
-{showAgent && (
+{vibeOn && showButtons && (
   <button
-    style={fabBase(204, codegenOpen ? "#d97706" : "#f59e0b", codegenOpen)}
+    style={fabBase(codegenBottom, codegenOpen ? "#d97706" : "#f59e0b", codegenOpen)}
     aria-label="Open Vibe Coder"
     title="⚡ Vibe Coder — Generate Next.js project"
     onClick={() => { setCodegenOpen(p => !p); setAgentOpen(false); setRagOpen(false); setPanelOpen(false) }}
@@ -339,7 +501,7 @@ const [codegenOpen, setCodegenOpen] = useState(false);
 )}
 
 {/* ⚡ VIBE CODER PANEL */}
-{showAgent && codegenOpen && (
+{vibeOn && showButtons && codegenOpen && (
   <CodeGenPanel
     position={position}
     onClose={() => setCodegenOpen(false)}
@@ -349,7 +511,7 @@ const [codegenOpen, setCodegenOpen] = useState(false);
       {/* ─────────────────────────────────────────────────────────────── */}
       {/* 🤖 AGENT FLOATING BUTTON                                        */}
       {/* ─────────────────────────────────────────────────────────────── */}
-      {showAgent && (
+      {agentOn && showButtons && (
         <button
           style={fabBase(agentBottom, agentOpen ? "#059669" : "#10b981", agentOpen)}
           aria-label="Open AI agent"
@@ -367,7 +529,7 @@ const [codegenOpen, setCodegenOpen] = useState(false);
       {/* ─────────────────────────────────────────────────────────────── */}
       {/* 🤖 AGENT PANEL                                                  */}
       {/* ─────────────────────────────────────────────────────────────── */}
-      {showAgent && agentOpen && (
+      {agentOn && showButtons && agentOpen && (
         <div
           role="dialog"
           aria-modal="true"
@@ -480,7 +642,7 @@ const [codegenOpen, setCodegenOpen] = useState(false);
       {/* ─────────────────────────────────────────────────────────────── */}
       {/* 💬 RAG FLOATING BUTTON                                          */}
       {/* ─────────────────────────────────────────────────────────────── */}
-      {showRag && (
+      {ragOn && showButtons && (
         <button
           style={fabBase(ragBottom, ragOpen ? "#7c3aed" : "#6d28d9", ragOpen)}
           aria-label="Ask a question about this page"
@@ -498,7 +660,7 @@ const [codegenOpen, setCodegenOpen] = useState(false);
       {/* ─────────────────────────────────────────────────────────────── */}
       {/* 💬 RAG PANEL                                                    */}
       {/* ─────────────────────────────────────────────────────────────── */}
-      {showRag && ragOpen && (
+      {ragOn && showButtons && ragOpen && (
         <div
           role="dialog"
           aria-modal="true"
@@ -543,20 +705,20 @@ const [codegenOpen, setCodegenOpen] = useState(false);
               onChange={e => setRagQuestion(e.target.value)}
               onKeyDown={e => { if (e.key === "Enter") handleRagAsk() }}
               placeholder="e.g. What does this page do?"
-              disabled={ragLoading || !ragEngine}
+              disabled={ragLoading || !canAsk}
               aria-label="Ask a question about this page"
-              style={{ flex: 1, padding: "8px 10px", borderRadius: "8px", border: "1px solid #e2e8f0", fontSize: "12px", color: "#0f172a", background: ragEngine ? "#fff" : "#f8fafc", outline: "none", height: "36px" }}
+              style={{ flex: 1, padding: "8px 10px", borderRadius: "8px", border: "1px solid #e2e8f0", fontSize: "12px", color: "#0f172a", background: canAsk ? "#fff" : "#f8fafc", outline: "none", height: "36px" }}
             />
             <button
               onClick={handleRagAsk}
-              disabled={ragLoading || !ragQuestion.trim() || !ragEngine}
+              disabled={ragLoading || !ragQuestion.trim() || !canAsk}
               aria-label="Submit question"
               style={{
                 padding: "8px 12px", borderRadius: "8px", border: "none",
-                background: ragEngine && ragQuestion.trim() && !ragLoading ? "#7c3aed" : "#e2e8f0",
-                color: ragEngine && ragQuestion.trim() && !ragLoading ? "#fff" : "#94a3b8",
+                background: canAsk && ragQuestion.trim() && !ragLoading ? "#7c3aed" : "#e2e8f0",
+                color: canAsk && ragQuestion.trim() && !ragLoading ? "#fff" : "#94a3b8",
                 fontSize: "12px", fontWeight: 600,
-                cursor: ragEngine && ragQuestion.trim() && !ragLoading ? "pointer" : "not-allowed",
+                cursor: canAsk && ragQuestion.trim() && !ragLoading ? "pointer" : "not-allowed",
                 height: "36px", minWidth: "48px", transition: "background 0.2s",
               }}
             >
@@ -565,22 +727,36 @@ const [codegenOpen, setCodegenOpen] = useState(false);
           </div>
 
           {ragAnswer && (
-            <div style={{ padding: "10px", background: "#f5f3ff", borderRadius: "8px", fontSize: "12px", color: "#4c1d95", lineHeight: 1.6, maxHeight: "180px", overflowY: "auto" }}>
+            <div aria-live="polite" style={{ padding: "10px", background: "#f5f3ff", borderRadius: "8px", fontSize: "12px", color: "#4c1d95", lineHeight: 1.6, maxHeight: retrievalFirst ? "260px" : "180px", overflowY: "auto", whiteSpace: "pre-line" }}>
               <strong style={{ display: "block", marginBottom: "4px", fontSize: "11px", color: "#7c3aed" }}>💬 Answer</strong>
               {ragAnswer}
-              <button onClick={() => { setRagAnswer(""); setRagQuestion("") }}
+              {ragSources.length > 0 && (
+                <div style={{ marginTop: "8px" }}>
+                  <strong style={{ display: "block", fontSize: "10px", color: "#6d28d9" }}>From this page</strong>
+                  <ul style={{ margin: "4px 0 0", paddingLeft: "16px", fontSize: "11px", color: "#5b21b6" }}>
+                    {ragSources.map((src, i) => <li key={i} style={{ marginBottom: "2px" }}>{src}</li>)}
+                  </ul>
+                </div>
+              )}
+              {ragInfo && (
+                <p style={{ margin: "6px 0 0", fontSize: "10px", color: "#6d28d9" }}>
+                  ⚡ Found in {formatSearchTime(ragInfo.ms)} · {ragInfo.engine === "rust" ? "Rust" : "TS"} · on device{ragInfo.ai ? " · answer written by AI" : ""}
+                </p>
+              )}
+              <button onClick={() => { setRagAnswer(""); setRagQuestion(""); setRagSources([]); setRagInfo(null) }}
                 style={{ display: "block", marginTop: "6px", background: "none", border: "none", color: "#94a3b8", fontSize: "10px", cursor: "pointer", padding: 0 }}>
                 Clear
               </button>
             </div>
           )}
-          {!ragEngine && <p style={{ margin: "4px 0 0", fontSize: "10px", color: "#94a3b8" }}>Detecting AI engine...</p>}
+          {!canAsk && <p style={{ margin: "4px 0 0", fontSize: "10px", color: "#94a3b8" }}>Detecting AI engine...</p>}
         </div>
       )}
 
       {/* ─────────────────────────────────────────────────────────────── */}
       {/* ♿ ACCESSIBILITY FLOATING BUTTON                                 */}
       {/* ─────────────────────────────────────────────────────────────── */}
+      {a11yOn && showButtons && (
       <button
         style={fabBase(a11yBottom, isActive ? "#0d9488" : "#1a73e8", panelOpen)}
         aria-label="Open accessibility preferences"
@@ -594,11 +770,12 @@ const [codegenOpen, setCodegenOpen] = useState(false);
       >
         ♿
       </button>
+      )}
 
       {/* ─────────────────────────────────────────────────────────────── */}
       {/* ♿ ACCESSIBILITY PANEL                                           */}
       {/* ─────────────────────────────────────────────────────────────── */}
-      {panelOpen && (
+      {a11yOn && showButtons && panelOpen && (
         <WidgetPanel
           ref={panelRef}
           position={position}

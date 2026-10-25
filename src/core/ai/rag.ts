@@ -127,3 +127,35 @@ If not found say: "I could not find that on this page."`,
     }
   }
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// askWithContext — v5.3.9: answer from passages already found (e.g. by the
+// Rust RAG engine) instead of the whole page. Same rules as askPage.
+// ─────────────────────────────────────────────────────────────────────────────
+export async function askWithContext(question: string, context: string): Promise<RagResult> {
+  if (!question.trim() || !context.trim()) {
+    return { success: false, answer: "", error: "Nothing to answer from." }
+  }
+  try {
+    const w = window as any
+    const API = w.LanguageModel || w.ai?.languageModel
+    if (!API) return { success: false, answer: "", error: "Gemini Nano not available." }
+
+    let session
+    try {
+      session = await API.create({
+        systemPrompt: `Answer ONLY using page content.
+Keep answer short (2–3 sentences).
+If not found say: "I could not find that on this page."`,
+        outputLanguage: "en",
+      })
+    } catch {
+      session = await API.create()
+    }
+    const answer = await session.prompt(`Page:\n${context.slice(0, 3500)}\n\nQ: ${question}`)
+    if (session?.destroy) session.destroy()
+    return { success: true, answer: answer?.trim() || "No answer found." }
+  } catch (e) {
+    return { success: false, answer: "", error: e instanceof Error ? e.message : "Error occurred" }
+  }
+}

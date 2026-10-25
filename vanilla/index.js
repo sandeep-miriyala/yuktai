@@ -1,4 +1,4 @@
-/*! yuktai vanilla 5.3.8 — accessible data grid, page agents and WCAG tools for plain HTML.
+/*! yuktai vanilla 5.3.9 — accessible data grid, page agents and WCAG tools for plain HTML.
  *  No framework, no API keys, runs in the browser. ISC © Sandeep Miriyala, Yuktishaalaa AI Lab.
  *  Built from github.com/sandeepmiriyala03/yuktai (vanilla/src + src/agentic, src/grid, src/core; Rust engines: rust/grid-core, rust/rag-core). */
 "use strict";
@@ -7912,7 +7912,7 @@ ${command ? command.say : "Not a voice command. Try: make text bigger, high cont
   }
 
   // vanilla/src/index.js
-  var VERSION = "5.3.8";
+  var VERSION = "5.3.9";
   (function boot() {
     if (!isBrowser2()) return;
     if (window.yuktai && window.yuktai.__vanillaInitialized) return;

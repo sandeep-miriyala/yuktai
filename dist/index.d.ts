@@ -93,25 +93,6 @@ declare const wcagPlugin: {
     }[];
 };
 
-interface YuktAIWrapperProps {
-    position?: "left" | "right";
-    children: ReactNode;
-    config?: Partial<A11yConfig>;
-    showRag?: boolean;
-    showAgent?: boolean;
-}
-declare function YuktAIWrapper({ position, children, config: configOverrides, showRag, showAgent, }: YuktAIWrapperProps): react_jsx_runtime.JSX.Element;
-
-declare const aiPlugin: {
-    name: string;
-    execute(input: string): Promise<string>;
-};
-
-declare const voicePlugin: {
-    name: string;
-    execute(input: string): Promise<string>;
-};
-
 /** Which engine sorts and searches the grid. */
 type GridEngine = "ts" | "rust" | "auto";
 /** `engine: "auto"` switches to Rust from this many rows. */
@@ -157,6 +138,38 @@ declare class GridCore {
      */
     sortByKeys(keys: Float64Array, desc: boolean): Uint32Array | null;
 }
+
+interface YuktAIWrapperProps {
+    position?: "left" | "right";
+    children: ReactNode;
+    config?: Partial<A11yConfig>;
+    showRag?: boolean;
+    showAgent?: boolean;
+    /** v5.3.9 — show ♿ Accessibility. Setting this (or showVibeCoder/launcher) switches every button to opt-in. */
+    showAccessibility?: boolean;
+    /** v5.3.9 — show ⚡ Vibe Coder (a developer tool; in legacy mode it follows showAgent). */
+    showVibeCoder?: boolean;
+    /** v5.3.9 — one ✨ button that shows/hides the others; remembers the choice; Esc closes. */
+    launcher?: boolean;
+    /**
+     * v5.3.9 — 💬 Ask page finds passages first with the page RAG ("rust",
+     * "auto" or "ts"), shows them at once, then lets Gemini Nano /
+     * Transformers.js write the answer from only those passages.
+     * Not set: 💬 works exactly as before.
+     */
+    engine?: GridEngine;
+}
+declare function YuktAIWrapper({ position, children, config: configOverrides, showRag, showAgent, showAccessibility, showVibeCoder, launcher, engine, }: YuktAIWrapperProps): react_jsx_runtime.JSX.Element;
+
+declare const aiPlugin: {
+    name: string;
+    execute(input: string): Promise<string>;
+};
+
+declare const voicePlugin: {
+    name: string;
+    execute(input: string): Promise<string>;
+};
 
 /** One search/sort run: what was searched, how long it took, which engine answered. */
 interface GridSearchTime {

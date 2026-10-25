@@ -314,6 +314,33 @@ Answer:`
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// answerFromContext — v5.3.9: write the answer from passages already found
+// (e.g. by the Rust RAG engine). Skips embedding every chunk of the page,
+// which is the slow part of askPageWithTransformers on phones.
+// ─────────────────────────────────────────────────────────────────────────────
+export async function answerFromContext(question: string, context: string): Promise<RagResult> {
+  if (!question.trim() || !context.trim()) {
+    return { success: false, answer: "", error: "Nothing to answer from." }
+  }
+  try {
+    await loadModels()
+    const prompt = `Answer the question based on the context. Give a complete answer in 2-3 sentences.
+
+Context: ${context.slice(0, 1200)}
+
+Question: ${question}
+
+Answer:`
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const results: any[] = await generativePipeline(prompt, { max_new_tokens: 120, min_new_tokens: 10 })
+    const answer = results?.[0]?.generated_text?.trim() || ""
+    return answer ? { success: true, answer } : { success: false, answer: "", error: "No answer generated." }
+  } catch (error) {
+    return { success: false, answer: "", error: error instanceof Error ? error.message : "Transformers.js error." }
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // isTransformersSupported
 // ─────────────────────────────────────────────────────────────────────────────
 export function isTransformersSupported(): boolean {
