@@ -1,5 +1,5 @@
-import * as react_jsx_runtime from 'react/jsx-runtime';
-import { ReactNode, CSSProperties } from 'react';
+import * as react from 'react';
+import react__default, { ReactNode, CSSProperties } from 'react';
 export { AbcIcon, AccessibilityIcon, AdminIcon, AlertIcon, AlignCenterIcon, AlignJustifyIcon, AlignLeftIcon, AlignRightIcon, ApiIcon, ArchitectureIcon, ArrowDownIcon, ArrowLeftIcon, ArrowRightIcon, ArrowUpIcon, BarChartIcon, BoldIcon, BookIcon, BookmarkIcon, BrainIcon, BugReportIcon, BulbIcon, CakeIcon, CalendarIcon, CardsIcon, ChatIcon, CheckIcon, ChevronLeftIcon, ChevronRightIcon, ChevronsIcon, CleaningIcon, ClockIcon, CloseIcon, CloudIcon, CodeIcon, ComputerIcon, ContrastIcon, CopyIcon, DashboardIcon, DataObjectIcon, DeleteIcon, DocumentScannerIcon, DownloadIcon, DragHandleIcon, ExploreIcon, ExternalIcon, EyeIcon, EyeOffIcon, FactCheckIcon, FileIcon, FilterIcon, FirstIcon, FontIcon, FormIcon, FullscreenExitIcon, FullscreenIcon, GavelIcon, GiftIcon, GlobeIcon, GridIcon, HeadphonesIcon, HeartFilledIcon, HeartIcon, HelpIcon, HomeIcon, HubIcon, ICON_MIN_CONTRAST, ICON_NAMES, ICON_PATHS, IconBase, IconName, IconProps, IconShape, IconSvgOptions, IconVariant, ImageIcon, ImageSearchIcon, InfoIcon, InsightsIcon, InstallIcon, IntegrationIcon, ItalicIcon, JoinIcon, KeyIcon, KeyboardIcon, LabelIcon, LampIcon, LastIcon, LayoutIcon, LinkIcon, LoaderIcon, LockIcon, LoginIcon, LogoutIcon, MapIcon, MeditateIcon, MenuIcon, MergeIcon, MicIcon, MinusIcon, MoonIcon, MotionIcon, MovieIcon, MusicIcon, MusicOffIcon, MusicVideoIcon, NamaskarIcon, PageBreakIcon, PaletteIcon, PauseIcon, PenIcon, PersonIcon, PhoneIcon, PinIcon, PlayIcon, PlugIcon, PlusIcon, QuoteIcon, RadioCheckedIcon, RadioIcon, ReadingIcon, RedoIcon, RepeatIcon, ResetIcon, RobotIcon, SaveIcon, SchoolIcon, SearchIcon, SearchOffIcon, SendIcon, SentimentSadIcon, ShareIcon, ShieldCheckIcon, ShuffleIcon, SkipIcon, SlideshowIcon, SortDownIcon, SortIcon, SortUpIcon, SparkIcon, SpeakerIcon, SpeedIcon, SpellcheckIcon, StarIcon, StopIcon, StorageIcon, StyleIcon, SunIcon, SunriseIcon, SunsetIcon, SwapIcon, TargetIcon, TempleIcon, TextIcon, TitleIcon, ToolsIcon, TouchIcon, TrendingDownIcon, TrendingUpIcon, TrophyIcon, UnderlineIcon, UndoIcon, UnlockIcon, UploadIcon, UsersIcon, VolumeOffIcon, VolunteerIcon, WalletIcon, WandIcon, WifiIcon, WifiOffIcon, YuktaiIcon, YuktaiIconProps, ZoomInIcon, ZoomOutIcon, iconContrast, iconSvg, pickGlyphColor } from './icons.js';
 
 interface Plugin {
@@ -100,7 +100,7 @@ interface YuktAIWrapperProps {
     showRag?: boolean;
     showAgent?: boolean;
 }
-declare function YuktAIWrapper({ position, children, config: configOverrides, showRag, showAgent, }: YuktAIWrapperProps): react_jsx_runtime.JSX.Element;
+declare function YuktAIWrapper({ position, children, config: configOverrides, showRag, showAgent, }: YuktAIWrapperProps): react__default.JSX.Element;
 
 declare const aiPlugin: {
     name: string;
@@ -400,7 +400,7 @@ interface YuktaiGridProps<T = Record<string, unknown>> {
     }) => void;
 }
 
-declare function YuktaiGrid<T extends Record<string, unknown>>({ data, columns, rowKey, view, mobileBreakpoint, theme, locale, ai, search, selectable, selectedKeys, onSelectionChange, pagination, loading, highlightIds, highlightColor, autoScrollToHighlight, onRowClick, onSortChange, empty, className, inputLanguage, toolName, toolDescriptions, webmcp, onWebMCPStatusChange, onAgentResult, customRules, engine, showSearchTime, onSearchTime, }: YuktaiGridProps<T>): react_jsx_runtime.JSX.Element;
+declare function YuktaiGrid<T extends Record<string, unknown>>({ data, columns, rowKey, view, mobileBreakpoint, theme, locale, ai, search, selectable, selectedKeys, onSelectionChange, pagination, loading, highlightIds, highlightColor, autoScrollToHighlight, onRowClick, onSortChange, empty, className, inputLanguage, toolName, toolDescriptions, webmcp, onWebMCPStatusChange, onAgentResult, customRules, engine, showSearchTime, onSearchTime, }: YuktaiGridProps<T>): react__default.JSX.Element;
 
 /**
  * gridTools — the ONE place where YuktaiGrid tools are defined.
@@ -603,7 +603,7 @@ interface YuktaiGridAIProps<T> {
      */
     onInputLanguageChange?: (language: InputLanguage) => void;
 }
-declare function YuktaiGridAI<T extends Record<string, unknown>>({ data, columns, onSearch, onSort, theme, language, inputLanguage, embedded, agent, onInputLanguageChange, }: YuktaiGridAIProps<T>): react_jsx_runtime.JSX.Element;
+declare function YuktaiGridAI<T extends Record<string, unknown>>({ data, columns, onSearch, onSort, theme, language, inputLanguage, embedded, agent, onInputLanguageChange, }: YuktaiGridAIProps<T>): react__default.JSX.Element;
 
 type ModelContextTool = {
     name: string;
@@ -1263,7 +1263,7 @@ declare function AgenticGridBar({ grid, placeholder, examples, style, }: {
     placeholder?: string;
     examples?: string[];
     style?: CSSProperties;
-}): react_jsx_runtime.JSX.Element;
+}): react.JSX.Element;
 type Tab = "copilot" | "qa" | "forms" | "design" | "ask" | "voice";
 interface AgenticPanelProps {
     defaultTab?: Tab;
@@ -1273,7 +1273,7 @@ interface AgenticPanelProps {
     generate?: (question: string, context: string) => Promise<string>;
     style?: CSSProperties;
 }
-declare function AgenticPanel({ defaultTab, voiceLang, generate, style }: AgenticPanelProps): react_jsx_runtime.JSX.Element;
+declare function AgenticPanel({ defaultTab, voiceLang, generate, style }: AgenticPanelProps): react.JSX.Element;
 
 declare global {
     var __yuktai_runtime__: Runtime | undefined;

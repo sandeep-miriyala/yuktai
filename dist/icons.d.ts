@@ -1,5 +1,5 @@
-import * as react_jsx_runtime from 'react/jsx-runtime';
-import React from 'react';
+import * as react from 'react';
+import react__default from 'react';
 
 declare const ICON_PATHS: {
     readonly accessibility: "<circle cx=\"12\" cy=\"4\" r=\"2\"/><path d=\"M4 8l8-1 8 1M12 7v5m-5 9 5-8 5 8M7 12l-2 5m12-5 2 5\"/>";
@@ -207,7 +207,7 @@ interface IconSvgOptions extends IconColourOptions {
 /** SVG markup for any icon (used by the vanilla build: yuktai.icon). */
 declare function iconSvg(name: IconName | string, options?: IconSvgOptions): string;
 
-interface IconProps extends React.SVGAttributes<SVGSVGElement> {
+interface IconProps extends react__default.SVGAttributes<SVGSVGElement> {
     /** Size in pixels — applied to both width and height. Default: 20 */
     size?: number | string;
     /** outline: line colour · filled: background colour. Default: currentColor */
@@ -228,340 +228,340 @@ interface IconProps extends React.SVGAttributes<SVGSVGElement> {
  * Children should be SVG path/circle/rect elements.
  */
 declare function IconBase({ size, color, strokeWidth, label, variant, glyphColor, shape, children, ...rest }: IconProps & {
-    children: React.ReactNode;
-}): react_jsx_runtime.JSX.Element;
+    children: react__default.ReactNode;
+}): react__default.JSX.Element;
 
-declare function SearchIcon(props: IconProps): react_jsx_runtime.JSX.Element;
+declare function SearchIcon(props: IconProps): react.JSX.Element;
 
-declare function SortUpIcon(props: IconProps): react_jsx_runtime.JSX.Element;
+declare function SortUpIcon(props: IconProps): react.JSX.Element;
 
-declare function SortDownIcon(props: IconProps): react_jsx_runtime.JSX.Element;
+declare function SortDownIcon(props: IconProps): react.JSX.Element;
 
-declare function ChevronLeftIcon(props: IconProps): react_jsx_runtime.JSX.Element;
+declare function ChevronLeftIcon(props: IconProps): react.JSX.Element;
 
-declare function ChevronRightIcon(props: IconProps): react_jsx_runtime.JSX.Element;
+declare function ChevronRightIcon(props: IconProps): react.JSX.Element;
 
-declare function CheckIcon(props: IconProps): react_jsx_runtime.JSX.Element;
+declare function CheckIcon(props: IconProps): react.JSX.Element;
 
-declare function CloseIcon(props: IconProps): react_jsx_runtime.JSX.Element;
+declare function CloseIcon(props: IconProps): react.JSX.Element;
 
 interface YuktaiIconProps extends Omit<IconProps, "name"> {
     /** Icon name, e.g. "mic", "wand", "accessibility". See ICON_NAMES. */
     name: IconName;
 }
 /** Any yuktai icon by name. Paths are fixed constants from paths.ts (never user input). */
-declare function YuktaiIcon({ name, ...props }: YuktaiIconProps): react_jsx_runtime.JSX.Element;
+declare function YuktaiIcon({ name, ...props }: YuktaiIconProps): react.JSX.Element;
 /** Accessibility settings */
-declare const AccessibilityIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const AccessibilityIcon: (props: IconProps) => react.JSX.Element;
 /** High contrast */
-declare const ContrastIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const ContrastIcon: (props: IconProps) => react.JSX.Element;
 /** Dark mode */
-declare const MoonIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const MoonIcon: (props: IconProps) => react.JSX.Element;
 /** Reduce motion */
-declare const MotionIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const MotionIcon: (props: IconProps) => react.JSX.Element;
 /** Reading / dyslexia support */
-declare const ReadingIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const ReadingIcon: (props: IconProps) => react.JSX.Element;
 /** Large targets */
-declare const TargetIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const TargetIcon: (props: IconProps) => react.JSX.Element;
 /** Speak on focus */
-declare const SpeakerIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const SpeakerIcon: (props: IconProps) => react.JSX.Element;
 /** Colour-blind modes */
-declare const PaletteIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const PaletteIcon: (props: IconProps) => react.JSX.Element;
 /** Skip links */
-declare const SkipIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const SkipIcon: (props: IconProps) => react.JSX.Element;
 /** Increase / add */
-declare const PlusIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const PlusIcon: (props: IconProps) => react.JSX.Element;
 /** Decrease / remove */
-declare const MinusIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const MinusIcon: (props: IconProps) => react.JSX.Element;
 /** Reset */
-declare const ResetIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const ResetIcon: (props: IconProps) => react.JSX.Element;
 /** Sortable column (unsorted) */
-declare const SortIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const SortIcon: (props: IconProps) => react.JSX.Element;
 /** Expand / collapse */
-declare const ChevronsIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const ChevronsIcon: (props: IconProps) => react.JSX.Element;
 /** Table view */
-declare const GridIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const GridIcon: (props: IconProps) => react.JSX.Element;
 /** Card view */
-declare const CardsIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const CardsIcon: (props: IconProps) => react.JSX.Element;
 /** Ask / assistant */
-declare const ChatIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const ChatIcon: (props: IconProps) => react.JSX.Element;
 /** Voice input */
-declare const MicIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const MicIcon: (props: IconProps) => react.JSX.Element;
 /** Stop listening */
-declare const StopIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const StopIcon: (props: IconProps) => react.JSX.Element;
 /** Download / export / install */
-declare const DownloadIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const DownloadIcon: (props: IconProps) => react.JSX.Element;
 /** Copy */
-declare const CopyIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const CopyIcon: (props: IconProps) => react.JSX.Element;
 /** Filter */
-declare const FilterIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const FilterIcon: (props: IconProps) => react.JSX.Element;
 /** First page */
-declare const FirstIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const FirstIcon: (props: IconProps) => react.JSX.Element;
 /** Last page */
-declare const LastIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const LastIcon: (props: IconProps) => react.JSX.Element;
 /** AI / agentic answer */
-declare const SparkIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const SparkIcon: (props: IconProps) => react.JSX.Element;
 /** Warning */
-declare const AlertIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const AlertIcon: (props: IconProps) => react.JSX.Element;
 /** Information */
-declare const InfoIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const InfoIcon: (props: IconProps) => react.JSX.Element;
 /** Form review */
-declare const FormIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const FormIcon: (props: IconProps) => react.JSX.Element;
 /** Show on page / watch */
-declare const EyeIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const EyeIcon: (props: IconProps) => react.JSX.Element;
 /** Design review */
-declare const LayoutIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const LayoutIcon: (props: IconProps) => react.JSX.Element;
 /** Auto-fix */
-declare const WandIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const WandIcon: (props: IconProps) => react.JSX.Element;
 /** Undo */
-declare const UndoIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const UndoIcon: (props: IconProps) => react.JSX.Element;
 /** Page tools */
-declare const ToolsIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const ToolsIcon: (props: IconProps) => react.JSX.Element;
 /** WebMCP / integrations */
-declare const PlugIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const PlugIcon: (props: IconProps) => react.JSX.Element;
 /** Home */
-declare const HomeIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const HomeIcon: (props: IconProps) => react.JSX.Element;
 /** Menu */
-declare const MenuIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const MenuIcon: (props: IconProps) => react.JSX.Element;
 /** Book */
-declare const BookIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const BookIcon: (props: IconProps) => react.JSX.Element;
 /** Calendar */
-declare const CalendarIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const CalendarIcon: (props: IconProps) => react.JSX.Element;
 /** Clock */
-declare const ClockIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const ClockIcon: (props: IconProps) => react.JSX.Element;
 /** Person */
-declare const PersonIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const PersonIcon: (props: IconProps) => react.JSX.Element;
 /** Group of people */
-declare const UsersIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const UsersIcon: (props: IconProps) => react.JSX.Element;
 /** Language / world */
-declare const GlobeIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const GlobeIcon: (props: IconProps) => react.JSX.Element;
 /** Oil lamp (deepam) */
-declare const LampIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const LampIcon: (props: IconProps) => react.JSX.Element;
 /** Play */
-declare const PlayIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const PlayIcon: (props: IconProps) => react.JSX.Element;
 /** Pause */
-declare const PauseIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const PauseIcon: (props: IconProps) => react.JSX.Element;
 /** Send */
-declare const SendIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const SendIcon: (props: IconProps) => react.JSX.Element;
 /** Share */
-declare const ShareIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const ShareIcon: (props: IconProps) => react.JSX.Element;
 /** Gift */
-declare const GiftIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const GiftIcon: (props: IconProps) => react.JSX.Element;
 /** Image */
-declare const ImageIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const ImageIcon: (props: IconProps) => react.JSX.Element;
 /** File / document */
-declare const FileIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const FileIcon: (props: IconProps) => react.JSX.Element;
 /** Opens in a new tab */
-declare const ExternalIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const ExternalIcon: (props: IconProps) => react.JSX.Element;
 /** Arrow up */
-declare const ArrowUpIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const ArrowUpIcon: (props: IconProps) => react.JSX.Element;
 /** Arrow left */
-declare const ArrowLeftIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const ArrowLeftIcon: (props: IconProps) => react.JSX.Element;
 /** Arrow right */
-declare const ArrowRightIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const ArrowRightIcon: (props: IconProps) => react.JSX.Element;
 /** Headphones / listen */
-declare const HeadphonesIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const HeadphonesIcon: (props: IconProps) => react.JSX.Element;
 /** Music / audio */
-declare const MusicIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const MusicIcon: (props: IconProps) => react.JSX.Element;
 /** Location pin */
-declare const PinIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const PinIcon: (props: IconProps) => react.JSX.Element;
 /** Map / directions */
-declare const MapIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const MapIcon: (props: IconProps) => react.JSX.Element;
 /** Pen / write */
-declare const PenIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const PenIcon: (props: IconProps) => react.JSX.Element;
 /** Wallet / money */
-declare const WalletIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const WalletIcon: (props: IconProps) => react.JSX.Element;
 /** Install app */
-declare const InstallIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const InstallIcon: (props: IconProps) => react.JSX.Element;
 /** Help */
-declare const HelpIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const HelpIcon: (props: IconProps) => react.JSX.Element;
 /** Temple */
-declare const TempleIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const TempleIcon: (props: IconProps) => react.JSX.Element;
 /** Meditation */
-declare const MeditateIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const MeditateIcon: (props: IconProps) => react.JSX.Element;
 /** Trophy / result */
-declare const TrophyIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const TrophyIcon: (props: IconProps) => react.JSX.Element;
 /** Idea / tip */
-declare const BulbIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const BulbIcon: (props: IconProps) => react.JSX.Element;
 /** Sun / light mode */
-declare const SunIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const SunIcon: (props: IconProps) => react.JSX.Element;
 /** Delete */
-declare const DeleteIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const DeleteIcon: (props: IconProps) => react.JSX.Element;
 /** Robot / AI assistant */
-declare const RobotIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const RobotIcon: (props: IconProps) => react.JSX.Element;
 /** Heart (not liked) */
-declare const HeartIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const HeartIcon: (props: IconProps) => react.JSX.Element;
 /** Heart (liked) */
-declare const HeartFilledIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const HeartFilledIcon: (props: IconProps) => react.JSX.Element;
 /** Hub / network */
-declare const HubIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const HubIcon: (props: IconProps) => react.JSX.Element;
 /** Code */
-declare const CodeIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const CodeIcon: (props: IconProps) => react.JSX.Element;
 /** Text field */
-declare const TextIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const TextIcon: (props: IconProps) => react.JSX.Element;
 /** Bold */
-declare const BoldIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const BoldIcon: (props: IconProps) => react.JSX.Element;
 /** Italic */
-declare const ItalicIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const ItalicIcon: (props: IconProps) => react.JSX.Element;
 /** Underline */
-declare const UnderlineIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const UnderlineIcon: (props: IconProps) => react.JSX.Element;
 /** Align left */
-declare const AlignLeftIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const AlignLeftIcon: (props: IconProps) => react.JSX.Element;
 /** Align centre */
-declare const AlignCenterIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const AlignCenterIcon: (props: IconProps) => react.JSX.Element;
 /** Align right */
-declare const AlignRightIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const AlignRightIcon: (props: IconProps) => react.JSX.Element;
 /** Justify */
-declare const AlignJustifyIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const AlignJustifyIcon: (props: IconProps) => react.JSX.Element;
 /** Quote */
-declare const QuoteIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const QuoteIcon: (props: IconProps) => react.JSX.Element;
 /** Title */
-declare const TitleIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const TitleIcon: (props: IconProps) => react.JSX.Element;
 /** Font */
-declare const FontIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const FontIcon: (props: IconProps) => react.JSX.Element;
 /** Spell check */
-declare const SpellcheckIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const SpellcheckIcon: (props: IconProps) => react.JSX.Element;
 /** Letters (ABC) */
-declare const AbcIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const AbcIcon: (props: IconProps) => react.JSX.Element;
 /** Page break */
-declare const PageBreakIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const PageBreakIcon: (props: IconProps) => react.JSX.Element;
 /** Link */
-declare const LinkIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const LinkIcon: (props: IconProps) => react.JSX.Element;
 /** Style */
-declare const StyleIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const StyleIcon: (props: IconProps) => react.JSX.Element;
 /** Lock */
-declare const LockIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const LockIcon: (props: IconProps) => react.JSX.Element;
 /** Unlock */
-declare const UnlockIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const UnlockIcon: (props: IconProps) => react.JSX.Element;
 /** Key */
-declare const KeyIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const KeyIcon: (props: IconProps) => react.JSX.Element;
 /** Redo */
-declare const RedoIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const RedoIcon: (props: IconProps) => react.JSX.Element;
 /** Swap */
-declare const SwapIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const SwapIcon: (props: IconProps) => react.JSX.Element;
 /** Shuffle */
-declare const ShuffleIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const ShuffleIcon: (props: IconProps) => react.JSX.Element;
 /** Full screen */
-declare const FullscreenIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const FullscreenIcon: (props: IconProps) => react.JSX.Element;
 /** Exit full screen */
-declare const FullscreenExitIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const FullscreenExitIcon: (props: IconProps) => react.JSX.Element;
 /** Merge */
-declare const MergeIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const MergeIcon: (props: IconProps) => react.JSX.Element;
 /** Join */
-declare const JoinIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const JoinIcon: (props: IconProps) => react.JSX.Element;
 /** Tap / touch */
-declare const TouchIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const TouchIcon: (props: IconProps) => react.JSX.Element;
 /** Sound off */
-declare const VolumeOffIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const VolumeOffIcon: (props: IconProps) => react.JSX.Element;
 /** Music off */
-declare const MusicOffIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const MusicOffIcon: (props: IconProps) => react.JSX.Element;
 /** Music video */
-declare const MusicVideoIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const MusicVideoIcon: (props: IconProps) => react.JSX.Element;
 /** Movie */
-declare const MovieIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const MovieIcon: (props: IconProps) => react.JSX.Element;
 /** Slide show */
-declare const SlideshowIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const SlideshowIcon: (props: IconProps) => react.JSX.Element;
 /** Storage / database */
-declare const StorageIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const StorageIcon: (props: IconProps) => react.JSX.Element;
 /** API */
-declare const ApiIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const ApiIcon: (props: IconProps) => react.JSX.Element;
 /** Data object { } */
-declare const DataObjectIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const DataObjectIcon: (props: IconProps) => react.JSX.Element;
 /** Computer */
-declare const ComputerIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const ComputerIcon: (props: IconProps) => react.JSX.Element;
 /** Phone */
-declare const PhoneIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const PhoneIcon: (props: IconProps) => react.JSX.Element;
 /** Cloud */
-declare const CloudIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const CloudIcon: (props: IconProps) => react.JSX.Element;
 /** Wi-Fi */
-declare const WifiIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const WifiIcon: (props: IconProps) => react.JSX.Element;
 /** No Wi-Fi / offline */
-declare const WifiOffIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const WifiOffIcon: (props: IconProps) => react.JSX.Element;
 /** No results */
-declare const SearchOffIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const SearchOffIcon: (props: IconProps) => react.JSX.Element;
 /** Hide */
-declare const EyeOffIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const EyeOffIcon: (props: IconProps) => react.JSX.Element;
 /** Bookmark */
-declare const BookmarkIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const BookmarkIcon: (props: IconProps) => react.JSX.Element;
 /** School / learning */
-declare const SchoolIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const SchoolIcon: (props: IconProps) => react.JSX.Element;
 /** Law / rules */
-declare const GavelIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const GavelIcon: (props: IconProps) => react.JSX.Element;
 /** Architecture / design */
-declare const ArchitectureIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const ArchitectureIcon: (props: IconProps) => react.JSX.Element;
 /** Brain / thinking */
-declare const BrainIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const BrainIcon: (props: IconProps) => react.JSX.Element;
 /** Volunteer / care */
-declare const VolunteerIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const VolunteerIcon: (props: IconProps) => react.JSX.Element;
 /** Radio button (off) */
-declare const RadioIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const RadioIcon: (props: IconProps) => react.JSX.Element;
 /** Radio button (on) */
-declare const RadioCheckedIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const RadioCheckedIcon: (props: IconProps) => react.JSX.Element;
 /** Upload */
-declare const UploadIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const UploadIcon: (props: IconProps) => react.JSX.Element;
 /** Arrow down */
-declare const ArrowDownIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const ArrowDownIcon: (props: IconProps) => react.JSX.Element;
 /** Fact check / checklist */
-declare const FactCheckIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const FactCheckIcon: (props: IconProps) => react.JSX.Element;
 /** Image search */
-declare const ImageSearchIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const ImageSearchIcon: (props: IconProps) => react.JSX.Element;
 /** Document scanner / OCR */
-declare const DocumentScannerIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const DocumentScannerIcon: (props: IconProps) => react.JSX.Element;
 /** Dashboard */
-declare const DashboardIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const DashboardIcon: (props: IconProps) => react.JSX.Element;
 /** Clean up */
-declare const CleaningIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const CleaningIcon: (props: IconProps) => react.JSX.Element;
 /** Drag handle */
-declare const DragHandleIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const DragHandleIcon: (props: IconProps) => react.JSX.Element;
 /** Zoom in */
-declare const ZoomInIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const ZoomInIcon: (props: IconProps) => react.JSX.Element;
 /** Zoom out */
-declare const ZoomOutIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const ZoomOutIcon: (props: IconProps) => react.JSX.Element;
 /** Insights */
-declare const InsightsIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const InsightsIcon: (props: IconProps) => react.JSX.Element;
 /** Explore / compass */
-declare const ExploreIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const ExploreIcon: (props: IconProps) => react.JSX.Element;
 /** Save */
-declare const SaveIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const SaveIcon: (props: IconProps) => react.JSX.Element;
 /** Label */
-declare const LabelIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const LabelIcon: (props: IconProps) => react.JSX.Element;
 /** Keyboard */
-declare const KeyboardIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const KeyboardIcon: (props: IconProps) => react.JSX.Element;
 /** Trending up */
-declare const TrendingUpIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const TrendingUpIcon: (props: IconProps) => react.JSX.Element;
 /** Trending down */
-declare const TrendingDownIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const TrendingDownIcon: (props: IconProps) => react.JSX.Element;
 /** Birthday / cake */
-declare const CakeIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const CakeIcon: (props: IconProps) => react.JSX.Element;
 /** Bar chart */
-declare const BarChartIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const BarChartIcon: (props: IconProps) => react.JSX.Element;
 /** Admin */
-declare const AdminIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const AdminIcon: (props: IconProps) => react.JSX.Element;
 /** Bug report */
-declare const BugReportIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const BugReportIcon: (props: IconProps) => react.JSX.Element;
 /** Sad / not happy */
-declare const SentimentSadIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const SentimentSadIcon: (props: IconProps) => react.JSX.Element;
 /** Integration / code snippet */
-declare const IntegrationIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const IntegrationIcon: (props: IconProps) => react.JSX.Element;
 /** Namaskar (praying hands) */
-declare const NamaskarIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const NamaskarIcon: (props: IconProps) => react.JSX.Element;
 /** Sunrise */
-declare const SunriseIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const SunriseIcon: (props: IconProps) => react.JSX.Element;
 /** Sunset */
-declare const SunsetIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const SunsetIcon: (props: IconProps) => react.JSX.Element;
 /** Log in */
-declare const LoginIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const LoginIcon: (props: IconProps) => react.JSX.Element;
 /** Log out */
-declare const LogoutIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const LogoutIcon: (props: IconProps) => react.JSX.Element;
 /** Speed */
-declare const SpeedIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const SpeedIcon: (props: IconProps) => react.JSX.Element;
 /** Repeat */
-declare const RepeatIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const RepeatIcon: (props: IconProps) => react.JSX.Element;
 /** Loading */
-declare const LoaderIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const LoaderIcon: (props: IconProps) => react.JSX.Element;
 /** Star / favourite */
-declare const StarIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const StarIcon: (props: IconProps) => react.JSX.Element;
 /** Safe / verified */
-declare const ShieldCheckIcon: (props: IconProps) => react_jsx_runtime.JSX.Element;
+declare const ShieldCheckIcon: (props: IconProps) => react.JSX.Element;
 
 export { AbcIcon, AccessibilityIcon, AdminIcon, AlertIcon, AlignCenterIcon, AlignJustifyIcon, AlignLeftIcon, AlignRightIcon, ApiIcon, ArchitectureIcon, ArrowDownIcon, ArrowLeftIcon, ArrowRightIcon, ArrowUpIcon, BarChartIcon, BoldIcon, BookIcon, BookmarkIcon, BrainIcon, BugReportIcon, BulbIcon, CakeIcon, CalendarIcon, CardsIcon, ChatIcon, CheckIcon, ChevronLeftIcon, ChevronRightIcon, ChevronsIcon, CleaningIcon, ClockIcon, CloseIcon, CloudIcon, CodeIcon, ComputerIcon, ContrastIcon, CopyIcon, DashboardIcon, DataObjectIcon, DeleteIcon, DocumentScannerIcon, DownloadIcon, DragHandleIcon, ExploreIcon, ExternalIcon, EyeIcon, EyeOffIcon, FactCheckIcon, FileIcon, FilterIcon, FirstIcon, FontIcon, FormIcon, FullscreenExitIcon, FullscreenIcon, GavelIcon, GiftIcon, GlobeIcon, GridIcon, HeadphonesIcon, HeartFilledIcon, HeartIcon, HelpIcon, HomeIcon, HubIcon, ICON_MIN_CONTRAST, ICON_NAMES, ICON_PATHS, IconBase, type IconName, type IconProps, type IconShape, type IconSvgOptions, type IconVariant, ImageIcon, ImageSearchIcon, InfoIcon, InsightsIcon, InstallIcon, IntegrationIcon, ItalicIcon, JoinIcon, KeyIcon, KeyboardIcon, LabelIcon, LampIcon, LastIcon, LayoutIcon, LinkIcon, LoaderIcon, LockIcon, LoginIcon, LogoutIcon, MapIcon, MeditateIcon, MenuIcon, MergeIcon, MicIcon, MinusIcon, MoonIcon, MotionIcon, MovieIcon, MusicIcon, MusicOffIcon, MusicVideoIcon, NamaskarIcon, PageBreakIcon, PaletteIcon, PauseIcon, PenIcon, PersonIcon, PhoneIcon, PinIcon, PlayIcon, PlugIcon, PlusIcon, QuoteIcon, RadioCheckedIcon, RadioIcon, ReadingIcon, RedoIcon, RepeatIcon, ResetIcon, RobotIcon, SaveIcon, SchoolIcon, SearchIcon, SearchOffIcon, SendIcon, SentimentSadIcon, ShareIcon, ShieldCheckIcon, ShuffleIcon, SkipIcon, SlideshowIcon, SortDownIcon, SortIcon, SortUpIcon, SparkIcon, SpeakerIcon, SpeedIcon, SpellcheckIcon, StarIcon, StopIcon, StorageIcon, StyleIcon, SunIcon, SunriseIcon, SunsetIcon, SwapIcon, TargetIcon, TempleIcon, TextIcon, TitleIcon, ToolsIcon, TouchIcon, TrendingDownIcon, TrendingUpIcon, TrophyIcon, UnderlineIcon, UndoIcon, UnlockIcon, UploadIcon, UsersIcon, VolumeOffIcon, VolunteerIcon, WalletIcon, WandIcon, WifiIcon, WifiOffIcon, YuktaiIcon, type YuktaiIconProps, ZoomInIcon, ZoomOutIcon, iconContrast, iconSvg, pickGlyphColor, resolveIconColours };
