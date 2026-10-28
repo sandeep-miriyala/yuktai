@@ -130,6 +130,16 @@ function speak(text: string, priority: "polite" | "assertive" = "polite"): void 
   window.speechSynthesis.speak(utt)
 }
 
+/** Escapes text for use inside HTML markup (audit panel shows page values). */
+function escHtml(value: unknown): string {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;")
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Visual Alert — sliding banner for deaf users, no audio dependency
 // Responsive — anchored left+right on small screens
@@ -146,7 +156,8 @@ function showVisualAlert(message: string, type: AlertType = "info"): void {
   }
   const c = colors[type]
 
-  if (!_visualAlertNode) {
+  // Re-create it if the page removed it (otherwise alerts would silently stop showing)
+  if (!_visualAlertNode || !_visualAlertNode.isConnected) {
     _visualAlertNode = document.createElement("div")
     _visualAlertNode.setAttribute("role", "alert")
     _visualAlertNode.setAttribute("aria-live", "assertive")
@@ -177,14 +188,29 @@ function showVisualAlert(message: string, type: AlertType = "info"): void {
   _visualAlertNode.style.background = c.bg
   _visualAlertNode.style.border     = `1px solid ${c.border}`
   _visualAlertNode.style.color      = "#fff"
-  _visualAlertNode.innerHTML = `
-    <span style="font-size:18px;font-weight:700">${c.icon}</span>
-    <span style="flex:1;line-height:1.4">${message}</span>
-    <button
-      onclick="this.parentElement.style.transform='translateX(120%)';this.parentElement.style.opacity='0'"
-      style="background:none;border:none;color:#fff;cursor:pointer;font-size:18px;padding:0;line-height:1"
-      aria-label="Close notification">×</button>
-  `
+  // Built with DOM nodes: the message is always shown as text, never as HTML
+  // (it can contain page text, e.g. "Selected: <option text>"), and there is
+  // no inline handler, so the close button works under a strict CSP.
+  const iconEl = document.createElement("span")
+  iconEl.style.cssText = "font-size:18px;font-weight:700"
+  iconEl.setAttribute("aria-hidden", "true")
+  iconEl.textContent = c.icon
+  const textEl = document.createElement("span")
+  textEl.style.cssText = "flex:1;line-height:1.4"
+  textEl.textContent = String(message ?? "")
+  const closeEl = document.createElement("button")
+  closeEl.type = "button"
+  closeEl.style.cssText = "background:none;border:none;color:#fff;cursor:pointer;font-size:18px;padding:0;line-height:1"
+  closeEl.setAttribute("aria-label", "Close notification")
+  closeEl.textContent = "×"
+  closeEl.addEventListener("click", () => {
+    const node = closeEl.parentElement
+    if (node) {
+      node.style.transform = "translateX(120%)"
+      node.style.opacity = "0"
+    }
+  })
+  _visualAlertNode.replaceChildren(iconEl, textEl, closeEl)
 
   // Responsive — full width on small screens
   if (window.innerWidth <= 480) {
@@ -797,15 +823,15 @@ function showAuditDetails(report: A11yReport): void {
   panel.innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
       <strong style="font-size:14px;color:#74c0fc">Audit report</strong>
-      <span style="color:#aaa">${report.fixed} fixed · ${report.renderTime}ms</span>
+      <span style="color:#aaa">${escHtml(report.fixed)} fixed · ${escHtml(report.renderTime)}ms</span>
     </div>
     ${report.details.slice(0, 20).map(d => `
       <div style="padding:6px 0;border-bottom:1px solid #2a2a4a">
         <div style="display:flex;gap:6px;align-items:center">
-          <span style="background:${sevColor[d.severity]};color:#fff;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700;text-transform:uppercase">${d.severity}</span>
-          <code style="color:#74c0fc">&lt;${d.tag}&gt;</code>
+          <span style="background:${sevColor[d.severity]};color:#fff;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700;text-transform:uppercase">${escHtml(d.severity)}</span>
+          <code style="color:#74c0fc">&lt;${escHtml(d.tag)}&gt;</code>
         </div>
-        <div style="color:#ccc;margin-top:3px">${d.fix}</div>
+        <div style="color:#ccc;margin-top:3px">${escHtml(d.fix)}</div>
       </div>
     `).join("")}
     ${report.details.length > 20

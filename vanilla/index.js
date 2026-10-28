@@ -4002,6 +4002,9 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
     if (voices.length > 0) utt.voice = voices[0];
     window.speechSynthesis.speak(utt);
   }
+  function escHtml(value) {
+    return String(value ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  }
   function showVisualAlert(message, type = "info") {
     if (typeof document === "undefined") return;
     const colors = {
@@ -4013,7 +4016,7 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
       // W3C blue
     };
     const c = colors[type];
-    if (!_visualAlertNode) {
+    if (!_visualAlertNode || !_visualAlertNode.isConnected) {
       _visualAlertNode = document.createElement("div");
       _visualAlertNode.setAttribute("role", "alert");
       _visualAlertNode.setAttribute("aria-live", "assertive");
@@ -4043,14 +4046,26 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
     _visualAlertNode.style.background = c.bg;
     _visualAlertNode.style.border = `1px solid ${c.border}`;
     _visualAlertNode.style.color = "#fff";
-    _visualAlertNode.innerHTML = `
-    <span style="font-size:18px;font-weight:700">${c.icon}</span>
-    <span style="flex:1;line-height:1.4">${message}</span>
-    <button
-      onclick="this.parentElement.style.transform='translateX(120%)';this.parentElement.style.opacity='0'"
-      style="background:none;border:none;color:#fff;cursor:pointer;font-size:18px;padding:0;line-height:1"
-      aria-label="Close notification">\xD7</button>
-  `;
+    const iconEl2 = document.createElement("span");
+    iconEl2.style.cssText = "font-size:18px;font-weight:700";
+    iconEl2.setAttribute("aria-hidden", "true");
+    iconEl2.textContent = c.icon;
+    const textEl = document.createElement("span");
+    textEl.style.cssText = "flex:1;line-height:1.4";
+    textEl.textContent = String(message ?? "");
+    const closeEl = document.createElement("button");
+    closeEl.type = "button";
+    closeEl.style.cssText = "background:none;border:none;color:#fff;cursor:pointer;font-size:18px;padding:0;line-height:1";
+    closeEl.setAttribute("aria-label", "Close notification");
+    closeEl.textContent = "\xD7";
+    closeEl.addEventListener("click", () => {
+      const node = closeEl.parentElement;
+      if (node) {
+        node.style.transform = "translateX(120%)";
+        node.style.opacity = "0";
+      }
+    });
+    _visualAlertNode.replaceChildren(iconEl2, textEl, closeEl);
     if (window.innerWidth <= 480) {
       _visualAlertNode.style.right = "8px";
       _visualAlertNode.style.left = "8px";
@@ -4580,15 +4595,15 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
     panel.innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
       <strong style="font-size:14px;color:#74c0fc">Audit report</strong>
-      <span style="color:#aaa">${report.fixed} fixed \xB7 ${report.renderTime}ms</span>
+      <span style="color:#aaa">${escHtml(report.fixed)} fixed \xB7 ${escHtml(report.renderTime)}ms</span>
     </div>
     ${report.details.slice(0, 20).map((d) => `
       <div style="padding:6px 0;border-bottom:1px solid #2a2a4a">
         <div style="display:flex;gap:6px;align-items:center">
-          <span style="background:${sevColor[d.severity]};color:#fff;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700;text-transform:uppercase">${d.severity}</span>
-          <code style="color:#74c0fc">&lt;${d.tag}&gt;</code>
+          <span style="background:${sevColor[d.severity]};color:#fff;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700;text-transform:uppercase">${escHtml(d.severity)}</span>
+          <code style="color:#74c0fc">&lt;${escHtml(d.tag)}&gt;</code>
         </div>
-        <div style="color:#ccc;margin-top:3px">${d.fix}</div>
+        <div style="color:#ccc;margin-top:3px">${escHtml(d.fix)}</div>
       </div>
     `).join("")}
     ${report.details.length > 20 ? `<div style="color:#888;padding:8px 0;text-align:center">+${report.details.length - 20} more issues</div>` : ""}
@@ -7912,7 +7927,7 @@ ${command ? command.say : "Not a voice command. Try: make text bigger, high cont
   }
 
   // vanilla/src/index.js
-  var VERSION = "5.3.9";
+  var VERSION = "5.3.10";
   (function boot() {
     if (!isBrowser2()) return;
     if (window.yuktai && window.yuktai.__vanillaInitialized) return;
