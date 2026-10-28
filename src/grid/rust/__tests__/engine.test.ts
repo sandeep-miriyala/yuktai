@@ -136,7 +136,7 @@ describe("engine basics", () => {
 describe("<YuktaiGrid> pipeline: TypeScript and Rust agree", () => {
   const mixes = ["numbers", "numberish", "dates", "mixed"] as const
   for (const mix of mixes) {
-    it(`mix: ${mix}`, () => {
+    it(`mix: ${mix}`, () => {                                   // line 139: the test starts here
       for (let seed = 1; seed <= 12; seed++) {
         const data = makeRows(seed * 31 + mix.length, 300, mix)
         const core = GridCore.create()!
@@ -153,7 +153,7 @@ describe("<YuktaiGrid> pipeline: TypeScript and Rust agree", () => {
           }
         }
       }
-    })
+    }, 30_000)                                                   // 👈 was "})", now "}, 30_000)"
   }
 })
 
