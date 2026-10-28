@@ -1,0 +1,119 @@
+# YuktAI weekly usage report
+# Every Monday 9:00 AM IST it collects the numbers below and opens one GitHub
+# issue that @mentions the owner, so GitHub sends the report by email.
+#   • GitHub: clones, unique cloners, views, visitors (last 14 days), stars, forks, top referrers
+#   • npm: downloads last week (React / Next.js users)
+#   • jsDelivr: script hits last week (plain HTML users)
+# GitHub never shares WHO cloned a repository, only how many.
+#
+# Setup (once): create a fine-grained token with "Administration: Read-only"
+# for this repository and save it as the secret TRAFFIC_TOKEN.
+# Run it now: Actions tab → "Weekly usage report" → Run workflow.
+
+name: Weekly usage report
+
+on:
+  schedule:
+    - cron: "30 3 * * 1" # Monday 03:30 UTC = 09:00 IST
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Collect numbers and open the report issue
+        uses: actions/github-script@v7
+        env:
+          TRAFFIC_TOKEN: ${{ secrets.TRAFFIC_TOKEN }}
+          NPM_PACKAGE: "@yuktishaalaa/yuktai"
+          NOTIFY_USER: "sandeepmiriyala03"
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const pkg = process.env.NPM_PACKAGE;
+            const fmt = (n) => (typeof n === "number" ? n.toLocaleString("en-IN") : "n/a");
+
+            async function getJson(url, headers = {}) {
+              try {
+                const res = await fetch(url, { headers: { "user-agent": "yuktai-weekly-report", ...headers } });
+                if (!res.ok) return { error: `HTTP ${res.status}` };
+                return await res.json();
+              } catch (e) {
+                return { error: e.message };
+              }
+            }
+
+            // GitHub traffic needs a token with Administration: Read-only
+            const t = process.env.TRAFFIC_TOKEN;
+            const gh = (path) => getJson(`https://api.github.com/repos/${owner}/${repo}${path}`,
+              t ? { authorization: `Bearer ${t}`, accept: "application/vnd.github+json" } : {});
+            const [clones, views, referrers, info] = await Promise.all([
+              t ? gh("/traffic/clones") : { error: "TRAFFIC_TOKEN secret not set" },
+              t ? gh("/traffic/views") : { error: "TRAFFIC_TOKEN secret not set" },
+              t ? gh("/traffic/popular/referrers") : { error: "TRAFFIC_TOKEN secret not set" },
+              gh(""),
+            ]);
+
+            // Last 7 days of clones (from the daily list)
+            const weekAgo = Date.now() - 7 * 24 * 3600 * 1000;
+            const last7 = (list) => (Array.isArray(list) ? list.filter((d) => Date.parse(d.timestamp) >= weekAgo) : []);
+            const clones7 = Array.isArray(clones.clones) ? last7(clones.clones).reduce((n, d) => n + d.count, 0) : undefined;
+            const views7 = Array.isArray(views.views) ? last7(views.views).reduce((n, d) => n + d.count, 0) : undefined;
+
+            // npm and jsDelivr (public, no token)
+            const npmWeek = await getJson(`https://api.npmjs.org/downloads/point/last-week/${pkg}`);
+            const npmMonth = await getJson(`https://api.npmjs.org/downloads/point/last-month/${pkg}`);
+            const jsd = await getJson(`https://data.jsdelivr.com/v1/stats/packages/npm/${pkg}?period=week`);
+            const jsdHits = jsd && jsd.hits ? jsd.hits.total : undefined;
+
+            const err = (o) => (o && o.error ? ` _(${o.error})_` : "");
+            const refRows = Array.isArray(referrers) && referrers.length
+              ? referrers.slice(0, 5).map((r) => `| ${r.referrer} | ${fmt(r.count)} | ${fmt(r.uniques)} |`).join("\n")
+              : "| none yet | | |";
+
+            const today = new Date().toISOString().slice(0, 10);
+            const body = [
+              `@${process.env.NOTIFY_USER} here is this week's YuktAI usage report (${today}).`,
+              "",
+              "### Downloads and clones",
+              "| What | Last 7 days | Last 14 days |",
+              "|---|---|---|",
+              `| GitHub clones | ${fmt(clones7)} | ${fmt(clones.count)}${err(clones)} |`,
+              `| Unique cloners | | ${fmt(clones.uniques)} |`,
+              `| GitHub views | ${fmt(views7)} | ${fmt(views.count)}${err(views)} |`,
+              `| Unique visitors | | ${fmt(views.uniques)} |`,
+              "",
+              "| What | Last week | Last month |",
+              "|---|---|---|",
+              `| npm downloads (React / Next.js) | ${fmt(npmWeek.downloads)}${err(npmWeek)} | ${fmt(npmMonth.downloads)} |`,
+              `| jsDelivr hits (plain HTML) | ${fmt(jsdHits)}${err(jsd)} | |`,
+              "",
+              `**Stars:** ${fmt(info.stargazers_count)} · **Forks:** ${fmt(info.forks_count)} · **Watchers:** ${fmt(info.subscribers_count)} · **Open issues:** ${fmt(info.open_issues_count)}`,
+              "",
+              "### Where visitors came from (last 14 days)",
+              "| Site | Views | Unique |",
+              "|---|---|---|",
+              refRows,
+              "",
+              "_GitHub shows how many people cloned, never who. npm counts include bots and CI, so treat them as a trend, not exact users._",
+            ].join("\n");
+
+            // Close last week's report, then open this week's
+            const open = await github.paginate(github.rest.issues.listForRepo, { owner, repo, state: "open", labels: "usage-report", per_page: 50 });
+            for (const old of open) {
+              await github.rest.issues.update({ owner, repo, issue_number: old.number, state: "closed", state_reason: "completed" });
+            }
+            try {
+              await github.rest.issues.createLabel({ owner, repo, name: "usage-report", color: "0a4a85", description: "Weekly usage numbers" });
+            } catch (e) { /* label already exists */ }
+            const issue = await github.rest.issues.create({
+              owner, repo,
+              title: `Weekly usage report · ${today} · ${fmt(clones7)} clones · ${fmt(npmWeek.downloads)} npm downloads`,
+              body,
+              labels: ["usage-report"],
+            });
+            core.notice(`Report: ${issue.data.html_url}`);
