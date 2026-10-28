@@ -1,0 +1,42 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "yuktai"
+version = "0.1.0"
+description = "YuktAI for Python web apps: add the accessibility widget, page tools and data grid to Django, Flask and FastAPI pages in one line. Runs in the browser, no API keys."
+readme = "README.md"
+requires-python = ">=3.9"
+license = "GPL-3.0-only"
+license-files = ["LICENSE"]
+authors = [{ name = "Sandeep Miriyala" }]
+keywords = ["accessibility", "wcag", "a11y", "django", "flask", "fastapi", "telugu", "indic", "data-grid", "rag"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Framework :: Django",
+  "Framework :: Flask",
+  "Framework :: FastAPI",
+  "Intended Audience :: Developers",
+  "Natural Language :: Telugu",
+  "Programming Language :: Python :: 3",
+  "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+  "Topic :: Software Development :: Libraries",
+  "Typing :: Typed",
+]
+dependencies = []
+
+[project.optional-dependencies]
+test = ["pytest>=8", "jinja2>=3.1", "django>=4.2"]
+
+[project.urls]
+Documentation = "https://yuktaidocs.netlify.app/"
+Source = "https://github.com/sandeepmiriyala03/yuktai"
+Issues = "https://github.com/sandeepmiriyala03/yuktai/issues"
+npm = "https://www.npmjs.com/package/@yuktishaalaa/yuktai"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/yuktai"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
