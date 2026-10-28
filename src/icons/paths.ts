@@ -14,7 +14,7 @@ export const ICON_PATHS = {
   reading: '<path d="M4 5h16M4 10h12M4 15h16M4 20h10"/>',
   target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/>',
   speaker: '<path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/>',
-  palette: '<circle cx="12" cy="12" r="9"/><circle cx="8" cy="10" r="1.3"/><circle cx="12" cy="7.5" r="1.3"/><circle cx="16" cy="10" r="1.3"/><path d="M12 21a3 3 0 0 1 0-6h2"/>',
+  palette: '<path d="M12 3.5c-4.7 0-8.5 3.6-8.5 8.3s3.7 8.7 8.3 8.7c1.1 0 1.8-.8 1.8-1.8 0-.5-.2-1-.5-1.3-.3-.4-.5-.8-.5-1.3 0-1 .8-1.8 1.8-1.8h2.2c2.3 0 3.9-1.7 3.9-3.9 0-4.3-3.8-6.9-8.5-6.9z"/><path d="M7.7 12.4h.01M9.2 8.3h.01M13.8 7.6h.01"/>',
   skip: '<path d="M5 5l7 7-7 7M13 5l7 7-7 7"/>',
   close: '<path d="m18 6-12 12M6 6l12 12"/>',
   plus: '<path d="M12 6.5v11M6.5 12h11"/>',
