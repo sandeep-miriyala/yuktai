@@ -1,74 +1,60 @@
 # Security Policy
 
-yuktai runs entirely in the browser. It has no servers, no API keys and no telemetry, and it never sends page or grid data anywhere unless your app passes its own `generate` or `summarize` hook. Even so, a bug in a client-side library can harm your users, so security reports are taken seriously.
+YuktAI runs entirely in the browser: no servers, no API keys, no telemetry. Page and grid data never leave the device unless your app adds its own `generate` or `summarize` hook.
 
 ## Supported versions
 
-| Version | Supported | Notes |
-|---|---|---|
-| 5.3.x | ✅ | Current release: React, Next.js and the vanilla JS build |
-| 5.2.x | ✅ | Security fixes only. Please upgrade to 5.3 |
-| 5.1.x and older | ❌ | Not supported. Upgrade to 5.3 |
+| Version | Supported |
+|---|---|
+| 5.3.x | ✅ Current (React, Next.js, plain HTML, Rust engine) |
+| 5.2.x | ⚠️ Security fixes only; please upgrade |
+| 5.1.x and older | ❌ Not supported |
 
-Security fixes are released as patch versions (for example 5.3.1) and listed on the [GitHub releases page](https://github.com/sandeepmiriyala03/yuktai/releases). The CDN build always follows npm:
-`https://cdn.jsdelivr.net/npm/@yuktishaalaa/yuktai@5/vanilla/index.min.js`
+Fixes ship as patch releases on [GitHub releases](https://github.com/sandeepmiriyala03/yuktai/releases). The CDN link `@5` always follows npm.
 
-## Reporting a vulnerability
+## Report a vulnerability
 
-**Please do not open a public issue for security problems.**
+**Please don't open a public issue.** Report privately:
 
-Report privately through GitHub:
-
-1. Open the [Security tab](https://github.com/sandeepmiriyala03/yuktai/security) of this repository.
-2. Click **Report a vulnerability**.
-3. Include:
-   - the affected version and module (grid, accessibility engine, agents, RAG, Vibe Coder or the vanilla build)
-   - steps to reproduce, or a small HTML page that shows the problem
-   - the impact you expect (for example script injection, data exposure, or a page that stops working)
-   - your name or handle, if you would like credit
+1. Go to the [Security tab](https://github.com/sandeepmiriyala03/yuktai/security) → **Report a vulnerability**.
+2. Include the version, the module, steps to reproduce (a small HTML page is ideal), the impact, and your name if you'd like credit.
 
 ## What to expect
 
-| Step | Timeline |
+| Step | Time |
 |---|---|
-| Acknowledgement of your report | Within 3 working days |
-| First assessment (accepted or declined, with reasons) | Within 7 days |
-| Progress updates | At least every 7 days until it is resolved |
-| Fix for critical and high issues | Target within 30 days |
-| Fix for medium and low issues | Next planned release |
+| Acknowledgement | 3 working days |
+| Accepted or declined, with reasons | 7 days |
+| Fix for critical and high issues | Target 30 days |
+| Fix for medium and low issues | Next release |
 
-**If the report is accepted:**
-- I will confirm the problem, agree on a disclosure date with you, and prepare a fix.
-- The fix ships as a patch release with a GitHub security advisory.
-- You will be credited in the advisory unless you ask not to be.
-
-**If the report is declined:** I will explain why, for example if the behaviour is expected or outside the scope below. You are welcome to disagree and send more detail.
-
-yuktai is maintained in free time by one person, so please allow for these timelines. Critical issues are always handled first.
+Accepted reports get a patch release, a GitHub security advisory and credit (unless you prefer not to be named). YuktAI is maintained by one person in free time; critical issues always come first.
 
 ## Scope
 
 **In scope**
-- Script injection (XSS) through grid data, column `render` output, search text, assistant answers or page tools
+- Script injection (XSS) through grid data, `render` output, search text, assistant answers or page tools
 - Data leaving the device without the app asking for it
-- CSV export that can run formulas in spreadsheet apps
-- Accessibility auto-fixes that make a page unusable or hide content from assistive technology
-- WebMCP tools that do more than the grid allows
-- The vanilla build, its demo page, PWA files and service worker
+- CSV export that runs formulas in spreadsheets
+- Auto-fixes that hide content from assistive technology or break a page
+- WebMCP tools doing more than the grid allows
+- The Rust/WebAssembly engines: crashes or results that differ from TypeScript
+- The plain HTML build, PWA files and service worker
 
 **Out of scope**
-- Bugs in browsers, Chrome's built-in AI, Transformers.js or model files downloaded from third parties
-- Problems in apps built with yuktai that come from that app's own code
-- Missing security headers on the demo sites
-- Denial of service by loading very large datasets into the client-side grid (use server paging for 100K+ rows)
+- Bugs in browsers, Chrome's built-in AI, Transformers.js or third-party models
+- Problems caused by your own app's code
+- Missing security headers on demo sites
+- Slowdowns from loading very large data into the client-side grid (use server paging for 100K+ rows)
 
 ## Built-in protections
 
-- All grid values are shown as text, never as HTML. Custom `render` functions return text or DOM nodes.
-- CSV export prefixes cells that start with `=`, `+`, `-` or `@`, so spreadsheets do not run them as formulas.
-- Grid tools never throw, check required inputs, and only exist when the grid can really perform them.
-- The page tools never audit or change their own UI (`data-yuktai-panel`).
-- Every change the accessibility copilot makes can be undone.
-- Nothing is stored except accessibility preferences, in the browser's `localStorage`.
+- Grid values are always shown as text, never as HTML.
+- CSV export neutralises cells starting with `=`, `+`, `-` or `@`.
+- The Rust engines run in the WebAssembly sandbox and are embedded in the package: no downloads, no network, no `eval`. Sites with a Content Security Policy need `'wasm-unsafe-eval'`; otherwise YuktAI falls back to TypeScript.
+- Grid tools validate inputs and never throw.
+- Page tools never audit or change their own UI.
+- Every copilot fix can be undone.
+- Only accessibility preferences are stored, in `localStorage`.
 
-Thank you for helping keep yuktai and its users safe.
+Thank you for helping keep YuktAI and its users safe. 🙏
