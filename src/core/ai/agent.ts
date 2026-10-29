@@ -11,6 +11,8 @@
 //   ✅ Plain HTML — no framework
 // ─────────────────────────────────────────────────────────────────────────────
 
+import { PROMPT_LANGUAGES } from "./promptOptions"
+
 export interface AgentStep {
   text: string
   type: "info" | "action" | "success" | "error" | "field"
@@ -436,6 +438,7 @@ async function planWithGeminiNano(
   if (!API) throw new Error("Gemini Nano not available")
 
   const session = await API.create({
+    ...PROMPT_LANGUAGES,
     systemPrompt: `You are a helpful web accessibility agent.
 Create a simple action plan to help a user complete a task on a webpage.
 Rules:

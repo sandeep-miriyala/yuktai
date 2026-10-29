@@ -12,6 +12,8 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 // ── Result returned to the caller
+import { WRITING_LANGUAGES } from "./promptOptions"
+
 export interface SummaryResult {
   success:  boolean
   summary:  string
@@ -45,7 +47,7 @@ export async function checkSummarizerSupport(): Promise<boolean> {
 
     // Chrome 147+ uses availability()
     if (typeof API.availability === "function") {
-      const status = await API.availability()
+      const status = await API.availability({ ...WRITING_LANGUAGES })
       return status === "readily" || status === "available" || status === "downloadable"
     }
 

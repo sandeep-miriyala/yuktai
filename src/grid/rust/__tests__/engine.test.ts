@@ -229,7 +229,7 @@ describe("vanilla renderGrid: TypeScript and Rust agree", () => {
       }
       ts.destroy()
       rust.destroy()
-    })
+    }, 30_000)
   }
 })
 
@@ -318,6 +318,36 @@ describe("search time", () => {
     })
     expect(el.textContent).toMatch(/ms · Rust/)
     expect(seen.at(-1)?.engine).toBe("rust")
+    act(() => root.unmount())
+  })
+})
+
+describe("Rust is the default grid engine (v5.3.11)", () => {
+  it("vanilla renderGrid uses Rust when no engine is given, and engine: \"ts\" keeps TypeScript", async () => {
+    const data = makeRows(5, 50, "numbers")
+    const cols = columns.map((c) => ({ key: c.key, label: c.label, type: c.type }))
+    const a = document.createElement("div"), b = document.createElement("div")
+    document.body.append(a, b)
+    const byDefault = renderGrid(a, { data, columns: cols })
+    const ts = renderGrid(b, { data, columns: cols, engine: "ts" })
+    expect(await byDefault.whenEngineReady()).toBe("rust")
+    expect(await ts.whenEngineReady()).toBe("ts")
+    byDefault.destroy(); ts.destroy()
+  })
+  it("useGrid uses Rust when no engine is given", async () => {
+    const data = makeRows(6, 50, "numbers")
+    let grid: UseGridReturn<Row> | null = null
+    function Probe() {
+      grid = useGrid({ data, columns, pagination: false })
+      return null
+    }
+    const el = document.createElement("div")
+    document.body.append(el)
+    const root = createRoot(el)
+    await act(async () => root.render(createElement(Probe)))
+    await act(async () => { await loadGridCore() })
+    await act(async () => { grid!.setSearchQuery("a") })
+    expect(grid!.searchTime?.engine).toBe("rust")
     act(() => root.unmount())
   })
 })

@@ -1,0 +1,14 @@
+{
+  // Type declarations for the npm package, written by TypeScript 7 (tsc).
+  // tsup builds the JavaScript; this writes dist/**/*.d.ts next to it.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "declaration": true,
+    "declarationMap": false,
+    "emitDeclarationOnly": true,
+    "outDir": "./dist"
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "src/**/__tests__/**", "src/**/*.test.ts", "src/**/*.test.tsx"]
+}

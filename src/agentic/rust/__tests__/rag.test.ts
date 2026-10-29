@@ -63,7 +63,7 @@ describe("engine choice", () => {
   })
 
   it("reports the engine", async () => {
-    const ts = createContextIndex({ includePage: false, documents: makeDocs(1, 10) })
+    const ts = createContextIndex({ includePage: false, documents: makeDocs(1, 10), engine: "ts" })
     const rust = createContextIndex({ includePage: false, documents: makeDocs(1, 10), engine: "rust" })
     expect(await ts.whenEngineReady()).toBe("ts")
     expect(await rust.whenEngineReady()).toBe("rust")
@@ -76,7 +76,7 @@ describe("search: TypeScript and Rust agree exactly", () => {
     it(`${size} documents`, async () => {
       for (let seed = 1; seed <= 6; seed++) {
         const documents = makeDocs(seed * 13 + size, size)
-        const ts = createContextIndex({ includePage: false, documents })
+        const ts = createContextIndex({ includePage: false, documents, engine: "ts" })
         const rust = createContextIndex({ includePage: false, documents, engine: "rust" })
         await rust.whenEngineReady()
         for (const q of QUESTIONS) {
@@ -101,7 +101,7 @@ describe("search: TypeScript and Rust agree exactly", () => {
       { key: "city", label: "City", type: "text" as const },
       { key: "salary", label: "Salary", type: "number" as const },
     ]
-    const ts = createContextIndex({ includePage: false, rows, columns })
+    const ts = createContextIndex({ includePage: false, rows, columns, engine: "ts" })
     const rust = createContextIndex({ includePage: false, rows, columns, engine: "rust" })
     await rust.whenEngineReady()
     for (const q of [...QUESTIONS, "salary 15000", "City Hyderabad", "Name సీత"]) {
@@ -111,7 +111,7 @@ describe("search: TypeScript and Rust agree exactly", () => {
 
   it("odd k values fall back to TypeScript safely", async () => {
     const documents = makeDocs(9, 30)
-    const ts = createContextIndex({ includePage: false, documents })
+    const ts = createContextIndex({ includePage: false, documents, engine: "ts" })
     const rust = createContextIndex({ includePage: false, documents, engine: "rust" })
     await rust.whenEngineReady()
     for (const k of [0, -1, 2.5, Infinity]) {
@@ -130,7 +130,7 @@ describe("Ask page: same answers from the real page text", () => {
         <p>Staff get 12 casual leaves. Leave requests go to the office manager.</p>
         <ul><li>రంగు రంగుల రత్నదీపాలు — పద్యాలు</li><li>Salary is paid on the 1st.</li></ul>
       </main>`
-    const ts = createContextIndex({})
+    const ts = createContextIndex({ engine: "ts" })
     const rust = createContextIndex({ engine: "rust" })
     for (const q of ["When does registration close?", "leave policy", "జయంతి ఎక్కడ", "రత్నదీపాలు", "salary"]) {
       const [a, b] = [await ts.ask(q), await rust.ask(q)]
@@ -146,5 +146,16 @@ describe("Ask page: same answers from the real page text", () => {
     const [a, b] = [await ts.ask("holiday list"), await rust.ask("holiday list")]
     expect(b.answer).toBe(a.answer)
     expect(a.answer).toMatch(/Sankranti/)
+  })
+})
+
+describe("Rust is the default engine (v5.3.11)", () => {
+  it("uses Rust when no engine is given", async () => {
+    const index = createContextIndex({ includePage: false, documents: makeDocs(3, 20) })
+    expect(await index.whenEngineReady()).toBe("rust")
+  })
+  it("engine: \"ts\" still keeps TypeScript", async () => {
+    const index = createContextIndex({ includePage: false, documents: makeDocs(3, 20), engine: "ts" })
+    expect(await index.whenEngineReady()).toBe("ts")
   })
 })

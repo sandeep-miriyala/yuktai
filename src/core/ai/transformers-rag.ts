@@ -42,7 +42,7 @@ function isMobileDevice(): boolean {
 // safeDevice — wasm always on mobile, webgpu only on desktop if available
 // FIX: WebGPU is unstable on mobile Safari and Android Chrome
 // ─────────────────────────────────────────────────────────────────────────────
-function safeDevice(): string {
+function safeDevice(): "wasm" | "webgpu" {
   if (isMobileDevice()) return "wasm"  // always wasm on mobile
   try {
     if (

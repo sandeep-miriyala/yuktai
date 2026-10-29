@@ -20,6 +20,7 @@ import {
   shorten,
   type AuditRoot,
   isDocument,
+  YUKTAI_IGNORE,
 } from "./dom"
 
 export type AuditSeverity = "critical" | "serious" | "moderate" | "minor"
@@ -318,7 +319,7 @@ export function runQaAudit(options: AuditOptions = {}): AuditReport {
     // ── Duplicate ids ───────────────────────────────────────────────────
     const seen = new Map<string, number>()
     for (const el of Array.from(root.querySelectorAll("[id]"))) {
-      if (el.closest("[data-yuktai-panel]")) continue
+      if (el.closest(YUKTAI_IGNORE)) continue
       seen.set(el.id, (seen.get(el.id) ?? 0) + 1)
     }
     for (const [id, count] of seen) {
@@ -342,14 +343,31 @@ export function runQaAudit(options: AuditOptions = {}): AuditReport {
       }
     }
 
-    // ── Target size ─────────────────────────────────────────────────────
+    // ── Target size (WCAG 2.5.8) ────────────────────────────────────────
+    // A target smaller than 24×24 still passes when it has room around it:
+    // a 24px circle centred on it touches no other target and no other small
+    // target's circle (the "spacing" exception). Inline links are exempt.
     const min = options.minTargetSize ?? 24
-    for (const el of queryAll(root, INTERACTIVE)) {
-      const rect = el.getBoundingClientRect()
-      if (rect.width === 0 && rect.height === 0) continue // not laid out (or test env)
-      if (el.tagName === "A" && el.closest("p,li,td")) continue // inline links are exempt
-      if (rect.width < min || rect.height < min) {
-        add("target-size", el, `Target is ${Math.round(rect.width)}×${Math.round(rect.height)}px (minimum ${min}×${min}).`, `Increase padding so it's at least ${min}×${min}px (44×44 is better for seniors).`)
+    const targets = queryAll(root, INTERACTIVE)
+      .map((el) => ({ el, rect: el.getBoundingClientRect() }))
+      .filter((t) => t.rect.width > 0 || t.rect.height > 0) // not laid out (or test env)
+    const isSmall = (r: DOMRect) => r.width < min || r.height < min
+    const centre = (r: DOMRect): [number, number] => [r.left + r.width / 2, r.top + r.height / 2]
+    const distanceToRect = (x: number, y: number, r: DOMRect) =>
+      Math.hypot(Math.max(r.left - x, 0, x - r.right), Math.max(r.top - y, 0, y - r.bottom))
+    for (const t of targets) {
+      if (!isSmall(t.rect)) continue
+      if (t.el.tagName === "A" && t.el.closest("p,li,td")) continue // inline links are exempt
+      const [cx, cy] = centre(t.rect)
+      const crowded = targets.some((o) => {
+        if (o === t || o.el.contains(t.el) || t.el.contains(o.el)) return false
+        if (distanceToRect(cx, cy, o.rect) < min / 2) return true
+        if (!isSmall(o.rect)) return false
+        const [ox, oy] = centre(o.rect)
+        return Math.hypot(cx - ox, cy - oy) < min
+      })
+      if (crowded) {
+        add("target-size", t.el, `Target is ${Math.round(t.rect.width)}×${Math.round(t.rect.height)}px and too close to another target (needs ${min}×${min}, or ${min}px of space around it).`, `Increase padding so it's at least ${min}×${min}px (44×44 is better for seniors), or add space between targets.`)
       }
     }
   }

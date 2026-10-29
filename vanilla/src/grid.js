@@ -189,9 +189,10 @@ export function renderGrid(container, rowsOrOptions, columnsArg, optionsArg) {
     statusTimer = setTimeout(() => (status.textContent = text), 40)
   }
 
-  // ── optional Rust engine (opts.engine: "ts" default | "rust" | "auto") ──
+  // ── Rust engine (opts.engine: "rust" default since v5.3.11 | "auto" | "ts") ──
   // Same results as the TypeScript path below; used only where they can't differ.
-  const engineOption = opts.engine === "rust" || opts.engine === "auto" ? opts.engine : "ts"
+  // Without WebAssembly (or with a CSP that blocks it) the grid stays on TypeScript.
+  const engineOption = opts.engine === "ts" || opts.engine === "auto" ? opts.engine : "rust"
   let core = null
   let coreLoading = null
   let searchIndex = { data: null, columns: null, ready: false }

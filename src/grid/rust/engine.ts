@@ -1,9 +1,9 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // @yuktishaalaa/yuktai · src/grid/rust/engine.ts
 //
-// Optional Rust engine for the grid's EXISTING search and number/date sort.
-// Turn it on with `engine: "rust"` (always) or `engine: "auto"` (from 10,000
-// rows). The default, `engine: "ts"`, is unchanged TypeScript.
+// Rust engine for the grid's search and number/date sort. Since v5.3.11 it is
+// the default (`engine: "rust"`); `engine: "auto"` uses it from 10,000 rows and
+// `engine: "ts"` keeps TypeScript only. Without WebAssembly, TypeScript runs.
 //
 // Rules stay in TypeScript: each grid decides what is empty, what a number or
 // a date is, and which text is searched, then hands Rust plain keys and text.

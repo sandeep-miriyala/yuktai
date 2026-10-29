@@ -10,10 +10,22 @@
 
 // ── Types for Web Speech Recognition API
 // Not fully typed in TypeScript default lib — we declare them here
+interface SpeechRecognition extends EventTarget {
+  continuous:     boolean;
+  interimResults: boolean;
+  lang:           string;
+  onresult: ((event: SpeechRecognitionEvent) => void) | null;
+  onend:    (() => void) | null;
+  onerror:  ((event: SpeechRecognitionErrorEvent) => void) | null;
+  start(): void;
+  stop():  void;
+}
+type SpeechRecognitionConstructor = new () => SpeechRecognition;
+
 declare global {
   interface Window {
-    SpeechRecognition?:       typeof SpeechRecognition;
-    webkitSpeechRecognition?: typeof SpeechRecognition;
+    SpeechRecognition?:       SpeechRecognitionConstructor;
+    webkitSpeechRecognition?: SpeechRecognitionConstructor;
   }
 }
 
@@ -214,6 +226,7 @@ export function startVoiceControl(callback?: CommandCallback): boolean {
   // Create recognition instance
   const SpeechRecognitionAPI =
     window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognitionAPI) return false;
 
   recognition = new SpeechRecognitionAPI();
 

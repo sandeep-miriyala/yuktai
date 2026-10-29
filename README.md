@@ -24,8 +24,8 @@ Built in free time by [Sandeep Miriyala](https://github.com/sandeepmiriyala03).
 | 📊 | **YuktaiGrid** | Search, sort, pages, CSV export, 5 WCAG themes, Telugu UI, keyboard navigation |
 | 🤖 | **Ask your data** | "salary over 1 lakh in Hyderabad", BI answers, unusual rows, multi-step tasks, WebMCP |
 | 💬 | **Ask page (RAG)** | Answers from your page and data, offline |
-| 🛠 | **Page tools** | QA audit (15 WCAG checks), form and design review, voice commands |
-| 🦀 | **Rust engine** | Up to 42× faster search on big data (optional) |
+| 🛠 | **Page tools** | QA audit (15 WCAG checks), form and design review, voice commands. In React/Next.js: `showPageTools` |
+| 🦀 | **Rust engine** | Up to 42× faster search on big data. The default since 5.3.11 |
 | 🎨 | **163 icons** | Any size and colour, outline or filled, safe in Server Components |
 | ⚡ | **Vibe Coder** | Plain English → a full Next.js project ZIP (developer tool) |
 | 📱 | **PWA** | Installable, works offline |
@@ -33,7 +33,7 @@ Built in free time by [Sandeep Miriyala](https://github.com/sandeepmiriyala03).
 ## Supported languages
 
 **Use it with:** HTML · JavaScript · TypeScript · React (JSX) · Next.js (TSX)
-**Built with:** TypeScript + Rust (WebAssembly, embedded; no setup needed)
+**Built with:** TypeScript 7 + Rust (WebAssembly, embedded; no setup needed)
 **Interface:** English and Telugu. All 22 Indian languages for number and date formats, sorting and voice input.
 
 ---
@@ -43,7 +43,7 @@ Built in free time by [Sandeep Miriyala](https://github.com/sandeepmiriyala03).
 **Plain HTML:** one line, no build step
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@yuktishaalaa/yuktai@5.3.9/vanilla/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@yuktishaalaa/yuktai@5.3.11/vanilla/index.min.js"></script>
 <script>
   yuktai.renderGrid("#staff", { data: rows, columns, engine: "auto", showSearchTime: true })
 </script>
@@ -63,7 +63,7 @@ import type { ReactNode } from "react"
 
 export default function YuktaiClient({ children }: { children: ReactNode }) {
   return (
-    <YuktAIWrapper position="left" launcher showAccessibility showRag engine="rust">
+    <YuktAIWrapper position="left" launcher showAccessibility showRag showPageTools engine="rust">
       {children}
     </YuktAIWrapper>
   )
@@ -100,9 +100,9 @@ More examples for every feature: **https://yuktaidocs.netlify.app/**
 
 ---
 
-## Rust engine (optional)
+## Rust engine (default)
 
-Set `engine="rust"` or `"auto"`. Results are identical to TypeScript, proven by tests, only faster. If WebAssembly is unavailable, it falls back to TypeScript.
+Since 5.3.11 the grid and page search use Rust by default. Results are identical to TypeScript, proven by tests, only faster. If WebAssembly is unavailable or blocked by a Content Security Policy, they fall back to TypeScript. Set `engine="ts"` to keep TypeScript only, or `"auto"` for Rust from 10,000 rows. The 💬 button uses Rust page search when you set `engine`.
 
 | Task | TypeScript | Rust | Speed-up |
 |---|---|---|---|

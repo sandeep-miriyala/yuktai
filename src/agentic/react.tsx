@@ -263,7 +263,7 @@ export interface AgenticPanelProps {
   voiceLang?: string
   /** Optional model hook for Ask page, e.g. Gemini Nano or your own API. */
   generate?: (question: string, context: string) => Promise<string>
-  /** Ask page search engine: "ts" (default), "rust" or "auto". Same answers; Rust is faster on long pages. */
+  /** Ask page search engine: "rust" (default since v5.3.11), "auto" or "ts". Same answers; Rust is faster on long pages. */
   engine?: GridEngine
   style?: CSSProperties
 }

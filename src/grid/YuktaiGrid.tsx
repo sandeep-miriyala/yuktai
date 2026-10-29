@@ -292,7 +292,7 @@ export function YuktaiGrid<
   onWebMCPStatusChange,
   onAgentResult,
   customRules = [],
-  engine = "ts",
+  engine = "rust",
   showSearchTime = false,
   onSearchTime,
 }: YuktaiGridProps<T>) {

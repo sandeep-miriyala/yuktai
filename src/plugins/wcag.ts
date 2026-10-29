@@ -33,7 +33,20 @@ export interface A11yReport {
   scanned: number;
   /** List of errors encountered */
   errors?: string[];
+  /** Page validation, when config.validate is set */
+  validation?: unknown;
 }
+
+const errorText = (e: unknown): string => (e instanceof Error ? e.message : String(e));
+
+/** WCAG relative luminance of an sRGB colour (0–255 channels). */
+const rgbToLuminance = (r: number, g: number, b: number): number => {
+  const [R, G, B] = [r, g, b].map((v) => {
+    const c = v / 255;
+    return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+  });
+  return 0.2126 * R + 0.7152 * G + 0.0722 * B;
+};
 
 /**
  * WCAG Accessibility Plugin
@@ -74,7 +87,7 @@ export const wcagPlugin = {
       return report;
     } catch (error) {
       console.error('WCAG Plugin execution error:', error);
-      return { fixed: 0, scanned: 0, errors: [error.message] };
+      return { fixed: 0, scanned: 0, errors: [errorText(error)] };
     }
   },
 
@@ -203,7 +216,7 @@ export const wcagPlugin = {
           }
 
         } catch (elementError) {
-          report.errors!.push(`Error fixing element ${el.tagName}: ${elementError.message}`);
+          report.errors!.push(`Error fixing element ${el.tagName}: ${errorText(elementError)}`);
         }
       });
 
@@ -223,7 +236,7 @@ export const wcagPlugin = {
       }
 
     } catch (error) {
-      report.errors!.push(`General error in applyFixes: ${error.message}`);
+      report.errors!.push(`General error in applyFixes: ${errorText(error)}`);
     }
 
     return report;
@@ -354,8 +367,8 @@ export const wcagPlugin = {
 
         if (!fgMatch || !bgMatch) return 1; // Assume good contrast if parsing fails
 
-        const fgL = this.rgbToLuminance(parseInt(fgMatch[1]), parseInt(fgMatch[2]), parseInt(fgMatch[3]));
-        const bgL = this.rgbToLuminance(parseInt(bgMatch[1]), parseInt(bgMatch[2]), parseInt(bgMatch[3]));
+        const fgL = rgbToLuminance(parseInt(fgMatch[1]), parseInt(fgMatch[2]), parseInt(fgMatch[3]));
+        const bgL = rgbToLuminance(parseInt(bgMatch[1]), parseInt(bgMatch[2]), parseInt(bgMatch[3]));
 
         const lighter = Math.max(fgL, bgL);
         const darker = Math.min(fgL, bgL);

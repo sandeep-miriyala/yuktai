@@ -14,6 +14,8 @@
 //                                           passages, then the model answers)
 //   🤖  Agent           — showAgent
 //   ⚡  Vibe Coder      — showVibeCoder
+//   🛠  Page tools      — showPageTools    (Copilot, QA report, Forms, Design,
+//                                           Ask page, Voice; v5.3.11)
 //
 // Older usage still works exactly as before (♿ always, ⚡ with showAgent):
 //   <YuktAIWrapper position="left" showRag={true} showAgent={true}>
@@ -39,6 +41,8 @@ import {
 import CodeGenPanel from "./CodeGenPanel"
 import { createContextIndex } from "../agentic/contextIndex"
 import { formatSearchTime, type GridEngine } from "../grid/rust/engine"
+import { AgenticPanel, type AgenticPanelProps } from "../agentic/react"
+import { PROMPT_LANGUAGES, WRITING_LANGUAGES } from "../core/ai/promptOptions"
 // ─────────────────────────────────────────────────────────────────────────────
 // Props
 // ─────────────────────────────────────────────────────────────────────────────
@@ -61,6 +65,16 @@ export interface YuktAIWrapperProps {
    * Not set: 💬 works exactly as before.
    */
   engine?: GridEngine
+  /**
+   * v5.3.11 — show 🛠 Page tools: Copilot, QA report (15 WCAG checks), Forms,
+   * Design, Ask page and Voice, the same panel as the vanilla showPageTools.
+   * Adding it does not change which other buttons show.
+   */
+  showPageTools?: boolean
+  /** v5.3.11 — tab 🛠 opens on: "copilot" (default), "qa", "forms", "design", "ask" or "voice". */
+  pageToolsTab?: AgenticPanelProps["defaultTab"]
+  /** v5.3.11 — speech language for the 🛠 Voice tab, e.g. "te-IN" (default "en-IN"). */
+  voiceLang?: string
 }
 
 const LAUNCHER_KEY = "yuktai-tools-open"
@@ -77,25 +91,25 @@ async function detectAISupport(): Promise<boolean> {
     if (w.LanguageModel) {
       try {
         if (typeof w.LanguageModel.availability === "function") {
-          const s = await w.LanguageModel.availability()
+          const s = await w.LanguageModel.availability({ ...PROMPT_LANGUAGES })
           if (s === "readily" || s === "available" || s === "downloadable") return true
         } else return true
       } catch { /* continue */ }
     }
     if (w.Summarizer) {
-      try { const s = await w.Summarizer.availability?.(); if (!s || s === "readily" || s === "available") return true } catch { /* continue */ }
+      try { const s = await w.Summarizer.availability?.({ ...WRITING_LANGUAGES }); if (!s || s === "readily" || s === "available") return true } catch { /* continue */ }
     }
     if (w.Rewriter) {
-      try { const s = await w.Rewriter.availability?.(); if (!s || s === "readily" || s === "available") return true } catch { /* continue */ }
+      try { const s = await w.Rewriter.availability?.({ ...WRITING_LANGUAGES }); if (!s || s === "readily" || s === "available") return true } catch { /* continue */ }
     }
     if (w.Writer) {
-      try { const s = await w.Writer.availability?.(); if (!s || s === "readily" || s === "available") return true } catch { /* continue */ }
+      try { const s = await w.Writer.availability?.({ ...WRITING_LANGUAGES }); if (!s || s === "readily" || s === "available") return true } catch { /* continue */ }
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const ai = w.ai || (globalThis as any).ai
     if (ai) {
       if (ai.languageModel?.availability) {
-        try { const s = await ai.languageModel.availability(); if (s === "readily" || s === "available") return true } catch { /* continue */ }
+        try { const s = await ai.languageModel.availability({ ...PROMPT_LANGUAGES }); if (s === "readily" || s === "available") return true } catch { /* continue */ }
       }
       if (ai.languageModel && typeof ai.languageModel.create === "function") return true
       if (ai.summarizer || ai.rewriter || ai.writer || ai.languageModel) return true
@@ -118,6 +132,9 @@ export function YuktAIWrapper({
   showVibeCoder,
   launcher,
   engine,
+  showPageTools = false,
+  pageToolsTab = "copilot",
+  voiceLang,
 }: YuktAIWrapperProps) {
 
   // ── Which buttons are on ──
@@ -175,6 +192,20 @@ export function YuktAIWrapper({
     ? stack([a11yOn, ragOn, agentOn, vibeOn])
     : [24, 84, showRag ? 144 : 84, 204]
   const [codegenOpen, setCodegenOpen] = useState(false);
+
+  // ── 🛠 Page tools: always the top button, above whichever ones are showing ──
+  const [toolsPanelOpen, setToolsPanelOpen] = useState(false)
+  const toolsBottom = Math.max(
+    launcher ? 24 : -36,
+    a11yOn ? a11yBottom : -36,
+    ragOn ? ragBottom : -36,
+    agentOn ? agentBottom : -36,
+    vibeOn ? codegenBottom : -36,
+  ) + 60
+  // Opening any other panel closes 🛠, so only one panel is open at a time
+  useEffect(() => {
+    if (panelOpen || ragOpen || agentOpen || codegenOpen) setToolsPanelOpen(false)
+  }, [panelOpen, ragOpen, agentOpen, codegenOpen])
 
   // ── 💬 retrieval-first mode (engine set) ──
   const retrievalFirst = engine !== undefined
@@ -370,18 +401,19 @@ export function YuktAIWrapper({
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== "Escape") return
-      if (panelOpen || ragOpen || agentOpen || codegenOpen) {
+      if (panelOpen || ragOpen || agentOpen || codegenOpen || toolsPanelOpen) {
         setPanelOpen(false)
         setRagOpen(false)
         setAgentOpen(false)
         setCodegenOpen(false)
+        setToolsPanelOpen(false)
       } else if (launcher && toolsOpen) {
         setToolsOpen(false)
       }
     }
     window.addEventListener("keydown", onKey)
     return () => window.removeEventListener("keydown", onKey)
-  }, [panelOpen, ragOpen, agentOpen, codegenOpen, launcher, toolsOpen])
+  }, [panelOpen, ragOpen, agentOpen, codegenOpen, toolsPanelOpen, launcher, toolsOpen])
 
   // ── Launcher: remember open/closed, expose it for styling ──
   useEffect(() => {
@@ -404,6 +436,7 @@ export function YuktAIWrapper({
         setRagOpen(false)
         setAgentOpen(false)
         setCodegenOpen(false)
+        setToolsPanelOpen(false)
       }
       return !open
     })
@@ -414,6 +447,10 @@ export function YuktAIWrapper({
   }, [panelOpen])
 
   // ── Shared FAB base style ──
+  // Every floating button also carries data-yuktai-ui, so the QA report and
+  // Copilot treat it as YuktAI's own UI, not the page's. (Not data-yuktai-panel:
+  // on phones the engine turns those into full-width bottom sheets.)
+  // Colours keep white text at 4.5:1 or more (WCAG 1.4.3).
   const fabBase = (bottom: number, bg: string, active: boolean): React.CSSProperties => ({
     position:       "fixed",
     bottom:         `${bottom}px`,
@@ -464,6 +501,7 @@ export function YuktAIWrapper({
       {launcher && (
         <button
           type="button"
+          data-yuktai-ui="true"
           style={fabBase(24, toolsOpen ? "#134e4a" : "#0f766e", toolsOpen)}
           aria-expanded={toolsOpen}
           aria-label={toolsOpen ? "Hide yuktai tools" : "Show yuktai tools"}
@@ -486,10 +524,68 @@ export function YuktAIWrapper({
         </button>
       )}
 
+      {/* 🛠 PAGE TOOLS BUTTON + PANEL (v5.3.11) */}
+      {showPageTools && showButtons && (
+        <button
+          type="button"
+          data-yuktai-ui="true"
+          style={fabBase(toolsBottom, toolsPanelOpen ? "#312e81" : "#4338ca", toolsPanelOpen)}
+          aria-label="Open page tools"
+          aria-haspopup="dialog"
+          aria-expanded={toolsPanelOpen}
+          title="🛠 Page tools: QA report, forms, design, ask, voice"
+          data-yuktai-page-tools="true"
+          onClick={() => {
+            setToolsPanelOpen((p) => !p)
+            setPanelOpen(false); setRagOpen(false); setAgentOpen(false); setCodegenOpen(false)
+          }}
+          onMouseEnter={hover}
+          onMouseLeave={unhover}
+        >
+          🛠
+        </button>
+      )}
+      {showPageTools && showButtons && toolsPanelOpen && (
+        <div
+          role="dialog"
+          aria-label="yuktai page tools"
+          data-yuktai-panel="true"
+          style={{
+            position:   "fixed",
+            bottom:     `${toolsBottom + 64}px`,
+            [position]: "24px",
+            zIndex:     9999,
+            width:      "420px",
+            maxWidth:   "calc(100vw - 48px)",
+            maxHeight:  `calc(100vh - ${toolsBottom + 88}px)`,
+            minHeight:  "160px",
+            overflowY:  "auto",
+            boxShadow:  "0 8px 32px rgba(0,0,0,0.18)",
+            borderRadius: "16px",
+            background: "Canvas",
+            color:      "CanvasText",
+            border:     "1px solid color-mix(in srgb, CanvasText 20%, transparent)",
+          }}
+        >
+          <div style={{ display: "flex", justifyContent: "flex-end", position: "sticky", top: 0, zIndex: 1, background: "Canvas" }}>
+            <button
+              type="button"
+              onClick={() => setToolsPanelOpen(false)}
+              aria-label="Close page tools"
+              style={{ margin: "6px 6px 0 0", minWidth: 32, minHeight: 32, borderRadius: 8, border: "1px solid #94a3b8", background: "#fff", color: "#0f172a", cursor: "pointer", fontSize: 16 }}
+            >
+              ✕
+            </button>
+          </div>
+          <AgenticPanel defaultTab={pageToolsTab} voiceLang={voiceLang} engine={engine} style={{ margin: 0, border: 0, paddingTop: 4 }} />
+        </div>
+      )}
+
 {/* ⚡ VIBE CODER BUTTON */}
 {vibeOn && showButtons && (
   <button
-    style={fabBase(codegenBottom, codegenOpen ? "#d97706" : "#f59e0b", codegenOpen)}
+    data-yuktai-ui="true"
+    style={fabBase(codegenBottom, codegenOpen ? "#92400e" : "#b45309", codegenOpen)}
     aria-label="Open Vibe Coder"
     title="⚡ Vibe Coder — Generate Next.js project"
     onClick={() => { setCodegenOpen(p => !p); setAgentOpen(false); setRagOpen(false); setPanelOpen(false) }}
@@ -513,7 +609,8 @@ export function YuktAIWrapper({
       {/* ─────────────────────────────────────────────────────────────── */}
       {agentOn && showButtons && (
         <button
-          style={fabBase(agentBottom, agentOpen ? "#059669" : "#10b981", agentOpen)}
+          data-yuktai-ui="true"
+          style={fabBase(agentBottom, agentOpen ? "#065f46" : "#047857", agentOpen)}
           aria-label="Open AI agent"
           aria-haspopup="dialog"
           aria-expanded={agentOpen}
@@ -644,6 +741,7 @@ export function YuktAIWrapper({
       {/* ─────────────────────────────────────────────────────────────── */}
       {ragOn && showButtons && (
         <button
+          data-yuktai-ui="true"
           style={fabBase(ragBottom, ragOpen ? "#7c3aed" : "#6d28d9", ragOpen)}
           aria-label="Ask a question about this page"
           aria-haspopup="dialog"
@@ -758,7 +856,8 @@ export function YuktAIWrapper({
       {/* ─────────────────────────────────────────────────────────────── */}
       {a11yOn && showButtons && (
       <button
-        style={fabBase(a11yBottom, isActive ? "#0d9488" : "#1a73e8", panelOpen)}
+        data-yuktai-ui="true"
+        style={fabBase(a11yBottom, isActive ? "#0f766e" : "#1a73e8", panelOpen)}
         aria-label="Open accessibility preferences"
         aria-haspopup="dialog"
         aria-expanded={panelOpen}

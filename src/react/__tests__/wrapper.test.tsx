@@ -195,3 +195,58 @@ describe("💬 with Gemini Nano + engine=\"rust\"", () => {
     delete w.LanguageModel
   })
 })
+
+describe("🛠 page tools (showPageTools, v5.3.11)", () => {
+  const TOOLS = "Open page tools"
+  const bottomOf = (label: string) => (host.querySelector(`button[aria-label="${label}"]`) as HTMLElement).style.bottom
+
+  it("adds 🛠 without changing which other buttons show", () => {
+    mount({ showPageTools: true })
+    expect(labels().sort()).toEqual([A11Y, TOOLS].sort())
+    expect(bottomOf(A11Y)).toBe("24px")
+    expect(bottomOf(TOOLS)).toBe("84px")
+  })
+
+  it("sits above the highest button in opt-in mode", () => {
+    mount({ showAccessibility: true, showRag: true, showPageTools: true })
+    expect(bottomOf(A11Y)).toBe("24px")
+    expect(bottomOf(RAG)).toBe("84px")
+    expect(bottomOf(TOOLS)).toBe("144px")
+  })
+
+  it("is hidden until the launcher opens", () => {
+    mount({ launcher: true, showAccessibility: true, showPageTools: true })
+    expect(labels()).toEqual([SHOW])
+    click(SHOW)
+    expect(labels()).toContain(TOOLS)
+    expect(bottomOf(TOOLS)).toBe("144px")
+  })
+
+  it("opens the panel on the chosen tab and runs the QA report", () => {
+    mount({ showPageTools: true, pageToolsTab: "qa" })
+    click(TOOLS)
+    const dialog = host.querySelector('[role="dialog"][aria-label="yuktai page tools"]')
+    expect(dialog).not.toBeNull()
+    expect(host.querySelector(`button[aria-label="${TOOLS}"]`)!.getAttribute("aria-expanded")).toBe("true")
+    const tabs = Array.from(dialog!.querySelectorAll('[role="tab"]')).map((t) => t.textContent)
+    expect(tabs).toEqual(["Copilot", "QA report", "Forms", "Design", "Ask page", "Voice"])
+    expect(dialog!.querySelector('[role="tab"][aria-selected="true"]')!.textContent).toBe("QA report")
+    const run = Array.from(dialog!.querySelectorAll("button")).find((b) => b.textContent === "Run QA check")!
+    act(() => run.click())
+    expect(dialog!.textContent).toMatch(/(PASS|FAIL) — \d+ of 15 checks passed/)
+  })
+
+  it("closes with ✕, with Escape, and when another panel opens", () => {
+    mount({ showPageTools: true })
+    const dialog = () => host.querySelector('[aria-label="yuktai page tools"]')
+    click(TOOLS)
+    click("Close page tools")
+    expect(dialog()).toBeNull()
+    click(TOOLS)
+    act(() => { window.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" })) })
+    expect(dialog()).toBeNull()
+    click(TOOLS)
+    click(A11Y)
+    expect(dialog()).toBeNull()
+  })
+})

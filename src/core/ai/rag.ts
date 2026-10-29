@@ -2,6 +2,8 @@
 // rag.ts — improved universal extraction
 // ─────────────────────────────────────────────────────────────────────────────
 
+import { PROMPT_LANGUAGES } from "./promptOptions"
+
 export interface RagResult {
   success: boolean
   answer: string
@@ -102,10 +104,10 @@ export async function askPage(question: string): Promise<RagResult> {
         systemPrompt: `Answer ONLY using page content.
 Keep answer short (2–3 sentences).
 If not found say: "I could not find that on this page."`,
-        outputLanguage: "en",
+        ...PROMPT_LANGUAGES,
       })
     } catch {
-      session = await API.create()
+      session = await API.create({ ...PROMPT_LANGUAGES })
     }
 
     const prompt = `Page:\n${pageText}\n\nQ: ${question}`
@@ -147,10 +149,10 @@ export async function askWithContext(question: string, context: string): Promise
         systemPrompt: `Answer ONLY using page content.
 Keep answer short (2–3 sentences).
 If not found say: "I could not find that on this page."`,
-        outputLanguage: "en",
+        ...PROMPT_LANGUAGES,
       })
     } catch {
-      session = await API.create()
+      session = await API.create({ ...PROMPT_LANGUAGES })
     }
     const answer = await session.prompt(`Page:\n${context.slice(0, 3500)}\n\nQ: ${question}`)
     if (session?.destroy) session.destroy()

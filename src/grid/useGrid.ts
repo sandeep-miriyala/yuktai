@@ -230,7 +230,7 @@ export function useGrid<T extends Record<string, unknown>>(
     mobileBreakpoint = 768,
     locale,
     initialFilters = [],
-    engine = "ts",
+    engine = "rust",
   } = options
 
   // Optional Rust engine (null = TypeScript, also while it loads)

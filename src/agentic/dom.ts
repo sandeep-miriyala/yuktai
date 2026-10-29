@@ -5,7 +5,8 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 /** Elements inside yuktai's own panels are never audited or read. */
-export const YUKTAI_IGNORE = "[data-yuktai-panel]"
+/** YuktAI's own UI: panels, floating buttons (React data-yuktai-ui, vanilla data-yuktai-fabs). Audits skip it. */
+export const YUKTAI_IGNORE = "[data-yuktai-panel],[data-yuktai-ui],[data-yuktai-fabs]"
 
 export type AuditRoot = Document | Element
 

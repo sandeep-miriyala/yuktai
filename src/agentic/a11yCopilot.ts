@@ -5,7 +5,7 @@
 // Original code for yuktai.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { isBrowser, resolveRoot, type AuditRoot, isDocument } from "./dom"
+import { isBrowser, resolveRoot, type AuditRoot, isDocument, YUKTAI_IGNORE } from "./dom"
 import { runQaAudit, type AuditIssue, type AuditOptions, type AuditReport } from "./qaAudit"
 
 export interface CopilotFixResult {
@@ -142,7 +142,7 @@ export function createA11yCopilot(options: A11yCopilotOptions = {}): A11yCopilot
       observer = new MutationObserver((mutations) => {
         if (applying) return
         // Ignore changes yuktai makes to its own panels
-        const relevant = mutations.some((m) => !(m.target as Element).closest?.("[data-yuktai-panel]"))
+        const relevant = mutations.some((m) => !(m.target as Element).closest?.(YUKTAI_IGNORE))
         if (!relevant) return
         if (timer) clearTimeout(timer)
         timer = setTimeout(scan, options.debounceMs ?? 600)

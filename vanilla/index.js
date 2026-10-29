@@ -1168,7 +1168,7 @@ ${summarizeRows(rows, columns)}` };
   }
 
   // src/agentic/dom.ts
-  var YUKTAI_IGNORE = "[data-yuktai-panel]";
+  var YUKTAI_IGNORE = "[data-yuktai-panel],[data-yuktai-ui],[data-yuktai-fabs]";
   function isBrowser() {
     return typeof window !== "undefined" && typeof document !== "undefined";
   }
@@ -1545,7 +1545,7 @@ ${summarizeRows(rows, columns)}` };
       }
       const seen = /* @__PURE__ */ new Map();
       for (const el of Array.from(root.querySelectorAll("[id]"))) {
-        if (el.closest("[data-yuktai-panel]")) continue;
+        if (el.closest(YUKTAI_IGNORE)) continue;
         seen.set(el.id, (seen.get(el.id) ?? 0) + 1);
       }
       for (const [id, count] of seen) {
@@ -1567,12 +1567,23 @@ ${summarizeRows(rows, columns)}` };
         }
       }
       const min = options.minTargetSize ?? 24;
-      for (const el of queryAll(root, INTERACTIVE)) {
-        const rect = el.getBoundingClientRect();
-        if (rect.width === 0 && rect.height === 0) continue;
-        if (el.tagName === "A" && el.closest("p,li,td")) continue;
-        if (rect.width < min || rect.height < min) {
-          add("target-size", el, `Target is ${Math.round(rect.width)}\xD7${Math.round(rect.height)}px (minimum ${min}\xD7${min}).`, `Increase padding so it's at least ${min}\xD7${min}px (44\xD744 is better for seniors).`);
+      const targets = queryAll(root, INTERACTIVE).map((el) => ({ el, rect: el.getBoundingClientRect() })).filter((t) => t.rect.width > 0 || t.rect.height > 0);
+      const isSmall = (r) => r.width < min || r.height < min;
+      const centre = (r) => [r.left + r.width / 2, r.top + r.height / 2];
+      const distanceToRect = (x, y, r) => Math.hypot(Math.max(r.left - x, 0, x - r.right), Math.max(r.top - y, 0, y - r.bottom));
+      for (const t of targets) {
+        if (!isSmall(t.rect)) continue;
+        if (t.el.tagName === "A" && t.el.closest("p,li,td")) continue;
+        const [cx, cy] = centre(t.rect);
+        const crowded = targets.some((o) => {
+          if (o === t || o.el.contains(t.el) || t.el.contains(o.el)) return false;
+          if (distanceToRect(cx, cy, o.rect) < min / 2) return true;
+          if (!isSmall(o.rect)) return false;
+          const [ox, oy] = centre(o.rect);
+          return Math.hypot(cx - ox, cy - oy) < min;
+        });
+        if (crowded) {
+          add("target-size", t.el, `Target is ${Math.round(t.rect.width)}\xD7${Math.round(t.rect.height)}px and too close to another target (needs ${min}\xD7${min}, or ${min}px of space around it).`, `Increase padding so it's at least ${min}\xD7${min}px (44\xD744 is better for seniors), or add space between targets.`);
         }
       }
     }
@@ -1730,7 +1741,7 @@ ${summarizeRows(rows, columns)}` };
           if (applying) return;
           const relevant = mutations.some((m) => {
             var _a, _b;
-            return !((_b = (_a = m.target).closest) == null ? void 0 : _b.call(_a, "[data-yuktai-panel]"));
+            return !((_b = (_a = m.target).closest) == null ? void 0 : _b.call(_a, YUKTAI_IGNORE));
           });
           if (!relevant) return;
           if (timer) clearTimeout(timer);
@@ -2990,7 +3001,8 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
       };
     });
   }
-  function createContextIndex(options = {}) {
+  function createContextIndex(input = {}) {
+    const options = { ...input, engine: input.engine ?? "rust" };
     let passages = [];
     let docs = [];
     let df = /* @__PURE__ */ new Map();
@@ -3228,6 +3240,13 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
     return focusVisibleStyled ? [] : out;
   }
 
+  // src/core/ai/promptOptions.ts
+  var WRITING_LANGUAGES = {
+    expectedInputLanguages: ["en"],
+    expectedContextLanguages: ["en"],
+    outputLanguage: "en"
+  };
+
   // src/core/ai/rewriter.ts
   function getRewriterAPI() {
     var _a;
@@ -3239,7 +3258,7 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
       const API = getRewriterAPI();
       if (!API) return false;
       if (typeof API.availability === "function") {
-        const status = await API.availability();
+        const status = await API.availability({ ...WRITING_LANGUAGES });
         return status === "readily" || status === "available" || status === "downloadable";
       }
       if (typeof API.capabilities === "function") {
@@ -3328,7 +3347,7 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
       const API = getSummarizerAPI();
       if (!API) return false;
       if (typeof API.availability === "function") {
-        const status = await API.availability();
+        const status = await API.availability({ ...WRITING_LANGUAGES });
         return status === "readily" || status === "available" || status === "downloadable";
       }
       if (typeof API.capabilities === "function") {
@@ -3727,6 +3746,7 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
     if (isListening) return true;
     if (callback) onCommand = callback;
     const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognitionAPI) return false;
     recognition = new SpeechRecognitionAPI();
     recognition.continuous = true;
     recognition.interimResults = false;
@@ -3853,7 +3873,7 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
       const API = getWriterAPI();
       if (!API) return false;
       if (typeof API.availability === "function") {
-        const status = await API.availability();
+        const status = await API.availability({ ...WRITING_LANGUAGES });
         return status === "readily" || status === "available" || status === "downloadable";
       }
       if (typeof API.capabilities === "function") {
@@ -6372,7 +6392,7 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
       status.textContent = "";
       statusTimer = setTimeout(() => status.textContent = text, 40);
     };
-    const engineOption = opts.engine === "rust" || opts.engine === "auto" ? opts.engine : "ts";
+    const engineOption = opts.engine === "ts" || opts.engine === "auto" ? opts.engine : "rust";
     let core = null;
     let coreLoading = null;
     let searchIndex = { data: null, columns: null, ready: false };
@@ -7927,7 +7947,7 @@ ${command ? command.say : "Not a voice command. Try: make text bigger, high cont
   }
 
   // vanilla/src/index.js
-  var VERSION = "5.3.10";
+  var VERSION = "5.3.11";
   (function boot() {
     if (!isBrowser2()) return;
     if (window.yuktai && window.yuktai.__vanillaInitialized) return;

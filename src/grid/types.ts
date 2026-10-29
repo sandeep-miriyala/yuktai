@@ -488,9 +488,11 @@ export interface YuktaiGridProps<
   /**
    * Search and sort engine.
    *
-   * - "ts" (default): TypeScript, as before
-   * - "rust": the Rust (WebAssembly) engine, about 13 KB, embedded
+   * - "rust" (default since v5.3.11): the Rust (WebAssembly) engine, about
+   *   13 KB, embedded. Falls back to TypeScript when WebAssembly is missing
+   *   or blocked by a Content Security Policy.
    * - "auto": Rust from 10,000 rows, TypeScript below
+   * - "ts": TypeScript only, as before v5.3.11
    *
    * Results are identical. Rust handles search and number/date sorting;
    * text sorting always uses TypeScript (browser locale rules for Telugu).

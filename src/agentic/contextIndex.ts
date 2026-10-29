@@ -93,14 +93,16 @@ export interface ContextIndexOptions<T = Record<string, unknown>> {
   /** Extra documents, e.g. FAQ text or help articles. */
   documents?: Array<{ id: string; text: string }>
   /**
-   * Search engine: "ts" (default), "rust" (always) or "auto" (Rust from 1,000
-   * passages). Same passages, same scores, same order; Rust is faster on long
-   * pages and big grids. Works offline (the engine is embedded).
+   * Search engine: "rust" (default since v5.3.11), "auto" (Rust from 1,000
+   * passages) or "ts". Same passages, same scores, same order; Rust is faster
+   * on long pages and big grids. Works offline (the engine is embedded) and
+   * falls back to TypeScript when WebAssembly is missing or blocked.
    */
   engine?: GridEngine
 }
 
-export function createContextIndex<T>(options: ContextIndexOptions<T> = {}) {
+export function createContextIndex<T>(input: ContextIndexOptions<T> = {}) {
+  const options: ContextIndexOptions<T> = { ...input, engine: input.engine ?? "rust" }
   let passages: ContextPassage[] = []
   let docs: string[][] = []
   let df = new Map<string, number>()
