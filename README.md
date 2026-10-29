@@ -43,7 +43,7 @@ Built in free time by [Sandeep Miriyala](https://github.com/sandeepmiriyala03).
 **Plain HTML:** one line, no build step
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@yuktishaalaa/yuktai@5.3.11/vanilla/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@yuktishaalaa/yuktai@5.3.12/vanilla/index.min.js"></script>
 <script>
   yuktai.renderGrid("#staff", { data: rows, columns, engine: "auto", showSearchTime: true })
 </script>

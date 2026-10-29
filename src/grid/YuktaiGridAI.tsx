@@ -1075,7 +1075,8 @@ export function YuktaiGridAI<
         ? "#94A3B8"
         : "#64748B",
 
-      accent: "#10B981",
+      // 5.3.12: white text on the accent needs 4.5:1 (WCAG 1.4.3); #10B981 gave 2.5:1
+      accent: "#047857",
 
       userMsg: dark
         ? "#334155"
@@ -1353,8 +1354,9 @@ export function YuktaiGridAI<
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
+            // darker, not lighter: white "AI" stays above 4.5:1 (5.3.12)
             background:
-              "rgba(255,255,255,0.18)",
+              "rgba(0,0,0,0.2)",
             fontSize: 17,
           }}
         >
@@ -1781,7 +1783,7 @@ export function YuktaiGridAI<
               borderRadius: 8,
               background:
                 listening
-                  ? "#EF4444"
+                  ? "#B91C1C"
                   : colors.accent,
               color:
                 "#FFFFFF",
@@ -1927,7 +1929,7 @@ export function YuktaiGridAI<
             cursor:
               "pointer",
             boxShadow:
-              "0 8px 20px rgba(16,185,129,0.3)",
+              "0 8px 20px rgba(4,120,87,0.3)",
             display:
               "flex",
             alignItems:

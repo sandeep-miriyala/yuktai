@@ -1347,6 +1347,7 @@ ${summarizeRows(rows, columns)}` };
   var INTERACTIVE = "a[href],button,input:not([type='hidden']),select,textarea,summary,[role='button'],[role='link'],[role='checkbox'],[role='tab'],[role='menuitem']";
 
   // src/agentic/qaAudit.ts
+  var DISABLED = "button[disabled],input[disabled],select[disabled],textarea[disabled],fieldset[disabled],[aria-disabled='true']";
   var AUDIT_RULES = {
     "html-lang": {
       title: "Page language is set",
@@ -1556,6 +1557,7 @@ ${summarizeRows(rows, columns)}` };
       for (const el of queryAll(root, "body *")) {
         if (checked >= max) break;
         if (!hasDirectText(el) || ["SCRIPT", "STYLE", "NOSCRIPT", "OPTION"].includes(el.tagName)) continue;
+        if (el.closest(DISABLED)) continue;
         checked++;
         const fg = parseColor(window.getComputedStyle(el).color);
         const bg = effectiveBackground(el);
@@ -7947,7 +7949,7 @@ ${command ? command.say : "Not a voice command. Try: make text bigger, high cont
   }
 
   // vanilla/src/index.js
-  var VERSION = "5.3.11";
+  var VERSION = "5.3.12";
   (function boot() {
     if (!isBrowser2()) return;
     if (window.yuktai && window.yuktai.__vanillaInitialized) return;

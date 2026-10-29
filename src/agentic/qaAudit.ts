@@ -23,6 +23,8 @@ import {
   YUKTAI_IGNORE,
 } from "./dom"
 
+const DISABLED = "button[disabled],input[disabled],select[disabled],textarea[disabled],fieldset[disabled],[aria-disabled='true']"
+
 export type AuditSeverity = "critical" | "serious" | "moderate" | "minor"
 
 export type AuditRuleId =
@@ -332,6 +334,8 @@ export function runQaAudit(options: AuditOptions = {}): AuditReport {
     for (const el of queryAll(root, "body *")) {
       if (checked >= max) break
       if (!hasDirectText(el) || ["SCRIPT", "STYLE", "NOSCRIPT", "OPTION"].includes(el.tagName)) continue
+      // WCAG 1.4.3: text in an inactive (disabled) control has no contrast requirement
+      if (el.closest(DISABLED)) continue
       checked++
       const fg = parseColor(window.getComputedStyle(el).color)
       const bg = effectiveBackground(el)

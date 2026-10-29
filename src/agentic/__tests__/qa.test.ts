@@ -58,3 +58,15 @@ describe("YuktAI's own buttons are not the page's problem", () => {
     expect(issues.filter((i) => i.rule === "target-size")).toEqual([])
   })
 })
+
+describe("contrast: disabled controls are exempt (WCAG 1.4.3), v5.3.12", () => {
+  it("skips a disabled button but still checks an enabled one", () => {
+    document.body.innerHTML = `
+      <button type="button" disabled style="color: rgb(192, 192, 192); background-color: rgb(224, 224, 224)">Ask</button>
+      <button type="button" aria-disabled="true" style="color: rgb(192, 192, 192); background-color: rgb(224, 224, 224)">Send</button>
+      <button type="button" style="color: rgb(192, 192, 192); background-color: rgb(224, 224, 224)">Go</button>`
+    const contrast = runQaAudit().issues.filter((i) => i.rule === "color-contrast").map((i) => i.message)
+    expect(contrast.some((m) => m.includes('"Go"'))).toBe(true)
+    expect(contrast.some((m) => m.includes('"Ask"') || m.includes('"Send"'))).toBe(false)
+  })
+})
