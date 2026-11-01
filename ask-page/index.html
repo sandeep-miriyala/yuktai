@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ask page · yuktai</title>
+<meta name="description" content="Ask any web page. Answers come from the page itself, with the source highlighted. Rust/WebAssembly search, on-device AI, nothing sent anywhere.">
+<meta name="theme-color" content="#001124">
+<link rel="icon" href="../vanilla/icons/favicon-32.png" type="image/png" sizes="32x32">
+<style>
+/* Yuktisárathi colours (same as the yuktai home page), WCAG 2.2 AA:
+   white on navy 19:1 · gold on navy 7.2:1 · blue on white 7.1:1 · muted on bg 7.0:1 */
+:root{--navy:#001124;--navy-2:#0b1e3a;--gold:#c8983a;--blue:#005a9c;--blue-light:#7cc4fa;--text:#172033;--muted:#475569;--line:#d5dce6;--bg:#f4f6fa;--card:#fff;
+  font-family:system-ui,-apple-system,"Segoe UI","Noto Sans Telugu",sans-serif;color:var(--text);background:var(--bg)}
+*{box-sizing:border-box}
+body{margin:0;line-height:1.65;font-size:17px}
+a{color:var(--blue)}
+:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+.skip{position:absolute;left:12px;top:-60px;background:var(--gold);color:var(--navy);padding:10px 16px;border-radius:8px;font-weight:700;z-index:10}
+.skip:focus{top:12px}
+.wrap{width:min(960px,calc(100% - 32px));margin:auto}
+header{background:var(--navy);color:#fff;border-bottom:4px solid var(--gold);padding:28px 0 32px}
+header a{color:var(--blue-light)}
+header :focus-visible{outline-color:var(--gold)}
+.crumbs{font-size:.92rem;margin:0 0 14px}
+h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(2rem,5vw,2.8rem);line-height:1.12;margin:0 0 10px}
+h1 span{color:var(--gold)}
+.lead{color:#dce6f2;max-width:640px;margin:0 0 20px;font-size:1.08rem}
+.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:8px;min-height:48px;padding:10px 20px;border-radius:10px;font-weight:700;text-decoration:none;border:0;font:inherit;font-weight:700;cursor:pointer}
+.btn-gold{background:var(--gold);color:var(--navy)}
+.btn-gold:hover{background:#d8aa4f}
+.btn-line{border:2px solid var(--gold);color:#fff;background:transparent}
+.proof{display:flex;flex-wrap:wrap;gap:8px 18px;margin:18px 0 0;padding:0;list-style:none;color:#dce6f2;font-size:.95rem}
+.proof b{color:#fff}
+main{padding:32px 0 64px}
+h2{font-family:Georgia,"Times New Roman",serif;color:var(--navy);margin:36px 0 8px;font-size:1.55rem}
+h3{margin:22px 0 6px;font-size:1.12rem;color:var(--navy)}
+p,li{max-width:70ch}
+pre{background:var(--navy);color:#e6edf6;padding:14px 18px;border-radius:10px;overflow-x:auto;font-size:.92rem}
+code{font-family:ui-monospace,Menlo,Consolas,monospace}
+table{border-collapse:collapse;width:100%;background:var(--card);font-size:.95rem}
+.table{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+th,td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{background:#e8edf5;color:var(--navy)}
+caption{text-align:left;padding:10px 12px;font-weight:700;color:var(--navy)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+.try{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));margin:12px 0 0;padding:0;list-style:none}
+.try li{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.try b{display:block;color:var(--navy)}
+form{display:grid;gap:12px;max-width:520px}
+label{font-weight:600}
+input,textarea{font:inherit;padding:10px 12px;border:1px solid #94a3b8;border-radius:8px;min-height:44px;width:100%}
+details{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin:8px 0}
+summary{cursor:pointer;font-weight:600;min-height:28px}
+.te{font-size:1.06rem}
+.net{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.92rem;background:#e8f5ec;color:#14532d;border:1px solid #9fd5b1;border-radius:8px;padding:8px 12px;display:inline-block}
+footer{border-top:1px solid var(--line);padding:24px 0 48px;color:var(--muted);font-size:.92rem}
+</style>
+</head>
+<body>
+<a class="skip" href="#content">Skip to content</a>
+<header>
+  <div class="wrap">
+    <p class="crumbs"><a href="../">yuktai</a> / Ask page</p>
+    <h1>Ask <span>this page</span></h1>
+    <p class="lead">A side panel that answers questions about the page you are reading, from the page itself, and highlights where each answer came from. Search runs in Rust compiled to WebAssembly. Nothing you type or read leaves your device.</p>
+    <div class="actions">
+      <button class="btn btn-gold" type="button" id="try-it">Open Ask page</button>
+      <a class="btn btn-line" href="https://github.com/sandeep-miriyala/yuktai/tree/main/packages/ask-page">Source on GitHub</a>
+    </div>
+    <ul class="proof" aria-label="This demo, live">
+      <li>Keyboard: <b>Ctrl + /</b></li>
+      <li>Search core: <b>Rust → WebAssembly</b></li>
+      <li>Requests made while you ask: <b id="net-count">0</b></li>
+    </ul>
+  </div>
+</header>
+
+<main id="content" class="wrap">
+  <h2>Try it</h2>
+  <p>Open the panel and ask anything about this page. Some questions to start with:</p>
+  <ul class="try">
+    <li><b>How do I install it?</b>Finds the Installation section and highlights it.</li>
+    <li><b>సంక్రాంతి మూడవ రోజు ఏం చేస్తారు?</b>Telugu question, Telugu section.</li>
+    <li><b>What fields are in the form?</b>Reads labels only, never what you type.</li>
+    <li><b>What is the refund policy?</b>Not on this page, so it says so.</li>
+  </ul>
+
+  <h2>Installation</h2>
+  <p>Install the package with npm and mount the panel once when your app starts. It works with React, Next.js, Astro and plain HTML.</p>
+  <pre><code>npm install @yuktishaalaa/ask-page</code></pre>
+  <pre><code>import { mountAskPage } from "@yuktishaalaa/ask-page"
+mountAskPage({ modes: ["fast", "balanced"] })</code></pre>
+  <p>No build step? Add one script tag. The launcher button appears in the bottom right corner.</p>
+  <pre><code>&lt;script src="https://cdn.jsdelivr.net/npm/@yuktishaalaa/ask-page/dist/ask-page.global.js" defer&gt;&lt;/script&gt;</code></pre>
+
+  <h2>Modes</h2>
+  <p>Visitors choose how much work their device does. Site owners decide which modes are offered.</p>
+  <div class="table">
+  <table>
+    <caption>Ask page modes</caption>
+    <tr><th scope="col">Mode</th><th scope="col">Search</th><th scope="col">Answer</th><th scope="col">Download</th></tr>
+    <tr><td>Fast</td><td>Rust BM25 keywords</td><td>Best sentences, quoted</td><td>About 100 KB</td></tr>
+    <tr><td>Balanced</td><td>Keywords plus meaning (multilingual embeddings), merged with RRF</td><td>Chrome built-in AI if available</td><td>About 118 MB, once</td></tr>
+    <tr><td>Best</td><td>Same as Balanced</td><td>Chrome built-in AI, or WebLLM if the site enables it</td><td>More, once</td></tr>
+  </table>
+  </div>
+
+  <h2>Privacy</h2>
+  <p>The panel never reads what you type into forms: values, passwords and rich-text editors are skipped before anything else sees the page. Page text and questions stay on your device. There are no analytics on questions and no tracing. On pages that look signed-in, nothing is saved at all.</p>
+  <p>The only download is the model for Balanced and Best mode, after you agree. It carries no page data.</p>
+
+  <h2>Accessibility</h2>
+  <p>Text is 17 pixels (18 for Telugu) and grows with A+. Every button is at least 44 pixels. The panel works with a keyboard and screen readers: new answers are announced, Escape closes the panel and focus returns to where you were. Dark and light themes follow your system, and Windows high contrast is supported.</p>
+
+  <h2>Sign up for updates</h2>
+  <p>This form is here to show the privacy filter. Type something and then ask the panel about it: it will not find it.</p>
+  <form id="signup" onsubmit="event.preventDefault()">
+    <label for="name">Full name</label>
+    <input id="name" autocomplete="name" required>
+    <label for="email">Email</label>
+    <input id="email" type="email" autocomplete="email" required>
+    <label for="note">What would you like to build?</label>
+    <textarea id="note" rows="3"></textarea>
+    <button class="btn btn-gold" type="submit">Sign up</button>
+  </form>
+
+  <h2>సంక్రాంతి పండుగ</h2>
+  <div class="te" lang="te">
+    <p>సంక్రాంతి తెలుగు ప్రజలకు అతి పెద్ద పండుగ. ఇది జనవరి నెలలో మూడు రోజులు జరుగుతుంది.</p>
+    <h3>భోగి</h3>
+    <p>మొదటి రోజు భోగి. ఉదయాన్నే భోగి మంటలు వేసి పాత వస్తువులను కాల్చుతారు. పిల్లలకు భోగి పళ్ళు పోస్తారు.</p>
+    <h3>సంక్రాంతి రోజు</h3>
+    <p>రెండవ రోజు ఇంటి ముందు రంగురంగుల ముగ్గులు వేస్తారు. కొత్త బియ్యంతో పొంగలి వండుతారు. గాలిపటాలు ఎగరేస్తారు.</p>
+    <h3>కనుమ</h3>
+    <p>మూడవ రోజు కనుమ. ఈ రోజు పశువులను పూజిస్తారు. రైతులు తమ ఎద్దులను అలంకరిస్తారు.</p>
+  </div>
+
+  <h2>Frequently asked questions</h2>
+  <details><summary>Does it need an API key?</summary><p>No. Everything runs in the browser. There is no server and no key.</p></details>
+  <details><summary>Which browsers work?</summary><p>Fast mode works in every modern browser. Balanced mode needs WebAssembly and about 118 MB of space. Chrome's built-in AI answers appear when Chrome has its model ready.</p></details>
+  <details><summary>Can AI agents use it?</summary><p>Yes. Ask page registers read-only WebMCP tools (ask_page, get_page_outline, get_suggested_questions) that browser agents can call. Agents can read answers but never click, type or submit.</p></details>
+  <details><summary>How do I remove downloaded data?</summary><p>Open Settings in the panel and choose Clear saved data or Remove model.</p></details>
+
+  <h2>Troubleshooting</h2>
+  <p>If the panel does not appear, check that the script loads and that your Content Security Policy allows blob: workers and WebAssembly ('wasm-unsafe-eval'). Without them Ask page still works, more slowly, on the page thread.</p>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Part of <a href="../">yuktai</a>, open source under GPL-3.0. Built in personal time by Sandeep Miriyala.</p>
+  </div>
+</footer>
+
+<script>
+  // Site owner config (all optional)
+  window.YuktaiAskConfig = {
+    questions: [{ text: "How do I install it?" }, { text: "Is anything I type read?" }],
+    transformersUrl: "https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2/dist/transformers.min.js",
+  }
+
+  // Live proof: counts every network request this page makes after load.
+  // Asking questions in Fast mode should leave it at 0.
+  ;(function () {
+    var n = 0
+    var out = document.getElementById("net-count")
+    var start = performance.now() + 1500
+    try {
+      new PerformanceObserver(function (list) {
+        list.getEntries().forEach(function (e) {
+          if (e.startTime > start) out.textContent = String(++n)
+        })
+      }).observe({ type: "resource", buffered: false })
+    } catch (e) {}
+  })()
+
+  document.getElementById("try-it").addEventListener("click", function () {
+    var el = document.querySelector("yuktai-ask")
+    if (el && el.openPanel) el.openPanel()
+  })
+</script>
+<script src="./ask-page.global.js" defer></script>
+</body>
+</html>

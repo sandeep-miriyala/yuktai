@@ -1,0 +1,11 @@
+{
+  "mode": "fast (Rust BM25)",
+  "questions": 53,
+  "recallAt5": 0.957,
+  "top1": 0.826,
+  "refusals": 1,
+  "misses": [
+    "[pricing] missed: Can I get my money back? → (none)",
+    "[course] missed: How long is the course? → Web Accessibility Course"
+  ]
+}

@@ -23,7 +23,7 @@ Built in free time by [Sandeep Miriyala](https://github.com/sandeepmiriyala03).
 | ♿ | **Accessibility** | WCAG 2.2 auto-fix, contrast, dark mode, text size, dyslexia font, colour-blind filters, speak on focus |
 | 📊 | **YuktaiGrid** | Search, sort, pages, CSV export, 5 WCAG themes, Telugu UI, keyboard navigation |
 | 🤖 | **Ask your data** | "salary over 1 lakh in Hyderabad", BI answers, unusual rows, multi-step tasks, WebMCP |
-| 💬 | **Ask page (RAG)** | Answers from your page and data, offline |
+| 💬 | **Ask page (RAG)** | Answers from your page and data, offline. New standalone package: [`@yuktishaalaa/ask-page`](./packages/ask-page) with a side panel, highlighted sources, Telugu, embeddings and Chrome built-in AI ([live demo](https://sandeep-miriyala.github.io/yuktai/ask-page/)) |
 | 🛠 | **Page tools** | QA audit (15 WCAG checks), form and design review, voice commands. In React/Next.js: `showPageTools` |
 | 🦀 | **Rust engine** | Up to 42× faster search on big data. The default since 5.3.11 |
 | 🎨 | **163 icons** | Any size and colour, outline or filled, safe in Server Components |
@@ -116,6 +116,7 @@ Since 5.3.11 the grid and page search use Rust by default. Results are identical
 - 📖 Docs and playgrounds: https://yuktaidocs.netlify.app/
 - Staff directory (Next.js): https://aksharatantra.miriyala.in/staffdirectory
 - Plain HTML PWA: https://sandeepmiriyala03.github.io/yuktai/vanilla/
+- Ask page panel: https://sandeep-miriyala.github.io/yuktai/ask-page/
 - Ratnalabala, a Telugu poetry app: https://ratnalabala.vercel.app/poems?view=grid
 
 ## Compatibility
@@ -125,14 +126,15 @@ Next.js 13–16 · React 17–19 (19 needs `--legacy-peer-deps`) · Node 18+ · 
 ## Honest limits
 
 - Grid questions use rules, not a language model; unusual phrasing may need rewording.
-- Ask page uses keyword search (BM25), not embeddings.
+- The built-in 💬 button uses keyword search (BM25). The [`@yuktishaalaa/ask-page`](./packages/ask-page) package adds meaning search (multilingual embeddings) in Balanced mode.
 - Telugu and Hindi data questions need `customRules` for now.
 - Automatic checks don't replace testing with real users and screen readers.
 
 ## Roadmap
 
 - **Next:** more Rust (filters, BI, typo-tolerant search, Telugu typed in English letters), Hindi voice commands
-- **Later:** semantic RAG (hybrid search), a Python package, Angular/Vue and .NET support, more Indian-language interfaces
+- **Done:** semantic RAG with hybrid search, in [`@yuktishaalaa/ask-page`](./packages/ask-page)
+- **Later:** a Python package, Angular/Vue and .NET support, more Indian-language interfaces
 
 ---
 

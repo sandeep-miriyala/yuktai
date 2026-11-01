@@ -133,6 +133,9 @@ export function getPageText(): string {
     // Skip yuktai panel
     if (el.closest("[data-yuktai-panel]")) continue
 
+    // Privacy: skip anything the user can type into (rich editors, inputs)
+    if (el.closest('[contenteditable]:not([contenteditable="false"]), textarea, input, select')) continue
+
     // Skip invisible elements
     if (!isVisible(el)) continue
 
@@ -199,7 +202,8 @@ export function getPageText(): string {
     if (el.closest("[data-yuktai-panel]")) return
     if (!isVisible(el as HTMLElement)) return
     if (el.placeholder) push(el.placeholder)
-    if (el.value && el.value.length > 3) push(el.value)
+    // Privacy: never read what the user typed (el.value). Labels and
+    // placeholders describe the field; the value belongs to the user.
     const ariaLabel = el.getAttribute("aria-label")?.trim()
     if (ariaLabel) push(ariaLabel)
   })

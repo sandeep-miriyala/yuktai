@@ -6,12 +6,14 @@ Written from the published package `@yuktishaalaa/yuktai@5.3.12`. Source paths a
 
 ## Fix first
 
-| Priority | File | Finding |
-| --- | --- | --- |
-| 🔴 High | [core/ai/agent](core-ai-agent.md) | `getPageText()` reads values typed into inputs, including password fields, and they can reach the model prompt |
-| 🟠 Medium | [core/ai/transformers-rag](core-ai-transformers-rag.md) | Fallback models are English-only (`all-MiniLM-L6-v2`, `flan-t5-small`): Telugu works poorly |
-| 🟠 Medium | [core/ai/promptOptions](core-ai-promptOptions.md) | Built-in AI languages are set to English only |
-| 🟢 Quick win | [agentic/contextIndex](agentic-contextIndex.md) | Hits already carry the section heading: show sources and highlight them in the UI |
+| Priority | File | Finding | Status |
+| --- | --- | --- | --- |
+| 🔴 High | [core/ai/agent](core-ai-agent.md) | `getPageText()` read values typed into inputs, including password fields | ✅ Fixed (v5.4.0): values and editable regions are skipped |
+| 🟠 Medium | [core/ai/transformers-rag](core-ai-transformers-rag.md) | Fallback embedding model was English-only (`all-MiniLM-L6-v2`) | ✅ Fixed: `Xenova/multilingual-e5-small` with `query:`/`passage:` prefixes. The generator (`flan-t5-small`) is still English |
+| 🟠 Medium | [core/ai/promptOptions](core-ai-promptOptions.md) | Built-in AI languages set to English only | ✅ `promptLanguagesFor()` added: en/ja/es where Chrome supports them, English otherwise (Telugu via the Translator API) |
+| 🟢 Quick win | [agentic/contextIndex](agentic-contextIndex.md) | Hits carry the section heading | ✅ Done in `@yuktishaalaa/ask-page`: sources shown and highlighted |
+
+The new package [`packages/ask-page`](../../packages/ask-page) implements the flow below with its own Rust core (`rust/ask-core`).
 
 ## Files by package after the split
 

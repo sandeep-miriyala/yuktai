@@ -7,10 +7,13 @@
 //   2. Transformers.js v4 API — env.useBrowserCache removed, use env.useWasmCache
 //   3. WebGPU forced off on mobile — wasm only (WebGPU unstable on mobile)
 //   4. isMobile detection — separate device handling
-//   5. Smaller model for mobile — Xenova/all-MiniLM-L6-v2 q4 only ~10MB
+//   5. Smaller model for mobile — q4 quantized
+//
+// v5.4.0: embeddings switched to a multilingual model so Telugu and Hindi
+// pages work. e5 models expect "query: " and "passage: " prefixes.
 //
 // Models:
-//   Embeddings: Xenova/all-MiniLM-L6-v2 — q4 quantized (~10MB mobile / ~23MB desktop)
+//   Embeddings: Xenova/multilingual-e5-small — q4 mobile / q8 desktop (~118MB)
 //   Generation: Xenova/flan-t5-small    — q4 quantized (~20MB mobile / ~80MB desktop)
 //
 // Zero API keys. Zero cost. No data leaves the browser.
@@ -92,10 +95,10 @@ async function loadModels(): Promise<void> {
     // q4 is default for WASM — much smaller memory footprint
     embeddingPipeline = await pipeline(
       "feature-extraction",
-      "Xenova/all-MiniLM-L6-v2",
+      "Xenova/multilingual-e5-small",
       {
         device,
-        dtype: mobile ? "q4" : "fp32",
+        dtype: mobile ? "q4" : "q8",
       }
     )
 
@@ -229,11 +232,11 @@ async function findRelevantChunks(
   chunks:   string[],
   topN = 3
 ): Promise<string[]> {
-  const questionVector = await embed(question)
+  const questionVector = await embed(`query: ${question}`)
 
   const scored = await Promise.all(
     chunks.map(async chunk => {
-      const chunkVector = await embed(chunk)
+      const chunkVector = await embed(`passage: ${chunk}`)
       const score       = cosineSimilarity(questionVector, chunkVector)
       return { chunk, score }
     })

@@ -8,6 +8,7 @@
 // Writes (generated, do not edit by hand — commit them):
 //   rust/grid-core → src/grid/rust/gridCoreWasm.ts      (grid search + sort)
 //   rust/rag-core  → src/agentic/rust/ragCoreWasm.ts    (page + data RAG search)
+//   rust/ask-core  → packages/ask-page/src/search/askCoreWasm.ts (Ask page search)
 // `npm run build` uses those files and never needs Rust installed.
 //
 // No wasm32 target available (offline machine)? With the Rust library source
@@ -24,9 +25,13 @@ const target = "wasm32-unknown-unknown"
 const crates = [
   { dir: "grid-core", file: "yuktai_grid_core.wasm", constName: "GRID_CORE_WASM", out: "src/grid/rust/gridCoreWasm.ts", version: "yk_version", std: "core" },
   { dir: "rag-core", file: "yuktai_rag_core.wasm", constName: "RAG_CORE_WASM", out: "src/agentic/rust/ragCoreWasm.ts", version: "yk_rag_version", std: "core,alloc" },
+  { dir: "ask-core", file: "yuktai_ask_core.wasm", constName: "ASK_CORE_WASM", out: "packages/ask-page/src/search/askCoreWasm.ts", version: "ak_version", std: "core,alloc" },
 ]
 
-for (const c of crates) {
+// Build only some crates: node rust/build-wasm.mjs ask-core
+const only = process.argv.slice(2)
+
+for (const c of crates.filter((c) => !only.length || only.includes(c.dir))) {
   const crate = join(here, c.dir)
   const args = ["build", "--release", "--target", target]
   const env = { ...process.env }

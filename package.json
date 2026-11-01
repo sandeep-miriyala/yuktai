@@ -82,7 +82,7 @@
     "build:vanilla": "node vanilla/build.mjs",
     "build:all": "npm run build && npm run build:vanilla",
     "build:rust": "node rust/build-wasm.mjs",
-    "test:rust": "cd rust/grid-core && cargo test && cd ../rag-core && cargo test",
+    "test:rust": "cd rust/grid-core && cargo test && cd ../rag-core && cargo test && cd ../ask-core && cargo test",
     "lint": "eslint src --ext .ts,.tsx",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",

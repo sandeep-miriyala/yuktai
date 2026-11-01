@@ -1,0 +1,99 @@
+{
+  "name": "@yuktishaalaa/ask-page",
+  "version": "0.1.0",
+  "description": "Ask any web page. A side panel that answers from the page itself, with sources highlighted. Rust/WASM search, on-device AI, nothing sent anywhere.",
+  "author": "Sandeep Miriyala — Yuktishaalaa AI Lab",
+  "license": "GPL-3.0-only",
+  "homepage": "https://sandeep-miriyala.github.io/yuktai/ask-page/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sandeep-miriyala/yuktai.git",
+    "directory": "packages/ask-page"
+  },
+  "bugs": {
+    "url": "https://github.com/sandeep-miriyala/yuktai/issues"
+  },
+  "keywords": [
+    "ask-page",
+    "rag",
+    "on-device-ai",
+    "privacy",
+    "chrome-built-in-ai",
+    "prompt-api",
+    "transformers.js",
+    "webassembly",
+    "rust",
+    "webmcp",
+    "langgraph",
+    "accessibility",
+    "telugu",
+    "web-component"
+  ],
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "unpkg": "./dist/ask-page.global.js",
+  "jsdelivr": "./dist/ask-page.global.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./langgraph": {
+      "types": "./dist/langgraph.d.ts",
+      "import": "./dist/langgraph.js",
+      "require": "./dist/langgraph.cjs"
+    },
+    "./global": "./dist/ask-page.global.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": [
+    "./dist/ask-page.global.js"
+  ],
+  "scripts": {
+    "build:worker": "node scripts/build-worker.mjs",
+    "build": "npm run build:worker && tsup && npm run build:types && node scripts/size.mjs",
+    "build:types": "tsc -p tsconfig.build.json",
+    "build:demo": "npm run build && node scripts/copy-demo.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:e2e": "node scripts/e2e.mjs",
+    "eval": "vitest run test/eval.test.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "comlink": "^4.4.2"
+  },
+  "peerDependencies": {
+    "@langchain/core": ">=1.0.0",
+    "@langchain/langgraph": ">=1.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@langchain/core": {
+      "optional": true
+    },
+    "@langchain/langgraph": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@langchain/core": "^1.3.2",
+    "@langchain/langgraph": "^1.6.0",
+    "axe-core": "^4.14.0",
+    "esbuild": "^0.28.2",
+    "happy-dom": "^21.0.4",
+    "tsup": "^9.0.0",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.5"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

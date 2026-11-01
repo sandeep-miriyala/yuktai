@@ -1,0 +1,22 @@
+[package]
+name = "yuktai-ask-core"
+version = "0.1.0"
+edition = "2021"
+license = "GPL-3.0-only"
+description = "Search core for @yuktishaalaa/ask-page: Telugu-aware tokenizer, BM25 with an inverted index, int8 vector search and RRF hybrid ranking, compiled to WebAssembly."
+repository = "https://github.com/sandeep-miriyala/yuktai"
+publish = false
+
+[lib]
+# cdylib = the .wasm file for the browser; rlib = `cargo test` on your machine.
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+# None. Only Rust's `core` and `alloc`, so the .wasm stays small.
+
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true
