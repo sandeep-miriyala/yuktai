@@ -19,6 +19,7 @@ import { registerAskTools } from "../webmcp"
 import { escapeHtml, renderMarkdown } from "./markdown"
 import { icon } from "./icons"
 import { STYLES } from "./styles"
+import { replaceWithHTML, setHTML } from "./dom"
 
 interface Msg {
   id: number
@@ -32,6 +33,10 @@ interface Msg {
 
 const MIN_W = 360
 const MAX_W = 720
+/** Conversations drawn at once; older ones behind "Show earlier" (LIFO). */
+const SHOWN_TURNS = 20
+/** Conversations kept at all; the oldest are dropped after this. */
+const KEPT_TURNS = 200
 
 export class YuktaiAskElement extends HTMLElement {
   /** Owner config. Set before the element is connected, or via the `config` JSON attribute. */
@@ -48,6 +53,7 @@ export class YuktaiAskElement extends HTMLElement {
   private undo: { msgs: Msg[]; timer: ReturnType<typeof setTimeout> } | null = null
   private sugg: Suggestion[] = []
   private showAllSugg = false
+  private shownTurns = SHOWN_TURNS
   private pendingMode: Mode | null = null
   private notice = ""
   private t: Strings = strings("en")
@@ -108,7 +114,7 @@ export class YuktaiAskElement extends HTMLElement {
   private renderShell() {
     const t = this.t
     const title = escapeHtml(this.page!.config.title || t.title)
-    this.shadow.innerHTML = `<style>${STYLES}</style>
+    setHTML(this.shadow, `<style>${STYLES}</style>
 <button class="launcher" type="button" data-action="open" aria-expanded="false" aria-controls="ask-panel" ${this.page!.config.launcher ? "" : "hidden"}>${icon("chat", 22)}<span>${escapeHtml(t.open)}</span></button>
 <section class="panel" id="ask-panel" role="dialog" aria-modal="false" aria-labelledby="ask-title" hidden>
   <div class="grab" aria-hidden="true"></div>
@@ -125,20 +131,20 @@ export class YuktaiAskElement extends HTMLElement {
   <div class="status" role="status" aria-live="polite" hidden><span class="status-text"></span><div class="bar" hidden><span></span></div></div>
   <div class="notices"></div>
   <div class="chat-view">
-    <div class="log" aria-label="Conversation"></div>
-    <div class="sugg"></div>
     <form class="composer" novalidate>
       <label for="ask-input"></label>
       <div class="row">
-        <textarea id="ask-input" class="input" rows="1" autocomplete="off" spellcheck="true"></textarea>
+        <textarea id="ask-input" class="input" rows="1" autocomplete="off" spellcheck="true" enterkeyhint="send"></textarea>
         <button class="primary" type="submit" data-role="send"></button>
       </div>
       <div class="row tools-row"></div>
     </form>
+    <div class="sugg"></div>
+    <div class="log" aria-label="Conversation"></div>
   </div>
   <div class="settings-view" hidden></div>
   <div class="sr live" aria-live="polite" aria-atomic="true"></div>
-</section>`
+</section>`)
     this.shadow.addEventListener("click", (e) => this.onClick(e))
     this.$("form.composer").addEventListener("submit", (e) => {
       e.preventDefault()
@@ -178,7 +184,7 @@ export class YuktaiAskElement extends HTMLElement {
     this.$(".ai-label").textContent = t.aiLabel
     const set = (sel: string, name: Parameters<typeof icon>[0], label: string) => {
       const b = this.$(sel)
-      b.innerHTML = icon(name, 22)
+      setHTML(b, icon(name, 22))
       b.setAttribute("aria-label", label)
       b.setAttribute("title", label)
     }
@@ -187,15 +193,15 @@ export class YuktaiAskElement extends HTMLElement {
     set("[data-action=close]", "close", t.close)
     const modeName = { fast: t.fast, balanced: t.balanced, best: t.best }[p.settings.mode]
     const vec = p.settings.mode !== "fast" && p.vectorState !== "ready" ? ` (${p.vectorState === "loading" ? "…" : t.fast})` : ""
-    this.$(".privacy").innerHTML = `${icon("lock", 18)}<span class="grow"><b>${escapeHtml(t.privacy)}</b> · ${escapeHtml(t.sent)}</span><span>${escapeHtml(modeName + vec)}</span>`
+    setHTML(this.$(".privacy"), `${icon("lock", 18)}<span class="grow"><b>${escapeHtml(t.privacy)}</b> · ${escapeHtml(t.sent)}</span><span>${escapeHtml(modeName + vec)}</span>`)
     this.$("label[for=ask-input]").textContent = t.inputLabel
     this.$<HTMLTextAreaElement>("#ask-input").placeholder = t.placeholder
     this.renderSendButton()
-    this.$(".tools-row").innerHTML = `
+    setHTML(this.$(".tools-row"), `
       <button class="btn danger" type="button" data-action="clear">${icon("delete", 18)}<span>${escapeHtml(t.clear)}</span></button>
       <span class="grow"></span>
       <button class="iconbtn" type="button" data-action="smaller" aria-label="${escapeHtml(t.smaller)}" title="${escapeHtml(t.smaller)}">${icon("zoomOut", 20)}</button>
-      <button class="iconbtn" type="button" data-action="larger" aria-label="${escapeHtml(t.larger)}" title="${escapeHtml(t.larger)}">${icon("zoomIn", 20)}</button>`
+      <button class="iconbtn" type="button" data-action="larger" aria-label="${escapeHtml(t.larger)}" title="${escapeHtml(t.larger)}">${icon("zoomIn", 20)}</button>`)
     this.renderNotices()
   }
 
@@ -204,11 +210,11 @@ export class YuktaiAskElement extends HTMLElement {
     if (this.abort) {
       b.type = "button"
       b.dataset.action = "stop"
-      b.innerHTML = `${icon("stop", 20)}<span>${escapeHtml(this.t.stop)}</span>`
+      setHTML(b, `${icon("stop", 20)}<span>${escapeHtml(this.t.stop)}</span>`)
     } else {
       b.type = "submit"
       delete b.dataset.action
-      b.innerHTML = `${icon("send", 20)}<span>${escapeHtml(this.t.ask)}</span>`
+      setHTML(b, `${icon("send", 20)}<span>${escapeHtml(this.t.ask)}</span>`)
     }
   }
 
@@ -219,7 +225,7 @@ export class YuktaiAskElement extends HTMLElement {
     if (this.notice) items.push(this.notice)
     if (p.snap?.sensitive) items.push(t.sensitive)
     if (p.snap && p.snap.passages.length === 0) items.push(t.emptyPage)
-    this.$(".notices").innerHTML = items.map((n) => `<div class="notice">${icon("info", 18)}<span>${escapeHtml(n)}</span></div>`).join("")
+    setHTML(this.$(".notices"), items.map((n) => `<div class="notice">${icon("info", 18)}<span>${escapeHtml(n)}</span></div>`).join(""))
   }
 
   // ── open / close ──────────────────────────────────────────────────────────
@@ -250,6 +256,13 @@ export class YuktaiAskElement extends HTMLElement {
     if (this.page!.config.launcher) l.focus()
   }
 
+  /** Opens the panel and asks a question, as if the visitor typed it. */
+  async askQuestion(question: string) {
+    await this.openPanel(false)
+    if (this.view !== "chat") this.showView("chat")
+    await this.submit(question)
+  }
+
   toggle() {
     if (this.isOpen) this.closePanel()
     else void this.openPanel()
@@ -273,7 +286,10 @@ export class YuktaiAskElement extends HTMLElement {
     this.msgs.push({ id: this.nextId++, role: "you", text: q })
     const bot: Msg = { id: this.nextId++, role: "bot", text: "", question: q, streaming: true }
     this.msgs.push(bot)
+    if (this.msgs.length > KEPT_TURNS * 2) this.msgs.splice(0, this.msgs.length - KEPT_TURNS * 2)
+    this.shownTurns = SHOWN_TURNS
     this.renderLog()
+    this.$(".log").scrollTop = 0
     if (this.msgs.length === 2) this.renderSuggestions()
     this.abort = new AbortController()
     this.renderSendButton()
@@ -350,19 +366,34 @@ export class YuktaiAskElement extends HTMLElement {
     return a.engine
   }
 
-  private renderLog() {
-    const intro = `<div class="msg bot intro">${escapeHtml(this.t.intro)}</div>`
-    const log = this.$(".log")
-    log.innerHTML = intro + this.msgs.map((m) => this.msgHtml(m)).join("") + (this.undo ? `<div class="toast" role="status"><span>${escapeHtml(this.t.cleared)}</span><button class="btn" type="button" data-action="undo">${icon("undo", 18)}<span>${escapeHtml(this.t.undo)}</span></button></div>` : "")
-    log.scrollTop = log.scrollHeight
+  /** Question + answer pairs, oldest first. */
+  private turns(): Msg[][] {
+    const out: Msg[][] = []
+    for (const m of this.msgs) {
+      if (m.role === "you" || !out.length) out.push([m])
+      else out[out.length - 1].push(m)
+    }
+    return out
   }
 
+  /** LIFO: the newest question and answer on top, right under the question box. */
+  private renderLog() {
+    const t = this.t
+    const turns = this.turns().reverse()
+    const shown = turns.slice(0, this.shownTurns)
+    const hidden = turns.length - shown.length
+    const toast = this.undo ? `<div class="toast" role="status"><span>${escapeHtml(t.cleared)}</span><button class="btn" type="button" data-action="undo">${icon("undo", 18)}<span>${escapeHtml(t.undo)}</span></button></div>` : ""
+    const body = shown.map((turn) => `<article class="turn">${turn.map((m) => this.msgHtml(m)).join("")}</article>`).join("")
+    const earlier = hidden > 0 ? `<button class="btn earlier" type="button" data-action="earlier">${icon("repeat", 18)}<span>${escapeHtml(fill(t.earlier, { n: hidden }))}</span></button>` : ""
+    const intro = `<div class="msg bot intro">${escapeHtml(t.intro)}</div>`
+    setHTML(this.$(".log"), toast + body + earlier + intro)
+  }
+
+  /** Redraws one message in place; the scroll position stays where the reader left it. */
   private updateMsg(m: Msg) {
     const el = this.$(`.msg[data-id="${m.id}"]`)
     if (!el) return this.renderLog()
-    el.outerHTML = this.msgHtml(m)
-    const log = this.$(".log")
-    log.scrollTop = log.scrollHeight
+    replaceWithHTML(el, this.msgHtml(m))
   }
 
   private clearChat() {
@@ -405,17 +436,19 @@ export class YuktaiAskElement extends HTMLElement {
     const t = this.t
     const box = this.$(".sugg")
     if (!this.sugg.length) {
-      box.innerHTML = ""
+      setHTML(box, "")
       return
     }
+    box.classList.toggle("compact", this.msgs.length > 0)
     // once the conversation starts, keep the suggestions short so answers have room
-    const n = this.msgs.length ? Math.min(3, this.page!.config.suggestionCount) : this.page!.config.suggestionCount
+    const narrow = typeof window !== "undefined" && !!window.matchMedia?.("(max-width: 640px)").matches
+    const n = this.msgs.length ? Math.min(3, this.page!.config.suggestionCount) : Math.min(narrow ? 4 : 6, this.page!.config.suggestionCount)
     const list = this.showAllSugg ? this.sugg : this.sugg.slice(0, n)
     const iconFor = (s: Suggestion) => (s.source === "owner" ? icon("pin", 16) : s.source === "pinned" ? icon("star", 16) : icon("spark", 16))
     const label = (s: Suggestion) => (s.source === "owner" ? t.ownerQ : s.source === "pinned" ? t.pinnedQ : t.autoQ)
-    box.innerHTML = `<h3 id="ask-sugg">${escapeHtml(t.suggestions)}</h3><ul class="chips" aria-labelledby="ask-sugg">${list
+    setHTML(box, `<h3 id="ask-sugg">${escapeHtml(t.suggestions)}</h3><ul class="chips" aria-labelledby="ask-sugg">${list
       .map((s) => `<li><button class="chip ${s.source}" type="button" data-action="chip" data-q="${escapeHtml(s.text)}" title="${escapeHtml(label(s))}">${iconFor(s)}<span>${escapeHtml(s.text)}</span><span class="sr"> (${escapeHtml(label(s))})</span></button></li>`)
-      .join("")}${this.sugg.length > n && !this.showAllSugg ? `<li><button class="chip more" type="button" data-action="more">${escapeHtml(t.more)}</button></li>` : ""}</ul>`
+      .join("")}${this.sugg.length > n && !this.showAllSugg ? `<li><button class="chip more" type="button" data-action="more">${escapeHtml(t.more)}</button></li>` : ""}</ul>`)
   }
 
   // ── progress ──────────────────────────────────────────────────────────────
@@ -481,7 +514,7 @@ export class YuktaiAskElement extends HTMLElement {
     const consent = this.pendingMode
       ? `<div class="consent" role="group" aria-labelledby="ask-consent-h" aria-describedby="ask-consent-p"><h3 id="ask-consent-h">${escapeHtml(t.modelConsentTitle)}</h3><p id="ask-consent-p">${escapeHtml(fill(t.modelConsent, { mb: EMBEDDING_MODEL_MB }))}</p><div class="row"><button class="primary" type="button" data-action="consent-yes">${escapeHtml(t.download)}</button><button class="btn" type="button" data-action="consent-no">${escapeHtml(t.cancel)}</button></div></div>`
       : ""
-    this.$(".settings-view").innerHTML = `
+    setHTML(this.$(".settings-view"), `
 <div class="settings">
   <button class="btn" type="button" data-action="back">${icon("arrowLeft", 18)}<span>${escapeHtml(t.back)}</span></button>
   ${consent}
@@ -500,7 +533,7 @@ export class YuktaiAskElement extends HTMLElement {
   <div class="card"><b>${escapeHtml(t.saved)}</b><span class="muted">${escapeHtml(t.index)} ${mb(usage.index)} · ${escapeHtml(t.model)} ${mb(usage.model)}</span>
     <div class="row" style="flex-wrap:wrap"><button class="btn" type="button" data-action="clear-saved">${escapeHtml(t.clearSaved)}</button><button class="btn" type="button" data-action="remove-model">${escapeHtml(t.removeModel)}</button></div></div>
 </div>
-<div class="foot"><button class="btn" type="button" data-action="reset-settings">${icon("undo", 18)}<span>${escapeHtml(t.reset)}</span></button><span style="flex:1"></span><button class="primary" type="button" data-action="save-settings">${escapeHtml(t.save)}</button></div>`
+<div class="foot"><button class="btn" type="button" data-action="reset-settings">${icon("undo", 18)}<span>${escapeHtml(t.reset)}</span></button><span style="flex:1"></span><button class="primary" type="button" data-action="save-settings">${escapeHtml(t.save)}</button></div>`)
     if (this.pendingMode) this.$<HTMLButtonElement>("[data-action=consent-yes]")?.focus()
   }
 
@@ -578,6 +611,9 @@ export class YuktaiAskElement extends HTMLElement {
     const p = this.page!
     const msg = () => this.msgs.find((m) => m.id === Number(btn.dataset.id))
     switch (a) {
+      case "earlier":
+        this.shownTurns += SHOWN_TURNS
+        return this.renderLog()
       case "open":
         return this.openPanel()
       case "close":
@@ -605,8 +641,11 @@ export class YuktaiAskElement extends HTMLElement {
       case "smaller":
       case "larger": {
         const step = a === "larger" ? 0.1 : -0.1
-        await p.updateSettings({ fontScale: Math.round((p.settings.fontScale + step) * 10) / 10 })
-        this.$(".panel").style.setProperty("--scale", String(p.settings.fontScale))
+        const next = Math.min(1.6, Math.max(0.85, Math.round((p.settings.fontScale + step) * 10) / 10))
+        p.settings.fontScale = next
+        // show it at once; saving to the device can take a moment
+        this.$(".panel").style.setProperty("--scale", String(next))
+        await p.updateSettings({ fontScale: next })
         return
       }
       case "chip":
@@ -632,8 +671,8 @@ export class YuktaiAskElement extends HTMLElement {
         try {
           await navigator.clipboard.writeText(`${m.text}\n\n${src}`.trim())
           this.$(".live").textContent = this.t.copied
-          btn.innerHTML = icon("check", 18)
-          setTimeout(() => (btn.innerHTML = icon("copy", 18)), 1500)
+          setHTML(btn, icon("check", 18))
+          setTimeout(() => setHTML(btn, icon("copy", 18)), 1500)
         } catch {
           /* clipboard blocked */
         }

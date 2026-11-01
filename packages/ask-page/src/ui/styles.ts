@@ -39,17 +39,19 @@ export const STYLES = `
 *, *::before, *::after { box-sizing: border-box; }
 .ic { flex: none; display: block; }
 button, input, select, textarea { font: inherit; color: inherit; }
+button { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
 :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 8px; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 /* launcher */
 .launcher {
-  position: fixed; z-index: 2147483000; bottom: max(20px, env(safe-area-inset-bottom)); right: 20px;
+  /* sites move it with CSS on the element: yuktai-ask { --ask-launcher-bottom: 96px } */
+  position: fixed; z-index: 2147483000; bottom: max(var(--ask-launcher-bottom, 20px), env(safe-area-inset-bottom)); right: var(--ask-launcher-x, 20px);
   display: inline-flex; align-items: center; gap: 10px; min-height: 52px; padding: 0 20px;
   border-radius: 999px; border: 1px solid var(--line-strong); background: var(--bg); color: var(--fg);
   font-size: 16px; font-weight: 600; cursor: pointer; box-shadow: 0 8px 24px rgb(0 0 0 / .25);
 }
-:host([side="left"]) .launcher { right: auto; left: 20px; }
+:host([side="left"]) .launcher { right: auto; left: var(--ask-launcher-x, 20px); }
 .launcher .ic { color: var(--accent); }
 .launcher:hover { border-color: var(--accent); }
 
@@ -90,7 +92,11 @@ button, input, select, textarea { font: inherit; color: inherit; }
 /* chat */
 .chat-view, .settings-view { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
 .chat-view[hidden], .settings-view[hidden] { display: none; }
-.log { min-height: 0; flex: 1 1 auto; overflow-y: auto; padding: 16px 18px; display: flex; flex-direction: column; gap: 14px; overscroll-behavior: contain; }
+.log { min-height: 0; flex: 1 1 auto; overflow-y: auto; padding: 14px 18px max(18px, env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 14px; overscroll-behavior: contain; scrollbar-gutter: stable; }
+/* LIFO: each question with its answer is one card, newest on top */
+.turn { display: flex; flex-direction: column; gap: 8px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+.turn:first-child .msg.you { box-shadow: 0 0 0 2px var(--accent); }
+.earlier { align-self: center; }
 .msg { max-width: 94%; padding: 12px 14px; border-radius: 16px; overflow-wrap: anywhere; }
 .msg.you { align-self: flex-end; background: var(--user); border-radius: 16px 16px 4px 16px; display: flex; gap: 6px; align-items: flex-start; }
 .msg.you .q { flex: 1; }
@@ -112,7 +118,13 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .typing::after { content: "▍"; animation: blink 1s steps(1) infinite; color: var(--accent); }
 @keyframes blink { 50% { opacity: 0; } }
 
-.sugg { padding: 0 18px 10px; display: flex; flex-direction: column; gap: 8px; }
+.sugg { padding: 10px 18px 0; display: flex; flex-direction: column; gap: 8px; }
+.sugg:empty { display: none; }
+/* once the conversation starts: one row that scrolls sideways */
+.sugg.compact h3 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.sugg.compact .chips { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 6px; scroll-snap-type: x proximity; scrollbar-width: thin; }
+.sugg.compact .chips li { flex: none; scroll-snap-align: start; }
+.sugg.compact .chip { white-space: nowrap; }
 .sugg h3 { margin: 0; font-size: .82em; color: var(--muted); font-weight: 600; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 0; padding: 0; }
 .chips li { margin: 0; display: flex; }
@@ -124,7 +136,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .chip.more { border-style: dashed; color: var(--muted); }
 
 /* composer */
-.composer { padding: 12px 18px max(14px, env(safe-area-inset-bottom)); border-top: 1px solid var(--line); background: var(--sunk); display: flex; flex-direction: column; gap: 10px; }
+.composer { padding: 12px 18px; border-bottom: 1px solid var(--line); background: var(--sunk); display: flex; flex-direction: column; gap: 10px; }
 .composer label { font-size: .86em; color: var(--muted); }
 .row { display: flex; gap: 8px; align-items: center; }
 .row .grow { flex: 1 1 auto; }
@@ -162,7 +174,21 @@ select { min-height: 48px; padding: 0 12px; border-radius: 10px; border: 1px sol
 .foot { padding: 12px 18px max(14px, env(safe-area-inset-bottom)); border-top: 1px solid var(--line); background: var(--sunk); display: flex; gap: 8px; }
 
 @media (max-width: 640px) {
-  .panel { top: auto; left: 0; right: 0; width: 100vw; height: min(88vh, 100%); border-left: 0; border-top: 1px solid var(--line); border-radius: 20px 20px 0 0; box-shadow: 0 -8px 30px rgb(0 0 0 / .35); }
+  .panel { top: auto; left: 0; right: 0; width: 100vw; height: 92vh; height: 92dvh; border-left: 0; border-top: 1px solid var(--line); border-radius: 20px 20px 0 0; box-shadow: 0 -8px 30px rgb(0 0 0 / .35); }
+  .head { padding: 4px 6px 4px 14px; }
+  .title p { display: none; }
+  .privacy { padding: 6px 14px; flex-wrap: nowrap; }
+  .privacy .grow { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .composer { padding: 10px 14px; gap: 8px; }
+  .composer label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .primary { padding: 0 14px; }
+  .sugg { padding: 8px 14px 0; }
+  .sugg .chips { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 6px; }
+  .sugg .chips li { flex: none; }
+  .sugg .chip { white-space: nowrap; }
+  .log { padding: 12px 14px max(18px, env(safe-area-inset-bottom)); }
+  .msg { max-width: 100%; }
+  .launcher { right: var(--ask-launcher-x, 16px); }
   :host([side="left"]) .panel { border-right: 0; }
   .resize { display: none; }
   .grab { display: block; width: 48px; height: 5px; border-radius: 3px; background: var(--line-strong); margin: 8px auto 0; }

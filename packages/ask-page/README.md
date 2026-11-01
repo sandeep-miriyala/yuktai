@@ -34,7 +34,19 @@ No build step:
 
 Configure it with `window.YuktaiAskConfig = { ... }` before the script, or `<yuktai-ask config='{"modes":["fast"]}'></yuktai-ask>`.
 
-Next.js (App Router): call `mountAskPage()` in a client component's `useEffect`.
+Next.js (App Router): see [Next.js](#nextjs) below.
+
+## Try it on any site
+
+**Bookmarklet.** Make a bookmark with this as its URL, then click it on any page:
+
+```text
+javascript:(function(){var el=document.querySelector("yuktai-ask");if(el&&el.toggle){el.toggle();return}var u="https://cdn.jsdelivr.net/npm/@yuktishaalaa/ask-page@0.1.2/dist/ask-page.global.js",p=null,s=document.createElement("script"),no=function(){alert("This site blocks outside scripts (Content Security Policy). Use the \"Ask this page\" Chrome extension instead.")};try{p=window.trustedTypes&&trustedTypes.createPolicy("yuktai-ask-bookmarklet",{createScriptURL:function(x){return x}})}catch(e){}try{s.src=p?p.createScriptURL(u):u}catch(e){return no()}s.onload=function(){setTimeout(function(){var a=document.querySelector("yuktai-ask");a&&a.openPanel&&a.openPanel()},100)};s.onerror=no;document.body.appendChild(s)})();
+```
+
+Some sites block outside scripts with a Content Security Policy. The bookmarklet then says so.
+
+**Chrome extension.** Works on those sites too, because the browser injects extension scripts past the page's CSP. `npm run build && npm run build:extension`, then `chrome://extensions` → Developer mode → **Load unpacked** → `dist/extension`. Click the toolbar button or press **Alt+Shift+A**. It only runs when you click it (`activeTab`), and collects nothing.
 
 ## Modes
 
@@ -85,6 +97,24 @@ question → shortcut ─┬─ page structure answers it (summary, forms, image
 
 Mark anything private with `data-ask-private`.
 
+<a id="nextjs"></a>Move the launcher away from other floating buttons with CSS: `yuktai-ask { --ask-launcher-bottom: 96px; --ask-launcher-x: 24px }`.
+
+Next.js: the panel is a browser-only web component, so import it inside `useEffect` (a top-level import breaks server rendering):
+
+```tsx
+"use client"
+import { useEffect } from "react"
+
+export default function AskPageClient() {
+  useEffect(() => {
+    let el: HTMLElement | undefined
+    import("@yuktishaalaa/ask-page").then(({ mountAskPage }) => { el = mountAskPage({ modes: ["fast", "balanced"] }) })
+    return () => el?.remove()
+  }, [])
+  return null
+}
+```
+
 ## Headless
 
 ```ts
@@ -102,7 +132,7 @@ import { askWithGraph, AskPageRetriever } from "@yuktishaalaa/ask-page/langgraph
 
 ## Quality
 
-- Unit tests (Vitest, 50) · Rust tests (cargo, 12) · browser tests (Playwright, 15) · axe: 0 violations
+- Unit tests (Vitest, 55) · Rust tests (cargo, 13) · browser tests (Playwright, 16 + 4 strict-CSP) · axe: 0 violations
 - Eval set: 53 questions over 7 pages (English, Telugu, government, pricing, FAQ, course, data). Fast mode: **recall@5 95.7%, top-1 82.6%, correct refusals 100%** ([report](./eval/report.json))
 - Core bundle: 74 KB gzip
 
@@ -122,6 +152,13 @@ cd ../../rust/ask-core && cargo test
 
 ## Content Security Policy
 
-Needs `worker-src blob:` and `script-src 'wasm-unsafe-eval'` for the worker and Rust core. Without them it still works, on the page thread, in TypeScript.
+| Site rule | What Ask page does |
+|---|---|
+| No `worker-src blob:` | Search runs on the page thread |
+| No `'wasm-unsafe-eval'` | TypeScript search instead of Rust/WASM (same results) |
+| `require-trusted-types-for 'script'` | Uses its own `yuktai-ask` policy; if the site allows no policy, builds the panel element by element |
+| `script-src` blocks the CDN | Self-host the file, or use the Chrome extension |
+
+For the full speed, allow `worker-src blob:` and `script-src 'wasm-unsafe-eval'` (and `trusted-types yuktai-ask` if you list policies). Tested in Chromium on strict-CSP pages: `npm run test:csp`.
 
 GPL-3.0 · Part of [yuktai](https://github.com/sandeep-miriyala/yuktai) · Built in personal time by Sandeep Miriyala.

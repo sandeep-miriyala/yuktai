@@ -21,12 +21,16 @@ export interface QuestionRule {
 const has = (re: RegExp) => (ctx: PageContext) => re.test(ctx.text) || ctx.headings.some((h) => re.test(h.toLowerCase()))
 // Headings that name a topic, not a call to action ("Try it", "Sign up", "Contact us")
 const CTA = /^(try|get|sign|join|subscribe|contact|learn|read|see|start|download|buy|follow|share|click|వెంటనే|ప్రయత్నించండి)\b/i
-const heading = (ctx: PageContext, n: number) => ctx.headings.filter((h) => h.length < 60 && !CTA.test(h) && !/[?？]$/.test(h))[n] ?? ""
-const withHeading = (n: number) => (ctx: PageContext) => !!heading(ctx, n) && heading(ctx, n).toLowerCase() !== ctx.snap.title.toLowerCase()
+// Section headings worth asking about: not the page's own title (h1), not long, not a question
+const heading = (ctx: PageContext, n: number) => {
+  const h1 = Array.from(ctx.doc.querySelectorAll("h1")).map((h) => (h.textContent ?? "").replace(/\s+/g, " ").trim())
+  return ctx.headings.filter((h) => h.length <= 40 && !h1.includes(h) && h !== ctx.snap.title && !CTA.test(h) && !/[?？]$/.test(h) && !/^(what|how|why|who|when|where|which)\b/i.test(h))[n] ?? ""
+}
+const withHeading = (n: number) => (ctx: PageContext) => !!heading(ctx, n - 1)
 
 /** Questions with {h1}, {h2}: filled with the page's own headings. */
 export function fillRule(text: string, ctx: PageContext): string {
-  return text.replace("{h1}", heading(ctx, 1)).replace("{h2}", heading(ctx, 2))
+  return text.replace("{h1}", heading(ctx, 0)).replace("{h2}", heading(ctx, 1))
 }
 
 export const RULES: Record<Exclude<PageType, "general">, QuestionRule[]> = {
@@ -42,10 +46,10 @@ export const RULES: Record<Exclude<PageType, "general">, QuestionRule[]> = {
     { en: "How do I install it?", te: "ఎలా install చేయాలి?", when: has(/install|npm|pip|setup/) },
     { en: "Show me a short example", te: "చిన్న example చూపించండి", when: (c) => c.counts.code > 0 },
     { en: "What options or settings are there?", te: "ఏ options / settings ఉన్నాయి?", when: has(/options?|settings?|configuration|config|props/) },
-    { en: "Explain {h1}", te: "{h1} గురించి వివరించండి", when: withHeading(1) },
+    { en: "Tell me about {h1}", te: "{h1} గురించి చెప్పండి", when: withHeading(1) },
     { en: "What are the requirements?", te: "Requirements ఏమిటి?", when: has(/requirements?|prerequisites?|requires|browser support/) },
     { en: "What are the common errors?", te: "Common errors ఏమిటి?", when: has(/troubleshoot|errors?|faq|known issues/) },
-    { en: "Explain {h2}", te: "{h2} గురించి వివరించండి", when: withHeading(2) },
+    { en: "Tell me about {h2}", te: "{h2} గురించి చెప్పండి", when: withHeading(2) },
   ],
   product: [
     { en: "How much does it cost?", te: "ధర ఎంత?", when: (c) => c.counts.prices > 0 },
@@ -66,7 +70,7 @@ export const RULES: Record<Exclude<PageType, "general">, QuestionRule[]> = {
     { en: "Summarize this article", te: "ఈ article సారాంశం", shortcut: true },
     { en: "What are the key points?", te: "ముఖ్యమైన points ఏమిటి?", shortcut: true },
     { en: "Who wrote it and when?", te: "ఎవరు రాశారు, ఎప్పుడు?", when: (c) => c.counts.dates > 0 || !!c.doc.querySelector("meta[name='author'], [rel='author']") },
-    { en: "Explain {h1}", te: "{h1} గురించి వివరించండి", when: withHeading(1) },
+    { en: "Tell me about {h1}", te: "{h1} గురించి చెప్పండి", when: withHeading(1) },
     { en: "What is the conclusion?", te: "ముగింపు ఏమిటి?", when: has(/conclusion|takeaways?|summary|in short|ముగింపు/) },
     { en: "Summarize this page in Telugu", te: "ఈ page సారాంశం తెలుగులో", shortcut: true },
   ],
@@ -78,7 +82,7 @@ export const RULES: Record<Exclude<PageType, "general">, QuestionRule[]> = {
     { en: "What does this table show?", te: "ఈ table ఏం చూపిస్తుంది?", shortcut: true, when: (c) => c.counts.tables > 0 },
     { en: "Summarize this data", te: "ఈ data సారాంశం", shortcut: true },
     { en: "What sections are on this page?", te: "ఈ page లో ఏ sections ఉన్నాయి?", shortcut: true },
-    { en: "Explain {h1}", te: "{h1} గురించి వివరించండి", when: withHeading(1) },
+    { en: "Tell me about {h1}", te: "{h1} గురించి చెప్పండి", when: withHeading(1) },
     { en: "What is the highest value?", te: "అత్యధిక విలువ ఏది?", when: has(/total|highest|maximum|max/) },
   ],
   government: [

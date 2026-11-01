@@ -5,6 +5,7 @@
 // tests). Callers see the same async API either way.
 // ─────────────────────────────────────────────────────────────────────────────
 
+import { trustedScriptURL } from "../ui/dom"
 import * as Comlink from "comlink"
 import { ASK_CORE_WASM_BASE64 } from "../search/askCoreWasm"
 import { WORKER_SOURCE } from "./workerSource"
@@ -30,7 +31,7 @@ export async function startBackend(opts: { worker?: boolean } = {}): Promise<Bac
     let worker: Worker | null = null
     try {
       url = URL.createObjectURL(new Blob([WORKER_SOURCE], { type: "text/javascript" }))
-      worker = new Worker(url, { type: "module", name: "yuktai-ask" })
+      worker = new Worker(trustedScriptURL(url), { type: "module", name: "yuktai-ask" })
       const remote = Comlink.wrap<Backend>(worker)
       const engine = await withTimeout(remote.init(ASK_CORE_WASM_BASE64), 8000)
       const w = worker

@@ -62,9 +62,10 @@ try {
     await host.locator("#ask-input").press("Enter")
     await page.waitForFunction((n) => {
       const msgs = document.querySelector("yuktai-ask").shadowRoot.querySelectorAll(".msg.bot:not(.intro)")
-      return msgs.length > n && msgs[msgs.length - 1].getAttribute("aria-busy") === "false"
+      // newest first (LIFO): the latest answer is the first one
+      return msgs.length > n && msgs[0].getAttribute("aria-busy") === "false"
     }, before)
-    return host.locator(".msg.bot:not(.intro)").last()
+    return host.locator(".msg.bot:not(.intro)").first()
   }
 
   await check("launcher opens the panel and focuses the question box", async () => {
@@ -179,6 +180,25 @@ try {
     assert(await host.locator(".launcher").evaluate((el) => el.getRootNode().activeElement === el), "focus not on launcher")
     await page.keyboard.press("Control+/")
     await panel.waitFor({ state: "visible" })
+  })
+
+  await check("100 questions: newest answer on top, 20 on screen, older ones behind \"show earlier\"", async () => {
+    const t0 = Date.now()
+    for (let i = 1; i <= 100; i++) await page.evaluate((q) => document.querySelector("yuktai-ask").askQuestion(q), `How do I install it? (${i})`)
+    const ms = Date.now() - t0
+    const r = await page.evaluate(() => {
+      const root = document.querySelector("yuktai-ask").shadowRoot
+      const first = root.querySelector(".turn .msg.you .q").textContent
+      const input = root.querySelector("#ask-input").getBoundingClientRect()
+      return { first, turns: root.querySelectorAll(".turn").length, earlier: !!root.querySelector("[data-action=earlier]"), inputTop: input.top, scroll: root.querySelector(".log").scrollTop }
+    })
+    assert(r.first.includes("(100)"), `newest not on top: ${r.first}`)
+    assert(r.turns === 20 && r.earlier, JSON.stringify(r))
+    assert(r.inputTop < 300 && r.scroll === 0, `question box or newest answer not in view: ${JSON.stringify(r)}`)
+    await host.locator("[data-action=earlier]").click()
+    assert((await host.locator(".turn").count()) === 40, "show earlier did not add 20")
+    assert(ms < 20000, `100 questions took ${ms} ms`)
+    console.log(`      (100 questions in ${ms} ms)`)
   })
 
   await check("no JavaScript errors", async () => assert(errors.length === 0, errors.join("; ")))

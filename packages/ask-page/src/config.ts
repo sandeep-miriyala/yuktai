@@ -5,7 +5,7 @@
 
 import type { Mode, OwnerConfig, PageCheck, Settings } from "./types"
 
-export const VERSION = "0.1.0"
+export const VERSION = "0.1.2"
 
 export const ALL_MODES: Mode[] = ["fast", "balanced", "best"]
 export const ALL_CHECKS: PageCheck[] = ["accessibility", "forms", "images", "structure"]

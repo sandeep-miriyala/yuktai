@@ -48,7 +48,8 @@ const STOP: &[&str] = &[
     "which", "who", "why", "when", "where", "do", "does", "did", "i", "it", "its", "this", "that", "these", "those",
     "with", "can", "could", "should", "my", "me", "you", "your", "about", "tell", "please", "there", "here", "any",
     "from", "by", "as", "at", "we", "us", "our", "show", "give", "explain", "page", "much", "many", "get", "have",
-    "has", "will", "would", "am", "if", "so", "into", "than", "then", "also", "just",
+    "has", "will", "would", "am", "if", "so", "into", "than", "then", "also", "just", "no", "not",
+    "version", "versions", "kind", "kinds", "available",
     // Telugu
     "ఈ", "ఆ", "ఏమిటి", "ఏమి", "ఏం", "ఎలా", "ఎందుకు", "ఎప్పుడు", "ఎక్కడ", "ఎవరు", "ఏది", "గురించి", "చెప్పండి", "చెప్పు",
     "లో", "కి", "కు", "ని", "ను", "ఉంది", "ఉన్నాయి", "ఏ", "మరియు", "లేదా", "చేయాలి",
@@ -263,6 +264,31 @@ impl Index {
         out
     }
 
+    /// "sugar free" → "sugarfree" when the page writes it as one word.
+    fn join_compounds(&self, terms: Vec<String>) -> Vec<String> {
+        let mut out: Vec<String> = Vec::new();
+        let mut i = 0;
+        while i < terms.len() {
+            let mut joined = String::new();
+            if i + 1 < terms.len() {
+                joined.push_str(&terms[i]);
+                joined.push_str(&terms[i + 1]);
+            }
+            if !joined.is_empty() && self.vocab.contains_key(joined.as_str()) {
+                if !out.contains(&joined) {
+                    out.push(joined);
+                }
+                i += 2;
+            } else {
+                if !out.contains(&terms[i]) {
+                    out.push(terms[i].clone());
+                }
+                i += 1;
+            }
+        }
+        out
+    }
+
     /// BM25 per passage, and the idf-weighted share of the question each covers.
     fn keyword_scores(&self, terms: &[String]) -> (Vec<f64>, Vec<f64>) {
         let n = self.docs();
@@ -326,7 +352,7 @@ impl Index {
     /// Best `k` passages for a question. `qvec` (normalized, `dim` long) is
     /// used in vector and hybrid modes; without it they fall back to keywords.
     pub fn search(&mut self, question: &str, qvec: Option<&[f32]>, mode: u32, k: usize) -> Vec<Hit> {
-        let terms = query_terms(question);
+        let terms = self.join_compounds(query_terms(question));
         self.last_terms = terms.len();
         let n = self.docs();
         let (bm25, covered) = self.keyword_scores(&terms);
@@ -658,6 +684,14 @@ mod tests {
         assert!(hits[0].coverage < 0.5, "{}", hits[0].coverage);
         let full = ix.search("security policy", None, MODE_KEYWORD, 3);
         assert!((full[0].coverage - 1.0).abs() < 1e-9);
+    }
+
+    #[test]
+    fn split_words_match_a_compound() {
+        let mut ix = index(&["Sugarfree energy drink", "The original drink", "Company history"]);
+        let hits = ix.search("is it sugar free?", None, MODE_KEYWORD, 3);
+        assert_eq!(hits[0].doc, 0);
+        assert!((hits[0].coverage - 1.0).abs() < 1e-9, "{}", hits[0].coverage);
     }
 
     #[test]

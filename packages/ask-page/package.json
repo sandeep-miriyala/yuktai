@@ -1,6 +1,6 @@
 {
   "name": "@yuktishaalaa/ask-page",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Ask any web page. A side panel that answers from the page itself, with sources highlighted. Rust/WASM search, on-device AI, nothing sent anywhere.",
   "author": "Sandeep Miriyala — Yuktishaalaa AI Lab",
   "license": "GPL-3.0-only",
@@ -62,6 +62,8 @@
     "build": "npm run build:worker && tsup && npm run build:types && node scripts/size.mjs",
     "build:types": "tsc -p tsconfig.build.json",
     "build:demo": "npm run build && node scripts/copy-demo.mjs",
+    "build:extension": "node scripts/build-extension.mjs",
+    "test:csp": "node scripts/e2e-csp.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:e2e": "node scripts/e2e.mjs",
@@ -95,5 +97,8 @@
   },
   "engines": {
     "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

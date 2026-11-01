@@ -16,6 +16,7 @@ import { pathMatches } from "../config"
 import type { UiLang } from "../lang"
 import { detectPageType, type PageContext } from "./pageType"
 import { faqQuestions, fillRule, GENERAL, RULES, type QuestionRule } from "./rules"
+import { queryTerms } from "../search/jsSearch"
 
 export interface SuggestOptions {
   ctx: PageContext
@@ -35,6 +36,15 @@ export interface SuggestResult {
 
 const norm = (s: string) => s.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim()
 
+/** Same question in other words? ("How do I install it?" vs "How do I install YuktAI?") */
+function sameQuestion(a: string, b: string): boolean {
+  const x = queryTerms(a)
+  const y = queryTerms(b)
+  if (!x.length || !y.length) return norm(a) === norm(b)
+  const [short, long] = x.length <= y.length ? [x, y] : [y, x]
+  return short.every((w) => long.includes(w))
+}
+
 export async function buildSuggestions(o: SuggestOptions): Promise<SuggestResult> {
   const { ctx, config, lang } = o
   const pool = o.pool ?? 12
@@ -43,7 +53,7 @@ export async function buildSuggestions(o: SuggestOptions): Promise<SuggestResult
   const seen = new Set<string>()
   const push = (text: string, source: Suggestion["source"]) => {
     const k = norm(text)
-    if (!k || seen.has(k)) return false
+    if (!k || seen.has(k) || out.some((o) => sameQuestion(o.text, text))) return false
     seen.add(k)
     out.push({ text, source })
     return true

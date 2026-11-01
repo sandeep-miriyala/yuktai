@@ -13,7 +13,8 @@ export const STOP = new Set([
   "which", "who", "why", "when", "where", "do", "does", "did", "i", "it", "its", "this", "that", "these", "those",
   "with", "can", "could", "should", "my", "me", "you", "your", "about", "tell", "please", "there", "here", "any",
   "from", "by", "as", "at", "we", "us", "our", "show", "give", "explain", "page", "much", "many", "get", "have",
-  "has", "will", "would", "am", "if", "so", "into", "than", "then", "also", "just",
+  "has", "will", "would", "am", "if", "so", "into", "than", "then", "also", "just", "no", "not",
+  "version", "versions", "kind", "kinds", "available",
   "ఈ", "ఆ", "ఏమిటి", "ఏమి", "ఏం", "ఎలా", "ఎందుకు", "ఎప్పుడు", "ఎక్కడ", "ఎవరు", "ఏది", "గురించి", "చెప్పండి", "చెప్పు",
   "లో", "కి", "కు", "ని", "ను", "ఉంది", "ఉన్నాయి", "ఏ", "మరియు", "లేదా", "చేయాలి",
   "చేస్తారు", "చేస్తాం", "చేయవచ్చు", "చేయండి", "ఉంటుంది", "ఉంటాయి", "అవుతుంది", "కావాలి", "ఉందా", "ఏమిటో",
@@ -151,8 +152,21 @@ export class JsEngine implements SearchEngine {
     return out
   }
 
+  /** "sugar free" → "sugarfree" when the page writes it as one word. */
+  private joinCompounds(terms: string[]): string[] {
+    const out: string[] = []
+    for (let i = 0; i < terms.length; i++) {
+      const joined = i + 1 < terms.length ? terms[i] + terms[i + 1] : ""
+      if (joined && this.vocab.has(joined)) {
+        if (!out.includes(joined)) out.push(joined)
+        i++
+      } else if (!out.includes(terms[i])) out.push(terms[i])
+    }
+    return out
+  }
+
   search(question: string, qvec: Float32Array | null, mode: SearchMode, k: number): { hits: RawHit[]; terms: number } {
-    const terms = queryTerms(question)
+    const terms = this.joinCompounds(queryTerms(question))
     const n = this.docLen.length
     const bm25 = new Float64Array(n)
     const covered = new Float64Array(n)
