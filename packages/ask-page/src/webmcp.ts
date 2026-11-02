@@ -91,3 +91,65 @@ export async function registerAskTools(page: AskPage): Promise<{ registered: str
   }
   return { registered, dispose: () => ctrl.abort() }
 }
+
+// ── automatic connection ────────────────────────────────────────────────────
+
+export interface WebMcpStatus {
+  /** connecting: still looking · connected: tools registered · unsupported: this browser has no WebMCP */
+  state: "connecting" | "connected" | "unsupported"
+  tools: string[]
+}
+
+/** Adds the site's WebMCP origin trial token, once. */
+export function addOriginTrial(doc: Document, token: string): void {
+  if (!token || !doc.head) return
+  const metas = Array.from(doc.head.querySelectorAll("meta[http-equiv='origin-trial']"))
+  if (metas.some((m) => m.getAttribute("content") === token)) return
+  const m = doc.createElement("meta")
+  m.setAttribute("http-equiv", "origin-trial")
+  m.setAttribute("content", token)
+  doc.head.appendChild(m)
+}
+
+/**
+ * Connects to WebMCP with no setup: registers the tools as soon as the browser
+ * offers document.modelContext (or navigator.modelContext), and keeps looking
+ * for a few seconds in case it arrives late (origin trial token just added, a
+ * polyfill or extension that installs after the page loads).
+ */
+export function connectWebMCP(
+  page: AskPage,
+  onStatus: (s: WebMcpStatus) => void,
+  opts: { token?: string; tries?: number[] } = {},
+): { dispose: () => void } {
+  const doc = page.doc
+  if (opts.token) addOriginTrial(doc, opts.token)
+  const tries = opts.tries ?? [0, 300, 1000, 2500, 5000]
+  const timers: ReturnType<typeof setTimeout>[] = []
+  let disposeTools: (() => void) | null = null
+  let done = false
+  onStatus({ state: "connecting", tools: [] })
+  tries.forEach((ms, i) => {
+    timers.push(
+      setTimeout(async () => {
+        if (done) return
+        if (getModelContext(doc)) {
+          done = true
+          const r = await registerAskTools(page)
+          disposeTools = r.dispose
+          onStatus({ state: r.registered.length ? "connected" : "unsupported", tools: r.registered })
+        } else if (i === tries.length - 1) {
+          done = true
+          onStatus({ state: "unsupported", tools: [] })
+        }
+      }, ms),
+    )
+  })
+  return {
+    dispose: () => {
+      done = true
+      timers.forEach(clearTimeout)
+      disposeTools?.()
+    },
+  }
+}

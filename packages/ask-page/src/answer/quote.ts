@@ -4,7 +4,7 @@
 // the most words with the question, quoted as they are on the page.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import type { AnswerStyle, Hit } from "../types"
+import type { AnswerStyle, Block, Hit } from "../types"
 import { queryTerms, tokenize } from "../search/jsSearch"
 
 export function splitSentences(text: string): string[] {
@@ -28,8 +28,26 @@ export interface QuoteResult {
   used: Hit[]
 }
 
-export function quoteAnswer(question: string, hits: Hit[], style: AnswerStyle): QuoteResult {
+/**
+ * A passage that is mostly a list (documents, steps, features) is answered as
+ * that list, item by item, not run together into one line.
+ */
+function listAnswer(hit: Hit, blocks: Block[]): string | null {
+  const own = hit.passage.blocks.map((i) => blocks[i]).filter((b): b is Block => !!b && b.kind !== "heading")
+  const items = own.filter((b) => b.kind === "list")
+  if (items.length < 2 || items.length * 2 < own.length) return null
+  const lead = own.find((b) => b.kind !== "list")
+  const shown = items.slice(0, 10).map((b) => `- ${b.text.length > 200 ? b.text.slice(0, 200) + "…" : b.text}`)
+  const more = items.length > 10 ? `\n- …` : ""
+  return (lead ? (lead.text.length > 300 ? lead.text.slice(0, 300) + "…" : lead.text) + "\n\n" : "") + shown.join("\n") + more
+}
+
+export function quoteAnswer(question: string, hits: Hit[], style: AnswerStyle, blocks: Block[] = []): QuoteResult {
   if (!hits.length) return { text: "", used: [] }
+  if (style !== "quote" && blocks.length) {
+    const list = listAnswer(hits[0], blocks)
+    if (list) return { text: list, used: [hits[0]] }
+  }
   if (style === "quote") {
     const p = hits[0].passage
     return { text: p.text.length > 900 ? p.text.slice(0, 900) + "…" : p.text, used: [hits[0]] }

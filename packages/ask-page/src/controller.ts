@@ -361,7 +361,7 @@ export class AskPage {
           return { answer: { text: out, kind: "ai", engine: p.name, pageHash: snap.hash, lang: writes !== lang && out === text.trim() ? writes : lang, sources } }
         }
       }
-      const q = quoteAnswer(s.question, hits, s.settings.answerStyle)
+      const q = quoteAnswer(s.question, hits, s.settings.answerStyle, snap.blocks)
       let text = q.text
       // the quote's own language, not the page's: a Telugu section on an English page stays Telugu
       let outLang: string = detectScriptLang(text)

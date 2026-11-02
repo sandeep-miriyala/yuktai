@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.0.0 (2026-11-02)
+
+First stable release. The options in `OwnerConfig`, `mountAskPage`, `AskPage.ask()`, the `<yuktai-ask>` element and the WebMCP tool names now follow semantic versioning.
+
+- **WebMCP connects by itself.** No setup: the read-only tools register as soon as the browser offers WebMCP, and Ask page keeps looking for a few seconds in case it arrives late. `el.webmcp` and the `yuktai-ask-webmcp` event report `connecting`, `connected` or `unsupported`
+- **`webmcpToken`**: your Chrome origin trial token; Ask page adds the `<meta http-equiv="origin-trial">` tag itself
+- **Chrome extension** shows **MCP** on its button when agents can use the tools
+- **For developers** screen shows the live WebMCP state
+- **Lists answered as lists:** "What documents are required?" gives the documents as bullet points, not one run-on line
+- Tests: 59 unit, 13 Rust, 16 browser, 4 strict-CSP (incl. extension + WebMCP); eval unchanged (recall@5 95.7%, top-1 82.6%, refusals 100%)
+
+## 0.1.4 (2026-11-02)
+
+- **"For developers" button** (`developer: true`, on in the Chrome extension): how to add Ask page to a site, with copy buttons for the script tag and npm, and which WebMCP tools AI agents can use on the page (with how to turn WebMCP on in Chrome). Off by default, so site visitors don't see it
+- Extension 0.1.4 turns it on
+
 ## 0.1.3 (2026-11-02)
 
 Cleaner answers, WebMCP up to date.

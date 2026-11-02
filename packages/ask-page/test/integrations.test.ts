@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 import { AskPage } from "../src/controller"
-import { registerAskTools } from "../src/webmcp"
+import { connectWebMCP, registerAskTools } from "../src/webmcp"
 import { askWithGraph, AskPageRetriever, createAskGraph } from "../src/langgraph"
 import { DOCS, FORM, load } from "./fixtures"
 
@@ -58,6 +58,35 @@ describe("LangGraph.js and LangChain", () => {
     const docs = await new AskPageRetriever(p, 3).invoke("model download size")
     expect(docs[0].metadata.section).toBe("Requirements")
     expect(docs[0].pageContent).toContain("118 MB")
+    p.dispose()
+  })
+
+  it("connects to WebMCP by itself, even when it appears late", async () => {
+    const doc = load(DOCS) as any
+    const p = new AskPage({ doc, worker: false })
+    const states: string[] = []
+    const tools: any[] = []
+    const conn = connectWebMCP(p, (s) => states.push(s.state), { tries: [0, 30, 80] })
+    // the browser offers WebMCP only after the page loaded
+    setTimeout(() => (doc.modelContext = { registerTool: async (t: any) => void tools.push(t) }), 15)
+    await new Promise((r) => setTimeout(r, 150))
+    expect(states).toEqual(["connecting", "connected"])
+    expect(tools.map((t) => t.name)).toEqual(["ask_page", "get_page_outline", "get_suggested_questions"])
+    conn.dispose()
+    p.dispose()
+  })
+
+  it("reports unsupported when the browser has no WebMCP, and adds the origin trial token", async () => {
+    const doc = load(DOCS) as any
+    const p = new AskPage({ doc, worker: false })
+    const states: string[] = []
+    const conn = connectWebMCP(p, (s) => states.push(s.state), { tries: [0, 20], token: "TOKEN123" })
+    await new Promise((r) => setTimeout(r, 60))
+    expect(states).toEqual(["connecting", "unsupported"])
+    expect(doc.head.querySelector("meta[http-equiv='origin-trial']")?.getAttribute("content")).toBe("TOKEN123")
+    connectWebMCP(p, () => undefined, { tries: [0], token: "TOKEN123" }).dispose()
+    expect(doc.head.querySelectorAll("meta[http-equiv='origin-trial']").length).toBe(1)
+    conn.dispose()
     p.dispose()
   })
 })

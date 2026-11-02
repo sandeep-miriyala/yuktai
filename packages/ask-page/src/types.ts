@@ -152,14 +152,25 @@ export interface OwnerConfig {
   webllmUrl?: string
   /** WebLLM model id. Default "Qwen2.5-0.5B-Instruct-q4f16_1-MLC". */
   webllmModel?: string
-  /** Register read-only WebMCP tools for browser agents. Default true. */
+  /** Register read-only WebMCP tools for browser agents, automatically. Default true. */
   webmcp?: boolean
+  /**
+   * Your site's Chrome origin trial token for WebMCP (while WebMCP is in its
+   * origin trial). Ask page adds the <meta http-equiv="origin-trial"> tag itself.
+   */
+  webmcpToken?: string
   /** Panel title. Default "Ask this page". */
   title?: string
   /** Which side the panel opens on. Default "right". */
   side?: "right" | "left"
   /** Show the floating launcher button. Default true. */
   launcher?: boolean
+  /**
+   * Show a "For developers" button: how to add Ask page to a site, and which
+   * WebMCP tools agents can use here. Default false (visitors don't need it);
+   * the Chrome extension turns it on.
+   */
+  developer?: boolean
 }
 
 export interface ProgressEvent {

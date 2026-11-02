@@ -93,7 +93,9 @@ question → shortcut ─┬─ page structure answers it (summary, forms, image
 | `transformersUrl`, `embeddingModel` | jsDelivr, multilingual-e5-small | Self-host if you prefer |
 | `webllmUrl`, `webllmModel` | off | WebLLM for Best mode |
 | `webmcp` | true | Register read-only tools for browser agents |
+| `webmcpToken` | none | Chrome origin trial token for WebMCP; the meta tag is added for you |
 | `title`, `side`, `launcher` | | Panel look |
+| `developer` | false | "For developers" button: script tag, npm and WebMCP tools (the Chrome extension turns it on) |
 
 Mark anything private with `data-ask-private`.
 
@@ -115,6 +117,26 @@ export default function AskPageClient() {
 }
 ```
 
+## WebMCP: agent-ready with no setup
+
+Ask page registers three read-only tools for AI agents in the browser, by itself, as soon as the browser supports [WebMCP](https://webmachinelearning.github.io/webmcp/) (`document.modelContext`):
+
+| Tool | Returns |
+|---|---|
+| `ask_page` | The answer from this page, with the sections it came from (`found: false` when the page doesn't answer) |
+| `get_page_outline` | Title, page type and section headings |
+| `get_suggested_questions` | Questions this page can answer |
+
+Results are JSON strings marked `untrustedContentHint` (page text is data for the agent, never instructions). Agents can read, never click, type or submit.
+
+While WebMCP is in Chrome's origin trial, add your site's token and Ask page adds the meta tag:
+
+```js
+window.YuktaiAskConfig = { webmcpToken: "YOUR_ORIGIN_TRIAL_TOKEN" }
+```
+
+To try it locally: `chrome://flags/#enable-webmcp-testing`. Check the state with `document.querySelector("yuktai-ask").webmcp` or the `yuktai-ask-webmcp` event.
+
 ## Headless
 
 ```ts
@@ -132,7 +154,7 @@ import { askWithGraph, AskPageRetriever } from "@yuktishaalaa/ask-page/langgraph
 
 ## Quality
 
-- Unit tests (Vitest, 55) · Rust tests (cargo, 13) · browser tests (Playwright, 16 + 4 strict-CSP) · axe: 0 violations
+- Unit tests (Vitest, 59) · Rust tests (cargo, 13) · browser tests (Playwright, 16 + 4 strict-CSP incl. the extension and WebMCP) · axe: 0 violations
 - Eval set: 53 questions over 7 pages (English, Telugu, government, pricing, FAQ, course, data). Fast mode: **recall@5 95.7%, top-1 82.6%, correct refusals 100%** ([report](./eval/report.json))
 - Core bundle: 74 KB gzip
 

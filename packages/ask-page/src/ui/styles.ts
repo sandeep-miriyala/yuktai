@@ -90,8 +90,21 @@ button { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
 .notice { margin: 12px 18px 0; padding: 10px 12px; border-radius: 10px; background: var(--warn-bg); color: var(--warn); font-size: .88em; display: flex; gap: 8px; }
 
 /* chat */
-.chat-view, .settings-view { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
-.chat-view[hidden], .settings-view[hidden] { display: none; }
+.chat-view, .settings-view, .dev-view { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+.chat-view[hidden], .settings-view[hidden], .dev-view[hidden] { display: none; }
+/* For developers */
+.dev-h { margin: 0 0 4px; font-size: 1.05em; display: flex; gap: 8px; align-items: center; }
+.dev-h .ic { color: var(--accent); }
+.card h3 { margin: 0; font-size: .95em; }
+.code { margin: 0; padding: 10px 12px; border-radius: 10px; background: var(--bg); border: 1px solid var(--line); font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .78em; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; user-select: all; }
+.tool-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; font-size: .86em; }
+.tool-list li { display: flex; flex-direction: column; gap: 2px; padding: 8px 10px; border-radius: 8px; background: var(--bg); border: 1px solid var(--line); }
+.tool-list code { font-family: ui-monospace, Menlo, Consolas, monospace; font-weight: 700; color: var(--link); }
+.tool-list .muted, .tool-list span { color: var(--muted); }
+.tool-list .on { display: inline-flex; gap: 4px; align-items: center; color: var(--ok) !important; font-weight: 600; }
+a.btn { text-decoration: none; align-self: flex-start; }
+.mcp-state { margin: 0; display: flex; gap: 6px; align-items: flex-start; font-size: .88em; font-weight: 600; color: var(--muted); }
+.mcp-state.ok { color: var(--ok); }
 .log { min-height: 0; flex: 1 1 auto; overflow-y: auto; padding: 14px 18px max(18px, env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 14px; overscroll-behavior: contain; scrollbar-gutter: stable; }
 /* LIFO: each question with its answer is one card, newest on top */
 .turn { display: flex; flex-direction: column; gap: 8px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }

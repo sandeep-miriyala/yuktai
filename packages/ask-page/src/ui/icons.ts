@@ -26,6 +26,7 @@ const P = {
   info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-9h.01"/>',
   arrowLeft: '<path d="M19 12H5m6-6-6 6 6 6"/>',
   heart: '<path d="M12 20s-7.5-4.6-9.2-9.3A4.9 4.9 0 0 1 12 6.6a4.9 4.9 0 0 1 9.2 4.1C19.5 15.4 12 20 12 20z"/>',
+  code: '<path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/>',
   shieldCheck: '<path d="M12 3 4 6v6c0 4.5 3.4 8 8 9 4.6-1 8-4.5 8-9V6z"/><path d="m8.5 12 2.5 2.5 4.5-4.5"/>',
 } as const
 

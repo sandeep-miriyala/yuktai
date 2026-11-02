@@ -136,6 +136,10 @@ const ctx = await chromium.launchPersistentContext(profile, {
   args: [`--disable-extensions-except=${testExt}`, `--load-extension=${testExt}`],
 })
 try {
+  // Chrome with WebMCP on (as with chrome://flags/#enable-webmcp-testing): a stand-in modelContext
+  await ctx.addInitScript(() => {
+    if (!document.modelContext) document.modelContext = { tools: [], registerTool: async (t) => void document.modelContext.tools.push(t.name) }
+  })
   await check("Chrome extension: opens and answers on a page that blocks all outside scripts", async () => {
     let [sw] = ctx.serviceWorkers()
     if (!sw) sw = await ctx.waitForEvent("serviceworker", { timeout: 10000 })
@@ -152,6 +156,24 @@ try {
     const r = await askOn(page, "How do I install it?")
     assert(/install/i.test(r.answer), `answer: ${r.answer}`)
     assert(!errors.length, errors.join(" | "))
+    // the extension shows "For developers": the script tag and the WebMCP tools
+    const dev = await page.evaluate(async () => {
+      const r = document.querySelector("yuktai-ask").shadowRoot
+      r.querySelector("[data-action=dev]").click()
+      await new Promise((ok) => setTimeout(ok, 100))
+      return { code: r.querySelector(".dev-view pre.code")?.textContent ?? "", tools: [...r.querySelectorAll(".tool-list code")].map((c) => c.textContent) }
+    })
+    assert(dev.code.includes("ask-page.global.js") && dev.tools.includes("ask_page"), JSON.stringify(dev))
+    // WebMCP connected by itself, no setup: tools registered, "MCP" on the button
+    const registered = await page.evaluate(() => document.modelContext.tools)
+    assert(registered.includes("ask_page") && registered.length === 3, `tools: ${registered}`)
+    const badge = await sw.evaluate(async () => {
+      const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true })
+      return chrome.action.getBadgeText({ tabId: tab.id })
+    })
+    assert(badge === "MCP", `badge: "${badge}"`)
+    console.log(`      (WebMCP connected: ${registered.join(", ")}; badge "${badge}")`)
+    await page.evaluate(() => document.querySelector("yuktai-ask").shadowRoot.querySelector(".dev-view [data-action=back]").click())
     // clicking again closes it
     await sw.evaluate(async () => {
       const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true })

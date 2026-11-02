@@ -12,10 +12,10 @@
 
 import { AskPage } from "../controller"
 import type { Answer, Mode, OwnerConfig, PageCheck, Settings, Suggestion } from "../types"
-import { ALL_CHECKS, EMBEDDING_MODEL_MB, TOP_K_CHOICES } from "../config"
+import { ALL_CHECKS, EMBEDDING_MODEL_MB, TOP_K_CHOICES, VERSION } from "../config"
 import { fill, strings, type Strings } from "../i18n"
 import { clearHighlight, focusElement, highlightElements } from "../highlight"
-import { registerAskTools } from "../webmcp"
+import { askTools, connectWebMCP, type WebMcpStatus } from "../webmcp"
 import { escapeHtml, renderMarkdown } from "./markdown"
 import { icon } from "./icons"
 import { STYLES } from "./styles"
@@ -48,7 +48,9 @@ export class YuktaiAskElement extends HTMLElement {
   private msgs: Msg[] = []
   private nextId = 1
   private isOpen = false
-  private view: "chat" | "settings" = "chat"
+  private view: "chat" | "settings" | "dev" = "chat"
+  private mcp: WebMcpStatus = { state: "unsupported", tools: [] }
+  private devCode: string[] = []
   private abort: AbortController | null = null
   private undo: { msgs: Msg[]; timer: ReturnType<typeof setTimeout> } | null = null
   private sugg: Suggestion[] = []
@@ -86,7 +88,10 @@ export class YuktaiAskElement extends HTMLElement {
     document.addEventListener("keydown", this.keyHandler)
     this.offProgress = this.page.onProgress((e) => this.onProgress(e))
     this.offChange = this.page.onPageChange(() => this.onPageChanged())
-    if (this.page.config.webmcp) void registerAskTools(this.page).then((r) => (this.disposeTools = r.dispose))
+    if (this.page.config.webmcp) {
+      const conn = connectWebMCP(this.page, (s) => this.onWebMcp(s), { token: this.page.config.webmcpToken })
+      this.disposeTools = conn.dispose
+    }
     if (this.hasAttribute("open")) void this.openPanel(false)
   }
 
@@ -122,6 +127,7 @@ export class YuktaiAskElement extends HTMLElement {
   <div class="head">
     <div class="title"><h2 id="ask-title">${icon("chat", 22)}<span>${title}</span><span class="badge">AI</span></h2><p class="ai-label"></p></div>
     <div class="tools">
+      ${this.page!.config.developer ? `<button class="iconbtn" type="button" data-action="dev" aria-pressed="false"></button>` : ""}
       <button class="iconbtn" type="button" data-action="settings" aria-pressed="false"></button>
       <button class="iconbtn" type="button" data-action="minimize"></button>
       <button class="iconbtn" type="button" data-action="close"></button>
@@ -143,6 +149,7 @@ export class YuktaiAskElement extends HTMLElement {
     <div class="log" aria-label="Conversation"></div>
   </div>
   <div class="settings-view" hidden></div>
+  <div class="dev-view" hidden></div>
   <div class="sr live" aria-live="polite" aria-atomic="true"></div>
 </section>`)
     this.shadow.addEventListener("click", (e) => this.onClick(e))
@@ -188,6 +195,7 @@ export class YuktaiAskElement extends HTMLElement {
       b.setAttribute("aria-label", label)
       b.setAttribute("title", label)
     }
+    if (p.config.developer) set("[data-action=dev]", "code", t.developer)
     set("[data-action=settings]", "tools", t.settings)
     set("[data-action=minimize]", "minus", t.minimize)
     set("[data-action=close]", "close", t.close)
@@ -488,15 +496,60 @@ export class YuktaiAskElement extends HTMLElement {
   }
 
   // ── settings ──────────────────────────────────────────────────────────────
-  private showView(v: "chat" | "settings") {
+  private showView(v: "chat" | "settings" | "dev") {
     this.view = v
     this.$(".chat-view").hidden = v !== "chat"
     this.$(".settings-view").hidden = v !== "settings"
+    this.$(".dev-view").hidden = v !== "dev"
     this.$("[data-action=settings]").setAttribute("aria-pressed", String(v === "settings"))
-    if (v === "settings") {
+    this.$("[data-action=dev]")?.setAttribute("aria-pressed", String(v === "dev"))
+    if (v === "dev") {
+      this.renderDev()
+      this.$<HTMLElement>(".dev-view [data-action=back]")?.focus()
+    } else if (v === "settings") {
       this.renderSettings()
       this.$<HTMLElement>(".settings-view input, .settings-view select")?.focus()
     } else this.$<HTMLTextAreaElement>("#ask-input").focus()
+  }
+
+  /** WebMCP connection, for the page (and the Chrome extension's badge). */
+  get webmcp(): WebMcpStatus {
+    return this.mcp
+  }
+
+  private onWebMcp(s: WebMcpStatus) {
+    this.mcp = s
+    this.dispatchEvent(new CustomEvent("yuktai-ask-webmcp", { detail: s, bubbles: true, composed: true }))
+    if (this.view === "dev") this.renderDev()
+  }
+
+  /** "For developers": how to add Ask page to a site, and the WebMCP tools. */
+  private renderDev() {
+    const t = this.t
+    const cdn = `https://cdn.jsdelivr.net/npm/@yuktishaalaa/ask-page@${VERSION}/dist/ask-page.global.js`
+    this.devCode = [
+      `<script src="${cdn}" defer></script>`,
+      `npm install @yuktishaalaa/ask-page\n\n// in a client component (Next.js: inside useEffect)\nimport { mountAskPage } from "@yuktishaalaa/ask-page"\nmountAskPage({ modes: ["fast", "balanced"] })`,
+    ]
+    const block = (title: string, i: number) =>
+      `<section class="card"><h3>${escapeHtml(title)}</h3><pre class="code" tabindex="0">${escapeHtml(this.devCode[i])}</pre><div class="row"><button class="btn" type="button" data-action="copy-code" data-i="${i}">${icon("copy", 18)}<span>${escapeHtml(t.copyCode)}</span></button></div></section>`
+    const tools = askTools(this.page!)
+    const live = this.mcp.state === "connected"
+    const state = live
+      ? `<p class="mcp-state ok" role="status">${icon("check", 16)}<span>${escapeHtml(fill(t.mcpConnected, { n: this.mcp.tools.length }))}</span></p>`
+      : this.mcp.state === "connecting"
+        ? `<p class="mcp-state" role="status">${escapeHtml(t.mcpConnecting)}</p>`
+        : `<p class="mcp-state" role="status">${icon("info", 16)}<span>${escapeHtml(t.mcpUnsupported)}</span></p>`
+    const toolList = `<ul class="tool-list">${tools.map((x) => `<li><code>${escapeHtml(x.name)}</code><span>${escapeHtml(x.description)}</span>${live && this.mcp.tools.includes(x.name) ? `<span class="on">${icon("check", 14)}on</span>` : ""}</li>`).join("")}</ul>`
+    setHTML(this.$(".dev-view"), `
+<div class="settings">
+  <button class="btn" type="button" data-action="back">${icon("arrowLeft", 18)}<span>${escapeHtml(t.back)}</span></button>
+  <div><h3 class="dev-h">${icon("code", 20)}<span>${escapeHtml(t.devTitle)}</span></h3><p class="muted">${escapeHtml(t.devIntro)}</p></div>
+  ${block(t.devHtml, 0)}
+  ${block(t.devNpm, 1)}
+  <section class="card"><h3>${escapeHtml(t.devMcp)}</h3>${state}<p class="muted">${escapeHtml(live ? t.devMcpOn : t.devMcpOff)}</p>${toolList}</section>
+  <a class="btn" href="https://github.com/sandeep-miriyala/yuktai/tree/main/packages/ask-page#readme" target="_blank" rel="noopener noreferrer">${icon("info", 18)}<span>${escapeHtml(t.devDocs)}</span></a>
+</div>`)
   }
 
   private async renderSettings() {
@@ -622,6 +675,20 @@ export class YuktaiAskElement extends HTMLElement {
         return this.closePanel(true)
       case "settings":
         return this.showView(this.view === "settings" ? "chat" : "settings")
+      case "dev":
+        return this.showView(this.view === "dev" ? "chat" : "dev")
+      case "copy-code": {
+        const code = this.devCode[Number(btn.dataset.i)] ?? ""
+        try {
+          await navigator.clipboard.writeText(code)
+        } catch {
+          /* clipboard blocked: the code is selectable in the box */
+        }
+        const label = btn.querySelector("span")
+        if (label) label.textContent = this.t.copied
+        setTimeout(() => label && (label.textContent = this.t.copyCode), 1500)
+        return
+      }
       case "back":
         this.pendingMode = null
         return this.showView("chat")

@@ -5,7 +5,7 @@
 
 import type { Mode, OwnerConfig, PageCheck, Settings } from "./types"
 
-export const VERSION = "0.1.3"
+export const VERSION = "1.0.0"
 
 export const ALL_MODES: Mode[] = ["fast", "balanced", "best"]
 export const ALL_CHECKS: PageCheck[] = ["accessibility", "forms", "images", "structure"]
@@ -54,9 +54,11 @@ export function resolveConfig(owner: OwnerConfig = {}): ResolvedConfig {
     webllmUrl: owner.webllmUrl ?? "",
     webllmModel: owner.webllmModel ?? DEFAULT_WEBLLM_MODEL,
     webmcp: owner.webmcp ?? true,
+    webmcpToken: owner.webmcpToken ?? "",
     title: owner.title ?? "",
     side: owner.side === "left" ? "left" : "right",
     launcher: owner.launcher ?? true,
+    developer: owner.developer ?? false,
   }
 }
 
