@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.3 (2026-11-02)
+
+Cleaner answers, WebMCP up to date.
+
+- Leaves out page noise: "×" close buttons, "☰" menus and image text that only names the picture ("New Banner Icon", "logo"). Seen on irctc.co.in
+- WebMCP tools follow the August 2026 draft: results are JSON strings, marked `untrustedContentHint` (page text is data, not instructions for the agent), and an agent can cancel a question
+- Tests: 56 unit
+
 ## 0.1.2 (2026-11-01)
 
 Newest first, works on strict sites, better on phones.

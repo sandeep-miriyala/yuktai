@@ -56,6 +56,12 @@ function visible(el: Element): boolean {
   return !isHidden(el)
 }
 
+// Noise that isn't content: "×" close buttons, "☰" menus, arrows…
+const CONTROL = "button, [role='button'], a, [role='link'], [role='tab']"
+const NO_WORDS = /^[^\p{L}\p{N}]*$/u
+// alt text that only names the picture's role ("New Banner Icon", "logo")
+const DECORATIVE_ALT = /\b(icon|logo|banner|image|img|picture|photo|spacer|arrow|bullet|placeholder|thumbnail|graphic)s?\b/i
+
 /** Text of an element without anything private inside it. */
 export function safeText(el: Element): string {
   const doc = el.ownerDocument
@@ -64,13 +70,17 @@ export function safeText(el: Element): string {
   let node = walker.nextNode()
   while (node) {
     const parent = node.parentElement
-    if (parent && !parent.closest(NEVER_READ)) parts.push(node.nodeValue ?? "")
+    const text = node.nodeValue ?? ""
+    const symbolOnlyControl = NO_WORDS.test(text.trim()) && text.trim() !== "" && !!parent?.closest(CONTROL)
+    if (parent && !parent.closest(NEVER_READ) && !symbolOnlyControl) parts.push(text)
     node = walker.nextNode()
   }
-  // images inside a block: their alt text is part of what the block says
+  // images inside a block: their alt text is part of what the block says,
+  // unless it only says what kind of picture it is
   el.querySelectorAll("img[alt]").forEach((img) => {
     const alt = clean(img.getAttribute("alt"))
-    if (alt && !img.closest(NEVER_READ)) parts.push(` ${alt} `)
+    const decorative = DECORATIVE_ALT.test(alt) && alt.split(" ").length <= 4
+    if (alt && !decorative && !img.closest(NEVER_READ)) parts.push(` ${alt} `)
   })
   return clean(parts.join(""))
 }

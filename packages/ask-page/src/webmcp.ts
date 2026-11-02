@@ -2,7 +2,9 @@
 // @yuktishaalaa/ask-page · src/webmcp.ts
 // Lets browser agents (Gemini in Chrome and others speaking WebMCP) use Ask
 // page as a tool. Every tool is read-only: agents can ask and read, never
-// click, type or submit. Same privacy filter as the panel.
+// click, type or submit. Same privacy filter as the panel. Results are JSON
+// strings marked untrustedContentHint: page text may contain instructions
+// meant to steer an agent, and the agent should treat it as data.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { AskPage } from "./controller"
@@ -12,8 +14,9 @@ interface ModelContextTool {
   title?: string
   description: string
   inputSchema: Record<string, unknown>
-  annotations?: { readOnlyHint?: boolean }
-  execute: (input: Record<string, unknown>) => Promise<unknown> | unknown
+  annotations?: { readOnlyHint?: boolean; untrustedContentHint?: boolean }
+  /** WebMCP (Aug 2026 draft): resolves to a string; the agent may cancel with `signal`. */
+  execute: (input: Record<string, unknown>, ctx?: { signal?: AbortSignal }) => Promise<string>
 }
 
 interface ModelContext {
@@ -33,17 +36,17 @@ export function askTools(page: AskPage): ModelContextTool[] {
       title: "Ask this page",
       description: "Answers a question using only the content of the current web page, with the page sections it came from. Returns found=false when the page does not answer it.",
       inputSchema: { type: "object", properties: { question: { type: "string", description: "The question, in English, Telugu or Hindi." } }, required: ["question"] },
-      annotations: { readOnlyHint: true },
-      async execute(input) {
+      annotations: { readOnlyHint: true, untrustedContentHint: true },
+      async execute(input, ctx) {
         const q = String(input?.question ?? "").slice(0, 500)
-        if (!q.trim()) return { found: false, error: "question is required" }
-        const a = await page.ask(q)
-        return {
+        if (!q.trim()) return JSON.stringify({ found: false, error: "question is required" })
+        const a = await page.ask(q, { signal: ctx?.signal })
+        return JSON.stringify({
           found: a.kind !== "unknown",
           answer: a.text,
           engine: a.engine,
           sources: a.sources.map((s) => ({ section: s.ref, excerpt: s.excerpt })),
-        }
+        })
       },
     },
     {
@@ -51,11 +54,11 @@ export function askTools(page: AskPage): ModelContextTool[] {
       title: "Page outline",
       description: "Returns the current page's title, type and section headings.",
       inputSchema: { type: "object", properties: {} },
-      annotations: { readOnlyHint: true },
+      annotations: { readOnlyHint: true, untrustedContentHint: true },
       async execute() {
         await page.init()
         const snap = page.snap!
-        return { title: snap.title, pageType: page.pageType, sections: [...new Set(snap.passages.map((p) => p.ref))].slice(0, 40) }
+        return JSON.stringify({ title: snap.title, pageType: page.pageType, sections: [...new Set(snap.passages.map((p) => p.ref))].slice(0, 40) })
       },
     },
     {
@@ -63,10 +66,10 @@ export function askTools(page: AskPage): ModelContextTool[] {
       title: "Suggested questions",
       description: "Returns questions this page can answer.",
       inputSchema: { type: "object", properties: {} },
-      annotations: { readOnlyHint: true },
+      annotations: { readOnlyHint: true, untrustedContentHint: true },
       async execute() {
         const s = await page.suggestions()
-        return { pageType: s.pageType, questions: s.suggestions.map((x) => x.text) }
+        return JSON.stringify({ pageType: s.pageType, questions: s.suggestions.map((x) => x.text) })
       },
     },
   ]

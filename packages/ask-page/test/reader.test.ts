@@ -44,6 +44,18 @@ describe("page reader and privacy filter", () => {
     expect(kanuma.text).toContain("పశువులను పూజిస్తారు")
   })
 
+  it("leaves out close buttons and picture-role alt text, keeps real alt text", () => {
+    // like the irctc.co.in banner: "Explore beta now × New Banner Icon"
+    const doc = load(`<main><h1>Book tickets</h1><p>Explore the beta version of our new website <a href="#">Explore beta now</a> <button aria-label="Close">×</button> <img src="b.png" alt="New Banner Icon"></p><p><img src="c.png" alt="A full can of Red Bull Sugarfree"> Prices are 2 × 3 rupees.</p></main>`)
+    const text = readPage(doc).blocks.map((b) => b.text).join(" | ")
+    expect(text).toContain("Explore beta now")
+    expect(text).not.toContain("×  ")
+    expect(text).not.toMatch(/now ×/)
+    expect(text).not.toContain("Banner Icon")
+    expect(text).toContain("A full can of Red Bull Sugarfree")
+    expect(text).toContain("2 × 3")
+  })
+
   it("the hash changes when the page changes", () => {
     const doc = load(DOCS)
     const a = readPage(doc).hash
