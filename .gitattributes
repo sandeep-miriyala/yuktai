@@ -19,3 +19,6 @@ vanilla/index.min.js          linguist-generated=true
 dist/**                       linguist-generated=true
 src/grid/rust/gridCoreWasm.ts linguist-generated=true
 src/agentic/rust/ragCoreWasm.ts linguist-generated=true
+ask-page/ask-page.global.js                    linguist-generated=true
+packages/ask-page/src/search/askCoreWasm.ts    linguist-generated=true
+packages/ask-page/src/worker/workerSource.ts   linguist-generated=true
