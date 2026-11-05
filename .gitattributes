@@ -1,6 +1,6 @@
 # Line endings: keep LF in the repo
 * text=auto eol=lf
-
+packages/*/dist/**   
 # Binary files
 *.png   binary
 *.jpg   binary
