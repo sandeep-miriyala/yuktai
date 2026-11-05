@@ -75,6 +75,22 @@ export default function YuktaiClient({ children }: { children: ReactNode }) {
 <body><YuktaiClient>{children}</YuktaiClient></body>
 ```
 
+**jQuery sites** (WordPress, ASP.NET WebForms, PHP): no plugin. Add the scripts after jQuery and call YuktAI from your jQuery code. Tested with jQuery 1.12.4, 2.2.4, 3.7.1 and 4.0.0.
+
+```html
+<script src="https://code.jquery.com/jquery-4.0.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@yuktishaalaa/yuktai@5.3.12/vanilla/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@yuktishaalaa/ask-page@1.0.0/dist/ask-page.global.js" defer></script>
+<script>
+  $(function () {
+    yuktai.renderGrid($("#staff")[0], { data: rows, columns: cols })
+    $("#contrastBtn").on("click", function () { yuktai.apply({ highContrast: true }) })
+  })
+</script>
+```
+
+Pin the jQuery version: `jquery-latest.js` stopped updating years ago, and jQuery 4 removed old APIs such as `$.trim` and `$.isArray`. Full guide: [YuktaiDocs › jQuery](https://yuktaidocs.netlify.app/jquery.html) · example: [`examples/jquery`](./examples/jquery/index.html)
+
 **Grid and icons**
 
 ```tsx
@@ -121,7 +137,7 @@ Since 5.3.11 the grid and page search use Rust by default. Results are identical
 
 ## Compatibility
 
-Next.js 13–16 · React 17–19 (19 needs `--legacy-peer-deps`) · Node 18+ · Chrome, Edge, Firefox, Safari, Samsung Internet
+Next.js 13–16 · React 17–19 (19 needs `--legacy-peer-deps`) · Node 18+ · Chrome, Edge, Firefox, Safari, Samsung Internet · jQuery 1.12–4.0 (no plugin needed)
 
 ## Honest limits
 

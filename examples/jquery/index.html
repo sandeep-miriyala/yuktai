@@ -1,0 +1,74 @@
+<!doctype html>
+<!--
+  YuktAI on a jQuery site: no plugin, two script tags.
+  Tested with jQuery 1.12.4, 2.2.4, 3.7.1 and 4.0.0.
+  Open this file through a local server (for example `npx serve examples/jquery`).
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>YuktAI with jQuery</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 860px; margin: 0 auto; padding: 24px 16px; line-height: 1.6; color: #0f172a; }
+  button { font: inherit; padding: 8px 14px; border-radius: 8px; border: 1px solid #94a3b8; background: #fff; cursor: pointer; margin: 0 8px 12px 0; }
+  button:focus-visible { outline: 3px solid #b45309; outline-offset: 2px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Staff directory</h1>
+  <p>This page uses jQuery <span id="jq-version"></span> with YuktAI and Ask page.</p>
+
+  <h2>How to apply</h2>
+  <p>Send your CV to the HR team. Applications close on 31 December 2026.</p>
+
+  <h2>Try it</h2>
+  <button id="contrastBtn" type="button">High contrast</button>
+  <button id="helpBtn" type="button">Ask: how do I apply?</button>
+
+  <h2>Staff</h2>
+  <div id="staff"></div>
+</main>
+
+<!-- 1. jQuery: pin the version (4.0 for new sites, 3.7 for older code) -->
+<script src="https://code.jquery.com/jquery-4.0.0.min.js"></script>
+
+<!-- 2. YuktAI: accessibility widget, page tools, data grid -->
+<script src="https://cdn.jsdelivr.net/npm/@yuktishaalaa/yuktai@5.3.12/vanilla/index.min.js"></script>
+
+<!-- 3. Ask page: answers from this page, sources highlighted -->
+<script src="https://cdn.jsdelivr.net/npm/@yuktishaalaa/ask-page@1.0.0/dist/ask-page.global.js"></script>
+
+<script>
+  // Ordinary jQuery page code calling YuktAI
+  $(function () {
+    $("#jq-version").text($.fn.jquery)
+
+    var rows = [
+      { name: "Ravi", city: "Hyderabad", salary: 120000 },
+      { name: "Sita", city: "Vijayawada", salary: 90000 },
+      { name: "Arun", city: "Hyderabad", salary: 150000 }
+    ]
+    var cols = [
+      { key: "name", label: "Name" },
+      { key: "city", label: "City" },
+      { key: "salary", label: "Salary" }
+    ]
+
+    // Data grid: a jQuery element with [0], or a CSS selector
+    yuktai.renderGrid($("#staff")[0], { data: rows, columns: cols, engine: "auto" })
+
+    // Accessibility from your own button
+    $("#contrastBtn").on("click", function () {
+      yuktai.apply({ highContrast: true })
+    })
+
+    // Open Ask page with a question
+    $("#helpBtn").on("click", function () {
+      document.querySelector("yuktai-ask").askQuestion("How do I apply?")
+    })
+  })
+</script>
+</body>
+</html>
