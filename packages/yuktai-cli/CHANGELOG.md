@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.2
+- Netlify: the build command now runs `rustup default stable` first (Netlify has rustup but no default toolchain). If Rust can't be set up, the site still builds with the TypeScript fallback.
+- Windows: no more DEP0190 warning from `yuktai dev` and `yuktai build`.
+- Docs and README use `npx yuktai@latest init my-app --yes`.
+
 ## 0.1.1
 - `--yes` turns everything on: the docs template with the grid, QA report and icons features. Pressing Enter at the features question picks all of them; `0` or `--features none` picks none.
 - Data grid: 10 lakh (1,000,000) sample orders made in the browser (`src/data/orders.ts`, seeded, nothing downloaded). Six columns, five types: text, badge, number, date, yes/no. Choose 1,000, 1,00,000 or 10,00,000 rows. Follows the light or dark theme.

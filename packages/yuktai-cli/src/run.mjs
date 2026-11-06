@@ -3,10 +3,8 @@
 // Then hand over to Next.js. Without Rust installed the app still works (TypeScript fallback).
 import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
-import { spawn, spawnSync } from "node:child_process";
+import { run, runSync, win } from "./proc.mjs";
 import { c, step, warn } from "./ui.mjs";
-
-const win = process.platform === "win32";
 
 function crateName(cargoToml) {
   const m = readFileSync(cargoToml, "utf8").match(/^\s*name\s*=\s*"([^"]+)"/m);
@@ -19,7 +17,7 @@ export function buildRust(cwd = process.cwd(), { required = false } = {}) {
   if (!existsSync(cargoToml)) return false;
   const crate = crateName(cargoToml);
   const target = "wasm32-unknown-unknown";
-  const r = spawnSync("cargo", ["build", "--release", "--target", target, "--manifest-path", cargoToml], { cwd, stdio: "inherit", shell: win });
+  const r = runSync("cargo", ["build", "--release", "--target", target, "--manifest-path", cargoToml], { cwd, stdio: "inherit" });
   if (r.status !== 0) {
     const msg = `Rust → WebAssembly did not build. The app uses its TypeScript fallback.
       Install Rust: ${c.cyan("https://rustup.rs")}  then  ${c.cyan(`rustup target add ${target}`)}`;
@@ -39,7 +37,7 @@ function next(args, cwd = process.cwd()) {
   const bin = join(cwd, "node_modules", ".bin", win ? "next.cmd" : "next");
   if (!existsSync(bin)) throw new Error(`Next.js is not installed here. Run "npm install" first.`);
   return new Promise((resolve, reject) => {
-    const p = spawn(bin, args, { cwd, stdio: "inherit", shell: win });
+    const p = run(bin, args, { cwd, stdio: "inherit" });
     p.on("exit", (code) => (code === 0 ? resolve() : reject(new Error(`next ${args[0]} stopped (exit ${code})`))));
   });
 }

@@ -1,7 +1,7 @@
 // yuktai init: questions → layers → package.json → install → git.
 import { existsSync, readdirSync } from "node:fs";
 import { resolve, basename } from "node:path";
-import { spawnSync } from "node:child_process";
+import { runSync } from "./proc.mjs";
 import { scaffold } from "./scaffold.mjs";
 import { writePackageJson } from "./pkg.mjs";
 import { writeReadme } from "./readme.mjs";
@@ -88,7 +88,7 @@ export async function init(args, cliVersion) {
     console.log();
 
     if (opts.stack === "next-rust") {
-      const cargo = spawnSync("cargo", ["--version"], { stdio: "ignore", shell: process.platform === "win32" });
+      const cargo = runSync("cargo", ["--version"], { stdio: "ignore" });
       if (cargo.status !== 0) warn(`Rust is not installed. The app works without it (TypeScript fallback). To build the Rust part: ${c.cyan("https://rustup.rs")}, then ${c.cyan("rustup target add wasm32-unknown-unknown")}`);
     }
 
@@ -99,12 +99,12 @@ export async function init(args, cliVersion) {
 
     if (o.install) {
       info("Installing packages (a minute or two)…");
-      const r = spawnSync("npm", ["install", "--no-audit", "--no-fund"], { cwd: dir, stdio: "inherit", shell: process.platform === "win32" });
+      const r = runSync("npm", ["install", "--no-audit", "--no-fund"], { cwd: dir, stdio: "inherit" });
       if (r.status === 0) step("Installed packages");
       else warn(`npm install did not finish. Run it yourself: cd ${name} → npm install`);
     }
     if (o.git) {
-      const g = (a) => spawnSync("git", a, { cwd: dir, stdio: "ignore", shell: process.platform === "win32" });
+      const g = (a) => runSync("git", a, { cwd: dir, stdio: "ignore" });
       if (g(["init", "-b", "main"]).status === 0 && g(["add", "-A"]).status === 0 && g(["commit", "-m", "Create app with yuktai " + cliVersion]).status === 0) step("Started a git repository");
     }
 

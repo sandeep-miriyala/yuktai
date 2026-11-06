@@ -53,8 +53,9 @@ export function values(o) {
     ]),
     engine: o.stack === "next-rust" ? "rust" : "ts",
     stackNote: o.stack === "next-rust" ? " + Rust (WebAssembly)" : "",
-    // Netlify: add the WebAssembly target before building when the app has Rust
-    netlifyCommand: o.stack === "next-rust" ? "rustup target add wasm32-unknown-unknown && npm run build" : "npm run build",
+    // Netlify has rustup but no default toolchain: pick stable, add the WebAssembly target, then build.
+    // If Rust can't be set up the build still runs and the app uses its TypeScript fallback.
+    netlifyCommand: o.stack === "next-rust" ? '(rustup default stable && rustup target add wasm32-unknown-unknown) || echo \\"Rust not available, using the TypeScript fallback\\"; npm run build' : "npm run build",
     cliVersion: o.cliVersion,
   };
 }

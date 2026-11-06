@@ -3,7 +3,7 @@
 Create accessible, AI-in-the-browser web apps with one command.
 
 ```
-npx yuktai init my-app --yes
+npx yuktai@latest init my-app --yes
 cd my-app
 npm run dev
 ```
