@@ -6,6 +6,8 @@ type NavItem = { href: string; label: string; feature?: keyof typeof config.feat
 const ALL: NavItem[] = [
   { href: "/", label: "Home" },
   { href: "/grid/", label: "Data grid", feature: "grid" },
+  { href: "/qa/", label: "QA report", feature: "pageTools" },
+  { href: "/icons/", label: "Icons", feature: "icons" },
   { href: "/about/", label: "About" },
 ];
 

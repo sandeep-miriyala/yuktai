@@ -10,6 +10,7 @@ const STACK: [string, string][] = [
   ["Accessibility", "@yuktishaalaa/yuktai: ♿ widget, 163 icons"],
   ["Ask this page", "@yuktishaalaa/ask-page: answers from the page, on the device"],
   ["App", "PWA: Install button, works offline"],
+  ["Lifecycle", "onStart, onChange, onEnd (src/components/yuktai/lifecycle.ts)"],
 ];
 
 export default function About() {

@@ -4,13 +4,14 @@ import { resolve, basename } from "node:path";
 import { spawnSync } from "node:child_process";
 import { scaffold } from "./scaffold.mjs";
 import { writePackageJson } from "./pkg.mjs";
+import { writeReadme } from "./readme.mjs";
 import { c, step, info, warn, text, choose, chooseMany, closePrompts } from "./ui.mjs";
 
 export const STACKS = ["next-rust", "next"];
-export const TEMPLATES = ["starter", "docs"];
-export const FEATURES = ["grid", "page-tools"];
+export const TEMPLATES = ["docs", "starter"];
+export const FEATURES = ["grid", "page-tools", "icons"];
 export const HOSTS = ["netlify", "github-pages", "none"];
-export const ACCENTS = ["violet", "blue", "teal", "orange"];
+export const ACCENTS = ["blue", "violet", "teal", "orange"];
 
 export function parseFlags(args) {
   const o = { name: undefined, yes: false, install: true, git: true };
@@ -26,7 +27,7 @@ export function parseFlags(args) {
     else if (a === "--no-git") o.git = false;
     else if (a === "--stack") o.stack = val();
     else if (a === "--template") o.template = val();
-    else if (a === "--features") o.features = val().split(",").map((s) => s.trim()).filter(Boolean);
+    else if (a === "--features") { const v = val(); o.features = v === "none" ? [] : v.split(",").map((s) => s.trim()).filter(Boolean); }
     else if (a === "--host") o.host = val();
     else if (a === "--accent") o.accent = val();
     else if (a === "--title") o.title = val();
@@ -67,19 +68,20 @@ export async function init(args, cliVersion) {
         { value: "next", label: "Next.js only", hint: "no Rust toolchain needed" },
       ]) : "next-rust"),
       template: o.template ?? (interactive ? await choose("Template", [
-        { value: "starter", label: "Starter", hint: "home + about" },
-        { value: "docs", label: "Docs site", hint: "guides with a sidebar, Ask these docs" },
-      ]) : "starter"),
-      features: o.features ?? (interactive ? await chooseMany("Extra features (Ask page, accessibility widget and PWA are always on)", [
-        { value: "grid", label: "Data grid", hint: "search, sort, CSV, Rust engine" },
-        { value: "page-tools", label: "Page tools", hint: "QA report, copilot (🛠 button)" },
-      ]) : []),
+        { value: "docs", label: "Docs site", hint: "recommended: home, guides with a sidebar, lifecycle guide" },
+        { value: "starter", label: "Starter", hint: "home + about only" },
+      ]) : "docs"),
+      features: o.features ?? (interactive ? await chooseMany("Features (Ask this page, accessibility widget and PWA are always on)", [
+        { value: "grid", label: "Data grid", hint: "10 lakh (1,000,000) sample rows, search, sort, Rust engine" },
+        { value: "page-tools", label: "QA report", hint: "15 WCAG checks, Markdown report, 🛠 page tools" },
+        { value: "icons", label: "Icons guide", hint: "every YuktAI icon, search, copy the code" },
+      ]) : [...FEATURES]),
       host: o.host ?? (interactive ? await choose("Hosting", [
         { value: "netlify", label: "Netlify", hint: "free, netlify.toml included" },
         { value: "github-pages", label: "GitHub Pages", hint: "free, GitHub Action included" },
         { value: "none", label: "Decide later" },
       ]) : "netlify"),
-      accent: o.accent ?? (interactive ? await choose("Theme colour", ACCENTS.map((a) => ({ value: a, label: a[0].toUpperCase() + a.slice(1) }))) : "violet"),
+      accent: o.accent ?? (interactive ? await choose("Theme colour", ACCENTS.map((a) => ({ value: a, label: a[0].toUpperCase() + a.slice(1) }))) : "blue"),
       cliVersion,
     };
     closePrompts();
@@ -92,6 +94,7 @@ export async function init(args, cliVersion) {
 
     const files = scaffold(dir, opts);
     writePackageJson(dir, opts);
+    writeReadme(dir, opts);
     step(`Created ${c.bold(name)} (${files} files): ${opts.stack}, ${opts.template}${opts.features.length ? ", " + opts.features.join(", ") : ""}, ${opts.host}`);
 
     if (o.install) {
@@ -109,8 +112,8 @@ export async function init(args, cliVersion) {
   ${c.bold("Next")}
     cd ${name}
     ${o.install ? "" : "npm install\n    "}npm run dev        → http://localhost:3000
-
-  Settings: ${c.cyan("yuktai.config.ts")}   ·   Docs: https://yuktaidocs.netlify.app
+${opts.features.includes("grid") ? "                       → /grid/  10 lakh rows\n" : ""}${opts.features.includes("page-tools") ? "                       → /qa/    QA report\n" : ""}${opts.features.includes("icons") ? "                       → /icons/ every icon\n" : ""}
+  Settings: ${c.cyan("yuktai.config.ts")}   ·   Guide: README.md   ·   Docs: https://yuktaidocs.netlify.app
 `);
   } finally {
     closePrompts();

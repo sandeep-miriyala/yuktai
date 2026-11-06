@@ -252,9 +252,13 @@ describe("search time", () => {
     const stats = { search: null, sort: null } as { search: "rust" | "ts" | null; sort: "rust" | "ts" | null }
     yuktaiGridRows({ ...base, searchText: "hyd", sortKey: "amount", stats })
     expect(stats).toEqual({ search: "rust", sort: "rust" })
-    yuktaiGridRows({ ...base, searchText: "", sortKey: "name", stats }) // Telugu text sort → TypeScript
+    // Telugu text sort (5.3.13): ranked with the te-IN collator, then sorted in Rust; same order as TypeScript
+    const rust = yuktaiGridRows({ ...base, searchText: "", sortKey: "name", stats })
+    expect(stats).toEqual({ search: null, sort: "rust" })
+    const ts = yuktaiGridRows({ ...base, core: null, searchReady: false, searchText: "", sortKey: "name", stats })
     expect(stats).toEqual({ search: null, sort: "ts" })
     expect(engineUsed(stats)).toBe("ts")
+    expect(rust).toEqual(ts)
     yuktaiGridRows({ ...base, searchText: "", stats })
     expect(engineUsed(stats)).toBeNull()
   })

@@ -11,8 +11,9 @@ const RENAME = { _gitignore: ".gitignore", _github: ".github", "_env.example": "
 
 // light text colour, dark text colour, gradient (light), gradient (dark). Text colours are 7:1 or more on their page.
 export const PALETTES = {
+  // blue is the YuktAI brand colour (the logo tile runs navy #000633 → blue #0053ED)
+  blue: { accent: "#0038b4", accentDark: "#93c5fd", grad: "#000633, #0038b4", gradDark: "#93c5fd, #67e8f9", theme: "#000633" },
   violet: { accent: "#4a1fb8", accentDark: "#c4b5fd", grad: "#5b21b6, #1e40af", gradDark: "#c4b5fd, #93c5fd", theme: "#4a1fb8" },
-  blue: { accent: "#1d3fb8", accentDark: "#93c5fd", grad: "#1e40af, #0e7490", gradDark: "#93c5fd, #67e8f9", theme: "#1e40af" },
   teal: { accent: "#0f5e59", accentDark: "#5eead4", grad: "#0f766e, #1e40af", gradDark: "#5eead4, #93c5fd", theme: "#0f766e" },
   orange: { accent: "#8a3a00", accentDark: "#fdba74", grad: "#9a3412, #b45309", gradDark: "#fdba74, #fcd34d", theme: "#9a3412" },
 };
@@ -25,7 +26,7 @@ export function layersFor(o) {
 }
 
 export function values(o) {
-  const p = PALETTES[o.accent] ?? PALETTES.violet;
+  const p = PALETTES[o.accent] ?? PALETTES.blue;
   return {
     name: o.name,
     title: o.title,
@@ -40,6 +41,16 @@ export function values(o) {
     themeColor: p.theme,
     grid: String(o.features.includes("grid")),
     pageTools: String(o.features.includes("page-tools")),
+    icons: String(o.features.includes("icons")),
+    hasLifecycleGuide: String(o.template === "docs"),
+    // pages the built-site test expects to find
+    pages: JSON.stringify([
+      "index.html", "about/index.html", "404.html",
+      ...(o.template === "docs" ? ["getting-started/index.html", "configuration/index.html", "lifecycle/index.html", "deploy/index.html"] : []),
+      ...(o.features.includes("grid") ? ["grid/index.html"] : []),
+      ...(o.features.includes("page-tools") ? ["qa/index.html"] : []),
+      ...(o.features.includes("icons") ? ["icons/index.html"] : []),
+    ]),
     engine: o.stack === "next-rust" ? "rust" : "ts",
     stackNote: o.stack === "next-rust" ? " + Rust (WebAssembly)" : "",
     // Netlify: add the WebAssembly target before building when the app has Rust

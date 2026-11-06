@@ -14,16 +14,17 @@ const HELP = `
 
   ${c.bold("Usage")}
     npx yuktai init my-app          create an app (asks a few questions)
-    npx yuktai init my-app --yes    create with the defaults
+    npx yuktai init my-app --yes    create with everything on (docs, grid, QA report, icons)
     yuktai dev                      run locally (Rust → WASM, then Next.js)
     yuktai build                    build static files into out/
 
   ${c.bold("init options")}
     --stack next-rust|next          default: next-rust
-    --template starter|docs         default: starter
-    --features grid,page-tools      extra features (Ask, accessibility and PWA are always on)
+    --template docs|starter         default: docs
+    --features grid,page-tools,icons   default: all (Ask, accessibility and PWA are always on)
+    --features none                 none of them
     --host netlify|github-pages|none   default: netlify
-    --accent violet|blue|teal|orange   default: violet
+    --accent blue|violet|teal|orange   default: blue
     --title "My App"                site title
     --no-install                    skip npm install
     --no-git                        skip git init

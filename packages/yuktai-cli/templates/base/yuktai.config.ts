@@ -6,16 +6,16 @@ const config = {
   description: "{{title}}: an accessible, AI-in-the-browser web app built with YuktAI.",
 
   theme: {
-    accent: "{{accentName}}", // violet | blue | teal | orange (colours in src/styles/tokens.css)
-    color: "{{themeColor}}", // browser bar and installed-app colour
+    accent: "{{accentName}}", // blue | violet | teal | orange (colours in src/styles/tokens.css)
   },
 
   features: {
     accessibility: true, // ♿ button: contrast, text size, dyslexia font, reduced motion…
     ask: true, // "Ask this page" panel, Ctrl + K. Answers come from the page itself.
     pwa: true, // Install button, works offline
-    pageTools: {{pageTools}}, // 🛠 button: QA report, copilot, form review
-    grid: {{grid}}, // data grid page (search, sort, CSV)
+    pageTools: {{pageTools}}, // QA report page and the 🛠 button: 15 WCAG checks, copilot, form review
+    grid: {{grid}}, // data grid page: 10 lakh sample rows, search, sort
+    icons: {{icons}}, // icons guide: every YuktAI icon, copy the code
   },
 
   // "rust": Rust compiled to WebAssembly (falls back to TypeScript if it is not built)

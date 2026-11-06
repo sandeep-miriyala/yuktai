@@ -28,6 +28,7 @@ import {
 } from "./gridTools"
 import { pickRows, SEARCH_SEPARATOR, type GridEngine } from "./rust/engine"
 import { useGridCore } from "./rust/useGridCore"
+import { gridCollator } from "./yuktaiGridRows"
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Hook input
@@ -145,11 +146,9 @@ function compareValues(a: unknown, b: unknown, type: GridColumn["type"], locale?
     return a === b ? 0 : a ? 1 : -1
   }
 
-  // Locale-aware text compare (Indic-friendly, numeric-aware: "2" < "10")
-  return String(a).localeCompare(String(b), locale, {
-    sensitivity: "base",
-    numeric: true,
-  })
+  // Locale-aware text compare (Indic-friendly, numeric-aware: "2" < "10").
+  // One cached collator: same answers as localeCompare, far faster on big tables.
+  return gridCollator(locale).compare(String(a), String(b))
 }
 
 type Run<T> = { rows: T[]; ms: number; engine: "rust" | "ts" | null }

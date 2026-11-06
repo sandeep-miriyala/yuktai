@@ -16,6 +16,7 @@ main { outline: none; }
 .wrap { max-width: var(--max); margin: 0 auto; padding-inline: max(20px, env(safe-area-inset-left)); }
 section.wrap { padding-block: 56px; }
 .kicker { margin: 0 0 8px; color: var(--accent); font-weight: 800; font-size: .8rem; letter-spacing: .12em; text-transform: uppercase; }
+.wrap > h1 { font-size: clamp(2.1rem, 4.5vw, 3rem); line-height: 1.08; margin: 0 0 12px; }
 .lead { font-size: clamp(1.08rem, 1.6vw, 1.22rem); color: var(--muted); max-width: 62ch; margin: 0 0 24px; }
 .grad { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
 
@@ -23,7 +24,7 @@ section.wrap { padding-block: 56px; }
 .topbar { position: sticky; top: 0; z-index: 30; border-bottom: 1px solid var(--line-soft); background: color-mix(in srgb, var(--bg) 80%, transparent); backdrop-filter: saturate(1.6) blur(14px); -webkit-backdrop-filter: saturate(1.6) blur(14px); }
 .topbar-in { max-width: var(--max); margin: 0 auto; padding: 10px 20px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; min-height: 68px; }
 .brand { display: flex; align-items: center; gap: 10px; color: var(--text); text-decoration: none; font-weight: 800; font-size: 1.1rem; }
-.brandmark { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 11px; background: var(--grad); color: var(--btn-text); }
+.logo { display: block; flex: none; border-radius: 11px; box-shadow: 0 0 0 1px color-mix(in srgb, #0053ED 45%, transparent); }
 .topnav { display: flex; gap: 2px; }
 .topnav a { padding: 10px 12px; border-radius: 10px; color: var(--muted); font-weight: 600; text-decoration: none; white-space: nowrap; }
 .topnav a:hover, .topnav a[aria-current="page"] { color: var(--text); background: var(--chip); }
@@ -64,6 +65,56 @@ pre { padding: 16px 18px; border-radius: 14px; background: var(--code-bg); color
 .table-box table { width: 100%; border-collapse: collapse; }
 .table-box th, .table-box td { padding: 12px 16px; text-align: left; border-top: 1px solid var(--line-soft); }
 .table-box thead th { background: var(--panel2); border-top: 0; }
+
+/* forms and small parts used by the grid, QA report and icons pages */
+.note, .hint { color: var(--muted); font-size: .95rem; }
+.nowrap { white-space: nowrap; }
+.btn-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin: 16px 0; }
+.check { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; font-weight: 600; cursor: pointer; }
+.check input { width: 20px; height: 20px; accent-color: var(--accent); }
+.field { display: grid; gap: 6px; font-weight: 600; }
+.field input[type="search"] { min-height: 46px; padding: 0 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); color: var(--text); font: 500 1rem var(--font); }
+.field input[type="range"] { min-height: 32px; accent-color: var(--accent); }
+.seg { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; border: 0; }
+.seg legend { padding: 0; margin-bottom: 6px; font-weight: 600; }
+.seg label { position: relative; display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 14px; border: 1px solid var(--line); border-radius: 999px; background: var(--panel); font-weight: 600; cursor: pointer; }
+.seg input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.seg label:has(input:checked) { background: var(--grad); border-color: transparent; color: var(--btn-text); }
+.seg label:has(input:focus-visible) { outline: 3px solid var(--focus); outline-offset: 2px; }
+.dot { width: 20px; height: 20px; border-radius: 50%; box-shadow: 0 0 0 2px var(--panel), 0 0 0 3px var(--line); }
+
+/* grid page */
+.grid-bar { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px 24px; margin-bottom: 16px; }
+.grid-status { margin: 0; color: var(--muted); font: 600 .92rem var(--mono); }
+.grid-loading { height: 10px; border-radius: 999px; background: var(--chip); overflow: hidden; }
+.grid-loading span { display: block; height: 100%; background: var(--grad); transition: width .2s; }
+.life { margin-top: 32px; padding: 20px; border: 1px dashed var(--line); border-radius: 16px; }
+.life h2 { font-size: 1.3rem; }
+.life-log { display: grid; gap: 6px; margin: 0; padding-left: 1.4em; font-size: .95rem; }
+
+/* QA report page */
+.practice { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 8px 0 16px; padding: 16px; border: 2px dashed var(--line); border-radius: 14px; }
+.practice .icon-only { width: 20px; height: 20px; }
+.qa-score { font-size: 1.3rem; }
+.qa-score strong { font-size: 2.2rem; }
+.qa-score.ok strong { color: var(--accent); }
+.issues { display: grid; gap: 12px; padding-left: 1.4em; }
+.issues span, .issues code { display: block; margin-top: 4px; }
+.issues span { color: var(--muted); }
+
+/* icons page */
+.icon-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; align-items: end; }
+.icon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 8px; margin: 16px 0; padding: 0; list-style: none; }
+.icon-grid button { display: grid; justify-items: center; gap: 8px; width: 100%; min-height: 96px; padding: 12px 6px; border: 1px solid var(--line-soft); border-radius: 14px; background: var(--panel); color: var(--text); font: 500 .8rem var(--font); cursor: pointer; overflow-wrap: anywhere; }
+.icon-grid button:hover { border-color: var(--accent); }
+.icon-grid button[aria-pressed="true"] { border: 2px solid var(--accent); background: var(--chip); }
+.icon-code { position: sticky; bottom: 12px; padding: 12px 16px; border: 1px solid var(--line-soft); border-radius: 16px; background: var(--panel); box-shadow: var(--shadow); }
+.icon-code-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.icon-code-head h2 { display: flex; align-items: center; gap: 10px; margin: 0 auto 0 0; font-size: 1.2rem; }
+.icon-code-head .btn { min-height: 44px; padding: 0 14px; font-size: .92rem; }
+.icon-code pre { margin: 10px 0 0; padding: 10px 14px; font-size: .85rem; }
+.rules { display: grid; gap: 8px; }
+@media (max-width: 640px) { .icon-code { position: static; } }
 
 /* footer */
 .footer { border-top: 1px solid var(--line-soft); color: var(--muted); font-size: .92rem; padding: 24px 0 96px; }

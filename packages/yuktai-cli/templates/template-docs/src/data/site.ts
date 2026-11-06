@@ -7,6 +7,8 @@ const ALL: NavItem[] = [
   { href: "/", label: "Home" },
   { href: "/getting-started/", label: "Docs" },
   { href: "/grid/", label: "Data grid", feature: "grid" },
+  { href: "/qa/", label: "QA report", feature: "pageTools" },
+  { href: "/icons/", label: "Icons", feature: "icons" },
   { href: "/about/", label: "About" },
 ];
 
@@ -16,6 +18,7 @@ export const NAV = ALL.filter((n) => !n.feature || config.features[n.feature]);
 export const GUIDES = [
   { href: "/getting-started/", title: "Getting started" },
   { href: "/configuration/", title: "Configuration" },
+  { href: "/lifecycle/", title: "Lifecycle" },
   { href: "/deploy/", title: "Deploy" },
 ];
 

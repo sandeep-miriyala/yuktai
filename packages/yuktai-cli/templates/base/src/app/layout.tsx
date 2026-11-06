@@ -11,10 +11,17 @@ const base = process.env.NEXT_PUBLIC_BASE_PATH || "";
 export const metadata: Metadata = {
   title: { default: config.title, template: `%s · ${config.title}` },
   description: config.description,
-  icons: { icon: `${base}/icons/favicon.svg`, apple: `${base}/icons/apple-touch-icon.png` },
+  manifest: `${base}/manifest.json`,
+  icons: {
+    icon: [
+      { url: `${base}/icons/favicon.svg`, type: "image/svg+xml" },
+      { url: `${base}/icons/favicon-32.png`, sizes: "32x32", type: "image/png" },
+    ],
+    apple: `${base}/icons/apple-touch-icon.png`,
+  },
 };
 
-export const viewport: Viewport = { themeColor: config.theme.color };
+export const viewport: Viewport = { themeColor: "#000633" };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

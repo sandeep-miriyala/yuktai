@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChatIcon, NamaskarIcon } from "@yuktishaalaa/yuktai/icons";
+import { ChatIcon } from "@yuktishaalaa/yuktai/icons";
 import config from "@config";
 import { NAV } from "@/data/site";
 import { ask } from "./ask";
 import InstallButton from "./InstallButton";
+import Logo from "./Logo";
 import ThemeToggle from "./ThemeToggle";
 
 export default function Header() {
@@ -16,7 +17,7 @@ export default function Header() {
     <header className="topbar">
       <div className="topbar-in">
         <Link className="brand" href="/">
-          <span className="brandmark" aria-hidden="true"><NamaskarIcon size={22} /></span>
+          <Logo />
           <span>{config.title}</span>
         </Link>
         <nav className="topnav" aria-label="Main">

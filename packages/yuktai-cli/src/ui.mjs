@@ -36,13 +36,14 @@ export async function choose(label, options) {
   }
 }
 
-/** Any number of choices: comma-separated numbers, Enter for none. */
+/** Any number of choices: comma-separated numbers. Enter = all of them, 0 = none. */
 export async function chooseMany(label, options) {
   console.log(`  ${c.bold("?")} ${label}`);
   options.forEach((o, i) => console.log(`      ${c.cyan(i + 1 + ")")} ${o.label}${o.hint ? c.dim("  " + o.hint) : ""}`));
   for (;;) {
-    const a = await ask(`    ${c.dim("e.g. 1,2  ·  Enter = none")} › `);
-    if (!a) return [];
+    const a = await ask(`    ${c.dim("e.g. 1,3  ·  Enter = all  ·  0 = none")} › `);
+    if (!a) return options.map((o) => o.value);
+    if (a === "0") return [];
     const picks = a.split(/[\s,]+/).filter(Boolean).map(Number);
     if (picks.every((n) => Number.isInteger(n) && n >= 1 && n <= options.length)) return [...new Set(picks)].map((n) => options[n - 1].value);
     console.log(`    ${c.yellow("Use numbers from 1 to " + options.length + ", separated by commas")}`);

@@ -1,13 +1,20 @@
+import Link from "next/link";
 import config from "@config";
 import HeroAsk from "@/components/ui/HeroAsk";
 import EngineDemo from "@/components/ui/EngineDemo";
-import { AccessibilityIcon, ChatIcon, InstallIcon, SpeedIcon } from "@yuktishaalaa/yuktai/icons";
+import { AccessibilityIcon, ChatIcon, FactCheckIcon, GridIcon, InstallIcon, PaletteIcon, RepeatIcon, SpeedIcon } from "@yuktishaalaa/yuktai/icons";
 
-const FEATURES = [
-  { icon: AccessibilityIcon, title: "Accessible", text: "The ♿ button: contrast, text size, dyslexia font, colour-blind filters, reduced motion." },
-  { icon: ChatIcon, title: "Ask this page", text: "Press Ctrl + K. Answers come from the page itself, with the source highlighted." },
-  { icon: SpeedIcon, title: "Fast core", text: "Heavy work runs in Rust compiled to WebAssembly, with a TypeScript fallback." },
-  { icon: InstallIcon, title: "Installable", text: "Add it to a phone or desktop. After the first visit it works offline." },
+type Feature = { icon: typeof ChatIcon; title: string; text: string; href?: string; on?: boolean };
+
+const FEATURES: Feature[] = [
+  { icon: GridIcon, title: "Data grid", text: "10 lakh sample rows, five data types. Search and sort in Rust (WebAssembly).", href: "/grid/", on: config.features.grid },
+  { icon: FactCheckIcon, title: "QA report", text: "15 WCAG checks on any page, with a Markdown report.", href: "/qa/", on: config.features.pageTools },
+  { icon: PaletteIcon, title: "Icons guide", text: "Every YuktAI icon. Search, pick a colour, copy the code.", href: "/icons/", on: config.features.icons },
+  { icon: RepeatIcon, title: "Lifecycle", text: "Three moments for every part: onStart, onChange, onEnd.", href: "/lifecycle/", on: {{hasLifecycleGuide}} },
+  { icon: ChatIcon, title: "Ask this page", text: "Press Ctrl + K. Answers come from the page itself, with the source highlighted.", on: config.features.ask },
+  { icon: AccessibilityIcon, title: "Accessible", text: "The ♿ button: contrast, text size, dyslexia font, colour-blind filters, reduced motion.", on: config.features.accessibility },
+  { icon: SpeedIcon, title: "Fast core", text: "Heavy work runs in Rust compiled to WebAssembly, with a TypeScript fallback.", on: true },
+  { icon: InstallIcon, title: "Installable", text: "Add it to a phone or desktop. After the first visit it works offline.", on: config.features.pwa },
 ];
 
 export default function Home() {
@@ -24,13 +31,20 @@ export default function Home() {
         <p className="kicker">What you get</p>
         <h2>Ready from the first page</h2>
         <ul className="cards">
-          {FEATURES.map((f) => (
-            <li key={f.title} className="card">
-              <span className="iconbox"><f.icon size={22} aria-hidden="true" /></span>
-              <strong>{f.title}</strong>
-              <span>{f.text}</span>
-            </li>
-          ))}
+          {FEATURES.filter((f) => f.on).map((f) => {
+            const inner = (
+              <>
+                <span className="iconbox"><f.icon size={22} aria-hidden="true" /></span>
+                <strong>{f.title}</strong>
+                <span>{f.text}</span>
+              </>
+            );
+            return (
+              <li key={f.title}>
+                {f.href ? <Link className="card" href={f.href}>{inner}</Link> : <div className="card">{inner}</div>}
+              </li>
+            );
+          })}
         </ul>
       </section>
     </>
