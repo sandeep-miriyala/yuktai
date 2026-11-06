@@ -223,8 +223,10 @@ export interface YuktaiGridProps<T = Record<string, unknown>> {
      * - "auto": Rust from 10,000 rows, TypeScript below
      * - "ts": TypeScript only, as before v5.3.11
      *
-     * Results are identical. Rust handles search and number/date sorting;
-     * text sorting always uses TypeScript (browser locale rules for Telugu).
+     * Results are identical. Rust handles search and sorting. Since 5.3.13
+     * text columns sort in Rust too: each distinct text is ranked once with the
+     * browser's collator (locale rules for Telugu and others), so 10 lakh rows
+     * sort in well under a second. Numbers mixed with text use TypeScript.
      */
     engine?: GridEngine;
     /**

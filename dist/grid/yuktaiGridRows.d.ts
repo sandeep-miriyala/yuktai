@@ -3,12 +3,18 @@ import { type GridToolColumn, type GridToolFilter } from "./gridTools";
 import { type GridCore } from "./rust/engine";
 /** One search text per row, built with <YuktaiGrid>'s own search rule. */
 export declare function yuktaiGridSearchTexts<T>(data: readonly T[], columns: readonly GridColumn<T>[]): string[];
+export declare function gridCollator(locale?: string): Intl.Collator;
 /**
- * Sort keys for Rust, or null when TypeScript must sort. Rust is used only
- * when every filled value is a real number, which is exactly when
- * <YuktaiGrid> compares numerically. Empty (null/undefined) = NaN.
+ * Sort keys for Rust, or null when TypeScript must sort. Empty (null/undefined) = NaN.
+ *
+ * - Every filled value a real number: the numbers themselves.
+ * - No numbers at all (text, dates as text, booleans …): each distinct text gets
+ *   its rank under the same collator <YuktaiGrid> sorts with. Texts the collator
+ *   calls equal share a rank, so the order is exactly the TypeScript order,
+ *   only much faster on big tables.
+ * - Numbers mixed with other values: null (TypeScript compares those pairwise).
  */
-export declare function yuktaiGridSortKeys<T>(rows: readonly T[], sortKey: string): Float64Array | null;
+export declare function yuktaiGridSortKeys<T>(rows: readonly T[], sortKey: string, locale?: string): Float64Array | null;
 export interface YuktaiGridRowsInput<T> {
     data: T[];
     columns: GridColumn<T>[];
