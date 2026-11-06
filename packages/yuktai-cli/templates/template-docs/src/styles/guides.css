@@ -1,0 +1,20 @@
+/* Guide pages: sidebar + reading column. */
+.guide-layout { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 40px; max-width: var(--max); margin: 0 auto; padding: 28px max(20px, env(safe-area-inset-right)) 48px max(20px, env(safe-area-inset-left)); }
+.guide-body { min-width: 0; max-width: 78ch; }
+.guide-body h1 { font-size: clamp(2.1rem, 4.5vw, 3rem); line-height: 1.08; margin: 0 0 12px; }
+.guide-body h2 { margin-top: 40px; }
+.gnav { position: sticky; top: 88px; align-self: start; }
+.gnav-title { margin: 0 0 8px; font-size: .75rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.gnav ul { display: grid; gap: 2px; margin: 0; padding: 0; list-style: none; }
+.gnav a { display: flex; align-items: center; min-height: 44px; padding: 6px 12px; border-radius: 10px; color: var(--text); font-weight: 600; text-decoration: none; }
+.gnav a:hover { background: var(--chip); }
+.gnav a[aria-current="page"] { background: var(--grad); color: var(--btn-text); }
+.gnav-toggle { display: none; }
+@media (max-width: 900px) {
+  .guide-layout { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .gnav { position: static; }
+  .gnav-title { display: none; }
+  .gnav-toggle { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 48px; padding: 0 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); color: var(--text); font: 700 1rem var(--font); cursor: pointer; }
+  .gnav ul { display: none; margin-top: 8px; }
+  .gnav.open ul { display: grid; }
+}

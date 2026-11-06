@@ -1,0 +1,23 @@
+# dependencies
+/node_modules
+
+# Next.js
+/.next/
+/out/
+next-env.d.ts
+*.tsbuildinfo
+
+# Rust (built by `yuktai dev` / `yuktai build`)
+/rust/target/
+/public/wasm/
+
+# env files: keep secrets out of git
+.env*
+!.env.example
+
+# misc
+.DS_Store
+*.pem
+npm-debug.log*
+.vercel
+.netlify

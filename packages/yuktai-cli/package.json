@@ -1,0 +1,16 @@
+{
+  "name": "yuktai",
+  "version": "0.1.0",
+  "description": "Create accessible, AI-in-the-browser web apps: Next.js + Rust, YuktAI widget, Ask page, PWA. `npx yuktai init my-app`.",
+  "type": "module",
+  "bin": { "yuktai": "bin/yuktai.mjs" },
+  "files": ["bin", "src", "templates", "README.md", "LICENSE"],
+  "engines": { "node": ">=20.9" },
+  "scripts": { "test": "node --test" },
+  "keywords": ["yuktai", "nextjs", "rust", "webassembly", "accessibility", "a11y", "rag", "pwa", "create-app", "cli"],
+  "author": "Sandeep Miriyala",
+  "license": "GPL-3.0-only",
+  "repository": { "type": "git", "url": "git+https://github.com/sandeep-miriyala/yuktai.git", "directory": "packages/yuktai-cli" },
+  "homepage": "https://yuktaidocs.netlify.app",
+  "bugs": "https://github.com/sandeep-miriyala/yuktai/issues"
+}

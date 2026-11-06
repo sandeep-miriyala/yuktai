@@ -1,0 +1,20 @@
+[package]
+name = "app-core"
+version = "0.1.0"
+edition = "2021"
+description = "The fast core of this app, compiled to WebAssembly by `yuktai dev` / `yuktai build`."
+publish = false
+
+[lib]
+# cdylib = the .wasm file for the browser; rlib = `cargo test` on your machine
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+# none: keeps the .wasm small
+
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true
