@@ -1,0 +1,31 @@
+name: ✨ Feature request
+description: Suggest an idea for YuktAI.
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: Thank you for the idea! Please check the [roadmap](https://github.com/sandeep-miriyala/yuktai/blob/main/ROADMAP.md) first, it may already be planned.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve?
+      description: Tell us who needs it and why.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: Your idea
+      description: How you'd like it to work. Example code or a sketch helps.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Other options you've tried
+  - type: checkboxes
+    id: help
+    attributes:
+      label: Can you help?
+      options:
+        - label: I'd like to open a pull request for this

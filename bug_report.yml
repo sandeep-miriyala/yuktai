@@ -1,0 +1,66 @@
+name: 🐞 Bug report
+description: Something doesn't work as it should.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting! 🙏
+        **Security problem?** Please don't open an issue. See [SECURITY.md](https://github.com/sandeep-miriyala/yuktai/blob/main/SECURITY.md).
+  - type: dropdown
+    id: package
+    attributes:
+      label: Package
+      options:
+        - "@yuktishaalaa/yuktai (library)"
+        - "yuktai / create-yuktai (create an app)"
+        - "@yuktishaalaa/ask-page"
+        - "Generated app: Python API or agents"
+        - "Docs site"
+        - "Not sure"
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      placeholder: "5.5.3"
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What you did, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: A small HTML page, a CodeSandbox link or a fresh `npm create yuktai` app helps most.
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: Browser, OS and framework
+      placeholder: "Chrome 141, Windows 11, Next.js 16"
+  - type: dropdown
+    id: a11y
+    attributes:
+      label: Does this affect accessibility?
+      description: For example keyboard use, screen readers, contrast or zoom.
+      options:
+        - "No"
+        - "Yes"
+        - "Not sure"
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else?
+      description: Screenshots, console errors, screen reader name and version.
