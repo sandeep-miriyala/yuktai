@@ -38,7 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         {/* Loading screen: your logo and "Welcome" in 7 languages, once per tab */}
         {config.features.splash && (
-          <YuktaiSplash title={config.title} logo={<span className="splash-brand"><Logo size={88} /><strong>{config.title}</strong></span>} />
+          <YuktaiSplash title={config.title} minMs={config.splash.seconds * 1000} tips={config.splash.tips} logo={<span className="splash-brand"><Logo size={88} /><strong>{config.title}</strong></span>} />
         )}
         <a className="skip" href="#main">Skip to content</a>
         <Providers>

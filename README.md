@@ -35,6 +35,7 @@ The [`yuktai`](https://www.npmjs.com/package/yuktai) command creates a Next.js +
 
 ## ✨ What's new
 
+- **5.5.1 — longer loading screens:** with `minMs` of 4,000 or more, the bar fills over that time and **Skip** counts down. `tips` shows short lines one after another (`tipMs`, default 3 s). Screen readers hear "Loading …" once, not every second.
 - **5.5.0 — loading screen, 7 languages, animations the visitor controls:** `<YuktaiSplash>` shows your logo with "Welcome" in English, తెలుగు, हिन्दी, தமிழ், ಕನ್ನಡ, മലയാളം and বাংলা, once per tab. `<YuktaiPreferences>` is one header button for the site language (menus and buttons) and animations: Device setting, Off, Calm or Lively. `<Reveal>` fades sections in as you scroll. Nothing moves when the visitor picks Off. [Details](#loading-screen-languages-and-animations)
 - **5.4.1 — floating buttons follow your colours:** the ✨ ♿ 🛠 💬 🤖 buttons of `<YuktAIWrapper>` read `--yk-fab-bg` (all buttons) or `--yk-fab-<name>-bg` (`launcher`, `tools`, `rag`, `agent`, `codegen`, `a11y`), plus `--yk-fab-text`, `--yk-fab-border` and `--yk-fab-shadow`, and carry `yk-fab yk-fab--<name>` classes. Old colours stay as fallbacks. The logo is now at the top of this page.
 - **5.4.0 — Show all:** one button shows every row in one scrolling list, even **10 lakh rows**. Only the rows on screen are drawn (virtual scrolling), so it stays smooth on phones too. Search, sort, the AI Assistant and selection work on the full list. `pagination: { pageSize: 0 }` starts in Show all; `allLimit` (default 5,000) is where the list switches to virtual scrolling; `rowHeight`, `listHeight` and `showAll: false` are there too.
@@ -82,7 +83,7 @@ The [`yuktai`](https://www.npmjs.com/package/yuktai) command creates a Next.js +
 **Plain HTML:** one line, no build step
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@yuktishaalaa/yuktai@5.5.0/vanilla/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@yuktishaalaa/yuktai@5.5.1/vanilla/index.min.js"></script>
 <script>
   yuktai.renderGrid("#staff", { data: rows, columns, ai: true, showSearchTime: true })
 </script>
@@ -151,7 +152,7 @@ export default function Orders({ rows }: { rows: Order[] }) {
 
 ```html
 <script src="https://code.jquery.com/jquery-4.0.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@yuktishaalaa/yuktai@5.5.0/vanilla/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@yuktishaalaa/yuktai@5.5.1/vanilla/index.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@yuktishaalaa/ask-page@1.0.0/dist/ask-page.global.js" defer></script>
 <script>
   $(function () {
@@ -237,7 +238,7 @@ export function Header() {
 
 | Part | What it does |
 |---|---|
-| `<YuktaiSplash>` | Logo, "Welcome" in 7 languages, progress bar, Skip (Esc or a click also skip). Once per tab; `once="always"` for every load. Leaves after `minMs` (1,200) from page start. Colours: `--yk-splash-bg`, `--yk-splash-text`, `--yk-splash-accent`, `--yk-splash-accent-2`; follows `data-theme`. |
+| `<YuktaiSplash>` | Logo, "Welcome" in 7 languages, progress bar, Skip (Esc or a click also skip). `minMs={15000}` keeps it 15 s with a filling bar and a countdown; `tips` adds rotating lines. Once per tab; `once="always"` for every load. Leaves after `minMs` (1,200) from page start. Colours: `--yk-splash-bg`, `--yk-splash-text`, `--yk-splash-accent`, `--yk-splash-accent-2`; follows `data-theme`. |
 | `<YuktaiPreferences>` | Header button and panel: site language and animations. `LanguagePicker` and `MotionPicker` are there on their own too. |
 | `useUiText(extra)` | `t(key)` in the visitor's language. Your words first, then built-in words (`docs`, `installApp`, `askThisPage`, `backToTop`…), then English. Put `lang={lang}` on what you translate. |
 | Animations | `data-motion` on `<html>`: `off`, `calm` or `lively`. Device setting follows `prefers-reduced-motion`. **Off** stops every animation and transition on the page. Classes: `yk-lift` (hover rise), `yk-float`, `yk-shimmer`, `yk-pop` (Lively only). |

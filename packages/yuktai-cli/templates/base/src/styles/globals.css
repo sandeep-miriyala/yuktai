@@ -125,3 +125,7 @@ pre { padding: 16px 18px; border-radius: 14px; background: var(--code-bg); color
   .topbar:not([data-lang="en"]) .topnav a { padding: 10px 7px; font-size: .9rem; }
   .topbar:not([data-lang="en"]) .install-btn span, .topbar:not([data-lang="en"]) .ask-btn .kbd { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 }
+
+/* Selected text stays readable, also inside dark code boxes */
+::selection { background: #b9d2ff; color: #0d0b1f; }
+pre ::selection, pre::selection { background: #2563eb; color: #ffffff; }

@@ -32,6 +32,18 @@ const config = {
     webmcp: true, // let browser AI agents use 11 grid tools (Chrome with WebMCP on)
   },
 
+  // Loading screen (features.splash): shown once per browser tab. Skip, Esc or a click end it sooner.
+  splash: {
+    seconds: 15, // how long it stays: the bar fills and Skip counts down
+    tips: [
+      "Everything runs in your browser: no server, no API key.",
+      "Press Ctrl + K to ask this page anything.",
+      "The ♿ button: contrast, text size, dyslexia font and more.",
+      "Menus in English, తెలుగు, हिन्दी, தமிழ், ಕನ್ನಡ, മലയാളം and বাংলা.",
+      "Install it from the header: it works offline after the first visit.",
+    ],
+  },
+
   // "rust": Rust compiled to WebAssembly (falls back to TypeScript if it is not built)
   engine: "{{engine}}" as "rust" | "ts",
 

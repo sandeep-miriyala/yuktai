@@ -47,8 +47,17 @@ describe("experience (5.5.0)", () => {
     expect(splashWordCss(7)).toContain("@keyframes yk-splash-word")
   })
 
+  it("long splash (5.5.1): bar fills over the time, Skip counts down, tips show, safety after time + 5 s", () => {
+    const html = renderToStaticMarkup(createElement(YuktaiSplash, { logo: "L", title: "Site", minMs: 15000, tips: ["One", "Two"] }))
+    expect(html).toContain("yk-splash--timed")
+    expect(html).toContain("--yk-splash-ms:15000ms")
+    expect(html).toContain("--yk-splash-safety:20000ms")
+    expect(html).toContain("(15)")
+    expect(html).toContain("One")
+  })
+
   it("reveal never hides content on the server", () => {
-    const html = renderToStaticMarkup(createElement(Reveal, { as: "li", delay: 80 }, "card"))
+    const html = renderToStaticMarkup(createElement(Reveal, { as: "li", delay: 80, children: "card" }))
     expect(html).toBe('<li class="yk-reveal" style="transition-delay:80ms">card</li>')
   })
 })

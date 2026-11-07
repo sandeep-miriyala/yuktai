@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.1.1
+- **Loading screen** stays 15 seconds by default (`splash.seconds` in `yuktai.config.ts`): the bar fills over that time, **Skip** counts down, and short tips (`splash.tips`) change every 3 seconds. Still once per browser tab.
+- **Selected text** is readable everywhere, also inside dark code boxes (Windows drew a light selection over light code text).
+- Needs `@yuktishaalaa/yuktai` 5.5.1.
+
 ## 1.1.0
 - **Loading screen:** the app's logo and name with "Welcome" in English, తెలుగు, हिन्दी, தமிழ், ಕನ್ನಡ, മലയാളം and বাংলা, once per browser tab (`features.splash`). Skip button, Esc or a click skips it.
 - **🌐 Language and animations** button in the header (`features.preferences`): menus and buttons in English + 6 Indian languages, and animations the visitor chooses: Device setting, Off, Calm or Lively. Off stops every animation on the page.

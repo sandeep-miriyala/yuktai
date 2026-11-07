@@ -51,7 +51,7 @@ export function readme(o) {
     "| ↑ Back to top | Bottom right, after you scroll |",
     "| Light and dark | Theme button; follows the device by default |",
     "| 🎨 Colour and font | Visitors pick any colour (kept at 7:1 contrast) and a font, including fonts on their own computer (desktop Chrome and Edge) |",
-    "| Loading screen | Your logo and \"Welcome\" in 7 languages, once per browser tab |",
+    "| Loading screen | Your logo and \"Welcome\" in 7 languages, once per browser tab (15 s, Skip any time; `splash.seconds`) |",
     "| 🌐 Language and animations | Menus and buttons in English + 6 Indian languages; animations: Device setting, Off, Calm or Lively |",
     "",
   );
