@@ -42,8 +42,21 @@ Three rules hold everywhere:
 | `packages/yuktai-cli/` | The `yuktai` command and app templates |
 | `packages/create-yuktai/` | `npm create yuktai`: a thin wrapper around `yuktai init` |
 | `packages/ask-page/` | `@yuktishaalaa/ask-page`: "Ask this page" side panel |
+| `python/` | `yuktai` on PyPI: adds the library's `<script>` tags to Django, Flask or FastAPI pages |
 | `examples/` | Small working examples |
-| `.github/workflows/` | CI on every push |
+| `docs/modules/` | Reference notes for individual modules |
+| `brand/` | Logos used by the README |
+| `.github/` | CI on every push, issue and pull request templates |
+
+### Demo site (GitHub Pages)
+
+These files are the live demos at https://sandeep-miriyala.github.io/yuktai/. Moving them would break those links.
+
+| Path | Demo |
+|---|---|
+| `index.html`, `404.html`, `.nojekyll` | Home page of the demo site |
+| `vanilla/` | Plain HTML demo, and the source of the one-file CDN build |
+| `ask-page/` | "Ask this page" demo (uses the built `ask-page.global.js`) |
 
 The documentation site lives in a separate repository and is published at https://yuktaidocs.netlify.app.
 
@@ -101,5 +114,6 @@ The library never reads what visitors type into password fields and stores only 
 | `yuktai` | `packages/yuktai-cli/` |
 | `create-yuktai` | `packages/create-yuktai/` |
 | `@yuktishaalaa/ask-page` | `packages/ask-page/` |
+| `yuktai` (PyPI) | `python/` |
 
 Versions follow [semantic versioning](https://semver.org). Changes are listed in [CHANGELOG.md](CHANGELOG.md).
