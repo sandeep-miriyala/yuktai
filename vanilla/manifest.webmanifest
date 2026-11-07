@@ -1,14 +1,14 @@
 {
-  "name": "yuktai by Yuktisárathi — accessible agentic web apps",
-  "short_name": "yuktai",
+  "name": "YuktAI: accessible, agentic web apps",
+  "short_name": "YuktAI",
   "description": "Accessible data grid you can talk to, page agents and WCAG tools for plain HTML. Works offline, no API keys.",
   "id": "./",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#001124",
-  "theme_color": "#001124",
+  "background_color": "#000633",
+  "theme_color": "#000633",
   "lang": "en",
   "dir": "ltr",
   "categories": [

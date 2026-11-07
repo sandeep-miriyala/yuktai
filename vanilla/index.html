@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="yuktai vanilla JS: accessible data grid you can talk to, page agents and WCAG tools for plain HTML. No framework, no API keys.">
-<title>yuktai by Yuktisárathi — accessible, agentic web apps in plain HTML</title>
-<meta name="theme-color" content="#001124">
+<meta name="description" content="YuktAI in plain HTML: an accessible data grid you can talk to, page tools and WCAG accessibility fixes. One script, no framework.">
+<title>YuktAI plain HTML demo · grid, accessibility and page tools</title>
+<meta name="theme-color" content="#000633">
 <meta name="application-name" content="yuktai">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="yuktai">
@@ -15,15 +15,14 @@
 <link rel="icon" href="./icons/icon-192.png" type="image/png" sizes="192x192">
 <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
 <style>
-/* Yuktisárathi brand on W3C/WAI blue. Every pair below is checked against WCAG 2.2:
-   navy #001124 + gold #C8983A 7.2:1 · navy + white 19:1 · navy + light blue #7CC4FA 10.1:1
-   white + blue #005A9C 7.1:1 · white + dark gold #8A6A1F 5.1:1 · white + text #172033 16:1
-   Gold is only ever used on navy; on white we use dark gold. */
+/* YuktAI brand. Every pair below is checked against WCAG 2.2:
+   navy #000633 + white 20:1 · navy + accent #7AA7FF 8.4:1 · white + blue #0038B4 9.6:1 · white + text #172033 16:1
+   The light accent is only used on navy; on white we use blue. */
 :root{
-  --navy:#001124;--navy-2:#0B1E3A;--gold:#C8983A;--gold-ink:#8A6A1F;
-  --blue:#005A9C;--blue-dark:#003F6E;--blue-light:#7CC4FA;--blue-soft:#E8F1F8;
+  --navy:#000633;--navy-2:#0B1442;--gold:#7AA7FF;--gold-ink:#0038B4;
+  --blue:#0038B4;--blue-dark:#002A88;--blue-light:#9BBCFF;--blue-soft:#E8EFFF;
   --text:#172033;--muted:#475569;--line:#D5DCE6;--bg:#F4F6FA;--card:#FFFFFF;
-  --focus:#005A9C;
+  --focus:#0053ED;
   font-family:system-ui,-apple-system,"Segoe UI","Noto Sans Telugu",sans-serif;color:var(--text);background:var(--bg);font-synthesis:none}
 *{box-sizing:border-box}
 body{margin:0;line-height:1.6}
@@ -34,25 +33,25 @@ a:hover{color:var(--blue-dark)}
 .skip:focus{left:8px;top:8px}
 .wrap{width:min(1200px,calc(100% - 32px));margin:auto}
 
-/* header: navy with the gold logo */
+/* header: navy with the YuktAI logo */
 header.site{background:var(--navy);color:#fff;padding:22px 0 30px;border-bottom:4px solid var(--gold)}
 header.site :focus-visible{outline-color:var(--gold)}
 header.site a{color:var(--blue-light)}
 .hero{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:28px;align-items:center}
 .brand-line{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 10px}
-.brand-name{font-family:Georgia,"Times New Roman",serif;color:var(--gold);font-size:1.05rem;letter-spacing:.04em;margin:0}
-h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(1.9rem,4vw,2.9rem);line-height:1.15;margin:0 0 10px;color:#fff}
+.brand-name{color:var(--gold);font-size:1.05rem;letter-spacing:.04em;margin:0}
+h1{font-size:clamp(1.9rem,4vw,2.9rem);line-height:1.15;margin:0 0 10px;color:#fff}
 h1 .gold{color:var(--gold)}
 header.site p{color:#DCE6F2;max-width:760px;margin:0}
-.motto{font-family:Georgia,"Times New Roman",serif;font-style:italic;color:var(--gold);margin:12px 0 0!important}
+.motto{font-style:italic;color:var(--gold);margin:12px 0 0!important}
 .logo{width:100%;height:auto;display:block;border-radius:14px}
 nav.toc{display:flex;flex-wrap:wrap;gap:6px;margin-top:18px}
-nav.toc a{color:#fff;border:1px solid rgba(200,152,58,.7);border-radius:999px;padding:7px 13px;text-decoration:none;font-size:.9rem;min-height:36px;display:inline-flex;align-items:center}
+nav.toc a{color:#fff;border:1px solid rgba(122,167,255,.7);border-radius:999px;padding:7px 13px;text-decoration:none;font-size:.9rem;min-height:36px;display:inline-flex;align-items:center}
 nav.toc a:hover,nav.toc a:focus-visible{background:var(--gold);color:var(--navy)}
 
 main{padding:28px 0 60px}
 section.block{margin:38px 0}
-section.block>h2{font-family:Georgia,"Times New Roman",serif;font-size:1.5rem;margin:0 0 4px;color:var(--navy)}
+section.block>h2{font-size:1.5rem;margin:0 0 4px;color:var(--navy)}
 section.block>h2::after{content:"";display:block;width:56px;height:3px;background:var(--gold);border-radius:3px;margin-top:6px}
 .lead{color:var(--muted);margin:0 0 14px;max-width:880px}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:14px}
@@ -82,13 +81,13 @@ pre{white-space:pre;overflow:auto;background:var(--navy);color:#E6EEF8;border-le
 .practice label{display:block;font-weight:600;margin-top:10px}
 .practice input,.practice select{min-height:44px;width:min(100%,360px);padding:8px;border:1px solid #94A3B8;border-radius:8px;font:inherit}
 dialog{border:1px solid #CBD5E1;border-radius:14px;padding:0;max-width:min(520px,calc(100vw - 24px));width:100%}
-dialog::backdrop{background:rgba(0,17,36,.55)}
+dialog::backdrop{background:rgba(0,6,51,.55)}
 dialog header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid #E2E8F0}
 dialog h2{margin:0;font-size:1.1rem}
 dialog dl{display:grid;grid-template-columns:120px 1fr;gap:6px 12px;padding:16px;margin:0}
 dialog dt{color:var(--muted)}dialog dd{margin:0;overflow-wrap:anywhere}
 
-/* footer: navy with gold */
+/* footer: navy with the accent colour */
 footer{background:var(--navy);color:#DCE6F2;padding:26px 0;font-size:.9rem;border-top:4px solid var(--gold)}
 footer a{color:var(--blue-light)}
 footer a:hover{color:#fff}
@@ -96,7 +95,7 @@ footer :focus-visible{outline-color:var(--gold)}
 .foot{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-bottom:70px}
 .foot img{width:56px;height:56px;border-radius:12px}
 .foot p{margin:0}
-.foot .gold{color:var(--gold);font-family:Georgia,"Times New Roman",serif}
+.foot .gold{color:var(--gold);font-weight:700}
 
 .badges{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
 .badges a{display:inline-flex;align-items:center;min-height:44px}
@@ -121,16 +120,15 @@ footer :focus-visible{outline-color:var(--gold)}
   <div class="wrap hero">
     <div>
       <div class="brand-line">
-        <p class="brand-name">YUKTISÁRATHI · yuktai</p>
+        <p class="brand-name"><a href="../" style="color:inherit">YuktAI</a> · plain HTML demo · v5.5.3</p>
         <div class="badges">
       <a href="https://hub.xerj.org/contributors/sandeepmiriyala03" rel="noopener" target="_blank" aria-label="XERJ Corpus Hub contributor profile of Sandeep Miriyala (opens in a new tab)">
         <img src="https://hub.xerj.org/contributors/sandeepmiriyala03/badge.svg" alt="XERJ Corpus Hub contributor" height="28" decoding="async">
       </a>
     </div>
       </div>
-      <h1>Accessible, agentic web apps — <span class="gold">in plain HTML</span></h1>
-      <p>The yuktai 5.3 toolkit for any web page: a data grid you can talk to, page agents that test and explain the page, and accessibility fixes. One script file, no framework, no API keys, and no yuktai servers.</p>
-      <p class="motto">“Not a tool, but a torch for your inner Mahabharata.”</p>
+      <h1>Accessible, agentic web apps, <span class="gold">in plain HTML</span></h1>
+      <p>YuktAI for any web page: a data grid you can talk to, page tools that test and explain the page, and accessibility fixes. One script file, no framework, nothing to install.</p>
       <nav class="toc" aria-label="Sections on this page">
       <a href="#grid">1. Agentic grid</a>
       <a href="#telugu">2. Telugu grid</a>
@@ -141,10 +139,11 @@ footer :focus-visible{outline-color:var(--gold)}
       <a href="#webmcp">7. WebMCP</a>
       <a href="#icons">8. Icons</a>
       <a href="#api">9. API reference</a>
+      <a href="../#how">How it works ↗</a>
     </nav>
     </div>
     <div class="logo-wrap">
-      <img class="logo" src="./brand/yuktisarathi-mark.png" width="470" height="380" alt="Yuktisárathi logo: a charioteer guiding a horse, with a glowing bulb above">
+      <img class="logo" src="../brand/yuktai-logo-dark.png" width="1860" height="624" alt="YuktAI">
     </div>
   </div>
 </header>
@@ -294,7 +293,7 @@ yuktai.mountAgenticPanel("#tools", { defaultTab: "qa", voiceLang: "te-IN" })</co
   <div class="wrap foot">
     <img src="./icons/icon-192.png" alt="" width="56" height="56">
     <div>
-      <p><span class="gold">Yuktisárathi</span> · yuktai Vanilla JS 5.3.9</p>
+      <p><span class="gold">YuktAI</span> · plain HTML build 5.5.3 · <a href="../">YuktAI home</a> · <a href="https://yuktaidocs.netlify.app/">Docs</a></p>
       <p>© Sandeep Miriyala, Yuktishaalaa AI Lab · <a href="https://github.com/sandeep-miriyala/yuktai">GitHub</a> · <a href="https://www.npmjs.com/package/@yuktishaalaa/yuktai">npm</a> · <a href="https://hub.xerj.org/contributors/sandeepmiriyala03">XERJ Corpus Hub</a></p>
     </div>
   </div>
@@ -307,7 +306,7 @@ yuktai.mountAgenticPanel("#tools", { defaultTab: "qa", voiceLang: "te-IN" })</co
 
 <script>
 // autoFix is off in this demo so the practice form keeps its problems for the page tools to find.
-window.YUKTAI_CONFIG = { position: "right", primaryColor: "#005A9C", title: "Accessibility", showPageTools: true, voiceLang: "en-IN", config: { autoFix: false } };
+window.YUKTAI_CONFIG = { position: "right", primaryColor: "#0038B4", title: "Accessibility", showPageTools: true, voiceLang: "en-IN", config: { autoFix: false } };
 </script>
 <script src="./index.js"></script>
 <script>

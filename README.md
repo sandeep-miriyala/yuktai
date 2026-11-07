@@ -76,6 +76,12 @@ Only Node.js 18+ is needed. Rust and Python are optional extras.
 - **Works anywhere** – Next.js, React, plain HTML and jQuery.
 - **Free** – GPL-3.0, free forever.
 
+## How it works
+
+<p align="center"><img src="https://raw.githubusercontent.com/sandeep-miriyala/yuktai/main/docs/diagrams/1-solution-overview.svg" alt="Four ways in: npm create, npm install, a CDN script or pip install. They lead to the yuktai CLI, the library and the PyPI package. The library uses three Rust engines." width="680"></p>
+
+More diagrams (library modules, `npm run dev`, a new app) in [ARCHITECTURE.md](ARCHITECTURE.md).
+
 ## What's inside
 
 | | |

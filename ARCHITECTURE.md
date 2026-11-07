@@ -20,6 +20,17 @@ A map of the YuktAI repository: what each part does and how they fit together.
                                                           (+ optional Rust, Python API, agents)
 ```
 
+### Diagrams
+
+The same pictures are on the [YuktAI home page](https://sandeep-miriyala.github.io/yuktai/#how). Source files: [`docs/diagrams/`](docs/diagrams/).
+
+| | |
+|---|---|
+| **1. The whole picture** | ![Four ways in lead to the CLI, the library and the PyPI package](docs/diagrams/1-solution-overview.svg) |
+| **2. Inside the library** | ![The library's 12 modules and the Rust engines](docs/diagrams/2-library-modules.svg) |
+| **3. What `npm run dev` does** | ![npm run dev builds Rust, starts the Python API and starts Next.js](docs/diagrams/3-npm-run-dev.svg) |
+| **4. Inside a new app** | ![Pages of the Next.js site and modules of the Python API](docs/diagrams/4-generated-app.svg) |
+
 Three rules hold everywhere:
 
 1. **The browser does the work.** The library needs no server and no API key.
@@ -45,6 +56,7 @@ Three rules hold everywhere:
 | `python/` | `yuktai` on PyPI: adds the library's `<script>` tags to Django, Flask or FastAPI pages |
 | `examples/` | Small working examples |
 | `docs/modules/` | Reference notes for individual modules |
+| `docs/diagrams/` | Architecture diagrams (SVG, light and dark) |
 | `brand/` | Logos used by the README |
 | `.github/` | CI on every push, issue and pull request templates |
 
