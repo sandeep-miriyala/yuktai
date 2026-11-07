@@ -30,7 +30,7 @@ export { wcagPlugin as wcag } from "./core/renderer";
 export { Runtime } from "./runtime/runtime";
 
 // ─── YuktAI Grid ─────────────────────────────────────────────────────────────
-export { YuktaiGrid } from "./grid/YuktaiGrid";
+export { YuktaiGrid, gridColors } from "./grid/YuktaiGrid";
 
 export { useGrid } from "./grid/useGrid";
 
@@ -45,6 +45,7 @@ export type { GridEngine } from "./grid/rust/engine";
 
 export {
   default as YuktaiGridAI,
+  INPUT_LANGUAGES,
 } from "./grid/YuktaiGridAI";
 
 export {

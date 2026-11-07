@@ -261,6 +261,35 @@ function CheckIcon({
   );
 }
 
+/** CSS custom property with a fallback: var(--yk-grid-<name>, <fallback>). */
+const cssVar = (name: string, fallback: string) => `var(--yk-grid-${name}, ${fallback})`;
+
+/**
+ * The grid's colours. Set any of these in your CSS to restyle the grid,
+ * for example `.yk-grid { --yk-grid-accent: #0038b4; }`. Dark theme values
+ * use the same names, so set them under your own dark-mode selector.
+ */
+export function gridColors(dark: boolean) {
+  return {
+    bg: cssVar("bg", dark ? "#0f172a" : "#ffffff"),
+    text: cssVar("text", dark ? "#f8fafc" : "#0f172a"),
+    border: cssVar("border", dark ? "#334155" : "#e2e8f0"),
+    control: cssVar("control-border", dark ? "#475569" : "#cbd5e1"),
+    controlBg: cssVar("control-bg", dark ? "#1e293b" : "#ffffff"),
+    controlMuted: cssVar("control-bg-muted", dark ? "#1e293b" : "#f8fafc"),
+    controlText: cssVar("control-text", dark ? "#ffffff" : "#0f172a"),
+    muted: cssVar("muted", dark ? "#cbd5e1" : "#64748b"),
+    chip: cssVar("chip-bg", dark ? "#1e293b" : "#f1f5f9"),
+    selected: cssVar("selected-bg", dark ? "#1e3a5f" : "#eff6ff"),
+    check: cssVar("check-border", dark ? "#64748b" : "#cbd5e1"),
+    cardCheck: cssVar("check-border", "#cbd5e1"),
+    accent: cssVar("accent", "#2563eb"),
+    accentText: cssVar("accent-text", "#ffffff"),
+    disabled: cssVar("disabled", "#94a3b8"),
+    hcBorder: cssVar("hc-border", "#000000"),
+  };
+}
+
 export function YuktaiGrid<
   T extends Record<string, unknown>
 >({
@@ -279,7 +308,7 @@ export function YuktaiGrid<
   pagination,
   loading = false,
   highlightIds = [],
-  highlightColor = "#fff3a3",
+  highlightColor = "var(--yk-grid-highlight, #fff3a3)",
   autoScrollToHighlight = false,
   onRowClick,
   onSortChange,
@@ -756,22 +785,20 @@ export function YuktaiGrid<
   const dyslexia =
     theme === "dyslexia";
 
+  // v5.3.14 — every colour is a CSS custom property with the old colour as the
+  // fallback, so the grid looks the same until an app sets --yk-grid-* in CSS.
+  const C = gridColors(dark);
+
   const containerStyle: React.CSSProperties =
     {
       width: "100%",
       overflow: "hidden",
       border: highContrast
-        ? "2px solid #000000"
-        : dark
-        ? "1px solid #334155"
-        : "1px solid #e2e8f0",
+        ? `2px solid ${C.hcBorder}`
+        : `1px solid ${C.border}`,
       borderRadius: 12,
-      background: dark
-        ? "#0f172a"
-        : "#ffffff",
-      color: dark
-        ? "#f8fafc"
-        : "#0f172a",
+      background: C.bg,
+      color: C.text,
       fontFamily: dyslexia
         ? "Arial, sans-serif"
         : undefined,
@@ -784,9 +811,7 @@ export function YuktaiGrid<
       alignItems: "center",
       gap: 12,
       flexWrap: "wrap",
-      borderBottom: dark
-        ? "1px solid #334155"
-        : "1px solid #e2e8f0",
+      borderBottom: `1px solid ${C.border}`,
     };
 
   const iconButtonStyle =
@@ -801,21 +826,13 @@ export function YuktaiGrid<
       justifyContent: "center",
       padding: 0,
       borderRadius: 8,
-      border: dark
-        ? "1px solid #475569"
-        : "1px solid #cbd5e1",
+      border: `1px solid ${C.control}`,
       background: disabled
-        ? dark
-          ? "#1e293b"
-          : "#f8fafc"
-        : dark
-        ? "#1e293b"
-        : "#ffffff",
+        ? C.controlMuted
+        : C.controlBg,
       color: disabled
-        ? "#94a3b8"
-        : dark
-        ? "#f8fafc"
-        : "#0f172a",
+        ? C.disabled
+        : C.text,
       cursor: disabled
         ? "not-allowed"
         : "pointer",
@@ -825,7 +842,7 @@ export function YuktaiGrid<
   if (loading) {
     return (
       <div
-        className={className}
+        className={`yk-grid ${className}`.trim()}
         style={containerStyle}
       >
         {/* keep tools registered while loading, so agents don't see them flicker */}
@@ -864,7 +881,7 @@ export function YuktaiGrid<
 
   return (
     <div
-      className={className}
+      className={`yk-grid ${className}`.trim()}
       style={containerStyle}
     >
       {webmcp && (
@@ -875,7 +892,7 @@ export function YuktaiGrid<
       )}
 
       {(search || aiEnabled || filters.length > 0) && (
-        <div style={headerStyle}>
+        <div className="yk-grid__toolbar" style={headerStyle}>
           {search && (
             <div
               style={{
@@ -893,9 +910,7 @@ export function YuktaiGrid<
                     "translateY(-50%)",
                   display: "flex",
                   alignItems: "center",
-                  color: dark
-                    ? "#cbd5e1"
-                    : "#64748b",
+                  color: C.muted,
                   pointerEvents: "none",
                 }}
               >
@@ -921,15 +936,9 @@ export function YuktaiGrid<
                   padding:
                     "10px 12px 10px 40px",
                   borderRadius: 8,
-                  border: dark
-                    ? "1px solid #475569"
-                    : "1px solid #cbd5e1",
-                  background: dark
-                    ? "#1e293b"
-                    : "#ffffff",
-                  color: dark
-                    ? "#ffffff"
-                    : "#0f172a",
+                  border: `1px solid ${C.control}`,
+                  background: C.controlBg,
+                  color: C.controlText,
                   outline: "none",
                   boxSizing: "border-box",
                 }}
@@ -945,8 +954,8 @@ export function YuktaiGrid<
               style={{
                 padding: "6px 10px",
                 borderRadius: 999,
-                border: dark ? "1px solid #475569" : "1px solid #cbd5e1",
-                background: dark ? "#1e293b" : "#f1f5f9",
+                border: `1px solid ${C.control}`,
+                background: C.chip,
                 color: "inherit",
                 fontSize: 12,
                 cursor: "pointer",
@@ -1009,7 +1018,7 @@ export function YuktaiGrid<
           {empty ?? t.noData}
         </div>
       ) : isCardView ? (
-        <div
+        <div className="yk-grid__cards"
           style={{
             display: "grid",
             gap: 12,
@@ -1025,7 +1034,7 @@ export function YuktaiGrid<
                 isHighlighted(id);
 
               return (
-                <div
+                <div className="yk-grid__card"
                   key={id}
                   data-yuktai-row-id={id}
                   onClick={() =>
@@ -1037,19 +1046,13 @@ export function YuktaiGrid<
                   style={{
                     padding: 14,
                     borderRadius: 10,
-                    border: dark
-                      ? "1px solid #334155"
-                      : "1px solid #e2e8f0",
+                    border: `1px solid ${C.border}`,
                     background:
                       highlighted
                         ? highlightColor
                         : selected
-                        ? dark
-                          ? "#1e3a5f"
-                          : "#eff6ff"
-                        : dark
-                        ? "#1e293b"
-                        : "#ffffff",
+                        ? C.selected
+                        : C.controlBg,
                     cursor: onRowClick
                       ? "pointer"
                       : "default",
@@ -1079,14 +1082,14 @@ export function YuktaiGrid<
                         marginBottom: 10,
                         borderRadius: 7,
                         border: selected
-                          ? "1px solid #2563eb"
-                          : "1px solid #cbd5e1",
+                          ? `1px solid ${C.accent}`
+                          : `1px solid ${C.cardCheck}`,
                         background:
                           selected
-                            ? "#2563eb"
+                            ? C.accent
                             : "transparent",
                         color: selected
-                          ? "#ffffff"
+                          ? C.accentText
                           : "currentColor",
                         cursor:
                           "pointer",
@@ -1140,29 +1143,27 @@ export function YuktaiGrid<
           )}
         </div>
       ) : (
-        <div
+        <div className="yk-grid__scroll"
           style={{
             width: "100%",
             overflowX: "auto",
           }}
         >
-          <table
+          <table className="yk-grid__table"
             style={{
               width: "100%",
               borderCollapse:
                 "collapse",
             }}
           >
-            <thead>
+            <thead className="yk-grid__head">
               <tr>
                 {selectable && (
                   <th
                     style={{
                       padding: 10,
                       borderBottom:
-                        dark
-                          ? "1px solid #334155"
-                          : "1px solid #e2e8f0",
+                        `1px solid ${C.border}`,
                       width: 52,
                     }}
                   />
@@ -1200,9 +1201,7 @@ export function YuktaiGrid<
                               column.align ??
                               "left",
                             borderBottom:
-                              dark
-                                ? "1px solid #334155"
-                                : "1px solid #e2e8f0",
+                              `1px solid ${C.border}`,
                             whiteSpace:
                               "nowrap",
                             cursor:
@@ -1256,7 +1255,7 @@ export function YuktaiGrid<
               </tr>
             </thead>
 
-            <tbody>
+            <tbody className="yk-grid__body">
               {displayedRows.map(
                 (row, index) => {
                   const id =
@@ -1269,7 +1268,7 @@ export function YuktaiGrid<
                     isHighlighted(id);
 
                   return (
-                    <tr
+                    <tr className="yk-grid__row"
                       key={id}
                       data-yuktai-row-id={id}
                       onClick={() =>
@@ -1283,9 +1282,7 @@ export function YuktaiGrid<
                           highlighted
                             ? highlightColor
                             : selected
-                            ? dark
-                              ? "#1e3a5f"
-                              : "#eff6ff"
+                            ? C.selected
                             : "transparent",
                         cursor:
                           onRowClick
@@ -1294,13 +1291,11 @@ export function YuktaiGrid<
                       }}
                     >
                       {selectable && (
-                        <td
+                        <td className="yk-grid__cell"
                           style={{
                             padding: 10,
                             borderBottom:
-                              dark
-                                ? "1px solid #334155"
-                                : "1px solid #e2e8f0",
+                              `1px solid ${C.border}`,
                           }}
                         >
                           <button
@@ -1330,17 +1325,15 @@ export function YuktaiGrid<
                               borderRadius: 6,
                               border:
                                 selected
-                                  ? "1px solid #2563eb"
-                                  : dark
-                                  ? "1px solid #64748b"
-                                  : "1px solid #cbd5e1",
+                                  ? `1px solid ${C.accent}`
+                                  : `1px solid ${C.check}`,
                               background:
                                 selected
-                                  ? "#2563eb"
+                                  ? C.accent
                                   : "transparent",
                               color:
                                 selected
-                                  ? "#ffffff"
+                                  ? C.accentText
                                   : "currentColor",
                               cursor:
                                 "pointer",
@@ -1367,7 +1360,7 @@ export function YuktaiGrid<
                           (
                             column
                           ) => (
-                            <td
+                            <td className="yk-grid__cell"
                               key={String(
                                 column.key
                               )}
@@ -1377,9 +1370,7 @@ export function YuktaiGrid<
                                   column.align ??
                                   "left",
                                 borderBottom:
-                                  dark
-                                    ? "1px solid #334155"
-                                    : "1px solid #e2e8f0",
+                                  `1px solid ${C.border}`,
                               }}
                             >
                               {renderValue(
@@ -1400,7 +1391,7 @@ export function YuktaiGrid<
       )}
 
       {paginationEnabled && (
-        <div
+        <div className="yk-grid__pager"
           style={{
             display: "flex",
             alignItems: "center",
@@ -1409,9 +1400,7 @@ export function YuktaiGrid<
             gap: 12,
             flexWrap: "wrap",
             padding: 12,
-            borderTop: dark
-              ? "1px solid #334155"
-              : "1px solid #e2e8f0",
+            borderTop: `1px solid ${C.border}`,
           }}
         >
           <span
@@ -1466,15 +1455,9 @@ export function YuktaiGrid<
                     padding:
                       "7px 10px",
                     borderRadius: 8,
-                    border: dark
-                      ? "1px solid #475569"
-                      : "1px solid #cbd5e1",
-                    background: dark
-                      ? "#1e293b"
-                      : "#ffffff",
-                    color: dark
-                      ? "#ffffff"
-                      : "#0f172a",
+                    border: `1px solid ${C.control}`,
+                    background: C.controlBg,
+                    color: C.controlText,
                   }}
                 >
                   {sizeOptions.map(

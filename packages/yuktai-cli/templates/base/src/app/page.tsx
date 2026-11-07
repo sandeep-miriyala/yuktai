@@ -2,17 +2,18 @@ import Link from "next/link";
 import config from "@config";
 import HeroAsk from "@/components/ui/HeroAsk";
 import EngineDemo from "@/components/ui/EngineDemo";
-import { AccessibilityIcon, ChatIcon, FactCheckIcon, GridIcon, InstallIcon, PaletteIcon, RepeatIcon, SpeedIcon } from "@yuktishaalaa/yuktai/icons";
+import { AccessibilityIcon, ChatIcon, FactCheckIcon, GridIcon, InstallIcon, PaletteIcon, RepeatIcon, SpeedIcon, StarIcon } from "@yuktishaalaa/yuktai/icons";
 
 type Feature = { icon: typeof ChatIcon; title: string; text: string; href?: string; on?: boolean };
 
 const FEATURES: Feature[] = [
-  { icon: GridIcon, title: "Data grid", text: "10 lakh sample rows, five data types. Search and sort in Rust (WebAssembly).", href: "/grid/", on: config.features.grid },
+  { icon: GridIcon, title: "Data grid", text: "10 lakh rows with the Grid AI Assistant, 🎤 voice and 24 languages. Search and sort in Rust.", href: "/grid/", on: config.features.grid },
   { icon: FactCheckIcon, title: "QA report", text: "15 WCAG checks on any page, with a Markdown report.", href: "/qa/", on: config.features.pageTools },
-  { icon: PaletteIcon, title: "Icons guide", text: "Every YuktAI icon. Search, pick a colour, copy the code.", href: "/icons/", on: config.features.icons },
+  { icon: StarIcon, title: "Icons guide", text: "Every YuktAI icon. Search, pick a colour, copy the code.", href: "/icons/", on: config.features.icons },
   { icon: RepeatIcon, title: "Lifecycle", text: "Three moments for every part: onStart, onChange, onEnd.", href: "/lifecycle/", on: {{hasLifecycleGuide}} },
   { icon: ChatIcon, title: "Ask this page", text: "Press Ctrl + K. Answers come from the page itself, with the source highlighted.", on: config.features.ask },
   { icon: AccessibilityIcon, title: "Accessible", text: "The ♿ button: contrast, text size, dyslexia font, colour-blind filters, reduced motion.", on: config.features.accessibility },
+  { icon: PaletteIcon, title: "Colour and font", text: "The 🎨 button: any colour (kept readable at 7:1) and any font, even ones on your computer.", on: config.theme.picker },
   { icon: SpeedIcon, title: "Fast core", text: "Heavy work runs in Rust compiled to WebAssembly, with a TypeScript fallback.", on: true },
   { icon: InstallIcon, title: "Installable", text: "Add it to a phone or desktop. After the first visit it works offline.", on: config.features.pwa },
 ];

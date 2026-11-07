@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import "@/styles/icons.css";
 import IconGallery from "./IconGallery";
 
 export const metadata: Metadata = { title: "Icons" };

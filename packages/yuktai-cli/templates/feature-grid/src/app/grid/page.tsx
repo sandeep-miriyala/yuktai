@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import "@/styles/grid.css";
 import OrdersGrid from "./OrdersGrid";
 
 export const metadata: Metadata = { title: "Data grid" };

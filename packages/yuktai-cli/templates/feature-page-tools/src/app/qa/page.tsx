@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import "@/styles/qa.css";
 import QaReport from "./QaReport";
 
 export const metadata: Metadata = { title: "QA report" };

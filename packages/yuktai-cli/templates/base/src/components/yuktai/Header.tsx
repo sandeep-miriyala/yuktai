@@ -9,6 +9,7 @@ import { ask } from "./ask";
 import InstallButton from "./InstallButton";
 import Logo from "./Logo";
 import ThemeToggle from "./ThemeToggle";
+import LookPicker from "./LookPicker";
 
 export default function Header() {
   const path = usePathname();
@@ -34,6 +35,7 @@ export default function Header() {
               <kbd className="kbd" aria-hidden="true">Ctrl K</kbd>
             </button>
           )}
+          {config.theme.picker && <LookPicker />}
           <ThemeToggle />
         </div>
       </div>

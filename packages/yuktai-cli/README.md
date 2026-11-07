@@ -8,7 +8,7 @@ cd my-app
 npm run dev
 ```
 
-`--yes` turns everything on: a docs site, a **data grid with 10 lakh (1,000,000) sample rows**, a **QA report**, an **icons guide**, the **lifecycle** guide and a README written for your choices.
+`--yes` turns everything on: a docs site, a **data grid with 10 lakh (1,000,000) sample rows and the Grid AI Assistant** (🎤 voice, 24 languages, WebMCP), a **QA report**, an **icons guide**, a **🎨 colour and font picker**, a complete **PWA**, the **lifecycle** guide and a README written for your choices. No hosting files unless you ask for them.
 
 Every app starts with:
 
@@ -24,7 +24,7 @@ With the features on (`--yes` turns them all on):
 
 | Page | What it does |
 |---|---|
-| `/grid/` | 10 lakh orders made in the browser: text, badge, number, date and yes/no columns. Search and sort every column in Rust, well under a second |
+| `/grid/` | 10 lakh orders made in the browser: text, badge, number, date and yes/no columns. Search and sort every column in Rust. The Grid AI Assistant answers typed or spoken commands in English and the 22 Indian languages |
 | `/qa/` | 15 WCAG 2.2 checks with a score, what to fix and a Markdown report |
 | `/icons/` | Every icon: search, size, outline or filled, colour with a contrast check, copy the code |
 | `/lifecycle/` | How `onStart`, `onChange` and `onEnd` work (docs template) |
@@ -49,7 +49,7 @@ Inside an app these run as `npm run dev` and `npm run build`.
 | `--stack` | `next-rust`, `next` | `next-rust` |
 | `--template` | `docs`, `starter` | `docs` |
 | `--features` | `grid`, `page-tools`, `icons` (comma-separated), or `none` | all |
-| `--host` | `netlify`, `github-pages`, `none` | `netlify` |
+| `--host` | `none`, `netlify`, `github-pages` | `none` (no hosting files) |
 | `--accent` | `blue`, `violet`, `teal`, `orange` | `blue` |
 | `--title` | any text | from the folder name |
 | `--no-install`, `--no-git`, `--yes` | | |

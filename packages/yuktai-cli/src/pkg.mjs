@@ -5,7 +5,7 @@ import { join } from "node:path";
 export const VERSIONS = {
   next: "16.4.5",
   react: "19.3.0",
-  yuktai: "5.3.13",
+  yuktai: "5.3.14",
   askPage: "1.0.0",
   typescript: "^5",
   typesNode: "^22",

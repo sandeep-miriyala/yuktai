@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
-import { YuktaiGrid, type GridColumn, type GridSearchTime } from "@yuktishaalaa/yuktai";
+import { YuktaiGrid, type GridColumn, type GridLocale, type WebMCPStatus, type YuktaiGridRule } from "@yuktishaalaa/yuktai";
 import config from "@config";
 import { useLifecycle } from "@/components/yuktai/lifecycle";
 import { isDark, subscribeTheme } from "@/components/yuktai/theme";
@@ -18,6 +18,30 @@ const columns: GridColumn<Order>[] = [
   { key: "paid", label: "Paid", sortable: true, type: "boolean", align: "center" },
 ];
 
+// Your own words for the assistant: a phrase → grid tools. Add more for your data.
+const rules: YuktaiGridRule<Order>[] = [
+  {
+    name: "unpaid",
+    phrases: ["unpaid", "not paid", "due", "బాకీ", "बकाया"],
+    description: "Orders that are not paid yet",
+    execute: async ({ executeTool }) => (await executeTool("filter", { key: "paid", operator: "equals", value: "false" })).message,
+  },
+  {
+    name: "biggest",
+    phrases: ["biggest", "highest amount", "top amount", "ఎక్కువ amount", "सबसे बड़ा"],
+    description: "Largest amounts first",
+    execute: async ({ executeTool }) => (await executeTool("sort", { key: "amount", direction: "desc" })).message,
+  },
+];
+
+const WEBMCP_TEXT: Record<WebMCPStatus["state"], string> = {
+  unsupported: "not available in this browser (Chrome with WebMCP on)",
+  registering: "starting…",
+  ready: "ready",
+  partial: "partly ready",
+  error: "could not start",
+};
+
 type Log = { stage: "onStart" | "onChange" | "onEnd"; text: string };
 
 export default function OrdersGrid() {
@@ -25,9 +49,11 @@ export default function OrdersGrid() {
   const [rows, setRows] = useState<Order[] | null>(null);
   const [progress, setProgress] = useState(0);
   const [madeIn, setMadeIn] = useState(0);
+  const [selected, setSelected] = useState<string[]>([]);
+  const [webmcp, setWebmcp] = useState<WebMCPStatus | null>(null);
   const [log, setLog] = useState<Log[]>([]);
   const dark = useSyncExternalStore(subscribeTheme, isDark, () => false);
-  const add = (l: Log) => setLog((old) => [l, ...old].slice(0, 6));
+  const add = (l: Log) => setLog((old) => [l, ...old].slice(0, 8));
 
   // Make the sample rows in the browser (no download), in slices so the page stays usable.
   useEffect(() => {
@@ -43,11 +69,11 @@ export default function OrdersGrid() {
   }, [count]);
 
   // The three lifecycle moments. onStart waits until the rows are ready.
-  const life = useLifecycle<GridSearchTime>(
+  const life = useLifecycle<string>(
     {
       part: "grid",
       onStart: () => add({ stage: "onStart", text: `${indian(rows?.length ?? 0)} rows ready` }),
-      onChange: (t) => add({ stage: "onChange", text: `${t.query ? `search "${t.query}"` : "all rows"} → ${indian(t.rows)} rows in ${t.ms.toFixed(1)} ms (${t.engine === "rust" ? "Rust" : "TypeScript"})` }),
+      onChange: (what) => add({ stage: "onChange", text: what }),
       onEnd: () => add({ stage: "onEnd", text: "grid left the page, rows freed" }),
     },
     rows !== null,
@@ -56,6 +82,7 @@ export default function OrdersGrid() {
   const choose = (n: number) => {
     if (n === count) return;
     setRows(null);
+    setSelected([]);
     setProgress(0);
     setCount(n);
   };
@@ -87,11 +114,24 @@ export default function OrdersGrid() {
           rowKey="id"
           theme={dark ? "dark" : "default"}
           search
+          selectable
+          selectedKeys={selected}
+          onSelectionChange={(keys) => {
+            setSelected(keys);
+            life.change(`${indian(keys.length)} rows selected`);
+          }}
           pagination={{ pageSize: 25, showSizeChanger: true, sizeOptions: [10, 25, 50, 100] }}
           engine={config.engine}
           showSearchTime
-          onSearchTime={life.change}
+          onSearchTime={(t) => life.change(`${t.query ? `search "${t.query}"` : "all rows"} → ${indian(t.rows)} rows in ${t.ms.toFixed(1)} ms (${t.engine === "rust" ? "Rust" : "TypeScript"})`)}
+          ai={config.grid.assistant}
+          voice={config.grid.voice}
+          inputLanguage={config.grid.language as GridLocale}
+          customRules={rules}
+          onAgentResult={(r) => life.change(`assistant${r.tool ? ` (${r.tool})` : ""}: ${r.message}`)}
           toolName="orders"
+          webmcp={config.grid.webmcp}
+          onWebMCPStatusChange={setWebmcp}
         />
       ) : (
         <div className="grid-loading" aria-hidden="true">
@@ -99,9 +139,19 @@ export default function OrdersGrid() {
         </div>
       )}
 
+      {config.grid.webmcp && (
+        <p className="hint">
+          Browser-agent tools (WebMCP): <strong>{webmcp ? WEBMCP_TEXT[webmcp.state] : "waiting for the grid"}</strong>
+          {webmcp && webmcp.registered.length > 0 && <> · {webmcp.registered.length} tools: {webmcp.registered.join(", ")}</>}
+        </p>
+      )}
+
       <section className="life" aria-labelledby="life-h">
         <h2 id="life-h">Lifecycle of this grid</h2>
-        <p>Search or sort and watch <code>onChange</code>. Leave the page and <code>onEnd</code> runs. See <code>src/components/yuktai/lifecycle.ts</code>.</p>
+        <p>
+          Search, sort, select rows or ask the assistant and watch <code>onChange</code>. Leave the page and <code>onEnd</code> runs.
+          See <code>src/components/yuktai/lifecycle.ts</code>.
+        </p>
         <ol className="life-log" aria-live="polite">
           {log.map((l, i) => (
             <li key={log.length - i}>

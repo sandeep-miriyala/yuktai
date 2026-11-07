@@ -43,7 +43,7 @@ Built in free time by [Sandeep Miriyala](https://github.com/sandeepmiriyala03).
 **Plain HTML:** one line, no build step
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@yuktishaalaa/yuktai@5.3.13/vanilla/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@yuktishaalaa/yuktai@5.3.14/vanilla/index.min.js"></script>
 <script>
   yuktai.renderGrid("#staff", { data: rows, columns, engine: "auto", showSearchTime: true })
 </script>
@@ -79,7 +79,7 @@ export default function YuktaiClient({ children }: { children: ReactNode }) {
 
 ```html
 <script src="https://code.jquery.com/jquery-4.0.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@yuktishaalaa/yuktai@5.3.13/vanilla/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@yuktishaalaa/yuktai@5.3.14/vanilla/index.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@yuktishaalaa/ask-page@1.0.0/dist/ask-page.global.js" defer></script>
 <script>
   $(function () {
@@ -115,6 +115,37 @@ More examples for every feature: **https://yuktaidocs.netlify.app/**
 | `engine` | Ask page search: `"ts"`, `"rust"` or `"auto"` |
 
 ---
+
+## Style the grid with CSS (5.3.14)
+
+Every grid colour is a CSS custom property whose fallback is the colour it always had, so nothing changes until you set one. Stable class names let you style the parts.
+
+```css
+.yk-grid {
+  --yk-grid-accent: #0038b4;          /* selected checkboxes, focus */
+  --yk-grid-border: #d6dbe8;
+  --yk-grid-assistant-accent: #0038b4; /* Grid AI Assistant buttons */
+}
+[data-theme="dark"] .yk-grid {
+  --yk-grid-bg: #12122a;
+  --yk-grid-text: #f4f4fb;
+  --yk-grid-accent: #93c5fd;
+  --yk-grid-accent-text: #000633;
+}
+.yk-grid__head th { text-transform: uppercase; }
+```
+
+| Variable | Used for |
+|---|---|
+| `--yk-grid-bg`, `--yk-grid-text`, `--yk-grid-border` | The grid box |
+| `--yk-grid-control-bg`, `--yk-grid-control-bg-muted`, `--yk-grid-control-border`, `--yk-grid-control-text` | Search, buttons, selects |
+| `--yk-grid-muted`, `--yk-grid-chip-bg`, `--yk-grid-disabled` | Hints, filter chips, disabled buttons |
+| `--yk-grid-selected-bg`, `--yk-grid-highlight`, `--yk-grid-check-border` | Selected and highlighted rows, checkboxes |
+| `--yk-grid-accent`, `--yk-grid-accent-text` | Checked boxes |
+| `--yk-grid-hc-border` | Border in the high-contrast theme |
+| `--yk-grid-assistant-bg`, `-surface`, `-border`, `-text`, `-muted`, `-accent`, `-user-bg`, `-ai-bg` | Grid AI Assistant |
+
+Classes: `yk-grid`, `yk-grid__toolbar`, `yk-grid__scroll`, `yk-grid__table`, `yk-grid__head`, `yk-grid__body`, `yk-grid__row`, `yk-grid__cell`, `yk-grid__cards`, `yk-grid__card`, `yk-grid__pager`, `yk-grid__assistant`. Keep text pairs at 4.5:1 or more (WCAG 1.4.3). `gridColors(dark)` returns the full list.
 
 ## Rust engine (default)
 

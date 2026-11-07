@@ -10,7 +10,7 @@ import { c, step, info, warn, text, choose, chooseMany, closePrompts } from "./u
 export const STACKS = ["next-rust", "next"];
 export const TEMPLATES = ["docs", "starter"];
 export const FEATURES = ["grid", "page-tools", "icons"];
-export const HOSTS = ["netlify", "github-pages", "none"];
+export const HOSTS = ["none", "netlify", "github-pages"];
 export const ACCENTS = ["blue", "violet", "teal", "orange"];
 
 export function parseFlags(args) {
@@ -77,10 +77,10 @@ export async function init(args, cliVersion) {
         { value: "icons", label: "Icons guide", hint: "every YuktAI icon, search, copy the code" },
       ]) : [...FEATURES]),
       host: o.host ?? (interactive ? await choose("Hosting", [
-        { value: "netlify", label: "Netlify", hint: "free, netlify.toml included" },
-        { value: "github-pages", label: "GitHub Pages", hint: "free, GitHub Action included" },
-        { value: "none", label: "Decide later" },
-      ]) : "netlify"),
+        { value: "none", label: "Decide later", hint: "recommended: no hosting files; any static host works" },
+        { value: "netlify", label: "Netlify", hint: "adds netlify.toml" },
+        { value: "github-pages", label: "GitHub Pages", hint: "adds a GitHub Action" },
+      ]) : "none"),
       accent: o.accent ?? (interactive ? await choose("Theme colour", ACCENTS.map((a) => ({ value: a, label: a[0].toUpperCase() + a.slice(1) }))) : "blue"),
       cliVersion,
     };

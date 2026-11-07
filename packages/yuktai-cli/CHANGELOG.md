@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.0.0
+Everything below is on with `npx yuktai@latest init my-app --yes`.
+
+- **Grid AI Assistant** on the data grid: type or say `how many rows`, `unpaid`, `search Pune`, `sort by date`, `clear filters`. Runs the grid's own tools in the browser, 0.1 to 1.8 s on 10 lakh rows.
+- **🎤 Voice** and **24 input languages**: English (US, India) and the 22 scheduled languages of India, listed in their own script.
+- **Your own words:** sample `customRules` ("unpaid", "బాకీ", "बकाया", "biggest") in `OrdersGrid.tsx`.
+- **WebMCP:** 11 grid tools for browser AI agents, with the real status shown on the page.
+- Row selection; every search, sort, selection and assistant answer shows in the lifecycle log.
+- **🎨 Colour and font picker** for visitors: any colour, kept at 7:1 contrast in light and dark; ready font choices (easy-to-read, serif, Telugu, Devanagari, Tamil); fonts on the visitor's computer on desktop Chrome and Edge (hidden on phones, Safari and Firefox). Saved in that browser only, restored before first paint.
+- **PWA:** maskable 192 and 512, monochrome (Android themed) icon, `favicon.ico`, two screenshots for Chrome's install window, shortcuts to the grid, QA report and icons. `manifest.json` is written for the pages the app has.
+- **CSS per feature:** `grid.css`, `qa.css`, `icons.css`, `look.css` next to `tokens.css` and `globals.css`. The grid follows the site colours through YuktAI 5.3.14's `--yk-grid-*` variables.
+- **No hosting files by default.** `--host netlify` or `--host github-pages` adds them.
+- `yuktai.config.ts`: new `theme.color`, `theme.picker`, `theme.localFonts` and a `grid` section (`assistant`, `voice`, `language`, `webmcp`).
+- Needs `@yuktishaalaa/yuktai` 5.3.14.
+
 ## 0.1.2
 - Netlify: the build command now runs `rustup default stable` first (Netlify has rustup but no default toolchain). If Rust can't be set up, the site still builds with the TypeScript fallback.
 - Windows: no more DEP0190 warning from `yuktai dev` and `yuktai build`.

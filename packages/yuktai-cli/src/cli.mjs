@@ -23,7 +23,7 @@ const HELP = `
     --template docs|starter         default: docs
     --features grid,page-tools,icons   default: all (Ask, accessibility and PWA are always on)
     --features none                 none of them
-    --host netlify|github-pages|none   default: netlify
+    --host none|netlify|github-pages   default: none (no hosting files)
     --accent blue|violet|teal|orange   default: blue
     --title "My App"                site title
     --no-install                    skip npm install

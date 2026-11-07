@@ -4,6 +4,7 @@
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { join, dirname, extname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { writeManifest } from "./manifest.mjs";
 
 const TEMPLATES = join(dirname(fileURLToPath(import.meta.url)), "..", "templates");
 const TEXT = new Set([".ts", ".tsx", ".mjs", ".js", ".json", ".css", ".md", ".toml", ".yml", ".yaml", ".rs", ".txt", ".html", ""]);
@@ -85,5 +86,6 @@ export function scaffold(dir, o) {
   const v = values(o);
   const count = { n: 0 };
   for (const layer of layersFor(o)) copyLayer(join(TEMPLATES, layer), dir, v, count);
-  return count.n;
+  writeManifest(dir, o, v.themeColor);
+  return count.n + 1;
 }

@@ -7,6 +7,7 @@ import { parseFlags } from "../src/init.mjs";
 import { layersFor, scaffold } from "../src/scaffold.mjs";
 import { writePackageJson } from "../src/pkg.mjs";
 import { readme } from "../src/readme.mjs";
+import { manifest } from "../src/manifest.mjs";
 import { FEATURES } from "../src/init.mjs";
 
 const opts = (o = {}) => ({ name: "demo-app", title: "Demo App", stack: "next-rust", template: "starter", features: [], host: "netlify", accent: "blue", cliVersion: "0.1.0", ...o });
@@ -52,7 +53,7 @@ test("scaffold: files, renamed dot-files, filled settings", () => {
     writePackageJson(dir, opts());
     const pkg = JSON.parse(readFileSync(join(dir, "package.json"), "utf8"));
     assert.equal(pkg.scripts.build, "yuktai build");
-    assert.equal(pkg.dependencies["@yuktishaalaa/yuktai"], "5.3.13");
+    assert.equal(pkg.dependencies["@yuktishaalaa/yuktai"], "5.3.14");
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
@@ -61,9 +62,18 @@ test("scaffold: files, renamed dot-files, filled settings", () => {
 test("everything on (what --yes makes): grid with 10 lakh rows, QA report, icons, lifecycle, README", () => {
   const dir = mkdtempSync(join(tmpdir(), "yuktai-"));
   try {
-    const o = opts({ template: "docs", features: [...FEATURES] });
-    assert.deepEqual(layersFor(o), ["base", "stack-next-rust", "template-docs", "feature-grid", "feature-page-tools", "feature-icons", "host-netlify"]);
+    const o = opts({ template: "docs", features: [...FEATURES], host: "none" });
+    // --yes: everything on, no hosting files
+    assert.deepEqual(layersFor(o), ["base", "stack-next-rust", "template-docs", "feature-grid", "feature-page-tools", "feature-icons"]);
     scaffold(dir, o);
+    assert.ok(!existsSync(join(dir, "netlify.toml")), "no hosting files by default");
+    for (const f of ["src/styles/grid.css", "src/styles/qa.css", "src/styles/icons.css", "src/styles/look.css", "src/components/yuktai/LookPicker.tsx", "public/favicon.ico", "public/icons/maskable-192.png", "public/icons/monochrome-512.png"]) assert.ok(existsSync(join(dir, f)), f);
+    const grid = readFileSync(join(dir, "src/app/grid/OrdersGrid.tsx"), "utf8");
+    for (const want of ["ai={config.grid.assistant}", "voice={config.grid.voice}", "webmcp={config.grid.webmcp}", "customRules={rules}", "onAgentResult"]) assert.ok(grid.includes(want), want);
+    const m = manifest(o);
+    assert.deepEqual(m.icons.map((i) => i.purpose).filter(Boolean), ["any", "any", "maskable", "maskable", "monochrome"]);
+    assert.deepEqual(m.shortcuts.map((s) => s.url), ["./grid/", "./qa/", "./icons/"]);
+    assert.equal(m.screenshots.length, 2);
     for (const f of ["src/app/grid/OrdersGrid.tsx", "src/data/orders.ts", "src/app/qa/QaReport.tsx", "src/app/icons/IconGallery.tsx", "src/app/(guides)/lifecycle/page.tsx", "src/components/yuktai/lifecycle.ts"]) assert.ok(existsSync(join(dir, f)), f);
     assert.match(readFileSync(join(dir, "src/data/orders.ts"), "utf8"), /DEFAULT_ROWS = 10_00_000/);
     const cfg = readFileSync(join(dir, "yuktai.config.ts"), "utf8");
@@ -73,7 +83,7 @@ test("everything on (what --yes makes): grid with 10 lakh rows, QA report, icons
     assert.match(test, /"grid\/index.html","qa\/index.html","icons\/index.html"/);
     for (const f of ["src/app/page.tsx", "tests/build.test.mjs"]) assert.doesNotMatch(readFileSync(join(dir, f), "utf8"), /\{\{\w+\}\}/, f);
     const md = readme(o);
-    for (const want of ["10 lakh", "## Lifecycle", "onStart", "/qa/", "/icons/", "rustup target add", "Netlify"]) assert.ok(md.includes(want), want);
+    for (const want of ["10 lakh", "## Lifecycle", "onStart", "/qa/", "/icons/", "rustup target add", "Grid AI Assistant", "22 Indian", "Colour and font", "--host netlify"]) assert.ok(md.includes(want), want);
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }

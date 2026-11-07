@@ -1,0 +1,22 @@
+/* 🎨 Colour and font picker in the header (src/components/yuktai/LookPicker.tsx). */
+.look { position: relative; }
+.look-panel {
+  position: absolute; right: 0; top: calc(100% + 8px); z-index: 60;
+  display: grid; gap: 14px; width: min(340px, calc(100vw - 32px)); max-height: min(70vh, 560px); overflow: auto;
+  padding: 16px; border: 1px solid var(--line-soft); border-radius: 16px; background: var(--panel); color: var(--text); box-shadow: var(--shadow);
+}
+.look-colors { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0; padding: 0; border: 0; }
+.look-colors legend { margin-bottom: 8px; padding: 0; font-weight: 700; }
+.look-colors label { position: relative; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; cursor: pointer; }
+.look-colors input[type="radio"] { position: absolute; inset: 0; margin: 0; opacity: 0; cursor: pointer; }
+.look-colors .dot { width: 30px; height: 30px; }
+.look-colors label:has(input:checked) .dot { box-shadow: 0 0 0 3px var(--panel), 0 0 0 5px var(--text); }
+.look-colors label:has(input:focus-visible) { outline: 3px solid var(--focus); outline-offset: 2px; }
+.look-custom { width: auto !important; border-radius: 12px !important; display: inline-flex !important; gap: 8px; padding: 0 10px; border: 1px solid var(--line); }
+.look-custom input[type="color"] { width: 30px; height: 30px; padding: 0; border: 0; background: none; cursor: pointer; }
+.look-panel select { min-height: 44px; padding: 0 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); color: var(--text); font: 500 1rem var(--font); }
+.look-local ul { display: grid; gap: 4px; max-height: 220px; margin: 8px 0 0; padding: 0; overflow: auto; list-style: none; }
+.look-local button { width: 100%; min-height: 44px; padding: 0 12px; border: 1px solid var(--line-soft); border-radius: 10px; background: var(--panel); color: var(--text); font-size: 1rem; text-align: left; cursor: pointer; }
+.look-local button[aria-pressed="true"] { border: 2px solid var(--accent); }
+.look-panel .hint { margin: 0; }
+@media (max-width: 640px) { .look-panel { position: fixed; left: 16px; right: 16px; top: 72px; width: auto; } }

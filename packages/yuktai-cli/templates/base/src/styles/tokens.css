@@ -3,7 +3,7 @@
 :root {
   --bg: #f7f7fb; --panel: #ffffff; --panel2: #f1f0f9; --chip: #ecebf6;
   --text: #0d0b1f; --muted: #3d3a56; --link: #1d3fb8;
-  --accent: {{accent}};
+  --accent: {{accent}}; --accent-solid: {{accent}};
   --line: #7c78a0; --line-soft: #d9d6ea; --focus: #7a3e00;
   --btn-text: #ffffff; --code-bg: #0d0b1f; --code-text: #e9e6ff;
   --grad: linear-gradient(135deg, {{grad}});
@@ -18,7 +18,7 @@
   :root:not([data-theme="light"]) {
     --bg: #08081a; --panel: #12122a; --panel2: #0e0e22; --chip: #1d1b3d;
     --text: #f4f3ff; --muted: #cbc8e6; --link: #a5b4fc;
-    --accent: {{accentDark}};
+    --accent: {{accentDark}}; --accent-solid: {{accent}};
     --line: #6a6696; --line-soft: #2b2950; --focus: #ffe066;
     --btn-text: #14093a; --code-bg: #05050f; --code-text: #e9e6ff;
     --grad: linear-gradient(135deg, {{gradDark}});
@@ -30,7 +30,7 @@
 :root[data-theme="dark"] {
   --bg: #08081a; --panel: #12122a; --panel2: #0e0e22; --chip: #1d1b3d;
   --text: #f4f3ff; --muted: #cbc8e6; --link: #a5b4fc;
-  --accent: {{accentDark}};
+  --accent: {{accentDark}}; --accent-solid: {{accent}};
   --line: #6a6696; --line-soft: #2b2950; --focus: #ffe066;
   --btn-text: #14093a; --code-bg: #05050f; --code-text: #e9e6ff;
   --grad: linear-gradient(135deg, {{gradDark}});

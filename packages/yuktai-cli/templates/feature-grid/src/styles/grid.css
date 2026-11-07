@@ -1,0 +1,37 @@
+/* Data grid page. Imported by src/app/grid/page.tsx, so it only loads there. */
+.grid-bar { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px 24px; margin-bottom: 16px; }
+.grid-status { margin: 0; color: var(--muted); font: 600 .92rem var(--mono); }
+.grid-loading { height: 10px; border-radius: 999px; background: var(--chip); overflow: hidden; }
+.grid-loading span { display: block; height: 100%; background: var(--grad); transition: width .2s; }
+.life { margin-top: 32px; padding: 20px; border: 1px dashed var(--line); border-radius: 16px; }
+.life h2 { font-size: 1.3rem; }
+.life-log { display: grid; gap: 6px; margin: 0; padding-left: 1.4em; font-size: .95rem; }
+
+
+/* The grid and its AI Assistant follow this site's colours (YuktAI 5.3.14 CSS variables).
+   --accent-solid is dark enough for white text in both themes. */
+.yk-grid {
+  --yk-grid-bg: var(--panel);
+  --yk-grid-text: var(--text);
+  --yk-grid-border: var(--line-soft);
+  --yk-grid-control-bg: var(--panel);
+  --yk-grid-control-bg-muted: var(--panel2);
+  --yk-grid-control-border: var(--line);
+  --yk-grid-control-text: var(--text);
+  --yk-grid-muted: var(--muted);
+  --yk-grid-chip-bg: var(--chip);
+  --yk-grid-selected-bg: var(--chip);
+  --yk-grid-accent: var(--accent-solid);
+  --yk-grid-accent-text: #ffffff;
+  --yk-grid-assistant-bg: var(--panel);
+  --yk-grid-assistant-surface: var(--panel2);
+  --yk-grid-assistant-border: var(--line-soft);
+  --yk-grid-assistant-text: var(--text);
+  --yk-grid-assistant-muted: var(--muted);
+  --yk-grid-assistant-accent: var(--accent-solid);
+  --yk-grid-assistant-user-bg: var(--chip);
+  --yk-grid-assistant-ai-bg: var(--panel2);
+  border-radius: var(--radius);
+  font-family: var(--font);
+}
+.yk-grid__head th { font-weight: 700; }

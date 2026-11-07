@@ -1,0 +1,10 @@
+/* QA report page. Imported by src/app/qa/page.tsx. */
+.practice { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 8px 0 16px; padding: 16px; border: 2px dashed var(--line); border-radius: 14px; }
+.practice .icon-only { width: 20px; height: 20px; }
+.qa-score { font-size: 1.3rem; }
+.qa-score strong { font-size: 2.2rem; }
+.qa-score.ok strong { color: var(--accent); }
+.issues { display: grid; gap: 12px; padding-left: 1.4em; }
+.issues span, .issues code { display: block; margin-top: 4px; }
+.issues span { color: var(--muted); }
+

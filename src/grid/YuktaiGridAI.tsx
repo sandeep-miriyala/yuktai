@@ -776,6 +776,34 @@ function answerQuestion<
   return t.fallback;
 }
 
+/** v5.3.14 — native names first, so people find their language in its own script. */
+export const INPUT_LANGUAGES: readonly { code: InputLanguage; native: string; english: string }[] = [
+  { code: "en-US", native: "English (US)", english: "English (US)" },
+  { code: "en-IN", native: "English (India)", english: "English (India)" },
+  { code: "as-IN", native: "অসমীয়া", english: "Assamese" },
+  { code: "bn-IN", native: "বাংলা", english: "Bengali" },
+  { code: "brx-IN", native: "बड़ो", english: "Bodo" },
+  { code: "doi-IN", native: "डोगरी", english: "Dogri" },
+  { code: "gu-IN", native: "ગુજરાતી", english: "Gujarati" },
+  { code: "hi-IN", native: "हिन्दी", english: "Hindi" },
+  { code: "kn-IN", native: "ಕನ್ನಡ", english: "Kannada" },
+  { code: "ks-IN", native: "کٲشُر", english: "Kashmiri" },
+  { code: "kok-IN", native: "कोंकणी", english: "Konkani" },
+  { code: "mai-IN", native: "मैथिली", english: "Maithili" },
+  { code: "ml-IN", native: "മലയാളം", english: "Malayalam" },
+  { code: "mni-IN", native: "ꯃꯤꯇꯩꯂꯣꯟ", english: "Manipuri" },
+  { code: "mr-IN", native: "मराठी", english: "Marathi" },
+  { code: "ne-IN", native: "नेपाली", english: "Nepali" },
+  { code: "or-IN", native: "ଓଡ଼ିଆ", english: "Odia" },
+  { code: "pa-IN", native: "ਪੰਜਾਬੀ", english: "Punjabi" },
+  { code: "sa-IN", native: "संस्कृतम्", english: "Sanskrit" },
+  { code: "sat-IN", native: "ᱥᱟᱱᱛᱟᱲᱤ", english: "Santali" },
+  { code: "sd-IN", native: "سنڌي", english: "Sindhi" },
+  { code: "ta-IN", native: "தமிழ்", english: "Tamil" },
+  { code: "te-IN", native: "తెలుగు", english: "Telugu" },
+  { code: "ur-IN", native: "اردو", english: "Urdu" },
+];
+
 function speak(
   text: string,
   language: UILanguage
@@ -1053,39 +1081,23 @@ export function YuktaiGridAI<
     voiceLanguage
   );
 
+  // v5.3.14 — CSS custom properties with the old colours as fallbacks:
+  // set --yk-grid-assistant-* (and --yk-grid-assistant-accent) to restyle.
   const colors = useMemo(
-    () => ({
-      bg: dark
-        ? "#0F172A"
-        : "#FFFFFF",
-
-      surface: dark
-        ? "#1E293B"
-        : "#F8FAFC",
-
-      border: dark
-        ? "#334155"
-        : "#E2E8F0",
-
-      text: dark
-        ? "#F1F5F9"
-        : "#0F172A",
-
-      muted: dark
-        ? "#94A3B8"
-        : "#64748B",
-
-      // 5.3.12: white text on the accent needs 4.5:1 (WCAG 1.4.3); #10B981 gave 2.5:1
-      accent: "#047857",
-
-      userMsg: dark
-        ? "#334155"
-        : "#DBEAFE",
-
-      aiMsg: dark
-        ? "#1E293B"
-        : "#F0FDF4",
-    }),
+    () => {
+      const v = (name: string, fallback: string) => `var(--yk-grid-assistant-${name}, ${fallback})`;
+      return {
+        bg: v("bg", dark ? "#0F172A" : "#FFFFFF"),
+        surface: v("surface", dark ? "#1E293B" : "#F8FAFC"),
+        border: v("border", dark ? "#334155" : "#E2E8F0"),
+        text: v("text", dark ? "#F1F5F9" : "#0F172A"),
+        muted: v("muted", dark ? "#94A3B8" : "#64748B"),
+        // 5.3.12: white text on the accent needs 4.5:1 (WCAG 1.4.3); #10B981 gave 2.5:1
+        accent: v("accent", "#047857"),
+        userMsg: v("user-bg", dark ? "#334155" : "#DBEAFE"),
+        aiMsg: v("ai-bg", dark ? "#1E293B" : "#F0FDF4"),
+      };
+    },
     [dark]
   );
 
@@ -1118,12 +1130,11 @@ export function YuktaiGridAI<
     });
   }, [initialMessage]);
 
+  // 5.3.14: scroll only the message list. scrollIntoView() also scrolled the
+  // whole page, so a page with the assistant jumped to it on load.
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView(
-      {
-        behavior: "smooth",
-      }
-    );
+    const box = messagesEndRef.current?.parentElement;
+    if (box) box.scrollTop = box.scrollHeight;
   }, [messages]);
 
   const timeNow = () =>
@@ -1311,7 +1322,7 @@ export function YuktaiGridAI<
         ];
 
   const panel = (
-    <div
+    <div className="yk-grid__assistant"
       style={{
         width: embedded
           ? "100%"
@@ -1458,101 +1469,11 @@ export function YuktaiGridAI<
             fontSize: 11,
           }}
         >
-          <option value="en-US">
-            English (US)
-          </option>
-
-          <option value="en-IN">
-            English (India)
-          </option>
-
-          <option value="as-IN">
-            Assamese
-          </option>
-
-          <option value="bn-IN">
-            Bengali
-          </option>
-
-          <option value="brx-IN">
-            Bodo
-          </option>
-
-          <option value="doi-IN">
-            Dogri
-          </option>
-
-          <option value="gu-IN">
-            Gujarati
-          </option>
-
-          <option value="hi-IN">
-            Hindi
-          </option>
-
-          <option value="kn-IN">
-            Kannada
-          </option>
-
-          <option value="ks-IN">
-            Kashmiri
-          </option>
-
-          <option value="kok-IN">
-            Konkani
-          </option>
-
-          <option value="mai-IN">
-            Maithili
-          </option>
-
-          <option value="ml-IN">
-            Malayalam
-          </option>
-
-          <option value="mni-IN">
-            Manipuri
-          </option>
-
-          <option value="mr-IN">
-            Marathi
-          </option>
-
-          <option value="ne-IN">
-            Nepali
-          </option>
-
-          <option value="or-IN">
-            Odia
-          </option>
-
-          <option value="pa-IN">
-            Punjabi
-          </option>
-
-          <option value="sa-IN">
-            Sanskrit
-          </option>
-
-          <option value="sat-IN">
-            Santali
-          </option>
-
-          <option value="sd-IN">
-            Sindhi
-          </option>
-
-          <option value="ta-IN">
-            Tamil
-          </option>
-
-          <option value="te-IN">
-            Telugu
-          </option>
-
-          <option value="ur-IN">
-            Urdu
-          </option>
+          {INPUT_LANGUAGES.map((l) => (
+            <option key={l.code} value={l.code} lang={l.code}>
+              {l.native === l.english ? l.english : `${l.native} · ${l.english}`}
+            </option>
+          ))}
         </select>
       </div>
 
@@ -1852,7 +1773,7 @@ export function YuktaiGridAI<
 
   if (embedded) {
     return (
-      <div
+      <div className="yk-grid__assistant-wrap"
         style={{
           width: "100%",
           minWidth: 0,

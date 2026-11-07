@@ -40,7 +40,7 @@ export function readme(o) {
   add("## What is inside", "", "| Page or part | What it does |", "|---|---|");
   add("| Home `/` | Hero with Ask box, feature cards |");
   if (docs) add("| Docs `/getting-started/` | Guides with a sidebar: getting started, configuration, lifecycle, deploy |");
-  if (has("grid")) add("| Data grid `/grid/` | 10 lakh (1,000,000) sample orders made in the browser. Search and sort every column in Rust (well under a second on 10 lakh rows), page size |");
+  if (has("grid")) add("| Data grid `/grid/` | 10 lakh (1,000,000) sample orders made in the browser. Search and sort every column in Rust, the Grid AI Assistant, 🎤 voice, 24 input languages, row selection, browser-agent tools (WebMCP) |");
   if (has("page-tools")) add("| QA report `/qa/` | 15 WCAG 2.2 checks, score, what to fix, Markdown download. The 🛠 button has it on every page |");
   if (has("icons")) add("| Icons `/icons/` | Every YuktAI icon: search, size, outline or filled, colour with a contrast check, copy the code |");
   add(
@@ -49,6 +49,7 @@ export function readme(o) {
     "| ♿ Accessibility | Contrast, text size, dyslexia font, colour-blind filters, reduced motion |",
     "| Install (PWA) | Install button, icons, works offline after the first visit |",
     "| Light and dark | Theme button; follows the device by default |",
+    "| 🎨 Colour and font | Visitors pick any colour (kept at 7:1 contrast) and a font, including fonts on their own computer (desktop Chrome and Edge) |",
     "",
   );
 
@@ -66,6 +67,15 @@ export function readme(o) {
       "| `amount` | number | `₹24,999.50` |",
       "| `date` | date | `2025-03-14` |",
       "| `paid` | boolean | Yes / No |",
+      "",
+      "### Grid AI Assistant",
+      "",
+      "Type or say what you want: `how many rows`, `unpaid`, `search Pune`, `sort by date`, `clear filters`. The assistant runs the grid's own tools (search, filter, sort, count) in the browser, in well under two seconds on 10 lakh rows. Nothing is sent anywhere.",
+      "",
+      "- **Languages:** English and the 22 Indian scheduled languages for typing and 🎤 voice (Telugu, Hindi, Tamil, Kannada, Malayalam, Bengali, Marathi, Gujarati…). Pick one in the assistant; set the default in `yuktai.config.ts` (`grid.language`). Commands are understood in English and Telugu today.",
+      "- **Your own words:** `rules` in `OrdersGrid.tsx` maps phrases (\"unpaid\", \"బాకీ\", \"बकाया\") to grid tools. Add rules for your data.",
+      "- **Browser agents (WebMCP):** with `grid.webmcp` on, AI agents in Chrome (WebMCP enabled) can use 11 grid tools. The page shows whether they are ready.",
+      "- **Restyle it:** the grid follows this site's colours through `--yk-grid-*` CSS variables in `src/styles/grid.css`.",
       "",
       "Pick 1,000, 1,00,000 or 10,00,000 rows on the page. To use your own data, replace `makeOrders()` and the `columns` list in `src/app/grid/OrdersGrid.tsx`.",
       "",
@@ -98,6 +108,22 @@ export function readme(o) {
   );
 
   add(
+    "## Colour and font",
+    "",
+    "The 🎨 button in the header lets each visitor choose:",
+    "",
+    "- **A colour:** six ready colours or any colour. It is darkened (light theme) or lightened (dark theme) until text reaches 7:1 contrast (WCAG AAA), so no choice can make the site hard to read.",
+    "- **A font:** ready choices that need no download (easy-to-read, serif, Telugu, Devanagari, Tamil), or, on desktop Chrome and Edge, any font installed on their computer. The browser asks first; the font list never leaves the device. Phones, tablets, Safari and Firefox see the ready choices only.",
+    "",
+    "Choices are saved in that browser only. Turn it off with `theme.picker` and `theme.localFonts` in `yuktai.config.ts`; the code is in `src/components/yuktai/look.ts`.",
+    "",
+    "## Install (PWA)",
+    "",
+    "`public/manifest.json` has normal, maskable and monochrome (Android themed) icons, shortcuts to the main pages and two screenshots for Chrome's install window. Replace `public/screenshots/*.png` with pictures of your app.",
+    "",
+  );
+
+  add(
     "## Folders",
     "",
     "```",
@@ -113,11 +139,11 @@ export function readme(o) {
   add(
     "│   │   └── about/",
     "│   ├── components/",
-    "│   │   ├── yuktai/            header, logo, widget, Ask, install, theme, lifecycle",
+    "│   │   ├── yuktai/            header, logo, widget, Ask, install, theme, colour and font picker, lifecycle",
     "│   │   └── ui/                your components",
     "│   ├── data/                  menu" + (has("grid") ? ", sample orders" : ""),
     "│   ├── lib/core.ts            the app's core functions" + (rust ? " (loads the Rust WebAssembly)" : ""),
-    "│   └── styles/                tokens.css (colours, light and dark), globals.css",
+    "│   └── styles/                tokens.css (colours), globals.css, look.css" + (has("grid") ? ", grid.css" : "") + (has("page-tools") ? ", qa.css" : "") + (has("icons") ? ", icons.css" : ""),
   );
   if (rust) add("├── rust/                      Rust core → public/wasm/core.wasm");
   add(
@@ -136,15 +162,17 @@ export function readme(o) {
     `  grid: ${has("grid")},          // data grid page`,
     `  icons: ${has("icons")},         // icons guide`,
     "},",
+    "theme: { picker: true, localFonts: true },  // 🎨 colour and font picker",
+    "grid: { assistant: true, voice: true, language: \"en-IN\", webmcp: true },",
     `engine: "${rust ? "rust" : "ts"}",          // "rust" (WebAssembly) or "ts"`,
     "```",
     "",
   );
 
-  add("## Deploy (free)", "");
+  add("## Put it online", "");
   if (o.host === "netlify") add("Netlify: push to GitHub, then **Add new site → Import an existing project**. `netlify.toml` already has the build command and the `out` folder.", "");
   else if (o.host === "github-pages") add("GitHub Pages: push to GitHub, then **Settings → Pages → Source: GitHub Actions**. `.github/workflows/deploy.yml` builds and publishes on every push to `main`.", "");
-  else add("Any static host works: run `npm run build` and upload the `out` folder.", "");
+  else add("`npm run build` makes a static site in `out/`. Upload that folder to any static host. To have the config made for you, create the app with `--host netlify` or `--host github-pages`.", "");
 
   add(
     "## Privacy",
