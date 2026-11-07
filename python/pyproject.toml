@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "yuktai"
-version = "0.1.0"
+version = "0.1.1"
 description = "YuktAI for Python web apps: add the accessibility widget, page tools and data grid to Django, Flask and FastAPI pages in one line. Runs in the browser, no API keys."
 readme = "README.md"
 requires-python = ">=3.9"

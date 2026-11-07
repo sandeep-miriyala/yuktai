@@ -2,7 +2,7 @@
 
 One page per source file: what it does, what it exports, where it goes after the package split, findings, and a checklist to tick off.
 
-Written from the published package `@yuktishaalaa/yuktai@5.3.12`. Source paths are inferred from the build output; check them against `src/`.
+Written from `@yuktishaalaa/yuktai@5.3.12`; the modules described here are unchanged in 5.5.x. For the current map of the code, see [ARCHITECTURE.md](../../ARCHITECTURE.md). Source paths are inferred from the build output; check them against `src/`.
 
 ## Fix first
 

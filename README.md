@@ -16,6 +16,7 @@
   <a href="https://www.npmjs.com/package/@yuktishaalaa/yuktai"><img src="https://img.shields.io/npm/v/@yuktishaalaa/yuktai" alt="npm version"></a>
   <a href="https://www.npmjs.com/package/@yuktishaalaa/yuktai"><img src="https://img.shields.io/npm/dm/@yuktishaalaa/yuktai" alt="npm downloads"></a>
   <a href="https://github.com/sandeep-miriyala/yuktai/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-blue" alt="License: GPL-3.0"></a>
+  <a href="https://github.com/sandeep-miriyala/yuktai/actions/workflows/ci.yml"><img src="https://github.com/sandeep-miriyala/yuktai/actions/workflows/ci.yml/badge.svg" alt="CI status"></a>
   <a href="https://yuktaidocs.netlify.app/"><img src="https://img.shields.io/badge/docs-live%20demos-0038b4" alt="Docs"></a>
 </p>
 

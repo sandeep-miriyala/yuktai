@@ -13,7 +13,7 @@ def config_of(html):
 
 def test_default_tag_loads_pinned_version():
     html = yuktai.script_tag()
-    assert 'src="https://cdn.jsdelivr.net/npm/@yuktishaalaa/yuktai@5.3.10/vanilla/index.min.js"' in html
+    assert 'src="https://cdn.jsdelivr.net/npm/@yuktishaalaa/yuktai@5.5.3/vanilla/index.min.js"' in html
     assert " defer" in html and "YUKTAI_CONFIG" not in html
     assert hasattr(html, "__html__")
 
@@ -50,7 +50,7 @@ def test_bad_values_rejected(kw):
 def test_versions_and_cdns():
     assert yuktai.cdn_url("5") == "https://cdn.jsdelivr.net/npm/@yuktishaalaa/yuktai@5/vanilla/index.min.js"
     assert yuktai.cdn_url("latest") == "https://cdn.jsdelivr.net/npm/@yuktishaalaa/yuktai/vanilla/index.min.js"
-    assert yuktai.cdn_url("5.3.10", "unpkg").startswith("https://unpkg.com/@yuktishaalaa/yuktai@5.3.10/")
+    assert yuktai.cdn_url("5.5.3", "unpkg").startswith("https://unpkg.com/@yuktishaalaa/yuktai@5.5.3/")
 
 
 def test_nonce():

@@ -22,7 +22,7 @@ __all__ = ["__version__", "YUKTAI_JS_VERSION", "cdn_url", "config_json", "script
 __version__ = "0.1.0"
 
 #: The YuktAI (JavaScript) release these helpers load by default.
-YUKTAI_JS_VERSION = "5.3.10"
+YUKTAI_JS_VERSION = "5.5.3"
 
 _CDNS = {
     "jsdelivr": "https://cdn.jsdelivr.net/npm/@yuktishaalaa/yuktai@{v}/vanilla/index.min.js",
@@ -46,7 +46,7 @@ class Markup(str):
 
 
 def cdn_url(version: str = YUKTAI_JS_VERSION, cdn: str = "jsdelivr") -> str:
-    """URL of the YuktAI browser script for a version ("5.3.10", "5", "latest")."""
+    """URL of the YuktAI browser script for a version ("5.5.3", "5", "latest")."""
     if not isinstance(version, str) or not _VERSION_RE.match(version):
         raise ValueError(f"Not a valid YuktAI version: {version!r}")
     if cdn not in _CDNS:

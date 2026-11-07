@@ -1,0 +1,32 @@
+# Dependabot: free security and version updates, once a month, grouped so there are few pull requests.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule: { interval: monthly }
+    groups:
+      library: { patterns: ["*"] }
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: npm
+    directory: /packages/ask-page
+    schedule: { interval: monthly }
+    groups:
+      ask-page: { patterns: ["*"] }
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: cargo
+    directories: ["/rust/grid-core", "/rust/rag-core", "/rust/ask-core"]
+    schedule: { interval: monthly }
+    groups:
+      rust: { patterns: ["*"] }
+
+  - package-ecosystem: pip
+    directory: /python
+    schedule: { interval: monthly }
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule: { interval: monthly }
+    groups:
+      actions: { patterns: ["*"] }

@@ -89,8 +89,6 @@ async function loadModels(): Promise<void> {
     const device = safeDevice()
     const mobile = isMobileDevice()
 
-    console.log(`yuktai: Transformers.js — device: ${device}, mobile: ${mobile}`)
-
     // ── FIX: q4 quantization on mobile — ~10MB vs ~23MB ──
     // q4 is default for WASM — much smaller memory footprint
     embeddingPipeline = await pipeline(
@@ -114,7 +112,6 @@ async function loadModels(): Promise<void> {
 
     modelsLoaded  = true
     modelsLoading = false
-    console.log("yuktai: Transformers.js models loaded ✅")
 
   } catch (err) {
     modelsLoading = false

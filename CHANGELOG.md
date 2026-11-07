@@ -1,5 +1,12 @@
 # Changelog
 
+All notable changes to `@yuktishaalaa/yuktai`. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow [Semantic Versioning](https://semver.org/).
+
+## Unreleased
+- No more `console.log` messages from the on-device AI (Transformers.js) loader.
+- Shorter package description; simpler README with a cheat sheet and architecture diagrams.
+- Open-source docs: CONTRIBUTING, CODE_OF_CONDUCT, ARCHITECTURE, ROADMAP, SECURITY, issue and pull request templates.
+
 ## 5.5.3
 - Clickable grid rows and phone cards (`onRowClick`) open with Tab, then Enter or Space.
 - The selection column has a heading screen readers announce ("Select").

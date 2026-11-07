@@ -58,7 +58,7 @@ YUKTAI = {"position": "right", "show_page_tools": True}   # optional defaults
 
 | Option | Meaning |
 |---|---|
-| `version` | YuktAI release to load (default `5.3.10`), or `"latest"` |
+| `version` | YuktAI release to load (default `5.5.3`), or `"latest"` |
 | `position` | `"left"` or `"right"` |
 | `primary_color` | Button colour, e.g. `"#0a4a85"` |
 | `title` | Settings dialog title |
