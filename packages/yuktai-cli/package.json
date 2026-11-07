@@ -1,6 +1,6 @@
 {
   "name": "yuktai",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Create accessible, AI-in-the-browser web apps: Next.js + Rust, YuktAI widget, Ask page, PWA. `npx yuktai init my-app`.",
   "type": "module",
   "bin": {

@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.1
+- **Install app** is always in the header until the app is installed. Chrome, Edge and Android Chrome show their own prompt; Safari (iPhone, iPad, Mac), Firefox and other browsers get short steps for that device.
+- **↑ Back to top** button at the bottom right after you scroll (`features.backToTop`). Smooth scroll unless reduced motion is on; focus moves to the top too.
+- **Grid:** a **Show all (10,00,000)** button lists every row in one smooth scrolling list (virtual scrolling), plus First, Last, page numbers and "Go to page". Needs `@yuktishaalaa/yuktai` 5.4.0.
+
 ## 1.0.0
 Everything below is on with `npx yuktai@latest init my-app --yes`.
 

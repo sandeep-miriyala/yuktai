@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import config from "@config";
 import Header from "@/components/yuktai/Header";
 import Providers from "@/components/yuktai/Providers";
+import BackToTop from "@/components/yuktai/BackToTop";
 import { THEME_SCRIPT } from "@/components/yuktai/theme";
 import { LOOK_SCRIPT } from "@/components/yuktai/look";
 import { LINKS } from "@/data/site";
@@ -42,6 +43,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <span><a href={LINKS.docs}>YuktAI docs</a></span>
             </div>
           </footer>
+          {config.features.backToTop && <BackToTop />}
         </Providers>
       </body>
     </html>

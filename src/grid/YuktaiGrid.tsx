@@ -4,6 +4,7 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 
@@ -44,6 +45,15 @@ const translations: Record<
     of: string;
     previous: string;
     next: string;
+    first: string;
+    last: string;
+    goTo: string;
+    all: string;
+    pages: string;
+    showAll: string;
+    showPages: string;
+    rowsRange: (from: string, to: string, total: string) => string;
+    listLabel: string;
     yes: string;
     no: string;
     sortAscending: string;
@@ -65,6 +75,15 @@ const translations: Record<
     of: "of",
     previous: "Previous",
     next: "Next",
+    first: "First page",
+    last: "Last page",
+    goTo: "Go to page",
+    all: "All",
+    pages: "Pages",
+    showAll: "Show all",
+    showPages: "Show pages",
+    rowsRange: (from, to, total) => `Rows ${from}–${to} of ${total}`,
+    listLabel: "All rows, scroll to see more",
     yes: "Yes",
     no: "No",
     sortAscending: "Sort ascending",
@@ -85,6 +104,15 @@ const translations: Record<
     of: "లో",
     previous: "వెనుకకు",
     next: "ముందుకు",
+    first: "మొదటి పేజీ",
+    last: "చివరి పేజీ",
+    goTo: "పేజీకి వెళ్ళండి",
+    all: "అన్నీ",
+    pages: "పేజీలు",
+    showAll: "అన్నీ చూపించు",
+    showPages: "పేజీలుగా చూపించు",
+    rowsRange: (from, to, total) => `${total} లో ${from}–${to} వరుసలు`,
+    listLabel: "అన్ని వరుసలు, ఇంకా చూడటానికి స్క్రోల్ చేయండి",
     yes: "అవును",
     no: "కాదు",
     sortAscending: "ఆరోహణ క్రమంలో అమర్చండి",
@@ -260,6 +288,30 @@ function CheckIcon({
     </svg>
   );
 }
+
+/**
+ * v5.3.16 — page numbers to show: always the first and last, two either side of
+ * the current page, and 0 where pages are skipped (shown as "…").
+ */
+export function pageWindow(page: number, total: number): number[] {
+  const want = new Set([1, total, page - 2, page - 1, page, page + 1, page + 2]);
+  const pages = [...want].filter((n) => n >= 1 && n <= total).sort((a, b) => a - b);
+  const out: number[] = [];
+  pages.forEach((n, i) => {
+    if (i > 0 && n - pages[i - 1] > 1) out.push(0);
+    out.push(n);
+  });
+  return out;
+}
+
+/** v5.4.0 — one-line cells for the fixed-height "Show all" list. */
+const cellClip = (h: number): React.CSSProperties => ({
+  height: h,
+  boxSizing: "border-box",
+  whiteSpace: "nowrap",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+});
 
 /** CSS custom property with a fallback: var(--yk-grid-<name>, <fallback>). */
 const cssVar = (name: string, fallback: string) => `var(--yk-grid-${name}, ${fallback})`;
@@ -451,11 +503,93 @@ export function YuktaiGrid<
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [run]);
 
+  // pageSize 0 means "All". v5.4.0: above allLimit rows, "All" is a virtual list.
+  const allLimit =
+    typeof pagination === "object" && typeof pagination.allLimit === "number"
+      ? pagination.allLimit
+      : 5000;
+  const allowAll = !(typeof pagination === "object" && pagination.showAll === false);
+  const showAll = allowAll && pageSize === 0 && rows.length > 0;
+  const virtual = showAll && rows.length > allLimit;
+  const effectiveSize = showAll
+    ? Math.max(1, rows.length)
+    : pageSize === 0
+    ? configuredPageSize
+    : pageSize;
+  const rowHeight = Math.max(
+    44,
+    (typeof pagination === "object" && pagination.rowHeight) || 48
+  );
+  const listHeight =
+    (typeof pagination === "object" && pagination.listHeight) || "min(70vh, 720px)";
+
+  // Virtual list: only the rows on screen are drawn. Browsers cap an element's
+  // height (about 33 million px in Chrome), so very long lists are scaled.
+  const listRef = useRef<HTMLDivElement>(null);
+  const [scrollTop, setScrollTop] = useState(0);
+  const [viewport, setViewport] = useState(600);
+  const MAX_PX = 15_000_000;
+  const fullPx = rows.length * rowHeight;
+  const bodyPx = Math.min(fullPx, MAX_PX);
+  const viewPx = Math.max(rowHeight, viewport - rowHeight); // minus the sticky header
+  const maxScroll = Math.max(0, bodyPx - viewPx);
+  const maxVirtual = Math.max(0, fullPx - viewPx);
+  const virtualTop = maxScroll > 0 ? (Math.min(scrollTop, maxScroll) / maxScroll) * maxVirtual : 0;
+  const firstRow = virtual ? Math.min(rows.length - 1, Math.floor(virtualTop / rowHeight)) : 0;
+  const rowOffset = virtualTop - firstRow * rowHeight;
+  const visibleCount = virtual ? Math.ceil(viewPx / rowHeight) + 8 : 0;
+  const topSpacer = virtual ? Math.max(0, Math.min(scrollTop, maxScroll) - rowOffset) : 0;
+  const renderedCount = virtual ? Math.min(visibleCount, rows.length - firstRow) : 0;
+  const bottomSpacer = virtual ? Math.max(0, bodyPx - topSpacer - renderedCount * rowHeight) : 0;
+
+  useEffect(() => {
+    if (!virtual) return;
+    const el = listRef.current;
+    if (!el) return;
+    let frame = 0;
+    const measure = () => setViewport(el.clientHeight || 600);
+    const onScroll = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => setScrollTop(el.scrollTop));
+    };
+    measure();
+    el.addEventListener("scroll", onScroll, { passive: true });
+    const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(measure) : null;
+    ro?.observe(el);
+    return () => {
+      cancelAnimationFrame(frame);
+      el.removeEventListener("scroll", onScroll);
+      ro?.disconnect();
+    };
+  }, [virtual]);
+
+  // New search, filter or sort: back to the first row
+  useEffect(() => {
+    if (!virtual) return;
+    if (listRef.current) listRef.current.scrollTop = 0;
+    setScrollTop(0);
+  }, [virtual, rows]);
+
+  /** Scroll the virtual list so row `index` is at the top. */
+  const scrollToRow = useCallback(
+    (index: number) => {
+      const el = listRef.current;
+      if (!el) return;
+      const target = maxVirtual > 0 ? (Math.min(index * rowHeight, maxVirtual) / maxVirtual) * maxScroll : 0;
+      el.scrollTop = target;
+      setScrollTop(target);
+    },
+    [maxScroll, maxVirtual, rowHeight]
+  );
+
+  const showPageNumbers =
+    !(typeof pagination === "object" && pagination.showPageNumbers === false);
+
   const totalPages = paginationEnabled
     ? Math.max(
         1,
         Math.ceil(
-          rows.length / pageSize
+          rows.length / effectiveSize
         )
       )
     : 1;
@@ -511,27 +645,48 @@ export function YuktaiGrid<
   ]);
 
   const displayedRows = useMemo(() => {
+    if (virtual) {
+      return rows.slice(firstRow, firstRow + renderedCount);
+    }
+
     if (!paginationEnabled) {
       return rows;
     }
 
     const start =
-      (page - 1) * pageSize;
+      (page - 1) * effectiveSize;
 
     return rows.slice(
       start,
-      start + pageSize
+      start + effectiveSize
     );
   }, [
     rows,
     paginationEnabled,
     page,
-    pageSize,
+    effectiveSize,
+    virtual,
+    firstRow,
+    renderedCount,
   ]);
 
+  // the "Show all" list is always a table: fixed-height rows keep it fast
+  // spacer rows must span exactly the real columns (fixed table layout counts them)
+  const colCount =
+    (selectable ? 1 : 0) +
+    columns.filter((column) => !(isMobile && column.hiddenOnMobile)).length;
+
+  // fixed layout: give every column a minimum width so phones scroll sideways instead of squashing
+  const tableMinWidth =
+    (selectable ? 52 : 0) +
+    columns
+      .filter((column) => !(isMobile && column.hiddenOnMobile))
+      .reduce((sum, column) => sum + (typeof column.width === "number" ? column.width : 140), 0);
+
   const isCardView =
-    view === "card" ||
-    (view === "auto" && isMobile);
+    !virtual &&
+    (view === "card" ||
+      (view === "auto" && isMobile));
 
   const getId = (row: T) =>
     String(
@@ -652,10 +807,13 @@ export function YuktaiGrid<
       // Jump to the page that contains the first highlighted row
       if (paginationEnabled && ids.length) {
         const index = rows.findIndex((row) => String(row[rowKey as keyof T] ?? "") === ids[0]);
-        if (index >= 0) setPage(Math.floor(index / pageSize) + 1);
+        if (index >= 0) {
+          if (virtual) scrollToRow(index);
+          else setPage(Math.floor(index / effectiveSize) + 1);
+        }
       }
     },
-    [paginationEnabled, rows, rowKey, pageSize]
+    [paginationEnabled, rows, rowKey, effectiveSize, virtual, scrollToRow]
   );
 
   const tools = useMemo<GridTool[]>(
@@ -1143,21 +1301,36 @@ export function YuktaiGrid<
           )}
         </div>
       ) : (
-        <div className="yk-grid__scroll"
+        <div className={virtual ? "yk-grid__scroll yk-grid__scroll--all" : "yk-grid__scroll"}
+          ref={virtual ? listRef : undefined}
+          {...(virtual
+            ? { tabIndex: 0, role: "region", "aria-label": t.listLabel }
+            : {})}
           style={{
             width: "100%",
             overflowX: "auto",
+            ...(virtual
+              ? { height: listHeight, overflowY: "auto" as const, overscrollBehavior: "contain" as const }
+              : {}),
           }}
         >
           <table className="yk-grid__table"
+            {...(virtual ? { "aria-rowcount": rows.length + 1 } : {})}
             style={{
               width: "100%",
               borderCollapse:
                 "collapse",
+              ...(virtual ? { tableLayout: "fixed" as const, minWidth: tableMinWidth } : {}),
             }}
           >
-            <thead className="yk-grid__head">
-              <tr>
+            <thead className="yk-grid__head"
+              style={
+                virtual
+                  ? { position: "sticky", top: 0, zIndex: 1, background: C.bg }
+                  : undefined
+              }
+            >
+              <tr {...(virtual ? { "aria-rowindex": 1 } : {})}>
                 {selectable && (
                   <th
                     style={{
@@ -1210,9 +1383,10 @@ export function YuktaiGrid<
                                 ? "default"
                                 : "pointer",
                             width:
-                              column.width,
+                              column.width ?? (virtual ? 140 : undefined),
                             userSelect:
                               "none",
+                            ...(virtual ? { overflow: "hidden", textOverflow: "ellipsis" } : {}),
                           }}
                         >
                           <span
@@ -1256,6 +1430,11 @@ export function YuktaiGrid<
             </thead>
 
             <tbody className="yk-grid__body">
+              {virtual && topSpacer > 0 && (
+                <tr aria-hidden="true" style={{ height: topSpacer }}>
+                  <td colSpan={colCount} style={{ padding: 0, border: 0 }} />
+                </tr>
+              )}
               {displayedRows.map(
                 (row, index) => {
                   const id =
@@ -1271,6 +1450,7 @@ export function YuktaiGrid<
                     <tr className="yk-grid__row"
                       key={id}
                       data-yuktai-row-id={id}
+                      {...(virtual ? { "aria-rowindex": firstRow + index + 2 } : {})}
                       onClick={() =>
                         onRowClick?.(
                           row,
@@ -1288,14 +1468,16 @@ export function YuktaiGrid<
                           onRowClick
                             ? "pointer"
                             : "default",
+                        ...(virtual ? { height: rowHeight } : {}),
                       }}
                     >
                       {selectable && (
                         <td className="yk-grid__cell"
                           style={{
-                            padding: 10,
+                            padding: virtual ? "0 10px" : 10,
                             borderBottom:
                               `1px solid ${C.border}`,
+                            ...(virtual ? cellClip(rowHeight) : {}),
                           }}
                         >
                           <button
@@ -1365,12 +1547,13 @@ export function YuktaiGrid<
                                 column.key
                               )}
                               style={{
-                                padding: 10,
+                                padding: virtual ? "0 10px" : 10,
                                 textAlign:
                                   column.align ??
                                   "left",
                                 borderBottom:
                                   `1px solid ${C.border}`,
+                                ...(virtual ? cellClip(rowHeight) : {}),
                               }}
                             >
                               {renderValue(
@@ -1384,6 +1567,11 @@ export function YuktaiGrid<
                     </tr>
                   );
                 }
+              )}
+              {virtual && bottomSpacer > 0 && (
+                <tr aria-hidden="true" style={{ height: bottomSpacer }}>
+                  <td colSpan={colCount} style={{ padding: 0, border: 0 }} />
+                </tr>
               )}
             </tbody>
           </table>
@@ -1405,12 +1593,45 @@ export function YuktaiGrid<
         >
           <span
             style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 10,
+              flexWrap: "wrap",
               fontSize: 13,
-              opacity: 0.7,
             }}
           >
-            {t.page} {page} {t.of}{" "}
-            {totalPages}
+            <span style={{ opacity: 0.75 }} aria-live="polite">
+              {showAll
+                ? t.rowsRange(
+                    (virtual ? firstRow + 1 : 1).toLocaleString(locale),
+                    (virtual ? Math.min(rows.length, firstRow + Math.ceil(viewPx / rowHeight)) : rows.length).toLocaleString(locale),
+                    rows.length.toLocaleString(locale)
+                  )
+                : `${t.page} ${page.toLocaleString(locale)} ${t.of} ${totalPages.toLocaleString(locale)}`}
+            </span>
+            {allowAll && rows.length > 0 && (
+              <button
+                type="button"
+                className="yk-grid__show-all"
+                aria-pressed={showAll}
+                onClick={() => {
+                  setPageSize(showAll ? configuredPageSize : 0);
+                  setPage(1);
+                }}
+                style={{
+                  minHeight: 40,
+                  padding: "0 14px",
+                  borderRadius: 8,
+                  border: `1px solid ${showAll ? C.control : C.accent}`,
+                  background: showAll ? C.controlBg : C.accent,
+                  color: showAll ? C.controlText : C.accentText,
+                  fontWeight: 700,
+                  cursor: "pointer",
+                }}
+              >
+                {showAll ? t.showPages : `${t.showAll} (${rows.length.toLocaleString(locale)})`}
+              </button>
+            )}
           </span>
 
           <div
@@ -1425,7 +1646,7 @@ export function YuktaiGrid<
               "object" &&
               pagination.showSizeChanger && (
                 <select
-                  value={pageSize}
+                  value={showAll ? 0 : effectiveSize}
                   onChange={(event) => {
                     const nextSize =
                       Number(
@@ -1437,7 +1658,7 @@ export function YuktaiGrid<
                       !Number.isFinite(
                         nextSize
                       ) ||
-                      nextSize <= 0
+                      nextSize < 0
                     ) {
                       return;
                     }
@@ -1470,8 +1691,27 @@ export function YuktaiGrid<
                       </option>
                     )
                   )}
+                  {allowAll && rows.length > 0 && (
+                    <option value={0}>
+                      {t.all} ({rows.length.toLocaleString(locale)})
+                    </option>
+                  )}
                 </select>
               )}
+
+            {showPageNumbers && (
+              <button
+                type="button"
+                disabled={page <= 1}
+                onClick={() => setPage(1)}
+                aria-label={t.first}
+                title={t.first}
+                style={iconButtonStyle(page <= 1)}
+              >
+                <ChevronLeftIcon size={16} />
+                <ChevronLeftIcon size={16} />
+              </button>
+            )}
 
             <button
               type="button"
@@ -1497,6 +1737,38 @@ export function YuktaiGrid<
               />
             </button>
 
+            {showPageNumbers && totalPages > 1 && (
+              <nav className="yk-grid__pages" aria-label={t.pages} style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
+                {pageWindow(page, totalPages).map((n, i) =>
+                  n === 0 ? (
+                    <span key={`gap${i}`} aria-hidden="true" style={{ alignSelf: "center", padding: "0 2px" }}>
+                      …
+                    </span>
+                  ) : (
+                    <button
+                      key={n}
+                      type="button"
+                      onClick={() => setPage(n)}
+                      aria-current={n === page ? "page" : undefined}
+                      aria-label={`${t.page} ${n}`}
+                      style={{
+                        ...iconButtonStyle(false),
+                        width: "auto",
+                        minWidth: 40,
+                        padding: "0 8px",
+                        fontWeight: n === page ? 700 : 400,
+                        background: n === page ? C.accent : C.controlBg,
+                        color: n === page ? C.accentText : C.controlText,
+                        borderColor: n === page ? C.accent : undefined,
+                      }}
+                    >
+                      {n.toLocaleString(locale)}
+                    </button>
+                  )
+                )}
+              </nav>
+            )}
+
             <button
               type="button"
               disabled={
@@ -1520,6 +1792,55 @@ export function YuktaiGrid<
                 size={20}
               />
             </button>
+
+            {showPageNumbers && (
+              <button
+                type="button"
+                disabled={page >= totalPages}
+                onClick={() => setPage(totalPages)}
+                aria-label={t.last}
+                title={t.last}
+                style={iconButtonStyle(page >= totalPages)}
+              >
+                <ChevronRightIcon size={16} />
+                <ChevronRightIcon size={16} />
+              </button>
+            )}
+
+            {showPageNumbers && totalPages > 7 && (
+              <form
+                className="yk-grid__goto"
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  const input = event.currentTarget.elements.namedItem("page") as HTMLInputElement | null;
+                  const n = Math.round(Number(input?.value));
+                  if (Number.isFinite(n)) setPage(Math.min(totalPages, Math.max(1, n)));
+                }}
+                style={{ display: "flex", alignItems: "center", gap: 6 }}
+              >
+                <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13 }}>
+                  {t.goTo}
+                  <input
+                    name="page"
+                    type="number"
+                    min={1}
+                    max={totalPages}
+                    defaultValue={page}
+                    key={page}
+                    inputMode="numeric"
+                    style={{
+                      width: 90,
+                      minHeight: 40,
+                      padding: "7px 8px",
+                      borderRadius: 8,
+                      border: `1px solid ${C.control}`,
+                      background: C.controlBg,
+                      color: C.controlText,
+                    }}
+                  />
+                </label>
+              </form>
+            )}
           </div>
         </div>
       )}

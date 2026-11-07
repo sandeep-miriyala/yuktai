@@ -40,14 +40,15 @@ export function readme(o) {
   add("## What is inside", "", "| Page or part | What it does |", "|---|---|");
   add("| Home `/` | Hero with Ask box, feature cards |");
   if (docs) add("| Docs `/getting-started/` | Guides with a sidebar: getting started, configuration, lifecycle, deploy |");
-  if (has("grid")) add("| Data grid `/grid/` | 10 lakh (1,000,000) sample orders made in the browser. Search and sort every column in Rust, the Grid AI Assistant, 🎤 voice, 24 input languages, row selection, browser-agent tools (WebMCP) |");
+  if (has("grid")) add("| Data grid `/grid/` | 10 lakh (1,000,000) sample orders made in the browser. Search and sort every column in Rust, **Show all** (every row in one smooth scrolling list) or pages, the Grid AI Assistant, 🎤 voice, 24 input languages, row selection, browser-agent tools (WebMCP) |");
   if (has("page-tools")) add("| QA report `/qa/` | 15 WCAG 2.2 checks, score, what to fix, Markdown download. The 🛠 button has it on every page |");
   if (has("icons")) add("| Icons `/icons/` | Every YuktAI icon: search, size, outline or filled, colour with a contrast check, copy the code |");
   add(
     "| About `/about/` | What the app is built with |",
     "| Ask this page | Ctrl + K or the header button. Answers come from the page, with the source highlighted |",
     "| ♿ Accessibility | Contrast, text size, dyslexia font, colour-blind filters, reduced motion |",
-    "| Install (PWA) | Install button, icons, works offline after the first visit |",
+    "| Install (PWA) | Install button in the header until installed (steps for Safari and Firefox), works offline after the first visit |",
+    "| ↑ Back to top | Bottom right, after you scroll |",
     "| Light and dark | Theme button; follows the device by default |",
     "| 🎨 Colour and font | Visitors pick any colour (kept at 7:1 contrast) and a font, including fonts on their own computer (desktop Chrome and Edge) |",
     "",

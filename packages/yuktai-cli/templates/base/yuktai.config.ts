@@ -15,7 +15,8 @@ const config = {
   features: {
     accessibility: true, // ♿ button: contrast, text size, dyslexia font, reduced motion…
     ask: true, // "Ask this page" panel, Ctrl + K. Answers come from the page itself.
-    pwa: true, // Install button, works offline
+    pwa: true, // Install button (always shown until installed), works offline
+    backToTop: true, // ↑ Back to top button, bottom right
     pageTools: {{pageTools}}, // QA report page and the 🛠 button: 15 WCAG checks, copilot, form review
     grid: {{grid}}, // data grid page: 10 lakh sample rows, search, sort
     icons: {{icons}}, // icons guide: every YuktAI icon, copy the code

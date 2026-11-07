@@ -170,6 +170,21 @@ export interface PaginationConfig {
   pageSize?: number
   showSizeChanger?: boolean
   sizeOptions?: number[]
+  /**
+   * "Show all" (v5.4.0): above this many rows the grid shows every row in one
+   * scrolling list that only draws the rows on screen (virtual scrolling), so even
+   * 10 lakh rows stay fast. At or below it, all rows are drawn normally.
+   * Default 5,000. Set showAll: false to hide "Show all".
+   */
+  allLimit?: number
+  /** v5.4.0 — the "Show all" button and the "All" page size (default true). */
+  showAll?: boolean
+  /** v5.4.0 — row height in px for the "Show all" list (default 48; at least 44 for touch). */
+  rowHeight?: number
+  /** v5.4.0 — height of the "Show all" list (default "min(70vh, 720px)"). */
+  listHeight?: string
+  /** v5.3.16 — page number buttons, First/Last and "Go to page" (default true). */
+  showPageNumbers?: boolean
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

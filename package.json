@@ -1,10 +1,10 @@
 {
   "name": "@yuktishaalaa/yuktai",
-  "version": "5.3.14",
-  "description": "Accessibility, AI and data toolkit for Next.js, React and plain HTML: WCAG 2.2 auto-fix, agentic data grid, accessibility copilot, QA reports and in-browser RAG. Zero API keys.",
+  "version": "5.4.0",
+  "description": "Accessibility, AI and data toolkit for Next.js, React and plain HTML: a 10 lakh row data grid with an AI assistant (voice, 24 languages, WebMCP), WCAG 2.2 auto-fix, QA reports, page Q&A and 163 icons. Runs in the browser: no API keys, no server, Rust (WebAssembly) engine.",
   "author": "Sandeep Miriyala — Yuktishaalaa AI Lab",
   "license": "GPL-3.0-only",
-  "homepage": "https://aksharatantra.miriyala.in",
+  "homepage": "https://yuktaidocs.netlify.app",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sandeepmiriyala03/yuktai.git"
@@ -37,7 +37,22 @@
     "indian-languages",
     "icons",
     "react-icons",
-    "svg-icons"
+    "svg-icons",
+    "ai-assistant",
+    "grid-assistant",
+    "voice",
+    "speech-recognition",
+    "hindi",
+    "tamil",
+    "indic",
+    "pwa",
+    "css-variables",
+    "data-table",
+    "large-dataset",
+    "qa-audit",
+    "wcag-2.2",
+    "offline",
+    "no-api-key"
   ],
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",

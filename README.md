@@ -1,18 +1,39 @@
 # @yuktishaalaa/yuktai
 
-> Accessibility, AI and data toolkit for **Next.js, React and plain HTML**. One install or one script tag. Runs in the browser: no API keys, no server, no cost, works offline.
+> **Accessibility, AI and data toolkit for Next.js, React and plain HTML.** A data grid that handles 10 lakh rows and answers questions, a WCAG 2.2 accessibility widget, page Q&A, 163 icons. Everything runs in the visitor's browser: **no API keys, no server, no cost, works offline.**
 
 [![npm](https://img.shields.io/npm/v/@yuktishaalaa/yuktai)](https://www.npmjs.com/package/@yuktishaalaa/yuktai)
 [![downloads](https://img.shields.io/npm/dm/@yuktishaalaa/yuktai)](https://www.npmjs.com/package/@yuktishaalaa/yuktai)
-[![license](https://img.shields.io/badge/license-GPL--3.0-blue)](./LICENSE)
+[![license](https://img.shields.io/badge/license-GPL--3.0-blue)](https://github.com/sandeepmiriyala03/yuktai/blob/main/LICENSE)
 [![Next.js](https://img.shields.io/badge/Next.js-13%2B-black)](https://nextjs.org)
-[![Rust](https://img.shields.io/badge/engine-Rust%20%2B%20WebAssembly-orange)](./rust)
-[![docs](https://img.shields.io/badge/docs-live%20demos-0a4a85)](https://yuktaidocs.netlify.app/)
+[![Rust](https://img.shields.io/badge/engine-Rust%20%2B%20WebAssembly-orange)](https://github.com/sandeepmiriyala03/yuktai/tree/main/rust)
+[![docs](https://img.shields.io/badge/docs-live%20demos-0038b4)](https://yuktaidocs.netlify.app/)
 [![XERJ Corpus Hub contributor](https://hub.xerj.org/contributors/sandeepmiriyala03/badge.svg)](https://hub.xerj.org/contributors/sandeepmiriyala03)
 
-📖 **Docs and live demos:** https://yuktaidocs.netlify.app/
+📖 **Docs and live demos:** https://yuktaidocs.netlify.app/ · Built in free time by [Sandeep Miriyala](https://github.com/sandeepmiriyala03).
 
-Built in free time by [Sandeep Miriyala](https://github.com/sandeepmiriyala03).
+---
+
+## ⚡ Start in one command
+
+```bash
+npx yuktai@latest init my-app --yes
+cd my-app
+npm run dev        # http://localhost:3000
+```
+
+The [`yuktai`](https://www.npmjs.com/package/yuktai) command creates a Next.js + Rust app with all of this package already set up: a **10 lakh row data grid with the Grid AI Assistant**, a **QA report**, an **icons guide**, a **🎨 colour and font picker**, an installable **PWA** and a README written for your choices. Or add the package to a site you already have ([Quick start](#quick-start)).
+
+## ✨ What's new
+
+- **5.4.0 — Show all:** one button shows every row in one scrolling list, even **10 lakh rows**. Only the rows on screen are drawn (virtual scrolling), so it stays smooth on phones too. Search, sort, the AI Assistant and selection work on the full list. `pagination: { pageSize: 0 }` starts in Show all; `allLimit` (default 5,000) is where the list switches to virtual scrolling; `rowHeight`, `listHeight` and `showAll: false` are there too.
+- **5.3.16 — pages:** First and Last buttons, page numbers (1 … 49 50 51 … 100) and "Go to page". `pagination.showPageNumbers: false` keeps just Previous and Next.
+- **5.3.15:** a clearer npm page and docs links.
+
+- **Style the grid with CSS:** every colour is a `--yk-grid-*` variable, and the parts have stable class names. Nothing changes until you set one. [Details](#style-the-grid-with-css)
+- **Grid AI Assistant languages** listed in their own script: తెలుగు · Telugu, हिन्दी · Hindi, தமிழ் · Tamil…
+- **Fix:** a page with the assistant no longer jumps down to it on load.
+- **5.3.13:** text and date columns now sort in Rust too: **10 lakh rows in 0.2 to 0.8 s** (was 4.7 s, and over 30 s for a name column).
 
 ---
 
@@ -20,21 +41,28 @@ Built in free time by [Sandeep Miriyala](https://github.com/sandeepmiriyala03).
 
 | | Feature | What it does |
 |---|---|---|
+| 📊 | **YuktaiGrid** | Search, sort, filter, pages or **Show all** (virtual scrolling: 10 lakh rows in one smooth list), row selection, CSV export, 5 WCAG themes, keyboard navigation, cards on phones |
+| 🤖 | **Grid AI Assistant** | Type or say *"unpaid"*, *"salary over 1 lakh in Hyderabad"*, *"sort by date"*. Runs the grid's own tools: search, filter, sort, count, unusual rows, multi-step tasks |
+| 🎤 | **Voice and 24 languages** | English (US, India) and all **22 scheduled languages of India** for voice and typed input |
+| 🌐 | **WebMCP** | 11 grid tools that browser AI agents can call, with the real status reported |
 | ♿ | **Accessibility** | WCAG 2.2 auto-fix, contrast, dark mode, text size, dyslexia font, colour-blind filters, speak on focus |
-| 📊 | **YuktaiGrid** | Search, sort, pages, CSV export, 5 WCAG themes, Telugu UI, keyboard navigation |
-| 🤖 | **Ask your data** | "salary over 1 lakh in Hyderabad", BI answers, unusual rows, multi-step tasks, WebMCP |
-| 💬 | **Ask page (RAG)** | Answers from your page and data, offline. New standalone package: [`@yuktishaalaa/ask-page`](./packages/ask-page) with a side panel, highlighted sources, Telugu, embeddings and Chrome built-in AI ([live demo](https://sandeep-miriyala.github.io/yuktai/ask-page/)) |
-| 🛠 | **Page tools** | QA audit (15 WCAG checks), form and design review, voice commands. In React/Next.js: `showPageTools` |
-| 🦀 | **Rust engine** | Up to 42× faster search on big data. The default since 5.3.11 |
+| 🛠 | **Page tools** | QA audit (15 WCAG checks, Markdown report), accessibility copilot with undo, form and design review, voice commands |
+| 💬 | **Ask page (RAG)** | Answers from your page, offline. Standalone package with a side panel, highlighted sources and Telugu: [`@yuktishaalaa/ask-page`](https://www.npmjs.com/package/@yuktishaalaa/ask-page) |
+| 🦀 | **Rust engine** | Search and sort in WebAssembly, up to 42× faster. The default since 5.3.11, with a TypeScript fallback |
 | 🎨 | **163 icons** | Any size and colour, outline or filled, safe in Server Components |
-| ⚡ | **Vibe Coder** | Plain English → a full Next.js project ZIP (developer tool) |
 | 📱 | **PWA** | Installable, works offline |
+| ⚡ | **Vibe Coder** | Plain English → a Next.js project ZIP (developer tool; keep it off on public sites) |
 
-## Supported languages
+## Languages
 
-**Use it with:** HTML · JavaScript · TypeScript · React (JSX) · Next.js (TSX)
-**Built with:** TypeScript 7 + Rust (WebAssembly, embedded; no setup needed)
-**Interface:** English and Telugu. All 22 Indian languages for number and date formats, sorting and voice input.
+| | |
+|---|---|
+| **Use it from** | HTML · JavaScript · TypeScript · React (JSX) · Next.js (TSX) · jQuery 1.12–4.0 |
+| **Built with** | TypeScript + Rust (WebAssembly, embedded; nothing to install) |
+| **Interface** | English and Telugu |
+| **Voice and typed input** | English and the 22 scheduled languages of India |
+| **Numbers, dates, sorting** | Every Indian locale (10,00,000 grouping; Telugu and other scripts sort correctly) |
+| **Assistant understands** | English and Telugu commands; add your own phrases in any language with `customRules` |
 
 ---
 
@@ -43,9 +71,9 @@ Built in free time by [Sandeep Miriyala](https://github.com/sandeepmiriyala03).
 **Plain HTML:** one line, no build step
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@yuktishaalaa/yuktai@5.3.14/vanilla/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@yuktishaalaa/yuktai@5.4.0/vanilla/index.min.js"></script>
 <script>
-  yuktai.renderGrid("#staff", { data: rows, columns, engine: "auto", showSearchTime: true })
+  yuktai.renderGrid("#staff", { data: rows, columns, ai: true, showSearchTime: true })
 </script>
 ```
 
@@ -75,11 +103,44 @@ export default function YuktaiClient({ children }: { children: ReactNode }) {
 <body><YuktaiClient>{children}</YuktaiClient></body>
 ```
 
-**jQuery sites** (WordPress, ASP.NET WebForms, PHP): no plugin. Add the scripts after jQuery and call YuktAI from your jQuery code. Tested with jQuery 1.12.4, 2.2.4, 3.7.1 and 4.0.0.
+**A grid with the AI Assistant**
+
+```tsx
+"use client"
+import { YuktaiGrid, type GridColumn, type YuktaiGridRule } from "@yuktishaalaa/yuktai"
+
+type Order = { id: string; customer: string; city: string; amount: number; paid: boolean }
+
+const columns: GridColumn<Order>[] = [
+  { key: "customer", label: "Customer", sortable: true },
+  { key: "city", label: "City", type: "badge" },
+  { key: "amount", label: "Amount", type: "number", sortable: true },
+  { key: "paid", label: "Paid", type: "boolean" },
+]
+
+// Your own words → grid tools
+const rules: YuktaiGridRule<Order>[] = [
+  { name: "unpaid", phrases: ["unpaid", "బాకీ", "बकाया"],
+    execute: async ({ executeTool }) => (await executeTool("filter", { key: "paid", operator: "equals", value: "false" })).message },
+]
+
+export default function Orders({ rows }: { rows: Order[] }) {
+  return (
+    <YuktaiGrid
+      data={rows} columns={columns} rowKey="id"
+      search selectable pagination={{ pageSize: 25 }}
+      ai voice inputLanguage="te-IN" customRules={rules}
+      webmcp toolName="orders" showSearchTime
+    />
+  )
+}
+```
+
+**jQuery sites** (WordPress, ASP.NET WebForms, PHP): no plugin. Tested with jQuery 1.12.4, 2.2.4, 3.7.1 and 4.0.0.
 
 ```html
 <script src="https://code.jquery.com/jquery-4.0.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@yuktishaalaa/yuktai@5.3.14/vanilla/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@yuktishaalaa/yuktai@5.4.0/vanilla/index.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@yuktishaalaa/ask-page@1.0.0/dist/ask-page.global.js" defer></script>
 <script>
   $(function () {
@@ -89,19 +150,15 @@ export default function YuktaiClient({ children }: { children: ReactNode }) {
 </script>
 ```
 
-Pin the jQuery version: `jquery-latest.js` stopped updating years ago, and jQuery 4 removed old APIs such as `$.trim` and `$.isArray`. Full guide: [YuktaiDocs › jQuery](https://yuktaidocs.netlify.app/jquery.html) · example: [`examples/jquery`](./examples/jquery/index.html)
+Pin the jQuery version: `jquery-latest.js` stopped updating years ago, and jQuery 4 removed old APIs such as `$.trim`. Guide: [YuktaiDocs › jQuery](https://yuktaidocs.netlify.app/jquery/)
 
-**Grid and icons**
+**Icons**
 
 ```tsx
-import { YuktaiGrid } from "@yuktishaalaa/yuktai"
 import { SearchIcon } from "@yuktishaalaa/yuktai/icons"
 
-<YuktaiGrid data={rows} columns={columns} rowKey="id" engine="auto" showSearchTime />
-<SearchIcon size={24} color="#0a4a85" label="Search" />
+<SearchIcon size={24} color="#0038b4" label="Search" />
 ```
-
-More examples for every feature: **https://yuktaidocs.netlify.app/**
 
 ### Wrapper buttons
 
@@ -109,28 +166,41 @@ More examples for every feature: **https://yuktaidocs.netlify.app/**
 |---|---|
 | `launcher` | ✨ One button that shows or hides the others |
 | `showAccessibility` | ♿ Accessibility |
+| `showPageTools` | 🛠 QA report, copilot, form and design review, voice |
 | `showRag` | 💬 Ask page |
 | `showAgent` | 🤖 AI agent |
 | `showVibeCoder` | ⚡ Vibe Coder (keep it off on public sites) |
-| `engine` | Ask page search: `"ts"`, `"rust"` or `"auto"` |
+| `engine` | Search engine: `"rust"` (default), `"ts"` or `"auto"` |
+
+More examples for every feature: **https://yuktaidocs.netlify.app/**
 
 ---
 
-## Style the grid with CSS (5.3.14)
+## Rust engine (default)
 
-Every grid colour is a CSS custom property whose fallback is the colour it always had, so nothing changes until you set one. Stable class names let you style the parts.
+The grid and page search use Rust by default. Results are identical to TypeScript, proven by tests, only faster. If WebAssembly is unavailable or blocked by a Content Security Policy, they fall back to TypeScript. Set `engine="ts"` for TypeScript only, or `"auto"` for Rust from 10,000 rows.
+
+| Task | TypeScript | Rust | Speed-up |
+|---|---|---|---|
+| Grid search, 1 lakh rows | 342 ms | 9 ms | 36× |
+| Ask page, 5,000 passages | 18.8 ms | 0.45 ms | 42× |
+| Sort a name column, 10 lakh rows | over 30 s (before 5.3.13) | 0.19 s | over 150× |
+
+Text columns are ranked once with the browser's collator, then sorted in Rust, so Telugu and other scripts keep their correct order.
+
+## Style the grid with CSS
+
+Every grid colour is a CSS custom property whose fallback is the colour it always had. Stable class names let you style the parts.
 
 ```css
 .yk-grid {
-  --yk-grid-accent: #0038b4;          /* selected checkboxes, focus */
+  --yk-grid-accent: #0038b4;           /* selected checkboxes */
   --yk-grid-border: #d6dbe8;
-  --yk-grid-assistant-accent: #0038b4; /* Grid AI Assistant buttons */
+  --yk-grid-assistant-accent: #0038b4; /* Grid AI Assistant header and buttons */
 }
 [data-theme="dark"] .yk-grid {
   --yk-grid-bg: #12122a;
   --yk-grid-text: #f4f4fb;
-  --yk-grid-accent: #93c5fd;
-  --yk-grid-accent-text: #000633;
 }
 .yk-grid__head th { text-transform: uppercase; }
 ```
@@ -143,20 +213,19 @@ Every grid colour is a CSS custom property whose fallback is the colour it alway
 | `--yk-grid-selected-bg`, `--yk-grid-highlight`, `--yk-grid-check-border` | Selected and highlighted rows, checkboxes |
 | `--yk-grid-accent`, `--yk-grid-accent-text` | Checked boxes |
 | `--yk-grid-hc-border` | Border in the high-contrast theme |
-| `--yk-grid-assistant-bg`, `-surface`, `-border`, `-text`, `-muted`, `-accent`, `-user-bg`, `-ai-bg` | Grid AI Assistant |
+| `--yk-grid-assistant-bg`, `-surface`, `-border`, `-text`, `-muted`, `-accent`, `-user-bg`, `-ai-bg` | Grid AI Assistant (white text sits on `-accent`, so keep it dark) |
 
 Classes: `yk-grid`, `yk-grid__toolbar`, `yk-grid__scroll`, `yk-grid__table`, `yk-grid__head`, `yk-grid__body`, `yk-grid__row`, `yk-grid__cell`, `yk-grid__cards`, `yk-grid__card`, `yk-grid__pager`, `yk-grid__assistant`. Keep text pairs at 4.5:1 or more (WCAG 1.4.3). `gridColors(dark)` returns the full list.
 
-## Rust engine (default)
-
-Since 5.3.11 the grid and page search use Rust by default. Results are identical to TypeScript, proven by tests, only faster. If WebAssembly is unavailable or blocked by a Content Security Policy, they fall back to TypeScript. Set `engine="ts"` to keep TypeScript only, or `"auto"` for Rust from 10,000 rows. The 💬 button uses Rust page search when you set `engine`.
-
-| Task | TypeScript | Rust | Speed-up |
-|---|---|---|---|
-| Grid search, 1 lakh rows | 342 ms | 9 ms | 36× |
-| Ask page, 5,000 passages | 18.8 ms | 0.45 ms | 42× |
-
 ---
+
+## The YuktAI family
+
+| Package | What it is |
+|---|---|
+| [`yuktai`](https://www.npmjs.com/package/yuktai) | `npx yuktai@latest init my-app --yes`: a complete Next.js + Rust app in one command |
+| **`@yuktishaalaa/yuktai`** | This toolkit: grid, assistant, accessibility, page tools, icons |
+| [`@yuktishaalaa/ask-page`](https://www.npmjs.com/package/@yuktishaalaa/ask-page) | "Ask this page" side panel: offline RAG, sources highlighted, Telugu and Hindi |
 
 ## Live demos
 
@@ -168,26 +237,29 @@ Since 5.3.11 the grid and page search use Rust by default. Results are identical
 
 ## Compatibility
 
-Next.js 13–16 · React 17–19 (19 needs `--legacy-peer-deps`) · Node 18+ · Chrome, Edge, Firefox, Safari, Samsung Internet · jQuery 1.12–4.0 (no plugin needed)
+Next.js 13–16 · React 17–19 · Node 18+ · Chrome, Edge, Firefox, Safari, Samsung Internet · jQuery 1.12–4.0 (no plugin needed). Voice needs a browser with speech recognition (Chrome, Edge, Safari). WebMCP needs Chrome with WebMCP turned on.
 
 ## Honest limits
 
-- Grid questions use rules, not a language model; unusual phrasing may need rewording.
-- The built-in 💬 button uses keyword search (BM25). The [`@yuktishaalaa/ask-page`](./packages/ask-page) package adds meaning search (multilingual embeddings) in Balanced mode.
-- Telugu and Hindi data questions need `customRules` for now.
+- The Grid AI Assistant uses rules, not a language model. It understands English and Telugu commands; unusual phrasing may need rewording, and other languages need `customRules`.
+- Voice input works in 24 languages, but turning speech into a grid command follows the rule above.
+- The built-in 💬 button uses keyword search (BM25). [`@yuktishaalaa/ask-page`](https://www.npmjs.com/package/@yuktishaalaa/ask-page) adds meaning search (multilingual embeddings).
+- 10 lakh rows need about 300 MB of browser memory; on older phones use fewer rows.
+- In Show all with more than 5,000 rows, each row is one line high (long text is cut with …); the phone card view is used with pages only.
+- Columns that mix numbers and text still sort in TypeScript.
 - Automatic checks don't replace testing with real users and screen readers.
 
 ## Roadmap
 
-- **Next:** more Rust (filters, BI, typo-tolerant search, Telugu typed in English letters), Hindi voice commands
-- **Done:** semantic RAG with hybrid search, in [`@yuktishaalaa/ask-page`](./packages/ask-page)
-- **Later:** a Python package, Angular/Vue and .NET support, more Indian-language interfaces
+- **Next:** agentic task runner with a confirm step and undo (LangGraph.js, optional), Hindi and more Indian-language commands, full Telugu and Hindi interface
+- **Done:** Rust sorting for every column (5.3.13), grid CSS variables (5.3.14), semantic RAG in `@yuktishaalaa/ask-page`, one-command apps with `yuktai`
+- **Later:** a Python package, Angular/Vue and .NET support
 
 ---
 
 **Recognition:** part of the [XERJ Corpus Hub](https://hub.xerj.org) · [contributor profile](https://hub.xerj.org/contributors/sandeepmiriyala03)
 
-**Contributing:** issues and PRs welcome at [GitHub](https://github.com/sandeepmiriyala03/yuktai). Security: [SECURITY.md](./SECURITY.md)
+**Contributing:** issues and PRs welcome at [GitHub](https://github.com/sandeepmiriyala03/yuktai). Security: [SECURITY.md](https://github.com/sandeepmiriyala03/yuktai/blob/main/SECURITY.md)
 
 **License:** GPL-3.0 © Sandeep Miriyala, Yuktishaalaa AI Lab. AI coding assistants helped with learning, writing and testing; every design decision and release is mine.
 

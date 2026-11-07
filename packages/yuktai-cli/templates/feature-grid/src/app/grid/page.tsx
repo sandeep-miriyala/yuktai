@@ -12,7 +12,7 @@ export default function GridPage() {
       <p className="lead">
         One million sample orders, made in your browser in a few seconds. Six columns and five data types: text, badge, number,
         date and yes/no. Search and sorting on every column run in Rust (WebAssembly); nothing is sent anywhere. Select a column
-        heading to sort by it.
+        heading to sort by it, or press <strong>Show all</strong> to scroll through every row in one list.
       </p>
       <OrdersGrid />
       <p className="note">

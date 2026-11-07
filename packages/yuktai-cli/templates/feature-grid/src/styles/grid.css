@@ -35,3 +35,4 @@
   font-family: var(--font);
 }
 .yk-grid__head th { font-weight: 700; }
+.yk-grid__scroll--all:focus-visible { outline: 3px solid var(--focus); outline-offset: -3px; }

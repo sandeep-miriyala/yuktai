@@ -112,6 +112,7 @@ export default function OrdersGrid() {
           data={rows}
           columns={columns}
           rowKey="id"
+          locale="en-IN"
           theme={dark ? "dark" : "default"}
           search
           selectable
@@ -120,6 +121,7 @@ export default function OrdersGrid() {
             setSelected(keys);
             life.change(`${indian(keys.length)} rows selected`);
           }}
+          // "Show all (10,00,000)" lists every row in one smooth scrolling list (virtual scrolling)
           pagination={{ pageSize: 25, showSizeChanger: true, sizeOptions: [10, 25, 50, 100] }}
           engine={config.engine}
           showSearchTime

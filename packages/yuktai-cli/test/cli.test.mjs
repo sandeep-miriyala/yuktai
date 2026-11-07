@@ -53,7 +53,7 @@ test("scaffold: files, renamed dot-files, filled settings", () => {
     writePackageJson(dir, opts());
     const pkg = JSON.parse(readFileSync(join(dir, "package.json"), "utf8"));
     assert.equal(pkg.scripts.build, "yuktai build");
-    assert.equal(pkg.dependencies["@yuktishaalaa/yuktai"], "5.3.14");
+    assert.equal(pkg.dependencies["@yuktishaalaa/yuktai"], "5.4.0");
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
