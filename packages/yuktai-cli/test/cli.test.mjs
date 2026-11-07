@@ -53,7 +53,7 @@ test("scaffold: files, renamed dot-files, filled settings", () => {
     writePackageJson(dir, opts());
     const pkg = JSON.parse(readFileSync(join(dir, "package.json"), "utf8"));
     assert.equal(pkg.scripts.build, "yuktai build");
-    assert.equal(pkg.dependencies["@yuktishaalaa/yuktai"], "5.4.1");
+    assert.equal(pkg.dependencies["@yuktishaalaa/yuktai"], "5.5.0");
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
@@ -79,11 +79,15 @@ test("everything on (what --yes makes): grid with 10 lakh rows, QA report, icons
     const cfg = readFileSync(join(dir, "yuktai.config.ts"), "utf8");
     assert.match(cfg, /pageTools: true/);
     assert.match(cfg, /icons: true/);
+    assert.match(cfg, /splash: true/);
+    assert.match(cfg, /preferences: true/);
+    assert.match(readFileSync(join(dir, "src/app/layout.tsx"), "utf8"), /YuktaiSplash[\s\S]*MOTION_SCRIPT|MOTION_SCRIPT[\s\S]*YuktaiSplash/);
+    assert.match(readFileSync(join(dir, "src/data/uiText.ts"), "utf8"), /డేటా గ్రిడ్/);
     const test = readFileSync(join(dir, "tests/build.test.mjs"), "utf8");
     assert.match(test, /"grid\/index.html","qa\/index.html","icons\/index.html"/);
     for (const f of ["src/app/page.tsx", "tests/build.test.mjs"]) assert.doesNotMatch(readFileSync(join(dir, f), "utf8"), /\{\{\w+\}\}/, f);
     const md = readme(o);
-    for (const want of ["10 lakh", "## Lifecycle", "onStart", "/qa/", "/icons/", "rustup target add", "Grid AI Assistant", "22 Indian", "Colour and font", "--host netlify"]) assert.ok(md.includes(want), want);
+    for (const want of ["10 lakh", "## Lifecycle", "onStart", "/qa/", "/icons/", "rustup target add", "Grid AI Assistant", "22 Indian", "Colour and font", "Language and animations", "Loading screen", "--host netlify"]) assert.ok(md.includes(want), want);
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }

@@ -35,6 +35,7 @@ The [`yuktai`](https://www.npmjs.com/package/yuktai) command creates a Next.js +
 
 ## ✨ What's new
 
+- **5.5.0 — loading screen, 7 languages, animations the visitor controls:** `<YuktaiSplash>` shows your logo with "Welcome" in English, తెలుగు, हिन्दी, தமிழ், ಕನ್ನಡ, മലയാളം and বাংলা, once per tab. `<YuktaiPreferences>` is one header button for the site language (menus and buttons) and animations: Device setting, Off, Calm or Lively. `<Reveal>` fades sections in as you scroll. Nothing moves when the visitor picks Off. [Details](#loading-screen-languages-and-animations)
 - **5.4.1 — floating buttons follow your colours:** the ✨ ♿ 🛠 💬 🤖 buttons of `<YuktAIWrapper>` read `--yk-fab-bg` (all buttons) or `--yk-fab-<name>-bg` (`launcher`, `tools`, `rag`, `agent`, `codegen`, `a11y`), plus `--yk-fab-text`, `--yk-fab-border` and `--yk-fab-shadow`, and carry `yk-fab yk-fab--<name>` classes. Old colours stay as fallbacks. The logo is now at the top of this page.
 - **5.4.0 — Show all:** one button shows every row in one scrolling list, even **10 lakh rows**. Only the rows on screen are drawn (virtual scrolling), so it stays smooth on phones too. Search, sort, the AI Assistant and selection work on the full list. `pagination: { pageSize: 0 }` starts in Show all; `allLimit` (default 5,000) is where the list switches to virtual scrolling; `rowHeight`, `listHeight` and `showAll: false` are there too.
 - **5.3.16 — pages:** First and Last buttons, page numbers (1 … 49 50 51 … 100) and "Go to page". `pagination.showPageNumbers: false` keeps just Previous and Next.
@@ -81,7 +82,7 @@ The [`yuktai`](https://www.npmjs.com/package/yuktai) command creates a Next.js +
 **Plain HTML:** one line, no build step
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@yuktishaalaa/yuktai@5.4.1/vanilla/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@yuktishaalaa/yuktai@5.5.0/vanilla/index.min.js"></script>
 <script>
   yuktai.renderGrid("#staff", { data: rows, columns, ai: true, showSearchTime: true })
 </script>
@@ -150,7 +151,7 @@ export default function Orders({ rows }: { rows: Order[] }) {
 
 ```html
 <script src="https://code.jquery.com/jquery-4.0.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@yuktishaalaa/yuktai@5.4.1/vanilla/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@yuktishaalaa/yuktai@5.5.0/vanilla/index.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@yuktishaalaa/ask-page@1.0.0/dist/ask-page.global.js" defer></script>
 <script>
   $(function () {
@@ -197,6 +198,52 @@ The grid and page search use Rust by default. Results are identical to TypeScrip
 | Sort a name column, 10 lakh rows | over 30 s (before 5.3.13) | 0.19 s | over 150× |
 
 Text columns are ranked once with the browser's collator, then sorted in Rust, so Telugu and other scripts keep their correct order.
+
+## Loading screen, languages and animations
+
+From `@yuktishaalaa/yuktai/experience` (client components) and `@yuktishaalaa/yuktai/head` (plain strings for `<head>`, safe in a Next.js layout):
+
+```tsx
+// app/layout.tsx
+import { MOTION_SCRIPT, SPLASH_SCRIPT } from "@yuktishaalaa/yuktai/head";
+import { YuktaiSplash } from "@yuktishaalaa/yuktai/experience";
+
+<head><script dangerouslySetInnerHTML={{ __html: MOTION_SCRIPT + SPLASH_SCRIPT }} /></head>
+<body>
+  <YuktaiSplash title="My app" logo={<img src="/logo.svg" alt="" width={520} height={156} />} />
+  ...
+</body>
+```
+
+```tsx
+"use client";
+import { GlobeIcon } from "@yuktishaalaa/yuktai/icons";
+import { Reveal, YuktaiPreferences, useUiText } from "@yuktishaalaa/yuktai/experience";
+
+const MY_TEXT = { te: { pricing: "ధరలు" }, hi: { pricing: "कीमतें" } };
+
+export function Header() {
+  const { t, lang } = useUiText(MY_TEXT);   // English on the server, the visitor's language after load
+  return (
+    <header>
+      <nav lang={lang}><a href="/docs/">{t("docs")}</a> <a href="/pricing/">{t("pricing")}</a></nav>
+      <YuktaiPreferences icon={<GlobeIcon size={18} aria-hidden="true" />} text={MY_TEXT} />
+    </header>
+  );
+}
+
+<Reveal delay={80}><div className="card yk-lift">…</div></Reveal>
+```
+
+| Part | What it does |
+|---|---|
+| `<YuktaiSplash>` | Logo, "Welcome" in 7 languages, progress bar, Skip (Esc or a click also skip). Once per tab; `once="always"` for every load. Leaves after `minMs` (1,200) from page start. Colours: `--yk-splash-bg`, `--yk-splash-text`, `--yk-splash-accent`, `--yk-splash-accent-2`; follows `data-theme`. |
+| `<YuktaiPreferences>` | Header button and panel: site language and animations. `LanguagePicker` and `MotionPicker` are there on their own too. |
+| `useUiText(extra)` | `t(key)` in the visitor's language. Your words first, then built-in words (`docs`, `installApp`, `askThisPage`, `backToTop`…), then English. Put `lang={lang}` on what you translate. |
+| Animations | `data-motion` on `<html>`: `off`, `calm` or `lively`. Device setting follows `prefers-reduced-motion`. **Off** stops every animation and transition on the page. Classes: `yk-lift` (hover rise), `yk-float`, `yk-shimmer`, `yk-pop` (Lively only). |
+| `<Reveal>` | Fades and slides in on scroll. Never hidden on the server or without JavaScript. |
+
+Languages: English, Telugu, Hindi, Tamil, Kannada, Malayalam, Bengali. Choices are saved in that browser only.
 
 ## Style the grid with CSS
 

@@ -1,15 +1,16 @@
 // Menu, guides and links. Items with a `feature` only show when it is on in yuktai.config.ts.
 import config from "@config";
 
-type NavItem = { href: string; label: string; feature?: keyof typeof config.features };
+// `key` is the word in src/data/uiText.ts, so the menu follows the visitor's language.
+type NavItem = { href: string; label: string; key: string; feature?: keyof typeof config.features };
 
 const ALL: NavItem[] = [
-  { href: "/", label: "Home" },
-  { href: "/getting-started/", label: "Docs" },
-  { href: "/grid/", label: "Data grid", feature: "grid" },
-  { href: "/qa/", label: "QA report", feature: "pageTools" },
-  { href: "/icons/", label: "Icons", feature: "icons" },
-  { href: "/about/", label: "About" },
+  { href: "/", label: "Home", key: "home" },
+  { href: "/getting-started/", label: "Docs", key: "docs" },
+  { href: "/grid/", label: "Data grid", key: "grid", feature: "grid" },
+  { href: "/qa/", label: "QA report", key: "qa", feature: "pageTools" },
+  { href: "/icons/", label: "Icons", key: "icons", feature: "icons" },
+  { href: "/about/", label: "About", key: "about" },
 ];
 
 export const NAV = ALL.filter((n) => !n.feature || config.features[n.feature]);

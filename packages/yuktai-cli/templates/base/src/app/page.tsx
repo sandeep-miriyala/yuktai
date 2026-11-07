@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Reveal } from "@yuktishaalaa/yuktai/experience";
 import config from "@config";
 import HeroAsk from "@/components/ui/HeroAsk";
 import EngineDemo from "@/components/ui/EngineDemo";
@@ -23,16 +24,17 @@ export default function Home() {
     <>
       <section className="wrap hero">
         <p className="kicker">Built with YuktAI</p>
-        <h1>{config.title}</h1>
+        <h1 className="yk-pop">{config.title}</h1>
         <p className="lead">{config.description} Edit this page in src/app/page.tsx and the settings in yuktai.config.ts.</p>
         {config.features.ask && <HeroAsk />}
         <EngineDemo />
       </section>
+      {/* Sections and cards fade in as you scroll; the 🌐 button lets visitors turn it off */}
       <section className="wrap">
         <p className="kicker">What you get</p>
         <h2>Ready from the first page</h2>
         <ul className="cards">
-          {FEATURES.filter((f) => f.on).map((f) => {
+          {FEATURES.filter((f) => f.on).map((f, i) => {
             const inner = (
               <>
                 <span className="iconbox"><f.icon size={22} aria-hidden="true" /></span>
@@ -41,9 +43,9 @@ export default function Home() {
               </>
             );
             return (
-              <li key={f.title}>
-                {f.href ? <Link className="card" href={f.href}>{inner}</Link> : <div className="card">{inner}</div>}
-              </li>
+              <Reveal as="li" key={f.title} delay={(i % 3) * 80}>
+                {f.href ? <Link className="card yk-lift" href={f.href}>{inner}</Link> : <div className="card yk-lift">{inner}</div>}
+              </Reveal>
             );
           })}
         </ul>

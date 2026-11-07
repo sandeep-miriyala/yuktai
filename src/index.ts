@@ -341,6 +341,9 @@ export type {
 // review, page + data RAG, multi-step tasks, BI insights, design review.
 export * from "./agentic";
 
+// ─── Experience (v5.5): loading screen, site language, animations ───────────
+export * from "./experience";
+
 // ─── Singleton runtime ───────────────────────────────────────────────────────
 import { Runtime } from "./runtime/runtime";
 import { aiPlugin } from "./plugins/ai";

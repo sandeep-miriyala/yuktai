@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { InstallIcon } from "@yuktishaalaa/yuktai/icons";
+import { useUiText } from "@yuktishaalaa/yuktai/experience";
 
 type InstallPrompt = Event & { prompt: () => Promise<void>; userChoice: Promise<{ outcome: string }> };
 type InstallWindow = Window & { __yuktaiInstall?: InstallPrompt | null };
@@ -36,6 +37,7 @@ const installed = () =>
  */
 export default function InstallButton() {
   const [ready, setReady] = useState(false);
+  const { t } = useUiText();
   const [prompt, setPrompt] = useState<InstallPrompt | null>(null);
   const [steps, setSteps] = useState<string[] | null>(null);
   const button = useRef<HTMLButtonElement>(null);
@@ -87,7 +89,7 @@ export default function InstallButton() {
         }}
       >
         <InstallIcon size={18} aria-hidden="true" />
-        <span>Install app</span>
+        <span>{t("installApp")}</span>
       </button>
       {steps && (
         <div className="install-help" role="dialog" aria-label="Install this app">

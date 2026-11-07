@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.0
+- **Loading screen:** the app's logo and name with "Welcome" in English, తెలుగు, हिन्दी, தமிழ், ಕನ್ನಡ, മലയാളം and বাংলা, once per browser tab (`features.splash`). Skip button, Esc or a click skips it.
+- **🌐 Language and animations** button in the header (`features.preferences`): menus and buttons in English + 6 Indian languages, and animations the visitor chooses: Device setting, Off, Calm or Lively. Off stops every animation on the page.
+- Home cards fade in as you scroll and rise on hover. Add your own words in `src/data/uiText.ts`.
+- Needs `@yuktishaalaa/yuktai` 5.5.0.
+
 ## 1.0.2
 - **Install app** now catches the browser's install offer even when it arrives before React starts, so Chrome, Edge and Android open their real install prompt.
 - **Top bar** stays on one row on desktops (961 px and up) and is solid enough to read over the page as you scroll.

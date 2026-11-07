@@ -17,6 +17,8 @@ const config = {
     ask: true, // "Ask this page" panel, Ctrl + K. Answers come from the page itself.
     pwa: true, // Install button (always shown until installed), works offline
     backToTop: true, // ↑ Back to top button, bottom right
+    splash: true, // loading screen: logo and "Welcome" in 7 languages, once per tab
+    preferences: true, // 🌐 button: site language (English + 6 Indian languages) and animations (Device setting / Off / Calm / Lively)
     pageTools: {{pageTools}}, // QA report page and the 🛠 button: 15 WCAG checks, copilot, form review
     grid: {{grid}}, // data grid page: 10 lakh sample rows, search, sort
     icons: {{icons}}, // icons guide: every YuktAI icon, copy the code

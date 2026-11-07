@@ -6,6 +6,10 @@ import { writeFileSync, existsSync } from "node:fs"
 const files = {
   "dist/icons.d.ts": 'export * from "./icons/index";\n',
   "dist/icons.d.mts": 'export * from "./icons/index";\n',
+  "dist/experience.d.ts": 'export * from "./experience/index";\n',
+  "dist/experience.d.mts": 'export * from "./experience/index";\n',
+  "dist/head.d.ts": 'export * from "./experience/head";\n',
+  "dist/head.d.mts": 'export * from "./experience/head";\n',
   "dist/index.d.mts": 'export * from "./index";\nexport { default } from "./index";\n',
 }
 if (!existsSync("dist/index.d.ts") || !existsSync("dist/icons/index.d.ts")) {

@@ -111,3 +111,17 @@ pre { padding: 16px 18px; border-radius: 14px; background: var(--code-bg); color
 
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation: none !important; transition: none !important; } }
 @media (forced-colors: active) { .grad { color: CanvasText; background: none; } .hero-ask { border: 2px solid CanvasText; } }
+
+/* ── Loading screen, 🌐 language and animations (@yuktishaalaa/yuktai/experience) ── */
+.yk-splash { --yk-splash-bg: var(--bg); --yk-splash-text: var(--text); --yk-splash-accent: var(--accent); --yk-splash-accent-2: var(--link); }
+.splash-brand { display: inline-flex; align-items: center; gap: 18px; font-size: clamp(1.8rem, 6vw, 3rem); font-weight: 800; letter-spacing: -.03em; }
+.splash-brand .logo { width: clamp(64px, 14vw, 88px); height: auto; }
+.yk-pref { --yk-pref-bg: var(--panel); --yk-pref-panel: var(--panel); --yk-pref-text: var(--text); --yk-pref-border: var(--line); --yk-pref-accent: var(--accent); --yk-pref-focus: var(--focus); }
+.yk-pref__btn span { font-size: .85rem; }
+:root[data-motion="lively"] .iconbox { transition: transform .35s cubic-bezier(.2, .9, .3, 1.4); }
+:root[data-motion="lively"] .yk-lift:hover .iconbox { transform: rotate(-8deg) scale(1.12); }
+/* Longer words in Indian languages: keep the header on one row */
+@media (max-width: 1480px) and (min-width: 961px) {
+  .topbar:not([data-lang="en"]) .topnav a { padding: 10px 7px; font-size: .9rem; }
+  .topbar:not([data-lang="en"]) .install-btn span, .topbar:not([data-lang="en"]) .ask-btn .kbd { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+}

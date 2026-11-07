@@ -5,6 +5,9 @@ import Providers from "@/components/yuktai/Providers";
 import BackToTop from "@/components/yuktai/BackToTop";
 import { INSTALL_SCRIPT, THEME_SCRIPT } from "@/components/yuktai/theme";
 import { LOOK_SCRIPT } from "@/components/yuktai/look";
+import Logo from "@/components/yuktai/Logo";
+import { MOTION_SCRIPT, SPLASH_SCRIPT } from "@yuktishaalaa/yuktai/head";
+import { YuktaiSplash } from "@yuktishaalaa/yuktai/experience";
 import { LINKS } from "@/data/site";
 import "@/styles/globals.css";
 
@@ -30,9 +33,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT + LOOK_SCRIPT + INSTALL_SCRIPT }} />
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT + LOOK_SCRIPT + MOTION_SCRIPT + SPLASH_SCRIPT + INSTALL_SCRIPT }} />
       </head>
       <body>
+        {/* Loading screen: your logo and "Welcome" in 7 languages, once per tab */}
+        {config.features.splash && (
+          <YuktaiSplash title={config.title} logo={<span className="splash-brand"><Logo size={88} /><strong>{config.title}</strong></span>} />
+        )}
         <a className="skip" href="#main">Skip to content</a>
         <Providers>
           <Header />

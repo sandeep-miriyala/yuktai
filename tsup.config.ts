@@ -2,9 +2,21 @@ import { defineConfig } from "tsup";
 
 export default defineConfig([
   {
+    // @yuktishaalaa/yuktai/experience: client components, marked "use client"
+    // so a Next.js Server Component (layout.tsx) can render them directly.
+    entry:     { experience: "src/experience/index.ts" },
+    format:    ["esm", "cjs"],
+    dts:       false,
+    minify:    true,
+    splitting: false,
+    external:  ["react", "react-dom"],
+    platform:  "browser",
+    banner:    { js: '"use client";' },
+  },
+  {
     // index: everything · icons: @yuktishaalaa/yuktai/icons (no hooks, no
     // browser globals, so it works in Next.js Server Components too)
-    entry:    { index: "src/index.ts", icons: "src/icons/index.ts" },
+    entry:    { index: "src/index.ts", icons: "src/icons/index.ts", head: "src/experience/head.ts" },
     format:   ["esm", "cjs"],
     dts:      false, // .d.ts files come from TypeScript 7: npm run build:types
     clean:    true,
