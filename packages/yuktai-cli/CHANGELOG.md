@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.2
+- **Install app** now catches the browser's install offer even when it arrives before React starts, so Chrome, Edge and Android open their real install prompt.
+- **Top bar** stays on one row on desktops (961 px and up) and is solid enough to read over the page as you scroll.
+- **Floating buttons** (✨ ♿ 🛠 and ↑ Back to top) share one look: the logo gradient, a white ring and a soft shadow, with `@yuktishaalaa/yuktai` 5.4.1's `--yk-fab-*` variables.
+
 ## 1.0.1
 - **Install app** is always in the header until the app is installed. Chrome, Edge and Android Chrome show their own prompt; Safari (iPhone, iPad, Mac), Firefox and other browsers get short steps for that device.
 - **↑ Back to top** button at the bottom right after you scroll (`features.backToTop`). Smooth scroll unless reduced motion is on; focus moves to the top too.

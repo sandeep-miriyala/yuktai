@@ -451,7 +451,9 @@ export function YuktAIWrapper({
   // Copilot treat it as YuktAI's own UI, not the page's. (Not data-yuktai-panel:
   // on phones the engine turns those into full-width bottom sheets.)
   // Colours keep white text at 4.5:1 or more (WCAG 1.4.3).
-  const fabBase = (bottom: number, bg: string, active: boolean): React.CSSProperties => ({
+  // v5.4.1: colours are CSS variables (old colours as fallbacks). Set --yk-fab-bg for
+  // every button, or --yk-fab-<name>-bg for one (launcher, tools, codegen, agent, rag, a11y).
+  const fabBase = (bottom: number, bg: string, active: boolean, name = "a11y"): React.CSSProperties => ({
     position:       "fixed",
     bottom:         `${bottom}px`,
     [position]:     "24px",
@@ -459,15 +461,16 @@ export function YuktAIWrapper({
     width:          "52px",
     height:         "52px",
     borderRadius:   "50%",
-    background:     active ? bg : bg,
-    color:          "#fff",
-    border:         "none",
+    background:     `var(--yk-fab-${name}-bg, var(--yk-fab-bg, ${bg}))`,
+    color:          "var(--yk-fab-text, #fff)",
+    border:         "var(--yk-fab-border, none)",
     cursor:         "pointer",
     fontSize:       "22px",
     display:        "flex",
     alignItems:     "center",
     justifyContent: "center",
-    boxShadow:      "0 4px 16px rgba(0,0,0,0.25)",
+    boxShadow:      "var(--yk-fab-shadow, 0 4px 16px rgba(0,0,0,0.25))",
+    filter:         active ? "brightness(0.85)" : undefined,
     transition:     "transform 0.15s, background 0.2s",
   })
 
@@ -502,7 +505,8 @@ export function YuktAIWrapper({
         <button
           type="button"
           data-yuktai-ui="true"
-          style={fabBase(24, toolsOpen ? "#134e4a" : "#0f766e", toolsOpen)}
+          className="yk-fab yk-fab--launcher"
+          style={fabBase(24, toolsOpen ? "#134e4a" : "#0f766e", toolsOpen, "launcher")}
           aria-expanded={toolsOpen}
           aria-label={toolsOpen ? "Hide yuktai tools" : "Show yuktai tools"}
           title={toolsOpen ? "Hide yuktai tools" : "yuktai tools"}
@@ -529,7 +533,8 @@ export function YuktAIWrapper({
         <button
           type="button"
           data-yuktai-ui="true"
-          style={fabBase(toolsBottom, toolsPanelOpen ? "#312e81" : "#4338ca", toolsPanelOpen)}
+          className="yk-fab yk-fab--tools"
+          style={fabBase(toolsBottom, toolsPanelOpen ? "#312e81" : "#4338ca", toolsPanelOpen, "tools")}
           aria-label="Open page tools"
           aria-haspopup="dialog"
           aria-expanded={toolsPanelOpen}
@@ -585,7 +590,8 @@ export function YuktAIWrapper({
 {vibeOn && showButtons && (
   <button
     data-yuktai-ui="true"
-    style={fabBase(codegenBottom, codegenOpen ? "#92400e" : "#b45309", codegenOpen)}
+    className="yk-fab yk-fab--codegen"
+          style={fabBase(codegenBottom, codegenOpen ? "#92400e" : "#b45309", codegenOpen, "codegen")}
     aria-label="Open Vibe Coder"
     title="⚡ Vibe Coder — Generate Next.js project"
     onClick={() => { setCodegenOpen(p => !p); setAgentOpen(false); setRagOpen(false); setPanelOpen(false) }}
@@ -610,7 +616,8 @@ export function YuktAIWrapper({
       {agentOn && showButtons && (
         <button
           data-yuktai-ui="true"
-          style={fabBase(agentBottom, agentOpen ? "#065f46" : "#047857", agentOpen)}
+          className="yk-fab yk-fab--agent"
+          style={fabBase(agentBottom, agentOpen ? "#065f46" : "#047857", agentOpen, "agent")}
           aria-label="Open AI agent"
           aria-haspopup="dialog"
           aria-expanded={agentOpen}
@@ -742,7 +749,8 @@ export function YuktAIWrapper({
       {ragOn && showButtons && (
         <button
           data-yuktai-ui="true"
-          style={fabBase(ragBottom, ragOpen ? "#7c3aed" : "#6d28d9", ragOpen)}
+          className="yk-fab yk-fab--rag"
+          style={fabBase(ragBottom, ragOpen ? "#7c3aed" : "#6d28d9", ragOpen, "rag")}
           aria-label="Ask a question about this page"
           aria-haspopup="dialog"
           aria-expanded={ragOpen}
@@ -857,7 +865,8 @@ export function YuktAIWrapper({
       {a11yOn && showButtons && (
       <button
         data-yuktai-ui="true"
-        style={fabBase(a11yBottom, isActive ? "#0f766e" : "#1a73e8", panelOpen)}
+        className="yk-fab yk-fab--a11y"
+          style={fabBase(a11yBottom, isActive ? "#0f766e" : "#1a73e8", panelOpen, "a11y")}
         aria-label="Open accessibility preferences"
         aria-haspopup="dialog"
         aria-expanded={panelOpen}

@@ -1,3 +1,12 @@
+<p align="center">
+  <a href="https://yuktaidocs.netlify.app/">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/sandeep-miriyala/yuktai/main/brand/yuktai-logo-dark.png">
+      <img src="https://raw.githubusercontent.com/sandeep-miriyala/yuktai/main/brand/yuktai-logo-light.png" alt="YuktAI: Open-Source Agentic AI Framework" width="520">
+    </picture>
+  </a>
+</p>
+
 # @yuktishaalaa/yuktai
 
 > **Accessibility, AI and data toolkit for Next.js, React and plain HTML.** A data grid that handles 10 lakh rows and answers questions, a WCAG 2.2 accessibility widget, page Q&A, 163 icons. Everything runs in the visitor's browser: **no API keys, no server, no cost, works offline.**
@@ -26,6 +35,7 @@ The [`yuktai`](https://www.npmjs.com/package/yuktai) command creates a Next.js +
 
 ## ✨ What's new
 
+- **5.4.1 — floating buttons follow your colours:** the ✨ ♿ 🛠 💬 🤖 buttons of `<YuktAIWrapper>` read `--yk-fab-bg` (all buttons) or `--yk-fab-<name>-bg` (`launcher`, `tools`, `rag`, `agent`, `codegen`, `a11y`), plus `--yk-fab-text`, `--yk-fab-border` and `--yk-fab-shadow`, and carry `yk-fab yk-fab--<name>` classes. Old colours stay as fallbacks. The logo is now at the top of this page.
 - **5.4.0 — Show all:** one button shows every row in one scrolling list, even **10 lakh rows**. Only the rows on screen are drawn (virtual scrolling), so it stays smooth on phones too. Search, sort, the AI Assistant and selection work on the full list. `pagination: { pageSize: 0 }` starts in Show all; `allLimit` (default 5,000) is where the list switches to virtual scrolling; `rowHeight`, `listHeight` and `showAll: false` are there too.
 - **5.3.16 — pages:** First and Last buttons, page numbers (1 … 49 50 51 … 100) and "Go to page". `pagination.showPageNumbers: false` keeps just Previous and Next.
 - **5.3.15:** a clearer npm page and docs links.
@@ -71,7 +81,7 @@ The [`yuktai`](https://www.npmjs.com/package/yuktai) command creates a Next.js +
 **Plain HTML:** one line, no build step
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@yuktishaalaa/yuktai@5.4.0/vanilla/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@yuktishaalaa/yuktai@5.4.1/vanilla/index.min.js"></script>
 <script>
   yuktai.renderGrid("#staff", { data: rows, columns, ai: true, showSearchTime: true })
 </script>
@@ -140,7 +150,7 @@ export default function Orders({ rows }: { rows: Order[] }) {
 
 ```html
 <script src="https://code.jquery.com/jquery-4.0.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@yuktishaalaa/yuktai@5.4.0/vanilla/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@yuktishaalaa/yuktai@5.4.1/vanilla/index.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@yuktishaalaa/ask-page@1.0.0/dist/ask-page.global.js" defer></script>
 <script>
   $(function () {

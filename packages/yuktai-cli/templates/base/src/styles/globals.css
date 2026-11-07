@@ -22,7 +22,7 @@ section.wrap { padding-block: 56px; }
 .grad { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
 
 /* header */
-.topbar { position: sticky; top: 0; z-index: 30; border-bottom: 1px solid var(--line-soft); background: color-mix(in srgb, var(--bg) 80%, transparent); backdrop-filter: saturate(1.6) blur(14px); -webkit-backdrop-filter: saturate(1.6) blur(14px); }
+.topbar { position: sticky; top: 0; z-index: 30; border-bottom: 1px solid var(--line-soft); background: color-mix(in srgb, var(--bg) 96%, transparent); backdrop-filter: saturate(1.6) blur(14px); -webkit-backdrop-filter: saturate(1.6) blur(14px); }
 .topbar-in { max-width: var(--max); margin: 0 auto; padding: 10px 20px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; min-height: 68px; }
 .brand { display: flex; align-items: center; gap: 10px; color: var(--text); text-decoration: none; font-weight: 800; font-size: 1.1rem; }
 .logo { display: block; flex: none; border-radius: 11px; box-shadow: 0 0 0 1px color-mix(in srgb, #0053ED 45%, transparent); }
@@ -30,13 +30,13 @@ section.wrap { padding-block: 56px; }
 .topnav a { padding: 10px 12px; border-radius: 10px; color: var(--muted); font-weight: 600; text-decoration: none; white-space: nowrap; }
 .topnav a:hover, .topnav a[aria-current="page"] { color: var(--text); background: var(--chip); }
 .tools { display: flex; align-items: center; gap: 8px; margin-left: auto; }
-.ask-btn { display: flex; align-items: center; gap: 10px; min-height: 44px; min-width: 220px; padding: 0 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); color: var(--muted); font: 500 .95rem var(--font); cursor: pointer; }
+.ask-btn { display: flex; align-items: center; gap: 10px; min-height: 44px; min-width: 0; padding: 0 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); color: var(--muted); font: 500 .95rem var(--font); cursor: pointer; }
 .ask-btn svg { color: var(--accent); }
 .ask-btn .ask-text { flex: 1; text-align: left; }
 .kbd { padding: 1px 7px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 6px; background: var(--panel2); color: var(--muted); font: 700 .74rem var(--mono); }
 .icon-btn { display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); color: var(--text); cursor: pointer; }
 .install-btn { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border: 0; border-radius: 12px; background: var(--grad); color: var(--btn-text); font: 700 .95rem var(--font); cursor: pointer; }
-@media (max-width: 820px) { .topnav { order: 3; width: 100%; overflow-x: auto; } .ask-btn { min-width: 0; } .ask-btn .kbd { display: none; } }
+@media (max-width: 960px) { .topnav { order: 3; width: 100%; overflow-x: auto; } .ask-btn { min-width: 0; } .ask-btn .kbd { display: none; } }
 @media (max-width: 480px) { .ask-btn .ask-text, .install-btn span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); } }
 
 /* buttons, cards */
@@ -84,15 +84,26 @@ pre { padding: 16px 18px; border-radius: 14px; background: var(--code-bg); color
 .seg label:has(input:focus-visible) { outline: 3px solid var(--focus); outline-offset: 2px; }
 .dot { width: 20px; height: 20px; border-radius: 50%; box-shadow: 0 0 0 2px var(--panel), 0 0 0 3px var(--line); }
 
+/* Floating buttons: the YuktAI widget (✨ ♿ 🛠), Back to top. One look, brand gradient, white ring. */
+:root { --fab-bg: linear-gradient(135deg, #000633, var(--accent-solid)); --fab-shadow: 0 8px 24px rgba(0, 20, 90, .35); }
+:root { --yk-fab-bg: var(--fab-bg); --yk-fab-border: 2px solid #ffffff; --yk-fab-shadow: var(--fab-shadow); }
+
 /* install help and back to top */
-.install { position: relative; }
+.install-wrap { position: relative; }
 .install-help { position: absolute; right: 0; top: calc(100% + 8px); z-index: 60; display: grid; gap: 10px; width: min(320px, calc(100vw - 32px)); padding: 16px; border: 1px solid var(--line-soft); border-radius: 16px; background: var(--panel); color: var(--text); box-shadow: var(--shadow); }
 .install-help ol { display: grid; gap: 6px; margin: 0; padding-left: 1.3em; }
 .install-help .hint { margin: 0; }
-.to-top { position: fixed; right: 24px; bottom: 24px; z-index: 50; display: grid; place-items: center; width: 52px; height: 52px; border: 0; border-radius: 50%; background: var(--accent-solid); color: #ffffff; box-shadow: var(--shadow); cursor: pointer; }
+.to-top { position: fixed; right: 24px; bottom: 24px; z-index: 50; display: grid; place-items: center; width: 52px; height: 52px; border: 2px solid #ffffff; border-radius: 50%; background: var(--fab-bg); color: #ffffff; box-shadow: var(--fab-shadow); cursor: pointer; transition: transform .15s, box-shadow .15s; }
+.to-top:hover, .yk-fab:hover { transform: translateY(-2px); }
 .to-top:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
 @media (max-width: 640px) { .install-help { position: fixed; left: 16px; right: 16px; top: 72px; width: auto; } .to-top { right: 16px; bottom: 16px; } }
 @media print { .to-top { display: none; } }
+
+
+@media (min-width: 961px) { .topbar-in { flex-wrap: nowrap; } .topnav { min-width: 0; overflow-x: auto; scrollbar-width: none; } .brand, .tools { flex: none; } }
+/* One-row top bar: on narrower desktops the Ask button keeps its icon and shortcut; the label stays for screen readers */
+@media (max-width: 1480px) and (min-width: 961px) { .ask-btn .ask-text { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; } .topnav a { padding: 10px 9px; } }
+@media (max-width: 1100px) and (min-width: 961px) { .install-btn span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); } .install-btn { padding: 0 12px; } }
 
 /* footer */
 .footer { border-top: 1px solid var(--line-soft); color: var(--muted); font-size: .92rem; padding: 24px 0 96px; }

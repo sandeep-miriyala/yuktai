@@ -3,7 +3,7 @@ import config from "@config";
 import Header from "@/components/yuktai/Header";
 import Providers from "@/components/yuktai/Providers";
 import BackToTop from "@/components/yuktai/BackToTop";
-import { THEME_SCRIPT } from "@/components/yuktai/theme";
+import { INSTALL_SCRIPT, THEME_SCRIPT } from "@/components/yuktai/theme";
 import { LOOK_SCRIPT } from "@/components/yuktai/look";
 import { LINKS } from "@/data/site";
 import "@/styles/globals.css";
@@ -30,7 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT + LOOK_SCRIPT }} />
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT + LOOK_SCRIPT + INSTALL_SCRIPT }} />
       </head>
       <body>
         <a className="skip" href="#main">Skip to content</a>

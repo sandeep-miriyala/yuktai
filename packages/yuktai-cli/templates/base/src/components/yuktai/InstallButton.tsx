@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { InstallIcon } from "@yuktishaalaa/yuktai/icons";
 
 type InstallPrompt = Event & { prompt: () => Promise<void>; userChoice: Promise<{ outcome: string }> };
+type InstallWindow = Window & { __yuktaiInstall?: InstallPrompt | null };
 
 /** How to install on this device when the browser has no install prompt to offer. */
 function howToInstall(): string[] {
@@ -40,14 +41,19 @@ export default function InstallButton() {
   const button = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
+    // The offer may have come before React started: INSTALL_SCRIPT (theme.ts) kept it.
+    const take = () => setPrompt((window as InstallWindow).__yuktaiInstall ?? null);
     const offer = (e: Event) => { e.preventDefault(); setPrompt(e as InstallPrompt); };
     const done = () => { setPrompt(null); setReady(false); };
     // window and matchMedia exist only after mount
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setReady(!installed());
+    take();
+    document.addEventListener("yuktai:install", take);
     window.addEventListener("beforeinstallprompt", offer);
     window.addEventListener("appinstalled", done);
     return () => {
+      document.removeEventListener("yuktai:install", take);
       window.removeEventListener("beforeinstallprompt", offer);
       window.removeEventListener("appinstalled", done);
     };
@@ -62,7 +68,7 @@ export default function InstallButton() {
 
   if (!ready) return null;
   return (
-    <div className="install">
+    <div className="install-wrap">
       <button
         ref={button}
         type="button"
@@ -73,6 +79,7 @@ export default function InstallButton() {
             await prompt.prompt();
             const choice = await prompt.userChoice.catch(() => null);
             setPrompt(null);
+            (window as InstallWindow).__yuktaiInstall = null; // an offer can be used once
             if (choice?.outcome === "accepted") setReady(false);
             return;
           }
