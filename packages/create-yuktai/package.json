@@ -1,0 +1,24 @@
+{
+  "name": "create-yuktai",
+  "version": "1.0.0",
+  "description": "npm create yuktai@latest: create a YuktAI app (Next.js, accessible, Indian languages) in one command.",
+  "type": "module",
+  "bin": {
+    "create-yuktai": "bin/create-yuktai.mjs"
+  },
+  "files": ["bin", "README.md", "LICENSE"],
+  "engines": { "node": ">=20.9" },
+  "dependencies": {
+    "yuktai": "^1.3.0"
+  },
+  "keywords": ["yuktai", "create", "nextjs", "accessibility", "starter"],
+  "author": "Sandeep Miriyala",
+  "license": "GPL-3.0-only",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sandeep-miriyala/yuktai.git",
+    "directory": "packages/create-yuktai"
+  },
+  "homepage": "https://yuktaidocs.netlify.app/create/",
+  "bugs": "https://github.com/sandeep-miriyala/yuktai/issues"
+}
