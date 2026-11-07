@@ -1,95 +1,171 @@
-# yuktai
+<p align="center">
+  <a href="https://yuktaidocs.netlify.app/">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/sandeep-miriyala/yuktai/main/brand/yuktai-logo-dark.png">
+      <img src="https://raw.githubusercontent.com/sandeep-miriyala/yuktai/main/brand/yuktai-logo-light.png" alt="YuktAI" width="420">
+    </picture>
+  </a>
+</p>
 
-Create accessible, AI-in-the-browser web apps with one command.
+<p align="center">
+  <strong>Accessible data grids and accessibility tools for Next.js, React and plain HTML.</strong><br>
+  Rust speed. Indian languages. One command.
+</p>
 
+<p align="center">
+  <a href="https://www.npmjs.com/package/@yuktishaalaa/yuktai"><img src="https://img.shields.io/npm/v/@yuktishaalaa/yuktai" alt="npm version"></a>
+  <a href="https://www.npmjs.com/package/@yuktishaalaa/yuktai"><img src="https://img.shields.io/npm/dm/@yuktishaalaa/yuktai" alt="npm downloads"></a>
+  <a href="https://github.com/sandeep-miriyala/yuktai/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-blue" alt="License: GPL-3.0"></a>
+  <a href="https://yuktaidocs.netlify.app/"><img src="https://img.shields.io/badge/docs-live%20demos-0038b4" alt="Docs"></a>
+</p>
+
+<p align="center">
+  <a href="https://yuktaidocs.netlify.app/">Documentation</a> ·
+  <a href="https://yuktaidocs.netlify.app/create/">Create an app</a> ·
+  <a href="https://yuktaidocs.netlify.app/grid/">Demos</a> ·
+  <a href="CHANGELOG.md">Changelog</a>
+</p>
+
+---
+
+## Quick start
+
+```bash
+npm install @yuktishaalaa/yuktai
 ```
-npx yuktai@latest init my-app --yes
+
+```tsx
+"use client"
+import { YuktaiGrid } from "@yuktishaalaa/yuktai"
+
+const columns = [
+  { key: "name", label: "Name", sortable: true },
+  { key: "city", label: "City" },
+  { key: "amount", label: "Amount", type: "number", sortable: true },
+]
+
+export default function Orders({ rows }) {
+  return <YuktaiGrid data={rows} columns={columns} rowKey="id" search pagination={{ pageSize: 25 }} />
+}
+```
+
+That's it. Search, sort, pages, keyboard navigation and phone cards work out of the box.
+
+**No build step?** Use one script tag:
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/@yuktishaalaa/yuktai@5.5.3/vanilla/index.min.js"></script>
+<script>yuktai.renderGrid("#orders", { data: rows, columns })</script>
+```
+
+**Starting a new app?** One command gives you a ready Next.js app:
+
+```bash
+npm create yuktai@latest my-app
 cd my-app
 npm run dev
 ```
 
-`--yes` turns everything on: a docs site, a **data grid with 25 lakh (2,500,000) sample rows and the Grid AI Assistant** (🎤 voice, 24 languages, WebMCP), a **QA report**, an **icons guide**, a **🎨 colour and font picker**, a **Python API** (FastAPI) that starts with the site, a complete **PWA**, the **lifecycle** guide and a README written for your choices. No hosting files unless you ask for them.
+Only Node.js 18+ is needed. Rust and Python are optional extras.
 
-Every app starts with:
+## Why YuktAI?
 
-- **Next.js** (static export, so hosting is free) with React and TypeScript
-- **Rust → WebAssembly** core (`rust/`), with a TypeScript fallback so the app works without Rust
-- The **YuktAI accessibility widget** (♿) and **Ask this page** (Ctrl + K), answering from the page itself
-- **163 YuktAI icons**, light and dark themes, AAA text contrast
-- An **installable app** (PWA) that works offline
-- `yuktai.config.ts`: one place for the name, colours and features
-- A three-step **lifecycle** for every part: `onStart`, `onChange`, `onEnd`
+- **Fast** – search and sort run in Rust (WebAssembly). 10 lakh rows sort in under a second.
+- **Accessible** – WCAG 2.2 checks, keyboard support and screen-reader labels built in.
+- **Indian languages** – Indian number format (10,00,000), correct sorting for Telugu and other scripts, voice input in 22 Indian languages.
+- **Works anywhere** – Next.js, React, plain HTML and jQuery.
+- **Free** – GPL-3.0, free forever.
 
-With the features on (`--yes` turns them all on):
+## What's inside
 
-| Page | What it does |
+| | |
 |---|---|
-| `/grid/` | 25 lakh orders made in the browser (10 lakh on phones): text, badge, number, date and yes/no columns. Search and sort every column in Rust. The Grid AI Assistant answers typed or spoken commands in English and the 22 Indian languages |
-| `/qa/` | 15 WCAG 2.2 checks with a score, what to fix and a Markdown report |
-| `/backend/` | The Python API: live status and its 25 lakh orders, page by page |
-| `/agents/` | Grid Agent and RAG (LangGraph). Groq with a key in `backend/.env`, free mode without |
-| `/icons/` | Every icon: search, size, outline or filled, colour with a contrast check, copy the code |
-| `/lifecycle/` | How `onStart`, `onChange` and `onEnd` work (docs template) |
+| 📊 **Data grid** | Search, sort, filter, pages or one scrolling list, selection, CSV export, themes |
+| ♿ **Accessibility** | Contrast, text size, dyslexia font, colour-blind filters, WCAG audit |
+| 💬 **Ask this page** | Answers questions from your page content |
+| 🎨 **163 icons** | Any size and colour, safe in Server Components |
 
-Nothing visitors type is sent anywhere.
+Optional, when you need them: a grid assistant that understands plain words, a loading screen, and a Python API with agents in apps made by `npx yuktai`. See the [docs](https://yuktaidocs.netlify.app/).
 
-## Commands
+## Cheat sheet
 
-| Command | What it does |
+### Create an app
+
+| Command | |
 |---|---|
-| `npx yuktai init my-app` | Create an app (asks a few questions) |
-| `npx yuktai init my-app --yes` | Create with everything on, no questions |
-| `yuktai dev` | Rust → WebAssembly, the Python API (if `backend/` exists) and `next dev`, together. One Ctrl + C stops all. `--no-api` skips the API |
-| `yuktai api` | The Python API on its own: http://localhost:8000/docs |
-| `yuktai api-test` | The Python API's tests (pytest) |
-| `yuktai agent-test` | Testing Agent: runs every check, explains what failed |
-| `yuktai assistant` | YuktAI Assistant: add pages and API endpoints, ask how-to |
-| `yuktai build` | Rust → WebAssembly, then `next build` → static files in `out/` |
+| `npm create yuktai@latest my-app` | Create an app (asks a few questions) |
+| `npm create yuktai@latest my-app -- --yes` | Create with the defaults |
+| `npx yuktai@latest init my-app` | The same, with the `yuktai` command |
+| `npx yuktai@latest init my-app --yes` | The same, with the defaults |
 
-Inside an app these run as `npm run dev`, `npm run build`, `npm run dev:api` and `npm run test:api`.
-
-The Python API needs Python 3.10 or newer. The first `npm run dev` makes `backend/.venv` and installs `backend/requirements.txt`. Without Python the site runs on its own.
-
-## Options for `init`
+### `init` options
 
 | Option | Values | Default |
 |---|---|---|
-| `--stack` | `next-rust`, `next` | `next-rust` |
-| `--template` | `docs`, `starter` | `docs` |
-| `--features` | `grid`, `page-tools`, `icons`, `backend` (comma-separated), or `none` | all |
-| `--host` | `none`, `netlify`, `github-pages` | `none` (no hosting files) |
-| `--accent` | `blue`, `violet`, `teal`, `orange` | `blue` |
-| `--title` | any text | from the folder name |
-| `--no-install`, `--no-git`, `--yes` | | |
+| `--stack` | `next-rust` · `next` | `next-rust` |
+| `--template` | `docs` · `starter` | `docs` |
+| `--features` | `grid,page-tools,icons,backend` · `none` | all |
+| `--host` | `none` · `netlify` · `github-pages` | `none` |
+| `--accent` | `blue` · `violet` · `teal` · `orange` | `blue` |
+| `--title "My App"` | Site title | |
+| `--no-install` | Skip `npm install` | |
+| `--no-git` | Skip `git init` | |
+| `--yes`, `-y` | Defaults for anything not given | |
 
-## What you get
-
-```
-my-app/
-├── yuktai.config.ts        settings: name, colours, features
-├── rust/                   Rust core → WebAssembly (next-rust)
-├── backend/                Python API (FastAPI): app/, tests/, requirements.txt
-├── src/
-│   ├── app/                pages: home, guides, grid/, qa/, icons/, backend/, about/
-│   ├── components/yuktai/  header, logo, widget, Ask, install, theme, lifecycle
-│   ├── components/ui/      your components
-│   ├── lib/core.ts         calls the Rust core, TypeScript fallback
-│   ├── data/               menu and links, orders.ts (25 lakh sample rows)
-│   └── styles/             tokens.css (colours), globals.css
-├── public/                 service worker, app icons
-├── tests/                  checks for the built site
-├── README.md               written for the choices you made
-└── netlify.toml  or  .github/workflows/deploy.yml
+```bash
+# smallest app: Next.js only, no Rust, no Python
+npx yuktai@latest init simple --stack next --features none --yes
 ```
 
-## Rust
+### Inside your app
 
-For the Rust core, install Rust from https://rustup.rs and add the WebAssembly target once:
+| Command | |
+|---|---|
+| `npm run dev` | Site, Rust build and Python API together (http://localhost:3000) |
+| `npx yuktai dev --no-api` | The same without the Python API |
+| `npm run build` | Static files in `out/` |
+| `npm run lint` | ESLint |
+| `npm test` | Site tests |
+| `npm run dev:api` | Python API only (http://localhost:8000/docs) |
+| `npm run test:api` | API tests (pytest) |
+| `npm run test:e2e` | Browser tests (Playwright). First time: `npx playwright install chromium` |
+| `npm run agent:test` | Testing Agent: runs every check and explains what failed |
+| `npm run assistant` | YuktAI Assistant: `add page contact`, `add api products` |
 
-```
-rustup target add wasm32-unknown-unknown
-```
+The last five come with the `backend` feature.
 
-Without it, `yuktai dev` and `yuktai build` say so and the app uses TypeScript.
+### Library imports
 
-Docs: https://yuktaidocs.netlify.app
+| Import | |
+|---|---|
+| `@yuktishaalaa/yuktai` | Grid, accessibility, page tools |
+| `@yuktishaalaa/yuktai/icons` | 163 icons |
+| `@yuktishaalaa/yuktai/experience` | Loading screen, language and animation picker |
+| `@yuktishaalaa/yuktai/head` | Small scripts for `<head>` |
+
+## Documentation
+
+Everything else (grid options, styling, accessibility tools, jQuery, the CLI, agents) lives in the docs:
+
+**https://yuktaidocs.netlify.app/**
+
+## Packages
+
+| Package | |
+|---|---|
+| [`@yuktishaalaa/yuktai`](https://www.npmjs.com/package/@yuktishaalaa/yuktai) | This library |
+| [`yuktai`](https://www.npmjs.com/package/yuktai) | Create a new app in one command |
+| [`create-yuktai`](https://www.npmjs.com/package/create-yuktai) | `npm create yuktai@latest` |
+| [`@yuktishaalaa/ask-page`](https://www.npmjs.com/package/@yuktishaalaa/ask-page) | "Ask this page" side panel |
+
+## Compatibility
+
+Next.js 13–16 · React 17–19 · Node 18+ · All modern browsers · jQuery 1.12–4.0
+
+## Contributing
+
+Issues and pull requests are welcome. Please read [SECURITY.md](SECURITY.md) before reporting a security problem.
+
+## License
+
+[GPL-3.0](LICENSE) © Sandeep Miriyala, Yuktishaalaa AI Lab
