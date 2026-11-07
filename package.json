@@ -7,10 +7,10 @@
   "homepage": "https://yuktaidocs.netlify.app",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sandeepmiriyala03/yuktai.git"
+    "url": "git+https://github.com/sandeep-miriyala/yuktai.git"
   },
   "bugs": {
-    "url": "https://github.com/sandeepmiriyala03/yuktai/issues"
+    "url": "https://github.com/sandeep-miriyala/yuktai/issues"
   },
   "keywords": [
     "accessibility",

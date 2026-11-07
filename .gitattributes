@@ -1,6 +1,6 @@
 # Line endings: keep LF in the repo
 * text=auto eol=lf
-packages/*/dist/**   
+
 # Binary files
 *.png   binary
 *.jpg   binary
@@ -19,7 +19,11 @@ vanilla/index.min.js          linguist-generated=true
 dist/**                       linguist-generated=true
 src/grid/rust/gridCoreWasm.ts linguist-generated=true
 src/agentic/rust/ragCoreWasm.ts linguist-generated=true
-ask-page/ask-page.global.js                    linguist-generated=true
-packages/ask-page/src/search/askCoreWasm.ts    linguist-generated=true
-packages/ask-page/src/worker/workerSource.ts   linguist-generated=true
 
+# Language bar: show the library itself (TypeScript, JavaScript, Rust)
+# Vue and Python are early experiments that are not in the npm package yet
+vue/**                            linguist-detectable=false
+python/**                         linguist-detectable=false
+# Examples and the CLI's app templates are sample code, not the library
+examples/**                       linguist-documentation
+packages/yuktai-cli/templates/**  linguist-documentation

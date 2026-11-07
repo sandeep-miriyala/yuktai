@@ -4,9 +4,9 @@
 
 [![npm](https://img.shields.io/npm/v/@yuktishaalaa/yuktai)](https://www.npmjs.com/package/@yuktishaalaa/yuktai)
 [![downloads](https://img.shields.io/npm/dm/@yuktishaalaa/yuktai)](https://www.npmjs.com/package/@yuktishaalaa/yuktai)
-[![license](https://img.shields.io/badge/license-GPL--3.0-blue)](https://github.com/sandeepmiriyala03/yuktai/blob/main/LICENSE)
+[![license](https://img.shields.io/badge/license-GPL--3.0-blue)](https://github.com/sandeep-miriyala/yuktai/blob/main/LICENSE)
 [![Next.js](https://img.shields.io/badge/Next.js-13%2B-black)](https://nextjs.org)
-[![Rust](https://img.shields.io/badge/engine-Rust%20%2B%20WebAssembly-orange)](https://github.com/sandeepmiriyala03/yuktai/tree/main/rust)
+[![Rust](https://img.shields.io/badge/engine-Rust%20%2B%20WebAssembly-orange)](https://github.com/sandeep-miriyala/yuktai/tree/main/rust)
 [![docs](https://img.shields.io/badge/docs-live%20demos-0038b4)](https://yuktaidocs.netlify.app/)
 [![XERJ Corpus Hub contributor](https://hub.xerj.org/contributors/sandeepmiriyala03/badge.svg)](https://hub.xerj.org/contributors/sandeepmiriyala03)
 
@@ -259,7 +259,7 @@ Next.js 13–16 · React 17–19 · Node 18+ · Chrome, Edge, Firefox, Safari, S
 
 **Recognition:** part of the [XERJ Corpus Hub](https://hub.xerj.org) · [contributor profile](https://hub.xerj.org/contributors/sandeepmiriyala03)
 
-**Contributing:** issues and PRs welcome at [GitHub](https://github.com/sandeepmiriyala03/yuktai). Security: [SECURITY.md](https://github.com/sandeepmiriyala03/yuktai/blob/main/SECURITY.md)
+**Contributing:** issues and PRs welcome at [GitHub](https://github.com/sandeep-miriyala/yuktai). Security: [SECURITY.md](https://github.com/sandeep-miriyala/yuktai/blob/main/SECURITY.md)
 
 **License:** GPL-3.0 © Sandeep Miriyala, Yuktishaalaa AI Lab. AI coding assistants helped with learning, writing and testing; every design decision and release is mine.
 
