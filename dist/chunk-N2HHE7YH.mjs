@@ -1,1 +1,0 @@
-var t={expectedInputs:[{type:"text",languages:["en"]}],expectedOutputs:[{type:"text",languages:["en"]}]},n={expectedInputLanguages:["en"],expectedContextLanguages:["en"],outputLanguage:"en"};export{t as a,n as b};

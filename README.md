@@ -61,7 +61,7 @@ That's it. Search, sort, pages, keyboard navigation and phone cards work out of 
 **Starting a new app?** One command gives you a ready Next.js app:
 
 ```bash
-npx yuktai@latest init my-app --yes
+npm create yuktai@latest my-app
 cd my-app
 npm run dev
 ```
@@ -87,6 +87,62 @@ Only Node.js 18+ is needed. Rust and Python are optional extras.
 
 Optional, when you need them: a grid assistant that understands plain words, a loading screen, and a Python API with agents in apps made by `npx yuktai`. See the [docs](https://yuktaidocs.netlify.app/).
 
+## Cheat sheet
+
+### Create an app
+
+| Command | |
+|---|---|
+| `npm create yuktai@latest my-app` | Create an app (asks a few questions) |
+| `npm create yuktai@latest my-app -- --yes` | Create with the defaults |
+| `npx yuktai@latest init my-app` | The same, with the `yuktai` command |
+| `npx yuktai@latest init my-app --yes` | The same, with the defaults |
+
+### `init` options
+
+| Option | Values | Default |
+|---|---|---|
+| `--stack` | `next-rust` · `next` | `next-rust` |
+| `--template` | `docs` · `starter` | `docs` |
+| `--features` | `grid,page-tools,icons,backend` · `none` | all |
+| `--host` | `none` · `netlify` · `github-pages` | `none` |
+| `--accent` | `blue` · `violet` · `teal` · `orange` | `blue` |
+| `--title "My App"` | Site title | |
+| `--no-install` | Skip `npm install` | |
+| `--no-git` | Skip `git init` | |
+| `--yes`, `-y` | Defaults for anything not given | |
+
+```bash
+# smallest app: Next.js only, no Rust, no Python
+npx yuktai@latest init simple --stack next --features none --yes
+```
+
+### Inside your app
+
+| Command | |
+|---|---|
+| `npm run dev` | Site, Rust build and Python API together (http://localhost:3000) |
+| `npx yuktai dev --no-api` | The same without the Python API |
+| `npm run build` | Static files in `out/` |
+| `npm run lint` | ESLint |
+| `npm test` | Site tests |
+| `npm run dev:api` | Python API only (http://localhost:8000/docs) |
+| `npm run test:api` | API tests (pytest) |
+| `npm run test:e2e` | Browser tests (Playwright). First time: `npx playwright install chromium` |
+| `npm run agent:test` | Testing Agent: runs every check and explains what failed |
+| `npm run assistant` | YuktAI Assistant: `add page contact`, `add api products` |
+
+The last five come with the `backend` feature.
+
+### Library imports
+
+| Import | |
+|---|---|
+| `@yuktishaalaa/yuktai` | Grid, accessibility, page tools |
+| `@yuktishaalaa/yuktai/icons` | 163 icons |
+| `@yuktishaalaa/yuktai/experience` | Loading screen, language and animation picker |
+| `@yuktishaalaa/yuktai/head` | Small scripts for `<head>` |
+
 ## Documentation
 
 Everything else (grid options, styling, accessibility tools, jQuery, the CLI, agents) lives in the docs:
@@ -99,6 +155,7 @@ Everything else (grid options, styling, accessibility tools, jQuery, the CLI, ag
 |---|---|
 | [`@yuktishaalaa/yuktai`](https://www.npmjs.com/package/@yuktishaalaa/yuktai) | This library |
 | [`yuktai`](https://www.npmjs.com/package/yuktai) | Create a new app in one command |
+| [`create-yuktai`](https://www.npmjs.com/package/create-yuktai) | `npm create yuktai@latest` |
 | [`@yuktishaalaa/ask-page`](https://www.npmjs.com/package/@yuktishaalaa/ask-page) | "Ask this page" side panel |
 
 ## Compatibility
@@ -107,7 +164,7 @@ Next.js 13–16 · React 17–19 · Node 18+ · All modern browsers · jQuery 1.
 
 ## Contributing
 
-Issues and pull requests are welcome. Please read [SECURITY.md](SECURITY.md) before reporting a security problem.
+Issues and pull requests are welcome. Start with [CONTRIBUTING.md](CONTRIBUTING.md) and the map in [ARCHITECTURE.md](ARCHITECTURE.md). Please follow the [Code of Conduct](CODE_OF_CONDUCT.md), and read [SECURITY.md](SECURITY.md) before reporting a security problem. What's coming: [ROADMAP.md](ROADMAP.md).
 
 ## License
 

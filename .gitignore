@@ -5,6 +5,9 @@ node_modules/
 
 public/tessdata/
 
+# Library build output (npm publish builds it again)
+/dist/
+
 # Rust build output
 rust/*/target/
 
@@ -15,3 +18,7 @@ packages/*/node_modules/
 # local test apps and npm pack files
 packages/yuktai-cli/test-local/
 *.tgz
+
+# Office files and Word temp files
+*.docx
+~$*
