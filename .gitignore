@@ -11,3 +11,7 @@ rust/*/target/
 # Package builds (npm run build inside the package)
 packages/*/dist/
 packages/*/node_modules/
+
+# local test apps and npm pack files
+packages/yuktai-cli/test-local/
+*.tgz
