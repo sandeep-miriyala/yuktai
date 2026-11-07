@@ -8,7 +8,7 @@ export function manifest(o, theme = "#000633") {
   const p = { theme };
   const has = (f) => o.features.includes(f);
   const shortcuts = [
-    has("grid") && { name: "Data grid", short_name: "Grid", description: "10 lakh rows, Grid AI Assistant", url: "./grid/", icons: [{ src: "icons/shortcut-grid.png", sizes: "96x96", type: "image/png" }] },
+    has("grid") && { name: "Data grid", short_name: "Grid", description: "25 lakh rows, Grid AI Assistant", url: "./grid/", icons: [{ src: "icons/shortcut-grid.png", sizes: "96x96", type: "image/png" }] },
     has("page-tools") && { name: "QA report", short_name: "QA", description: "15 accessibility checks", url: "./qa/", icons: [{ src: "icons/shortcut-qa.png", sizes: "96x96", type: "image/png" }] },
     has("icons") && { name: "Icons", short_name: "Icons", description: "Every YuktAI icon", url: "./icons/", icons: [{ src: "icons/shortcut-icons.png", sizes: "96x96", type: "image/png" }] },
   ].filter(Boolean);

@@ -5,12 +5,13 @@ import { join } from "node:path";
 export const VERSIONS = {
   next: "16.4.5",
   react: "19.3.0",
-  yuktai: "5.5.1",
+  yuktai: "5.5.3",
   askPage: "1.0.0",
   typescript: "^5",
   typesNode: "^22",
   typesReact: "^19",
   eslint: "^9",
+  playwright: "1.64.1",
 };
 
 export function writePackageJson(dir, o) {
@@ -24,6 +25,7 @@ export function writePackageJson(dir, o) {
       build: "yuktai build",
       lint: "eslint",
       test: "node --test",
+      ...(o.features.includes("backend") ? { "dev:api": "yuktai api", "test:api": "yuktai api-test", "test:e2e": "playwright test", "agent:test": "yuktai agent-test", assistant: "yuktai assistant" } : {}),
     },
     dependencies: {
       "@yuktishaalaa/ask-page": VERSIONS.askPage,
@@ -40,6 +42,7 @@ export function writePackageJson(dir, o) {
       "eslint-config-next": VERSIONS.next,
       typescript: VERSIONS.typescript,
       yuktai: `^${o.cliVersion}`,
+      ...(o.features.includes("backend") ? { "@playwright/test": VERSIONS.playwright } : {}),
     },
   };
   writeFileSync(join(dir, "package.json"), JSON.stringify(pkg, null, 2) + "\n");

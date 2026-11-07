@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState, type ReactNode } from "react";
+import React, { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { SPLASH_CSS, SPLASH_KEY, splashWordCss } from "./splash";
 import { UI_LANGUAGES, WELCOME, getUiLanguage, uiText, type UiLanguage } from "./uiLanguage";
 
@@ -22,7 +22,7 @@ export interface YuktaiSplashProps {
   tipMs?: number;
   /** "session" (default): once per browser tab. "always": every page load. */
   once?: "session" | "always";
-  /** Show a Skip button. Default true. Esc and a click anywhere also skip. */
+  /** Show a Skip button. Default true. Esc also skips. */
   skippable?: boolean;
   onDone?: () => void;
 }
@@ -41,12 +41,14 @@ export function YuktaiSplash({ logo, title, words, minMs = 1200, tips, tipMs = 3
   const timed = minMs >= 4000;
   const tipCount = tips?.length ?? 0;
   const doneRef = useRef(onDone);
-  doneRef.current = onDone;
+  useEffect(() => {
+    doneRef.current = onDone;
+  }, [onDone]);
   const list = words ?? UI_LANGUAGES.map((l) => WELCOME[l.code]);
 
-  const leave = () => {
+  const leave = useCallback(() => {
     setState((s) => (s === "show" ? "leaving" : s));
-  };
+  }, []);
 
   useEffect(() => {
     let seen = false;
@@ -74,7 +76,7 @@ export function YuktaiSplash({ logo, title, words, minMs = 1200, tips, tipMs = 3
       if (tipTimer) window.clearInterval(tipTimer);
       document.removeEventListener("keydown", key);
     };
-  }, [minMs, once, tipCount, tipMs]);
+  }, [minMs, once, tipCount, tipMs, leave]);
 
   useEffect(() => {
     if (state !== "leaving") return;
@@ -93,7 +95,6 @@ export function YuktaiSplash({ logo, title, words, minMs = 1200, tips, tipMs = 3
   return (
     <div
       className={`yk-splash${timed ? " yk-splash--timed" : ""}${state === "leaving" ? " yk-leaving" : ""}`}
-      onClick={skippable ? leave : undefined}
       style={{
         ["--yk-splash-cycle" as string]: `${cycle}s`,
         ["--yk-splash-ms" as string]: `${minMs}ms`,
@@ -121,7 +122,7 @@ export function YuktaiSplash({ logo, title, words, minMs = 1200, tips, tipMs = 3
         <p className="yk-splash__tip" key={tip} aria-hidden="true">{tips[tip % tips.length]}</p>
       )}
       {skippable && (
-        <button type="button" className="yk-splash__skip" lang={lang} onClick={(e) => { e.stopPropagation(); leave(); }}>
+        <button type="button" className="yk-splash__skip" lang={lang} onClick={leave}>
           {uiText(lang, "skipIntro")}
           {timed && left > 0 && <span aria-hidden="true"> ({left})</span>}
         </button>

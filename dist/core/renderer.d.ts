@@ -37,7 +37,7 @@ export interface A11yReport {
     score: number;
     details: A11yFix[];
 }
-declare function speak(text: string, priority?: "polite" | "assertive"): void;
+declare function speak(text: string): void;
 declare function showVisualAlert(message: string, type?: AlertType): void;
 declare function announce(message: string, type?: AlertType, useSpeech?: boolean): void;
 declare function trapFocus(modal: HTMLElement): void;
@@ -51,7 +51,7 @@ export declare const wcagPlugin: {
     version: string;
     observer: MutationObserver | null;
     execute(config: A11yConfig): Promise<string>;
-    applyFixes(config: A11yConfig): A11yReport;
+    applyFixes(_config?: A11yConfig): A11yReport;
     scan(): A11yReport;
     startObserver(config: A11yConfig): void;
     stopObserver(): void;

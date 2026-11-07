@@ -5,7 +5,7 @@ import { YuktaiGrid, type GridColumn, type GridLocale, type WebMCPStatus, type Y
 import config from "@config";
 import { useLifecycle } from "@/components/yuktai/lifecycle";
 import { isDark, subscribeTheme } from "@/components/yuktai/theme";
-import { DEFAULT_ROWS, ROW_CHOICES, indian, makeOrders, type Order } from "@/data/orders";
+import { ROW_CHOICES, indian, makeOrders, startRows, type Order } from "@/data/orders";
 
 const rupees = new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 2 });
 
@@ -45,7 +45,8 @@ const WEBMCP_TEXT: Record<WebMCPStatus["state"], string> = {
 type Log = { stage: "onStart" | "onChange" | "onEnd"; text: string };
 
 export default function OrdersGrid() {
-  const [count, setCount] = useState<number>(DEFAULT_ROWS);
+  // null until mounted: the starting count depends on the device (25 lakh, or 10 lakh on phones)
+  const [count, setCount] = useState<number | null>(null);
   const [rows, setRows] = useState<Order[] | null>(null);
   const [progress, setProgress] = useState(0);
   const [madeIn, setMadeIn] = useState(0);
@@ -57,6 +58,13 @@ export default function OrdersGrid() {
 
   // Make the sample rows in the browser (no download), in slices so the page stays usable.
   useEffect(() => {
+    // the device is only known in the browser
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCount((c) => c ?? startRows());
+  }, []);
+
+  useEffect(() => {
+    if (count === null) return;
     const stop = new AbortController();
     const t0 = performance.now();
     makeOrders(count, setProgress, stop.signal)
@@ -88,7 +96,7 @@ export default function OrdersGrid() {
   };
 
   const status = useMemo(
-    () => (rows ? `${indian(rows.length)} rows made in your browser in ${(madeIn / 1000).toFixed(1)} s` : `Making ${indian(count)} rows… ${Math.round(progress * 100)}%`),
+    () => (rows ? `${indian(rows.length)} rows made in your browser in ${(madeIn / 1000).toFixed(1)} s` : count === null ? "Getting ready…" : `Making ${indian(count)} rows… ${Math.round(progress * 100)}%`),
     [rows, madeIn, count, progress],
   );
 
@@ -121,7 +129,7 @@ export default function OrdersGrid() {
             setSelected(keys);
             life.change(`${indian(keys.length)} rows selected`);
           }}
-          // "Show all (10,00,000)" lists every row in one smooth scrolling list (virtual scrolling)
+          // "Show all (25,00,000)" lists every row in one smooth scrolling list (virtual scrolling)
           pagination={{ pageSize: 25, showSizeChanger: true, sizeOptions: [10, 25, 50, 100] }}
           engine={config.engine}
           showSearchTime

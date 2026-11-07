@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { writeManifest } from "./manifest.mjs";
 
 const TEMPLATES = join(dirname(fileURLToPath(import.meta.url)), "..", "templates");
-const TEXT = new Set([".ts", ".tsx", ".mjs", ".js", ".json", ".css", ".md", ".toml", ".yml", ".yaml", ".rs", ".txt", ".html", ""]);
+const TEXT = new Set([".ts", ".tsx", ".mjs", ".js", ".json", ".css", ".md", ".toml", ".yml", ".yaml", ".rs", ".txt", ".html", ".py", ".ini", ".sql", ""]);
 const RENAME = { _gitignore: ".gitignore", _github: ".github", "_env.example": ".env.example" };
 
 // light text colour, dark text colour, gradient (light), gradient (dark). Text colours are 7:1 or more on their page.
@@ -43,6 +43,8 @@ export function values(o) {
     grid: String(o.features.includes("grid")),
     pageTools: String(o.features.includes("page-tools")),
     icons: String(o.features.includes("icons")),
+    backend: String(o.features.includes("backend")),
+    apiPort: "8000",
     hasLifecycleGuide: String(o.template === "docs"),
     // pages the built-site test expects to find
     pages: JSON.stringify([
@@ -51,6 +53,7 @@ export function values(o) {
       ...(o.features.includes("grid") ? ["grid/index.html"] : []),
       ...(o.features.includes("page-tools") ? ["qa/index.html"] : []),
       ...(o.features.includes("icons") ? ["icons/index.html"] : []),
+      ...(o.features.includes("backend") ? ["backend/index.html", "agents/index.html"] : []),
     ]),
     engine: o.stack === "next-rust" ? "rust" : "ts",
     stackNote: o.stack === "next-rust" ? " + Rust (WebAssembly)" : "",

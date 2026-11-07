@@ -161,8 +161,8 @@ function generatePlaceholderPage(
   page:      string,
   siteName:  string,
   color:     string,
-  vars:      TemplateVars,
-  f:         (t: string) => string
+  _vars:     TemplateVars,
+  _f:        (t: string) => string
 ): string {
   const title = page.charAt(0).toUpperCase() + page.slice(1)
   return `import styles from "./page.module.css"

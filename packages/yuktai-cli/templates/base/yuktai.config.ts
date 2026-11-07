@@ -20,7 +20,8 @@ const config = {
     splash: true, // loading screen: logo and "Welcome" in 7 languages, once per tab
     preferences: true, // 🌐 button: site language (English + 6 Indian languages) and animations (Device setting / Off / Calm / Lively)
     pageTools: {{pageTools}}, // QA report page and the 🛠 button: 15 WCAG checks, copilot, form review
-    grid: {{grid}}, // data grid page: 10 lakh sample rows, search, sort
+    grid: {{grid}}, // data grid page: 25 lakh sample rows, search, sort
+    backend: {{backend}}, // Python API (FastAPI) in backend/: starts with npm run dev
     icons: {{icons}}, // icons guide: every YuktAI icon, copy the code
   },
 
@@ -43,6 +44,9 @@ const config = {
       "Install it from the header: it works offline after the first visit.",
     ],
   },
+
+  // The Python API in backend/ (features.backend). Set NEXT_PUBLIC_API_URL when it is online.
+  api: { url: process.env.NEXT_PUBLIC_API_URL || "http://localhost:{{apiPort}}" },
 
   // "rust": Rust compiled to WebAssembly (falls back to TypeScript if it is not built)
   engine: "{{engine}}" as "rust" | "ts",

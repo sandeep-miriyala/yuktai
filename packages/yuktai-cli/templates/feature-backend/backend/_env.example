@@ -1,0 +1,21 @@
+# Copy to backend/.env and change what you need. .env is never committed.
+
+# Sites allowed to call this API (comma separated)
+ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
+
+# Port for the API (the site reads NEXT_PUBLIC_API_URL)
+API_PORT=8000
+
+# Groq (optional): agents and RAG use it when set; without it they work in free mode.
+# Get a key at https://console.groq.com . It stays on this server, never in the browser.
+GROQ_API_KEY=
+GROQ_MODEL=llama-3.3-70b-versatile
+
+# How many of the 25 lakh orders the Grid Agent works on (default 1 lakh)
+AGENT_ROWS=100000
+
+# PostgreSQL (optional), see backend/db/README.md
+DATABASE_URL=
+
+# production turns off the developer agents (Testing Agent, YuktAI Assistant)
+YUKTAI_ENV=development

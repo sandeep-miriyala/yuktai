@@ -347,7 +347,7 @@ export class AskPage {
               text += delta
               if (writes === lang && !isNotInPage(text)) cb.onToken?.(text)
             }
-          } catch (e) {
+          } catch {
             if (cb.signal?.aborted) return { answer: { text, kind: "ai", engine: p.name, pageHash: snap.hash, lang, sources: this.sourcesFor(top, text) } }
             continue
           }

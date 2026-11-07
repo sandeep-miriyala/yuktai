@@ -1,9 +1,19 @@
 # Changelog
 
+## 1.2.0
+- **One command runs everything:** `npm run dev` builds Rust → WebAssembly, starts the **Python API** (FastAPI, `backend/`) and Next.js together. The first run makes `backend/.venv` and installs the requirements. No Python? The site still runs, with a note on how to add it. `npm run dev -- --no-api` skips the API.
+- **Python API** (`--features backend`, on with `--yes`): `/api/health`, `/api/orders` (25 lakh sample orders, page by page, made on demand: no database), `/api/orders/{id}`, CORS for the site, settings in `backend/.env`, 7 pytest tests. New commands: `npm run dev:api`, `npm run test:api` (`yuktai api`, `yuktai api-test`).
+- **Backend page** (`/backend/`): live API status, 25 lakh orders paged from Python, how to add an endpoint.
+- **Agents (LangGraph, Python):** Grid Agent (tool calling: count, total, average, top, by city) and **RAG** over `backend/knowledge/*.md`, both on the new `/agents/` page; **Testing Agent** (`npm run agent:test`: lint, site test, pytest, Playwright, then what to fix) and **YuktAI Assistant** (`npm run assistant`: add pages and API endpoints after you say yes, how-to answers). Groq when `GROQ_API_KEY` is in `backend/.env` (kept on the server), free mode without a key. Developer agents are off when `YUKTAI_ENV=production`. Make your own with `build_agent(tools, instructions, model)`.
+- **PostgreSQL basics:** `backend/db/` with `schema.sql` (orders, and RAG passages with pgvector), `seed.sql`, a Docker file and the everyday commands; `/api/db/health`.
+- **Playwright:** `npm run test:e2e` with tests for the home page, keyboard skip link, grid search, backend page and phone width.
+- New API endpoints load by themselves from `backend/app/routes/`. 21 pytest tests in all, none needing a key or a database.
+- **Data grid: 25 lakh rows** by default (search 0.3 s, sort 0.5 s, Show all to the last row, measured in desktop Chrome). Phones and computers with less than 8 GB memory start at 10 lakh; any size can be picked on the page.
+
 ## 1.1.1
 - **Loading screen** stays 15 seconds by default (`splash.seconds` in `yuktai.config.ts`): the bar fills over that time, **Skip** counts down, and short tips (`splash.tips`) change every 3 seconds. Still once per browser tab.
 - **Selected text** is readable everywhere, also inside dark code boxes (Windows drew a light selection over light code text).
-- Needs `@yuktishaalaa/yuktai` 5.5.1.
+- Uses `@yuktishaalaa/yuktai` 5.5.3 (stable Rust, keyboard fixes).
 
 ## 1.1.0
 - **Loading screen:** the app's logo and name with "Welcome" in English, తెలుగు, हिन्दी, தமிழ், ಕನ್ನಡ, മലയാളം and বাংলা, once per browser tab (`features.splash`). Skip button, Esc or a click skips it.

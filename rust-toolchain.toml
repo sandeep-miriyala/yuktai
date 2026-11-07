@@ -1,0 +1,6 @@
+# YuktAI builds with stable Rust only: no nightly features anywhere.
+# rustup reads this file and installs the same toolchain on every computer and in CI.
+[toolchain]
+channel = "stable"
+targets = ["wasm32-unknown-unknown"]
+profile = "minimal"

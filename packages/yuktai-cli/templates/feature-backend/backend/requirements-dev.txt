@@ -1,0 +1,4 @@
+# Tests: npm run test:api
+-r requirements.txt
+pytest>=8,<10
+httpx>=0.27,<1

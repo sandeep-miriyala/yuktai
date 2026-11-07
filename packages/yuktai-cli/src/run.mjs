@@ -4,6 +4,7 @@
 import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { run, runSync, win } from "./proc.mjs";
+import { startApi } from "./api.mjs";
 import { c, step, warn } from "./ui.mjs";
 
 function crateName(cargoToml) {
@@ -33,18 +34,38 @@ export function buildRust(cwd = process.cwd(), { required = false } = {}) {
   return true;
 }
 
-function next(args, cwd = process.cwd()) {
+function next(args, cwd = process.cwd(), onStart = () => {}) {
   const bin = join(cwd, "node_modules", ".bin", win ? "next.cmd" : "next");
   if (!existsSync(bin)) throw new Error(`Next.js is not installed here. Run "npm install" first.`);
   return new Promise((resolve, reject) => {
     const p = run(bin, args, { cwd, stdio: "inherit" });
-    p.on("exit", (code) => (code === 0 ? resolve() : reject(new Error(`next ${args[0]} stopped (exit ${code})`))));
+    onStart(p);
+    p.on("exit", (code, signal) => (code === 0 || signal ? resolve() : reject(new Error(`next ${args[0]} stopped (exit ${code})`))));
   });
 }
 
+/** Stops a child and everything it started (Windows runs it inside a shell). */
+function stopChild(p) {
+  if (!p || p.exitCode !== null || p.signalCode !== null) return;
+  if (win) runSync("taskkill", ["/pid", String(p.pid), "/T", "/F"], { stdio: "ignore" });
+  else p.kill("SIGTERM");
+}
+
+// One command for everything: Rust → WebAssembly, the Python API (backend/) and Next.js.
+// --no-api skips the Python API.
 export async function dev(args) {
   buildRust();
-  await next(["dev", ...args]);
+  const stopApi = args.includes("--no-api") ? null : startApi();
+  let site = null;
+  // Ctrl + C (or closing the terminal) stops the site and the API together
+  const stopAll = () => { stopApi?.(); stopChild(site); };
+  process.once("SIGINT", stopAll);
+  process.once("SIGTERM", stopAll);
+  try {
+    await next(["dev", ...args.filter((a) => a !== "--no-api")], process.cwd(), (p) => { site = p; });
+  } finally {
+    stopApi?.();
+  }
 }
 
 export async function build(args) {

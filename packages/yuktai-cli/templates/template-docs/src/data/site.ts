@@ -10,6 +10,7 @@ const ALL: NavItem[] = [
   { href: "/grid/", label: "Data grid", key: "grid", feature: "grid" },
   { href: "/qa/", label: "QA report", key: "qa", feature: "pageTools" },
   { href: "/icons/", label: "Icons", key: "icons", feature: "icons" },
+  { href: "/backend/", label: "Backend", key: "backend", feature: "backend" },
   { href: "/about/", label: "About", key: "about" },
 ];
 

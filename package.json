@@ -1,6 +1,6 @@
 {
   "name": "@yuktishaalaa/yuktai",
-  "version": "5.5.1",
+  "version": "5.5.3",
   "description": "Accessibility, AI and data toolkit for Next.js, React and plain HTML: a 10 lakh row data grid with an AI assistant (voice, 24 languages, WebMCP), WCAG 2.2 auto-fix, QA reports, page Q&A and 163 icons, a loading screen, site language in English + 6 Indian languages and visitor-controlled animations. Runs in the browser: no API keys, no server, Rust (WebAssembly) engine.",
   "author": "Sandeep Miriyala — Yuktishaalaa AI Lab",
   "license": "GPL-3.0-only",
@@ -118,10 +118,13 @@
     "build:all": "npm run build && npm run build:vanilla",
     "build:rust": "node rust/build-wasm.mjs",
     "test:rust": "cd rust/grid-core && cargo test && cd ../rag-core && cargo test && cd ../ask-core && cargo test",
-    "lint": "eslint src --ext .ts,.tsx",
+    "lint": "oxlint src packages/ask-page/src packages/yuktai-cli/src",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "prepublishOnly": "npm run build:all"
+    "prepublishOnly": "npm run build:all",
+    "format": "biome format --write",
+    "format:check": "biome format src packages/ask-page/src packages/yuktai-cli/src",
+    "check": "npm run lint && npm test && npm run test:rust"
   },
   "dependencies": {
     "jszip": "^3.10.1"
@@ -136,6 +139,7 @@
     }
   },
   "devDependencies": {
+    "@biomejs/biome": "2.6.2",
     "@huggingface/transformers": "^4.3.2",
     "@types/jszip": "^3.4.0",
     "@types/react": "^18.3.3",
@@ -144,6 +148,7 @@
     "esbuild": "^0.28.2",
     "eslint": "^8.57.0",
     "happy-dom": "^21.0.4",
+    "oxlint": "1.89.0",
     "playwright-core": "^1.64.1",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",

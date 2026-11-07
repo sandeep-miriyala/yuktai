@@ -40,8 +40,10 @@ export function readme(o) {
   add("## What is inside", "", "| Page or part | What it does |", "|---|---|");
   add("| Home `/` | Hero with Ask box, feature cards |");
   if (docs) add("| Docs `/getting-started/` | Guides with a sidebar: getting started, configuration, lifecycle, deploy |");
-  if (has("grid")) add("| Data grid `/grid/` | 10 lakh (1,000,000) sample orders made in the browser. Search and sort every column in Rust, **Show all** (every row in one smooth scrolling list) or pages, the Grid AI Assistant, 🎤 voice, 24 input languages, row selection, browser-agent tools (WebMCP) |");
+  if (has("grid")) add("| Data grid `/grid/` | 25 lakh (2,500,000) sample orders made in the browser (10 lakh on phones). Search and sort every column in Rust, **Show all** (every row in one smooth scrolling list) or pages, the Grid AI Assistant, 🎤 voice, 24 input languages, row selection, browser-agent tools (WebMCP) |");
   if (has("page-tools")) add("| QA report `/qa/` | 15 WCAG 2.2 checks, score, what to fix, Markdown download. The 🛠 button has it on every page |");
+  if (has("backend")) add("| Agents `/agents/` | Grid Agent and RAG (LangGraph, in the Python API). Groq when `GROQ_API_KEY` is set, free mode without |");
+  if (has("backend")) add("| Backend `/backend/` | The Python API (FastAPI): live status and 25 lakh orders served page by page from `backend/` |");
   if (has("icons")) add("| Icons `/icons/` | Every YuktAI icon: search, size, outline or filled, colour with a contrast check, copy the code |");
   add(
     "| About `/about/` | What the app is built with |",
@@ -58,7 +60,7 @@ export function readme(o) {
 
   if (has("grid")) {
     add(
-      "## Data grid: 10 lakh rows",
+      "## Data grid: 25 lakh rows",
       "",
       "`src/data/orders.ts` makes the rows in the browser with a seeded random generator (the same rows every time, nothing downloaded). Six columns, five data types:",
       "",
@@ -73,14 +75,61 @@ export function readme(o) {
       "",
       "### Grid AI Assistant",
       "",
-      "Type or say what you want: `how many rows`, `unpaid`, `search Pune`, `sort by date`, `clear filters`. The assistant runs the grid's own tools (search, filter, sort, count) in the browser, in well under two seconds on 10 lakh rows. Nothing is sent anywhere.",
+      "Type or say what you want: `how many rows`, `unpaid`, `search Pune`, `sort by date`, `clear filters`. The assistant runs the grid's own tools (search, filter, sort, count) in the browser, in a second or two on 25 lakh rows. Nothing is sent anywhere.",
       "",
       "- **Languages:** English and the 22 Indian scheduled languages for typing and 🎤 voice (Telugu, Hindi, Tamil, Kannada, Malayalam, Bengali, Marathi, Gujarati…). Pick one in the assistant; set the default in `yuktai.config.ts` (`grid.language`). Commands are understood in English and Telugu today.",
       "- **Your own words:** `rules` in `OrdersGrid.tsx` maps phrases (\"unpaid\", \"బాకీ\", \"बकाया\") to grid tools. Add rules for your data.",
       "- **Browser agents (WebMCP):** with `grid.webmcp` on, AI agents in Chrome (WebMCP enabled) can use 11 grid tools. The page shows whether they are ready.",
       "- **Restyle it:** the grid follows this site's colours through `--yk-grid-*` CSS variables in `src/styles/grid.css`.",
       "",
-      "Pick 1,000, 1,00,000 or 10,00,000 rows on the page. To use your own data, replace `makeOrders()` and the `columns` list in `src/app/grid/OrdersGrid.tsx`.",
+      "Pick 1,000, 1,00,000, 10,00,000 or 25,00,000 rows on the page (phones start at 10 lakh). To use your own data, replace `makeOrders()` and the `columns` list in `src/app/grid/OrdersGrid.tsx`.",
+      "",
+    );
+  }
+
+  if (has("backend")) {
+    add(
+      "## Python API (backend/)",
+      "",
+      "`npm run dev` starts three things together: the Rust build, this Python API and Next.js. The first time, it makes `backend/.venv` and installs `backend/requirements.txt` (needs Python 3.10 or newer; Windows: tick \"Add python.exe to PATH\" when installing). Without Python the site still runs.",
+      "",
+      "| Command | What it does |",
+      "|---|---|",
+      "| `npm run dev` | Site on http://localhost:3000, API on http://localhost:8000 |",
+      "| `npm run dev -- --no-api` | Site only |",
+      "| `npm run dev:api` | API only. Try it at http://localhost:8000/docs |",
+      "| `npm run test:api` | API tests (pytest) |",
+      "",
+      "| Endpoint | Returns |",
+      "|---|---|",
+      "| `GET /api/health` | `{ status: \"ok\" }` |",
+      "| `GET /api/orders?page=1&size=25` | One page of 25 lakh sample orders (made on demand, no database) |",
+      "| `GET /api/orders/ORD-0000042` | One order |",
+      "",
+      "Add an endpoint in `backend/app/main.py` with `@app.get` or `@app.post`. Settings go in `backend/.env` (copy `backend/.env.example`): `ALLOWED_ORIGINS` for the sites that may call the API, `API_PORT`. The site finds the API through `NEXT_PUBLIC_API_URL` (default http://localhost:8000).",
+      "",
+      "Putting it online: the site is static files (any host); the API needs a host that runs Python, such as Render, Railway, Fly.io or your own server. Set `NEXT_PUBLIC_API_URL` to its address when you build the site.",
+      "",
+      "## Agents (LangGraph)",
+      "",
+      "| Agent | Where | What it does |",
+      "|---|---|---|",
+      "| 🤖 Grid Agent | `/agents/`, `POST /api/agents/grid` | Questions about the orders with tools: count, total, average, top, by city. Read-only |",
+      "| 📚 RAG | `/agents/`, `POST /api/rag/ask` | Answers from `backend/knowledge/*.md` with the passages it used |",
+      "| 🧪 Testing Agent | `npm run agent:test` | Runs lint, the site test, the API tests and Playwright, explains failures. Allowlisted commands only |",
+      "| ✨ YuktAI Assistant | `npm run assistant` | `add page contact`, `add api products`, how-to questions. Shows every file and asks first; never overwrites |",
+      "",
+      "**Groq:** put `GROQ_API_KEY` in `backend/.env` (free key at https://console.groq.com). It stays on the server. With a key, the question and the matching passages or tool results are sent to Groq; without one the agents work in free mode and nothing leaves your computer. The Testing Agent and the Assistant are off when `YUKTAI_ENV=production`.",
+      "",
+      "**Your own agent:** `build_agent(tools, instructions, model)` in `backend/app/agents/base.py`: write tools with `@tool`, and LangGraph runs model → tools → model until there is an answer (with a step limit).",
+      "",
+      "## Database (optional)",
+      "",
+      "`backend/db/` has `schema.sql` (orders, and RAG passages with pgvector), `seed.sql`, a Docker file for PostgreSQL with pgvector and the basic commands in its README. Set `DATABASE_URL` in `backend/.env`; check it at http://localhost:8000/api/db/health.",
+      "",
+      "## Browser tests (Playwright)",
+      "",
+      "`npm run test:e2e` runs `tests/e2e/` on a desktop and a phone screen. Install the browser once: `npx playwright install chromium`.",
       "",
     );
   }
@@ -158,6 +207,7 @@ export function readme(o) {
     "│   └── styles/                tokens.css (colours), globals.css, look.css" + (has("grid") ? ", grid.css" : "") + (has("page-tools") ? ", qa.css" : "") + (has("icons") ? ", icons.css" : ""),
   );
   if (rust) add("├── rust/                      Rust core → public/wasm/core.wasm");
+  if (has("backend")) add("├── backend/                   Python API (FastAPI): app/main.py, tests/, requirements.txt");
   add(
     "├── public/                    icons, manifest.json, service worker",
     "└── tests/                     checks for the built site",
@@ -175,6 +225,7 @@ export function readme(o) {
     `  pageTools: ${has("page-tools")},     // QA report page and 🛠 button`,
     `  grid: ${has("grid")},          // data grid page`,
     `  icons: ${has("icons")},         // icons guide`,
+    `  backend: ${has("backend")},       // Python API in backend/`,
     "},",
     "theme: { picker: true, localFonts: true },  // 🎨 colour and font picker",
     "grid: { assistant: true, voice: true, language: \"en-IN\", webmcp: true },",

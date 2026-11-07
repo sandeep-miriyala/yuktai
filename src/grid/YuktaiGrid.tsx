@@ -40,6 +40,8 @@ const translations: Record<
     loading: string;
     noData: string;
     selectRow: string;
+    selectColumn: string;
+    openRow: string;
     pageSize: string;
     page: string;
     of: string;
@@ -70,6 +72,8 @@ const translations: Record<
     loading: "Loading...",
     noData: "No data found.",
     selectRow: "Select row",
+    selectColumn: "Select",
+    openRow: "Open row",
     pageSize: "Page size",
     page: "Page",
     of: "of",
@@ -99,6 +103,8 @@ const translations: Record<
     loading: "లోడ్ అవుతోంది...",
     noData: "డేటా కనబడలేదు.",
     selectRow: "వరుసను ఎంచుకోండి",
+    selectColumn: "ఎంపిక",
+    openRow: "వరుసను తెరవండి",
     pageSize: "పేజీ పరిమాణం",
     page: "పేజీ",
     of: "లో",
@@ -305,6 +311,17 @@ export function pageWindow(page: number, total: number): number[] {
 }
 
 /** v5.4.0 — one-line cells for the fixed-height "Show all" list. */
+/** Enter or Space on a focused row or card opens it (keyboard users get what a click does). */
+function openOnKey(event: React.KeyboardEvent<HTMLElement>, open: () => void) {
+  if (event.target !== event.currentTarget) return;
+  if (event.key === "Enter" || event.key === " ") {
+    event.preventDefault();
+    open();
+  }
+}
+
+const srOnly: React.CSSProperties = { position: "absolute", width: 1, height: 1, padding: 0, margin: -1, overflow: "hidden", clip: "rect(0 0 0 0)", whiteSpace: "nowrap", border: 0 };
+
 const cellClip = (h: number): React.CSSProperties => ({
   height: h,
   boxSizing: "border-box",
@@ -1195,12 +1212,17 @@ export function YuktaiGrid<
                 <div className="yk-grid__card"
                   key={id}
                   data-yuktai-row-id={id}
-                  onClick={() =>
-                    onRowClick?.(
-                      row,
-                      index
-                    )
-                  }
+                  role="group"
+                  aria-label={id}
+                  // clickable cards open with Enter or Space too
+                  {...(onRowClick
+                    ? {
+                        tabIndex: 0,
+                        title: t.openRow,
+                        onClick: () => onRowClick(row, index),
+                        onKeyDown: (event: React.KeyboardEvent<HTMLElement>) => openOnKey(event, () => onRowClick(row, index)),
+                      }
+                    : {})}
                   style={{
                     padding: 14,
                     borderRadius: 10,
@@ -1333,13 +1355,16 @@ export function YuktaiGrid<
               <tr {...(virtual ? { "aria-rowindex": 1 } : {})}>
                 {selectable && (
                   <th
+                    scope="col"
                     style={{
                       padding: 10,
                       borderBottom:
                         `1px solid ${C.border}`,
                       width: 52,
                     }}
-                  />
+                  >
+                    <span style={srOnly}>{t.selectColumn}</span>
+                  </th>
                 )}
 
                 {columns
@@ -1432,6 +1457,8 @@ export function YuktaiGrid<
             <tbody className="yk-grid__body">
               {virtual && topSpacer > 0 && (
                 <tr aria-hidden="true" style={{ height: topSpacer }}>
+                  {/* empty spacer for virtual scrolling, hidden from screen readers */}
+                  {/* oxlint-disable-next-line jsx-a11y/control-has-associated-label */}
                   <td colSpan={colCount} style={{ padding: 0, border: 0 }} />
                 </tr>
               )}
@@ -1451,12 +1478,14 @@ export function YuktaiGrid<
                       key={id}
                       data-yuktai-row-id={id}
                       {...(virtual ? { "aria-rowindex": firstRow + index + 2 } : {})}
-                      onClick={() =>
-                        onRowClick?.(
-                          row,
-                          index
-                        )
-                      }
+                      // clickable rows open with Enter or Space too
+                      {...(onRowClick
+                        ? {
+                            tabIndex: 0,
+                            onClick: () => onRowClick(row, index),
+                            onKeyDown: (event: React.KeyboardEvent<HTMLElement>) => openOnKey(event, () => onRowClick(row, index)),
+                          }
+                        : {})}
                       style={{
                         background:
                           highlighted
@@ -1570,6 +1599,8 @@ export function YuktaiGrid<
               )}
               {virtual && bottomSpacer > 0 && (
                 <tr aria-hidden="true" style={{ height: bottomSpacer }}>
+                  {/* empty spacer for virtual scrolling, hidden from screen readers */}
+                  {/* oxlint-disable-next-line jsx-a11y/control-has-associated-label */}
                   <td colSpan={colCount} style={{ padding: 0, border: 0 }} />
                 </tr>
               )}

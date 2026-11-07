@@ -99,15 +99,7 @@ const CB_FILTER_REFS: Record<string, string> = {
 // ─────────────────────────────────────────────────────────────────────────────
 // Tag groups
 // ─────────────────────────────────────────────────────────────────────────────
-const HEADING_TAGS     = new Set(["h1","h2","h3","h4","h5","h6"])
 const FORM_TAGS        = new Set(["input","select","textarea"])
-const INTERACTIVE_TAGS = new Set(["button","a","input","select","textarea","details","summary"])
-const MEDIA_TAGS       = new Set(["video","audio"])
-const LIST_TAGS        = new Set(["ul","ol","dl"])
-const INLINE_TAGS      = new Set([
-  "span","strong","em","b","i","u","s","small","mark","del","ins",
-  "sub","sup","abbr","cite","code","kbd","samp","var","time","q",
-])
 const LANDMARK_MAP: Record<string, string> = {
   nav: "navigation", header: "banner",
   footer: "contentinfo", main: "main", aside: "complementary",
@@ -116,7 +108,7 @@ const LANDMARK_MAP: Record<string, string> = {
 // ─────────────────────────────────────────────────────────────────────────────
 // Speech Synthesis — browser built-in, zero install
 // ─────────────────────────────────────────────────────────────────────────────
-function speak(text: string, priority: "polite" | "assertive" = "polite"): void {
+function speak(text: string): void {
   if (typeof window === "undefined") return
   if (!_currentConfig?.speechEnabled) return
   if (!window.speechSynthesis) return
@@ -241,7 +233,7 @@ function showVisualAlert(message: string, type: AlertType = "info"): void {
 function announce(message: string, type: AlertType = "info", useSpeech = true): void {
   if (_liveRegionNode) _liveRegionNode.textContent = message
   showVisualAlert(message, type)
-  if (useSpeech) speak(message, type === "error" ? "assertive" : "polite")
+  if (useSpeech) speak(message)
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -961,27 +953,6 @@ function applyConfigToDOM(config: A11yConfig): void {
 // ─────────────────────────────────────────────────────────────────────────────
 // Save + Load Preferences — localStorage
 // ─────────────────────────────────────────────────────────────────────────────
-function savePreferences(config: A11yConfig): void {
-  try {
-    const toSave = {
-      highContrast:      config.highContrast,
-      darkMode:          config.darkMode,
-      reduceMotion:      config.reduceMotion,
-      largeTargets:      config.largeTargets,
-      speechEnabled:     config.speechEnabled,
-      colorBlindMode:    config.colorBlindMode,
-      dyslexiaFont:      config.dyslexiaFont,
-      localFont:         config.localFont,
-      fontSizeMultiplier: config.fontSizeMultiplier,
-      plainEnglish:      config.plainEnglish,
-      summarisePage:     config.summarisePage,
-      translateLanguage: config.translateLanguage,
-      voiceControl:      config.voiceControl,
-      smartLabels:       config.smartLabels,
-    }
-    localStorage.setItem("yuktai-a11y-prefs", JSON.stringify(toSave))
-  } catch { /* ignore */ }
-}
 
 function loadPreferences(config: A11yConfig): void {
   try {
@@ -1207,7 +1178,7 @@ export const wcagPlugin = {
     return `yuktai v4.0.0: ${msg} Scanned ${report.scanned} elements in ${report.renderTime}ms.`
   },
 
-  applyFixes(config: A11yConfig): A11yReport {
+  applyFixes(_config?: A11yConfig): A11yReport {
     const report: A11yReport = {
       fixed: 0, scanned: 0, renderTime: 0, score: 100, details: [],
     }

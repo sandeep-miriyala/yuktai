@@ -11,8 +11,8 @@
 //   rust/ask-core  → packages/ask-page/src/search/askCoreWasm.ts (Ask page search)
 // `npm run build` uses those files and never needs Rust installed.
 //
-// No wasm32 target available (offline machine)? With the Rust library source
-// installed, set YUKTAI_BUILD_STD=1 to build Rust's `core`/`alloc` from source.
+// Stable Rust only: rust-toolchain.toml (repo root) picks the stable channel and
+// the wasm32 target, so every computer and CI build the same way.
 
 import { execFileSync } from "node:child_process"
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs"
@@ -23,9 +23,9 @@ const here = dirname(fileURLToPath(import.meta.url))
 const target = "wasm32-unknown-unknown"
 
 const crates = [
-  { dir: "grid-core", file: "yuktai_grid_core.wasm", constName: "GRID_CORE_WASM", out: "src/grid/rust/gridCoreWasm.ts", version: "yk_version", std: "core" },
-  { dir: "rag-core", file: "yuktai_rag_core.wasm", constName: "RAG_CORE_WASM", out: "src/agentic/rust/ragCoreWasm.ts", version: "yk_rag_version", std: "core,alloc" },
-  { dir: "ask-core", file: "yuktai_ask_core.wasm", constName: "ASK_CORE_WASM", out: "packages/ask-page/src/search/askCoreWasm.ts", version: "ak_version", std: "core,alloc" },
+  { dir: "grid-core", file: "yuktai_grid_core.wasm", constName: "GRID_CORE_WASM", out: "src/grid/rust/gridCoreWasm.ts", version: "yk_version" },
+  { dir: "rag-core", file: "yuktai_rag_core.wasm", constName: "RAG_CORE_WASM", out: "src/agentic/rust/ragCoreWasm.ts", version: "yk_rag_version" },
+  { dir: "ask-core", file: "yuktai_ask_core.wasm", constName: "ASK_CORE_WASM", out: "packages/ask-page/src/search/askCoreWasm.ts", version: "ak_version" },
 ]
 
 // Build only some crates: node rust/build-wasm.mjs ask-core
@@ -33,13 +33,11 @@ const only = process.argv.slice(2)
 
 for (const c of crates.filter((c) => !only.length || only.includes(c.dir))) {
   const crate = join(here, c.dir)
-  const args = ["build", "--release", "--target", target]
-  const env = { ...process.env }
-  if (process.env.YUKTAI_BUILD_STD === "1") {
-    args.push(`-Zbuild-std=${c.std}`)
-    env.RUSTC_BOOTSTRAP = "1"
+  try {
+    execFileSync("cargo", ["build", "--release", "--target", target], { cwd: crate, stdio: "inherit" })
+  } catch {
+    throw new Error(`Rust → WebAssembly failed for ${c.dir}. Install stable Rust from https://rustup.rs, then: rustup target add ${target}`)
   }
-  execFileSync("cargo", args, { cwd: crate, env, stdio: "inherit" })
 
   const bytes = readFileSync(join(crate, "target", target, "release", c.file))
 

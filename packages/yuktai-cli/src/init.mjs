@@ -9,7 +9,7 @@ import { c, step, info, warn, text, choose, chooseMany, closePrompts } from "./u
 
 export const STACKS = ["next-rust", "next"];
 export const TEMPLATES = ["docs", "starter"];
-export const FEATURES = ["grid", "page-tools", "icons"];
+export const FEATURES = ["grid", "page-tools", "icons", "backend"];
 export const HOSTS = ["none", "netlify", "github-pages"];
 export const ACCENTS = ["blue", "violet", "teal", "orange"];
 
@@ -72,9 +72,10 @@ export async function init(args, cliVersion) {
         { value: "starter", label: "Starter", hint: "home + about only" },
       ]) : "docs"),
       features: o.features ?? (interactive ? await chooseMany("Features (Ask this page, accessibility widget and PWA are always on)", [
-        { value: "grid", label: "Data grid", hint: "10 lakh (1,000,000) sample rows, search, sort, Rust engine" },
+        { value: "grid", label: "Data grid", hint: "25 lakh (2,500,000) sample rows, search, sort, Rust engine" },
         { value: "page-tools", label: "QA report", hint: "15 WCAG checks, Markdown report, 🛠 page tools" },
         { value: "icons", label: "Icons guide", hint: "every YuktAI icon, search, copy the code" },
+        { value: "backend", label: "Python API", hint: "FastAPI in backend/, starts with npm run dev, pytest tests" },
       ]) : [...FEATURES]),
       host: o.host ?? (interactive ? await choose("Hosting", [
         { value: "none", label: "Decide later", hint: "recommended: no hosting files; any static host works" },
@@ -112,7 +113,7 @@ export async function init(args, cliVersion) {
   ${c.bold("Next")}
     cd ${name}
     ${o.install ? "" : "npm install\n    "}npm run dev        → http://localhost:3000
-${opts.features.includes("grid") ? "                       → /grid/  10 lakh rows\n" : ""}${opts.features.includes("page-tools") ? "                       → /qa/    QA report\n" : ""}${opts.features.includes("icons") ? "                       → /icons/ every icon\n" : ""}
+${opts.features.includes("grid") ? "                       → /grid/  25 lakh rows\n" : ""}${opts.features.includes("backend") ? "                       → Python API http://localhost:8000/docs\n" : ""}${opts.features.includes("page-tools") ? "                       → /qa/    QA report\n" : ""}${opts.features.includes("icons") ? "                       → /icons/ every icon\n" : ""}
   Settings: ${c.cyan("yuktai.config.ts")}   ·   Guide: README.md   ·   Docs: https://yuktaidocs.netlify.app
 `);
   } finally {

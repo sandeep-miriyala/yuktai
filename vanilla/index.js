@@ -4011,7 +4011,7 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
     main: "main",
     aside: "complementary"
   };
-  function speak(text, priority = "polite") {
+  function speak(text) {
     if (typeof window === "undefined") return;
     if (!(_currentConfig == null ? void 0 : _currentConfig.speechEnabled)) return;
     if (!window.speechSynthesis) return;
@@ -4110,7 +4110,7 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
   function announce(message, type = "info", useSpeech = true) {
     if (_liveRegionNode) _liveRegionNode.textContent = message;
     showVisualAlert(message, type);
-    if (useSpeech) speak(message, type === "error" ? "assertive" : "polite");
+    if (useSpeech) speak(message);
   }
   function injectSkipLinks() {
     if (typeof document === "undefined") return;
@@ -4897,7 +4897,7 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
       announce(msg2, report.score >= 90 ? "success" : "info", false);
       return `yuktai v4.0.0: ${msg2} Scanned ${report.scanned} elements in ${report.renderTime}ms.`;
     },
-    applyFixes(config) {
+    applyFixes(_config) {
       const report = {
         fixed: 0,
         scanned: 0,

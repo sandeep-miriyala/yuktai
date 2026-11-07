@@ -17,7 +17,7 @@ export interface YuktaiSplashProps {
     tipMs?: number;
     /** "session" (default): once per browser tab. "always": every page load. */
     once?: "session" | "always";
-    /** Show a Skip button. Default true. Esc and a click anywhere also skip. */
+    /** Show a Skip button. Default true. Esc also skips. */
     skippable?: boolean;
     onDone?: () => void;
 }

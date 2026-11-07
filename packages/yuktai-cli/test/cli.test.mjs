@@ -53,18 +53,18 @@ test("scaffold: files, renamed dot-files, filled settings", () => {
     writePackageJson(dir, opts());
     const pkg = JSON.parse(readFileSync(join(dir, "package.json"), "utf8"));
     assert.equal(pkg.scripts.build, "yuktai build");
-    assert.equal(pkg.dependencies["@yuktishaalaa/yuktai"], "5.5.1");
+    assert.equal(pkg.dependencies["@yuktishaalaa/yuktai"], "5.5.3");
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
 });
 
-test("everything on (what --yes makes): grid with 10 lakh rows, QA report, icons, lifecycle, README", () => {
+test("everything on (what --yes makes): grid with 25 lakh rows, Python API, QA report, icons, lifecycle, README", () => {
   const dir = mkdtempSync(join(tmpdir(), "yuktai-"));
   try {
     const o = opts({ template: "docs", features: [...FEATURES], host: "none" });
     // --yes: everything on, no hosting files
-    assert.deepEqual(layersFor(o), ["base", "stack-next-rust", "template-docs", "feature-grid", "feature-page-tools", "feature-icons"]);
+    assert.deepEqual(layersFor(o), ["base", "stack-next-rust", "template-docs", "feature-grid", "feature-page-tools", "feature-icons", "feature-backend"]);
     scaffold(dir, o);
     assert.ok(!existsSync(join(dir, "netlify.toml")), "no hosting files by default");
     for (const f of ["src/styles/grid.css", "src/styles/qa.css", "src/styles/icons.css", "src/styles/look.css", "src/components/yuktai/LookPicker.tsx", "public/favicon.ico", "public/icons/maskable-192.png", "public/icons/monochrome-512.png"]) assert.ok(existsSync(join(dir, f)), f);
@@ -75,11 +75,18 @@ test("everything on (what --yes makes): grid with 10 lakh rows, QA report, icons
     assert.deepEqual(m.shortcuts.map((s) => s.url), ["./grid/", "./qa/", "./icons/"]);
     assert.equal(m.screenshots.length, 2);
     for (const f of ["src/app/grid/OrdersGrid.tsx", "src/data/orders.ts", "src/app/qa/QaReport.tsx", "src/app/icons/IconGallery.tsx", "src/app/(guides)/lifecycle/page.tsx", "src/components/yuktai/lifecycle.ts"]) assert.ok(existsSync(join(dir, f)), f);
-    assert.match(readFileSync(join(dir, "src/data/orders.ts"), "utf8"), /DEFAULT_ROWS = 10_00_000/);
+    assert.match(readFileSync(join(dir, "src/data/orders.ts"), "utf8"), /DEFAULT_ROWS = 25_00_000/);
     const cfg = readFileSync(join(dir, "yuktai.config.ts"), "utf8");
     assert.match(cfg, /pageTools: true/);
     assert.match(cfg, /icons: true/);
     assert.match(cfg, /splash: true/);
+    assert.match(cfg, /backend: true/);
+    for (const f of ["backend/app/main.py", "backend/app/orders.py", "backend/tests/test_api.py", "backend/requirements.txt", "backend/.env.example", "src/app/backend/page.tsx"]) assert.ok(existsSync(join(dir, f)), f);
+    writePackageJson(dir, o);
+    const pkg2 = JSON.parse(readFileSync(join(dir, "package.json"), "utf8"));
+    assert.equal(pkg2.scripts["dev:api"], "yuktai api");
+    assert.equal(pkg2.scripts["test:api"], "yuktai api-test");
+    assert.match(readFileSync(join(dir, ".gitignore"), "utf8"), /\.venv\//);
     assert.match(cfg, /preferences: true/);
     assert.match(readFileSync(join(dir, "src/app/layout.tsx"), "utf8"), /YuktaiSplash[\s\S]*MOTION_SCRIPT|MOTION_SCRIPT[\s\S]*YuktaiSplash/);
     assert.match(readFileSync(join(dir, "src/data/uiText.ts"), "utf8"), /డేటా గ్రిడ్/);
@@ -87,7 +94,7 @@ test("everything on (what --yes makes): grid with 10 lakh rows, QA report, icons
     assert.match(test, /"grid\/index.html","qa\/index.html","icons\/index.html"/);
     for (const f of ["src/app/page.tsx", "tests/build.test.mjs"]) assert.doesNotMatch(readFileSync(join(dir, f), "utf8"), /\{\{\w+\}\}/, f);
     const md = readme(o);
-    for (const want of ["10 lakh", "## Lifecycle", "onStart", "/qa/", "/icons/", "rustup target add", "Grid AI Assistant", "22 Indian", "Colour and font", "Language and animations", "Loading screen", "--host netlify"]) assert.ok(md.includes(want), want);
+    for (const want of ["10 lakh", "## Lifecycle", "onStart", "/qa/", "/icons/", "rustup target add", "Grid AI Assistant", "22 Indian", "Colour and font", "Language and animations", "Loading screen", "Python API (backend/)", "npm run test:api", "--host netlify"]) assert.ok(md.includes(want), want);
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }

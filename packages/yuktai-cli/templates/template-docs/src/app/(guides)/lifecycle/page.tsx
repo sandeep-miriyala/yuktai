@@ -50,7 +50,7 @@ export default function Lifecycle() {
 
       <h2>Where it is used</h2>
       <ul>
-        <li>Data grid: <code>onStart</code> when 10 lakh rows are ready, <code>onChange</code> after every search or sort, <code>onEnd</code> when you leave.</li>
+        <li>Data grid: <code>onStart</code> when 25 lakh rows are ready, <code>onChange</code> after every search or sort, <code>onEnd</code> when you leave.</li>
         <li>QA report: <code>onChange</code> with the score after every check.</li>
         <li>Icons guide: <code>onChange</code> with the icon you picked.</li>
       </ul>

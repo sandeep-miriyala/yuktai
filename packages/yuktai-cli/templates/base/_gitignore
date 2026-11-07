@@ -11,6 +11,15 @@ next-env.d.ts
 /rust/target/
 /public/wasm/
 
+# Python API (backend/)
+.venv/
+__pycache__/
+.pytest_cache/
+
+# Playwright
+/test-results/
+/playwright-report/
+
 # env files: keep secrets out of git
 .env*
 !.env.example

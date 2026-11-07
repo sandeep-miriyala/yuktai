@@ -1,0 +1,6 @@
+# The API and agents (installed by `npm run dev` into backend/.venv the first time)
+fastapi>=0.115,<1
+uvicorn[standard]>=0.30,<1
+langgraph>=1,<2
+langchain-core>=1,<2
+langchain-groq>=1,<2

@@ -1,0 +1,52 @@
+# Checks every push and pull request. Free for public repositories.
+# Stable Rust only (rust-toolchain.toml), Node 22, Python 3.12.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  library:
+    name: Library, Rust and CLI
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Stable Rust (from rust-toolchain.toml)
+        run: rustup show active-toolchain || rustup toolchain install
+      - run: npm ci
+      - name: Lint (Oxlint)
+        run: npm run lint
+      - name: Rust tests
+        run: npm run test:rust
+      - name: Rust → WebAssembly builds on stable
+        run: npm run build:rust
+      - name: Library tests
+        run: npm test
+      - name: Library build
+        run: npm run build
+      - name: CLI tests
+        working-directory: packages/yuktai-cli
+        run: npm test
+
+  python-template:
+    name: Python API template (pytest)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/yuktai-cli/templates/feature-backend/backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements-dev.txt
+      - run: python -m pytest -q

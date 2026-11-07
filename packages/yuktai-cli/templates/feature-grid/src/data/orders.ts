@@ -1,4 +1,4 @@
-// Sample data for the grid: up to 10 lakh (1,000,000) orders, made in the browser.
+// Sample data for the grid: up to 25 lakh (2,500,000) orders, made in the browser.
 // Nothing is downloaded: a seeded random generator gives the same rows on every visit.
 // Replace makeOrders() with your own data (an API, a JSON file, IndexedDB…).
 //
@@ -12,14 +12,23 @@
 
 export type Order = { id: string; customer: string; city: string; amount: number; date: string; paid: boolean };
 
-export const ROW_CHOICES = [1_000, 1_00_000, 10_00_000] as const;
-export const DEFAULT_ROWS = 10_00_000;
+export const ROW_CHOICES = [1_000, 1_00_000, 10_00_000, 25_00_000] as const;
+export const DEFAULT_ROWS = 25_00_000;
+/** Phones and computers with little memory start at 10 lakh (25 lakh needs about 600 MB). */
+export const LIGHT_ROWS = 10_00_000;
+
+/** The starting row count for this device. Runs in the browser only. */
+export function startRows(): number {
+  const memory = (navigator as Navigator & { deviceMemory?: number }).deviceMemory;
+  const phone = window.matchMedia("(pointer: coarse)").matches && window.innerWidth < 900;
+  return phone || (memory !== undefined && memory < 8) ? LIGHT_ROWS : DEFAULT_ROWS;
+}
 
 const FIRST = ["Aarav", "Lakshmi", "Ravi", "Priya", "Arjun", "Sita", "Kiran", "Ananya", "Vikram", "Meera", "Rahul", "Divya", "Suresh", "Kavya", "Manoj", "Sneha", "Arun", "Pooja", "Naveen", "Deepa", "Rohan", "Anjali", "Sanjay", "Nithya", "Imran", "Fatima", "John", "Mary", "Harpreet", "Gurpreet"];
 const LAST = ["Reddy", "Sharma", "Rao", "Iyer", "Naidu", "Patel", "Kumar", "Singh", "Menon", "Nair", "Gupta", "Das", "Khan", "Joshi", "Varma", "Pillai", "Chowdary", "Bose", "Mehta", "Thomas"];
 const CITIES = ["Hyderabad", "Bengaluru", "Chennai", "Mumbai", "Delhi", "Pune", "Kolkata", "Visakhapatnam", "Vijayawada", "Kochi", "Jaipur", "Ahmedabad"];
 
-// Strings are made once and shared, so a million rows stay light on memory.
+// Strings are made once and shared, so lakhs of rows stay light on memory.
 const NAMES = FIRST.flatMap((f) => LAST.map((l) => `${f} ${l}`));
 const DAY = 86_400_000;
 const START = Date.UTC(2024, 0, 1);

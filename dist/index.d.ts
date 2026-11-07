@@ -34,12 +34,12 @@ export declare const YuktAI: {
         version: string;
         observer: MutationObserver | null;
         execute(config: import(".").A11yConfig): Promise<string>;
-        applyFixes(config: import(".").A11yConfig): import(".").A11yReport;
+        applyFixes(_config?: import(".").A11yConfig): import(".").A11yReport;
         scan(): import(".").A11yReport;
         startObserver(config: import(".").A11yConfig): void;
         stopObserver(): void;
         announce: (message: string, type?: import("./core/renderer").AlertType, useSpeech?: boolean) => void;
-        speak: (text: string, priority?: "polite" | "assertive") => void;
+        speak: (text: string) => void;
         showVisualAlert: (message: string, type?: import("./core/renderer").AlertType) => void;
         trapFocus: (modal: HTMLElement) => void;
         handlePlainEnglish: (enabled: boolean) => Promise<void>;
