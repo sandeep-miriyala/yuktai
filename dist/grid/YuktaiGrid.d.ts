@@ -1,6 +1,11 @@
 import React from "react";
 import type { YuktaiGridProps } from "./types";
 /**
+ * v5.3.16 — page numbers to show: always the first and last, two either side of
+ * the current page, and 0 where pages are skipped (shown as "…").
+ */
+export declare function pageWindow(page: number, total: number): number[];
+/**
  * The grid's colours. Set any of these in your CSS to restyle the grid,
  * for example `.yk-grid { --yk-grid-accent: #0038b4; }`. Dark theme values
  * use the same names, so set them under your own dark-mode selector.
