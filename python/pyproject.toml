@@ -31,8 +31,8 @@ test = ["pytest>=8", "jinja2>=3.1", "django>=4.2"]
 
 [project.urls]
 Documentation = "https://yuktaidocs.netlify.app/"
-Source = "https://github.com/sandeepmiriyala03/yuktai"
-Issues = "https://github.com/sandeepmiriyala03/yuktai/issues"
+Source = "https://github.com/sandeep-miriyala/yuktai"
+Issues = "https://github.com/sandeep-miriyala/yuktai/issues"
 npm = "https://www.npmjs.com/package/@yuktishaalaa/yuktai"
 
 [tool.hatch.build.targets.wheel]
