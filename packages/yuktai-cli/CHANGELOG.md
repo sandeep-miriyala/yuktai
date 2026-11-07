@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.3.0
+- **Agentic AI menu:** one main menu with a submenu: Grid Agent, Ask the documents (RAG), Testing Agent, YuktAI Assistant and Python API. Keyboard: Enter or ↓ opens it, ↑ ↓ move, Esc closes; on phones the list opens below the menu bar, never cut off. Menu words in all 7 site languages. The menu now has 7 items: Home, Docs, Data grid, Agentic AI ▾, QA report, Icons, About.
+- Add your own submenu in `src/data/site.ts`: a group with `children` becomes a ▾ menu.
+- The Agents page has a section for each submenu item (`#grid-agent`, `#rag`, `#testing-agent`, `#assistant`).
+- Loading screen tip changed to "Search and sort 25 lakh rows in your browser, in Rust."
+
+## 1.2.1
+- **Two apps at once:** when port 8000 is busy, `npm run dev` starts the Python API on the next free port (8001…) and tells the site where it is. The API now accepts calls from any `localhost` port, so a site that moved to 3001 still connects.
+- **No service worker while developing:** `npm run dev` removes any service worker on that localhost port, so an old one (from this app or another site that used the same port) can't serve stale pages or missing styles. Built sites (`npm run build`) work offline as before.
+
 ## 1.2.0
 - **One command runs everything:** `npm run dev` builds Rust → WebAssembly, starts the **Python API** (FastAPI, `backend/`) and Next.js together. The first run makes `backend/.venv` and installs the requirements. No Python? The site still runs, with a note on how to add it. `npm run dev -- --no-api` skips the API.
 - **Python API** (`--features backend`, on with `--yes`): `/api/health`, `/api/orders` (25 lakh sample orders, page by page, made on demand: no database), `/api/orders/{id}`, CORS for the site, settings in `backend/.env`, 7 pytest tests. New commands: `npm run dev:api`, `npm run test:api` (`yuktai api`, `yuktai api-test`).

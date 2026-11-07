@@ -42,7 +42,7 @@ export function readme(o) {
   if (docs) add("| Docs `/getting-started/` | Guides with a sidebar: getting started, configuration, lifecycle, deploy |");
   if (has("grid")) add("| Data grid `/grid/` | 25 lakh (2,500,000) sample orders made in the browser (10 lakh on phones). Search and sort every column in Rust, **Show all** (every row in one smooth scrolling list) or pages, the Grid AI Assistant, 🎤 voice, 24 input languages, row selection, browser-agent tools (WebMCP) |");
   if (has("page-tools")) add("| QA report `/qa/` | 15 WCAG 2.2 checks, score, what to fix, Markdown download. The 🛠 button has it on every page |");
-  if (has("backend")) add("| Agents `/agents/` | Grid Agent and RAG (LangGraph, in the Python API). Groq when `GROQ_API_KEY` is set, free mode without |");
+  if (has("backend")) add("| Agents `/agents/` (menu: Agentic AI ▾) | Grid Agent and RAG (LangGraph, in the Python API). Groq when `GROQ_API_KEY` is set, free mode without |");
   if (has("backend")) add("| Backend `/backend/` | The Python API (FastAPI): live status and 25 lakh orders served page by page from `backend/` |");
   if (has("icons")) add("| Icons `/icons/` | Every YuktAI icon: search, size, outline or filled, colour with a contrast check, copy the code |");
   add(

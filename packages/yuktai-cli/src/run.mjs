@@ -55,7 +55,10 @@ function stopChild(p) {
 // --no-api skips the Python API.
 export async function dev(args) {
   buildRust();
-  const stopApi = args.includes("--no-api") ? null : startApi();
+  const api = args.includes("--no-api") ? null : await startApi();
+  const stopApi = api?.stop;
+  // the site calls the API where it really started (8001… when 8000 was busy)
+  if (api && !process.env.NEXT_PUBLIC_API_URL) process.env.NEXT_PUBLIC_API_URL = api.url;
   let site = null;
   // Ctrl + C (or closing the terminal) stops the site and the API together
   const stopAll = () => { stopApi?.(); stopChild(site); };

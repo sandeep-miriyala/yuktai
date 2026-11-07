@@ -30,7 +30,9 @@ app = FastAPI(
 # The Next.js app runs on another port, so the browser needs permission (CORS) to call this API.
 # Set ALLOWED_ORIGINS in backend/.env when the site is online, e.g. https://my-app.netlify.app
 origins = [o.strip() for o in settings.get("ALLOWED_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000").split(",") if o.strip()]
-app.add_middleware(CORSMiddleware, allow_origins=origins, allow_methods=["GET", "POST"], allow_headers=["*"])
+# Any port on this computer is allowed too, so the site works on 3000, 3001… while you develop.
+LOCAL = r"https?://(localhost|127\.0\.0\.1)(:\d+)?"
+app.add_middleware(CORSMiddleware, allow_origins=origins, allow_origin_regex=LOCAL, allow_methods=["GET", "POST"], allow_headers=["*"])
 
 
 @app.get("/api/health")

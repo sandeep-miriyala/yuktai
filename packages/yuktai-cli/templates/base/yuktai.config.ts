@@ -37,7 +37,7 @@ const config = {
   splash: {
     seconds: 15, // how long it stays: the bar fills and Skip counts down
     tips: [
-      "Everything runs in your browser: no server, no API key.",
+      "Search and sort 25 lakh rows in your browser, in Rust.",
       "Press Ctrl + K to ask this page anything.",
       "The ♿ button: contrast, text size, dyslexia font and more.",
       "Menus in English, తెలుగు, हिन्दी, தமிழ், ಕನ್ನಡ, മലയാളം and বাংলা.",

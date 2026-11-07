@@ -129,3 +129,16 @@ pre { padding: 16px 18px; border-radius: 14px; background: var(--code-bg); color
 /* Selected text stays readable, also inside dark code boxes */
 ::selection { background: #b9d2ff; color: #0d0b1f; }
 pre ::selection, pre::selection { background: #2563eb; color: #ffffff; }
+
+/* Main menu with a submenu (Agentic AI ▾) */
+.nav-menu { flex: none; }
+.nav-menu__button { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 10px 12px; border: 0; border-radius: 10px; background: transparent; color: var(--muted); font: 600 1rem var(--font); white-space: nowrap; cursor: pointer; }
+.nav-menu__button:hover, .nav-menu__button[aria-expanded="true"], .nav-menu__button[data-active] { color: var(--text); background: var(--chip); }
+.nav-menu__caret { font-size: .8em; transition: transform .2s; }
+.nav-menu__button[aria-expanded="true"] .nav-menu__caret { transform: rotate(180deg); }
+.nav-menu__list { position: fixed; z-index: 60; margin: 0; padding: 8px; list-style: none; border: 1px solid var(--line-soft); border-radius: 14px; background: var(--panel); box-shadow: 0 24px 60px -20px rgba(0, 0, 0, .35); }
+.topnav .nav-menu__list a { display: grid; gap: 2px; padding: 10px 12px; border-radius: 10px; color: var(--text); font-size: 1rem; text-decoration: none; white-space: normal; }
+.nav-menu__list a span { color: var(--muted); font-size: .85rem; }
+.nav-menu__list a:hover, .nav-menu__list a:focus-visible, .nav-menu__list a[aria-current="page"] { background: var(--chip); }
+@media (max-width: 1480px) and (min-width: 961px) { .nav-menu__button { padding: 10px 9px; } }
+@media (max-width: 1480px) and (min-width: 961px) { .topbar:not([data-lang="en"]) .nav-menu__button { padding: 10px 7px; font-size: .9rem; } }

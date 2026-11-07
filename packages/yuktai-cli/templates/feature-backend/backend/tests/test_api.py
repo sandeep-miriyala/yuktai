@@ -53,3 +53,11 @@ def test_cors_allows_the_site():
         headers={"Origin": "http://localhost:3000", "Access-Control-Request-Method": "GET"},
     )
     assert r.headers.get("access-control-allow-origin") == "http://localhost:3000"
+
+
+def test_cors_allows_any_local_port():
+    # the site moves to 3001 when 3000 is busy
+    r = client.options("/api/health", headers={"Origin": "http://localhost:3001", "Access-Control-Request-Method": "GET"})
+    assert r.headers.get("access-control-allow-origin") == "http://localhost:3001"
+    other = client.options("/api/health", headers={"Origin": "https://example.com", "Access-Control-Request-Method": "GET"})
+    assert other.headers.get("access-control-allow-origin") is None

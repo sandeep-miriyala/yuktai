@@ -33,8 +33,14 @@ export default function Providers({ children }: { children: ReactNode }) {
         ask();
       }
     };
-    if (config.features.pwa && "serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
-      navigator.serviceWorker.register(`${base}/sw.js`).catch(() => {});
+    if ("serviceWorker" in navigator) {
+      if (process.env.NODE_ENV === "production" && config.features.pwa && /^https?:$/.test(location.protocol)) {
+        navigator.serviceWorker.register(`${base}/sw.js`).catch(() => {});
+      } else {
+        // While you develop, no offline cache: an old service worker (from this app or another site
+        // that used the same localhost port) could otherwise serve stale pages and missing styles.
+        navigator.serviceWorker.getRegistrations().then((all) => all.forEach((r) => r.unregister())).catch(() => {});
+      }
     }
     document.addEventListener("keydown", onKey);
     const off = subscribeTheme(theme);

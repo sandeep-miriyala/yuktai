@@ -2,6 +2,7 @@
 // environment in backend/.venv, install requirements once, run it, test it.
 // Everything is optional: without Python the site still runs on its own.
 import { existsSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { createServer } from "node:net";
 import { join } from "node:path";
 import { run, runSync, win } from "./proc.mjs";
 import { c, info, step, warn } from "./ui.mjs";
@@ -66,30 +67,49 @@ export function ensureApiEnv(cwd = process.cwd(), { dev = false } = {}) {
   return py;
 }
 
-/** Starts the API with auto-reload. Returns a stop() function, or null when it can't run. */
-export function startApi(cwd = process.cwd()) {
+/** True when nothing is listening on this port yet. */
+function portFree(port) {
+  return new Promise((resolve) => {
+    const probe = createServer();
+    probe.once("error", () => resolve(false));
+    probe.once("listening", () => probe.close(() => resolve(true)));
+    probe.listen(port, "127.0.0.1");
+  });
+}
+
+/**
+ * Starts the API with auto-reload on API_PORT (8000), or the next free port when another
+ * app already uses it. Returns { stop, url }, or null when it can't run.
+ */
+export async function startApi(cwd = process.cwd()) {
   if (!hasApi(cwd)) return null;
   const py = ensureApiEnv(cwd);
   if (!py) return null;
-  const port = apiPort(cwd);
+  const wanted = apiPort(cwd);
+  let port = wanted;
+  while (!(await portFree(port)) && port < wanted + 20) port++;
+  if (port !== wanted) warn(`Port ${wanted} is busy (another app?), so the Python API uses ${port}.`);
   const child = run(py, ["-m", "uvicorn", "app.main:app", "--reload", "--port", String(port)], { cwd: join(cwd, "backend"), stdio: "inherit" });
-  step(`Python API: ${c.cyan(`http://localhost:${port}/docs`)}`);
+  const url = `http://localhost:${port}`;
+  step(`Python API: ${c.cyan(`${url}/docs`)}`);
   child.on("exit", (code) => {
     if (code && code !== 0) warn(`The Python API stopped (exit ${code}). The site keeps running.`);
   });
-  return () => {
+  const stop = () => {
     if (child.exitCode !== null) return;
     // on Windows the API runs inside a shell: stop the whole process tree
     if (win) runSync("taskkill", ["/pid", String(child.pid), "/T", "/F"], { stdio: "ignore" });
     else child.kill("SIGTERM");
   };
+  return { stop, url };
 }
 
 /** yuktai api: the API on its own, until Ctrl + C. */
 export async function api() {
   if (!hasApi()) throw new Error("This app has no backend/ folder. Create one with: npx yuktai init my-app --features backend");
-  const stop = startApi();
-  if (!stop) throw new Error("The Python API could not start (see above).");
+  const started = await startApi();
+  if (!started) throw new Error("The Python API could not start (see above).");
+  const stop = started.stop;
   await new Promise((resolve) => {
     const end = () => { stop(); resolve(); };
     process.once("SIGINT", end);

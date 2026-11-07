@@ -12,12 +12,11 @@ async function post(path: string, question: string): Promise<AgentReply> {
   return r.json();
 }
 
-function Panel({ title, path, hint, examples }: { title: string; path: string; hint: string; examples: string[] }) {
+function Panel({ id, title, path, hint, examples }: { id: string; title: string; path: string; hint: string; examples: string[] }) {
   const [q, setQ] = useState("");
   const [busy, setBusy] = useState(false);
   const [reply, setReply] = useState<AgentReply | null>(null);
   const [error, setError] = useState("");
-  const id = path.replace(/\W/g, "");
 
   const ask = async (question: string) => {
     if (!question.trim()) return;
@@ -34,7 +33,7 @@ function Panel({ title, path, hint, examples }: { title: string; path: string; h
   const submit = (e: FormEvent) => { e.preventDefault(); void ask(q); };
 
   return (
-    <section className="agent-panel" aria-labelledby={`${id}-h`}>
+    <section id={id} className="agent-panel" aria-labelledby={`${id}-h`}>
       <h2 id={`${id}-h`}>{title}</h2>
       <p className="hint">{hint}</p>
       <form className="agent-form" onSubmit={submit}>
@@ -83,12 +82,14 @@ export default function AgentsDemo() {
       <p className="api-status" role="status">{mode || "Checking the agents…"}</p>
       <div className="agent-grid">
         <Panel
+          id="grid-agent"
           title="🤖 Grid Agent"
           path="/api/agents/grid"
           hint="Counts, totals, averages, top orders and orders by city, with tools. Read-only."
           examples={["How many unpaid orders in Pune?", "Total amount in Hyderabad", "Top orders", "Orders by city"]}
         />
         <Panel
+          id="rag"
           title="📚 Ask the documents (RAG)"
           path="/api/rag/ask"
           hint="Answers from backend/knowledge/*.md, with the passages it used."
