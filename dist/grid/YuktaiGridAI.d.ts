@@ -42,5 +42,11 @@ export interface YuktaiGridAIProps<T> {
      */
     onInputLanguageChange?: (language: InputLanguage) => void;
 }
+/** v5.3.14 — native names first, so people find their language in its own script. */
+export declare const INPUT_LANGUAGES: readonly {
+    code: InputLanguage;
+    native: string;
+    english: string;
+}[];
 export declare function YuktaiGridAI<T extends Record<string, unknown>>({ data, columns, onSearch, onSort, theme, language, inputLanguage, embedded, agent, onInputLanguageChange, }: YuktaiGridAIProps<T>): React.JSX.Element;
 export default YuktaiGridAI;
