@@ -150,6 +150,17 @@ The last five come with the `backend` feature.
 | `@yuktishaalaa/yuktai/experience` | Loading screen, language and animation picker |
 | `@yuktishaalaa/yuktai/head` | Small scripts for `<head>` |
 
+## Live demos
+
+| Site | |
+|---|---|
+| [miriyalas.github.io/yuktai](https://miriyalas.github.io/yuktai/) | Made with no laptop: created, built and published from a browser with GitHub Codespaces |
+| [పద్యాలవాల](https://sandeep-miriyala.github.io/padyalavala/) | Telugu poetry site: Rust search, Grid AI Assistant in Telugu, listen and share |
+| [YuktaiDocs](https://yuktaidocs.netlify.app/) | Docs and playgrounds |
+| [Plain HTML demo](https://sandeep-miriyala.github.io/yuktai/vanilla/) | No framework, one script |
+
+**No laptop?** Open [GitHub Codespaces](https://github.com/codespaces) → Blank, run `npm create yuktai@latest my-app -- --yes`, push, then Settings → Pages → Source: GitHub Actions. [Step by step](https://yuktaidocs.netlify.app/create/#codespaces)
+
 ## Documentation
 
 Everything else (grid options, styling, accessibility tools, jQuery, the CLI, agents) lives in the docs:
