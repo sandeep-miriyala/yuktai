@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.3.1
+- **Fix: `npm run build` failed in new apps** with "Cannot find module '@/data/products'". Two old template files (`grid/ProductGrid.tsx`, `app/manifest.ts`) were still in the 1.3.0 package. They are gone, and a new test checks that every `@/` import in a new app points at a real file, for every template and feature, so this can't ship again.
+- **GitHub Pages by default:** `--yes` (and the first choice in the questions) adds `.github/workflows/deploy.yml`. Push, then Settings → Pages → Source: GitHub Actions. The workflow caches the Next.js build and turns telemetry off. The end of `yuktai init` says what to click, and the README warns not to use GitHub's suggested Next.js workflow.
+- **One settings file:** new apps have no `next.config`. `yuktai dev` and `yuktai build` write one for each run (static export, GitHub Pages path) and remove it afterwards. An app with its own `next.config.*` keeps it.
+- **No git inside git:** created inside another repository (a Codespace, a monorepo), the app joins that repository instead of starting its own.
+- "Next" at the end of `yuktai init` now says to go into the new folder first.
+- New tagline everywhere: "accessible, agentic web apps. Rust speed, Indian languages, one command." (welcome line of `yuktai init`, now "◆ YuktAI v1.3.1" without the 🙏, `yuktai help`, npm description, README). New apps describe themselves as "an accessible web app built with YuktAI".
+
 ## 1.3.0
 - **Agentic AI menu:** one main menu with a submenu: Grid Agent, Ask the documents (RAG), Testing Agent, YuktAI Assistant and Python API. Keyboard: Enter or ↓ opens it, ↑ ↓ move, Esc closes; on phones the list opens below the menu bar, never cut off. Menu words in all 7 site languages. The menu now has 7 items: Home, Docs, Data grid, Agentic AI ▾, QA report, Icons, About.
 - Add your own submenu in `src/data/site.ts`: a group with `children` becomes a ▾ menu.

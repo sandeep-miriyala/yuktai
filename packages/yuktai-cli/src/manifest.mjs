@@ -16,7 +16,7 @@ export function manifest(o, theme = "#000633") {
   return {
     name: o.title,
     short_name: o.title.length > 12 ? o.title.split(" ")[0].slice(0, 12) : o.title,
-    description: `${o.title}: an accessible, AI-in-the-browser web app built with YuktAI.`,
+    description: `${o.title}: an accessible web app built with YuktAI.`,
     lang: "en",
     dir: "ltr",
     id: "./",

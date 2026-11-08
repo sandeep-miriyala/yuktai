@@ -3,7 +3,7 @@
 const config = {
   name: "{{name}}",
   title: "{{title}}",
-  description: "{{title}}: an accessible, AI-in-the-browser web app built with YuktAI.",
+  description: "{{title}}: an accessible web app built with YuktAI.",
 
   theme: {
     accent: "{{accentName}}", // blue | violet | teal | orange (colours in src/styles/tokens.css)

@@ -14,7 +14,7 @@ import { c } from "./ui.mjs";
 const VERSION = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8")).version;
 
 const HELP = `
-  ${c.bold("yuktai")} ${VERSION}: accessible, AI-in-the-browser web apps
+  ${c.bold("yuktai")} ${VERSION}: accessible, agentic web apps. Rust speed, Indian languages, one command.
 
   ${c.bold("Usage")}
     npx yuktai init my-app          create an app (asks a few questions)

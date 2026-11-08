@@ -5,6 +5,8 @@
 /.next/
 /out/
 next-env.d.ts
+# written by `yuktai dev` / `yuktai build` for each run (settings: yuktai.config.ts)
+/next.config.mjs
 *.tsbuildinfo
 
 # Rust (built by `yuktai dev` / `yuktai build`)

@@ -1,6 +1,6 @@
 // yuktai init: questions → layers → package.json → install → git.
 import { existsSync, readdirSync } from "node:fs";
-import { resolve, basename } from "node:path";
+import { resolve, basename, dirname } from "node:path";
 import { runSync } from "./proc.mjs";
 import { scaffold } from "./scaffold.mjs";
 import { writePackageJson } from "./pkg.mjs";
@@ -47,7 +47,7 @@ const toTitle = (n) => n.replace(/[-_.]+/g, " ").replace(/\b\w/g, (m) => m.toUpp
 export async function init(args, cliVersion) {
   const o = parseFlags(args);
   const interactive = !o.yes && process.stdin.isTTY;
-  console.log(`\n  🙏 ${c.bold("YuktAI")}: accessible, AI-in-the-browser apps\n`);
+  console.log(`\n  ${c.cyan("◆")} ${c.bold("YuktAI")} ${c.dim("v" + cliVersion)}\n    Accessible, agentic web apps. Rust speed, Indian languages, one command.\n`);
 
   try {
     // node version (Next.js 16 needs 20.9 or newer)
@@ -78,10 +78,10 @@ export async function init(args, cliVersion) {
         { value: "backend", label: "Python API", hint: "FastAPI in backend/, starts with npm run dev, pytest tests" },
       ]) : [...FEATURES]),
       host: o.host ?? (interactive ? await choose("Hosting", [
-        { value: "none", label: "Decide later", hint: "recommended: no hosting files; any static host works" },
+        { value: "github-pages", label: "GitHub Pages", hint: "recommended: push, then Settings → Pages → GitHub Actions" },
         { value: "netlify", label: "Netlify", hint: "adds netlify.toml" },
-        { value: "github-pages", label: "GitHub Pages", hint: "adds a GitHub Action" },
-      ]) : "none"),
+        { value: "none", label: "No hosting files", hint: "npm run build makes out/ for any static host" },
+      ]) : "github-pages"),
       accent: o.accent ?? (interactive ? await choose("Theme colour", ACCENTS.map((a) => ({ value: a, label: a[0].toUpperCase() + a.slice(1) }))) : "blue"),
       cliVersion,
     };
@@ -104,16 +104,20 @@ export async function init(args, cliVersion) {
       if (r.status === 0) step("Installed packages");
       else warn(`npm install did not finish. Run it yourself: cd ${name} → npm install`);
     }
-    if (o.git) {
+    // inside another git repository (a Codespace, a monorepo) the app joins that one instead
+    const insideRepo = runSync("git", ["rev-parse", "--is-inside-work-tree"], { cwd: dirname(dir), stdio: "ignore" }).status === 0;
+    if (o.git && insideRepo) info("Inside a git repository already: commit the new folder with the rest of it.");
+    if (o.git && !insideRepo) {
       const g = (a) => runSync("git", a, { cwd: dir, stdio: "ignore" });
       if (g(["init", "-b", "main"]).status === 0 && g(["add", "-A"]).status === 0 && g(["commit", "-m", "Create app with yuktai " + cliVersion]).status === 0) step("Started a git repository");
     }
 
     console.log(`
-  ${c.bold("Next")}
-    cd ${name}
+  ${c.bold("Next")}  (go into the new folder first)
+    ${c.cyan("cd " + name)}
     ${o.install ? "" : "npm install\n    "}npm run dev        → http://localhost:3000
 ${opts.features.includes("grid") ? "                       → /grid/  25 lakh rows\n" : ""}${opts.features.includes("backend") ? "                       → Python API http://localhost:8000/docs\n" : ""}${opts.features.includes("page-tools") ? "                       → /qa/    QA report\n" : ""}${opts.features.includes("icons") ? "                       → /icons/ every icon\n" : ""}
+${opts.host === "github-pages" ? `  ${c.bold("Online")}  push to GitHub → Settings → Pages → Source: ${c.cyan("GitHub Actions")} (not the suggested Next.js workflow)\n` : ""}
   Settings: ${c.cyan("yuktai.config.ts")}   ·   Guide: README.md   ·   Docs: https://yuktaidocs.netlify.app
 `);
   } finally {

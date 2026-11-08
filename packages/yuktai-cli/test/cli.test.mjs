@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, readFileSync, existsSync, rmSync } from "node:fs";
+import { mkdtempSync, readFileSync, existsSync, rmSync, readdirSync, statSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { parseFlags } from "../src/init.mjs";
@@ -95,6 +95,67 @@ test("everything on (what --yes makes): grid with 25 lakh rows, Python API, QA r
     for (const f of ["src/app/page.tsx", "tests/build.test.mjs"]) assert.doesNotMatch(readFileSync(join(dir, f), "utf8"), /\{\{\w+\}\}/, f);
     const md = readme(o);
     for (const want of ["10 lakh", "## Lifecycle", "onStart", "/qa/", "/icons/", "rustup target add", "Grid AI Assistant", "22 Indian", "Colour and font", "Language and animations", "Loading screen", "Python API (backend/)", "npm run test:api", "--host netlify"]) assert.ok(md.includes(want), want);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+// Every "@/…" import in a new app must point at a file that the app really has. This catches a
+// template file left behind after the file it imports was renamed or removed.
+function missingImports(dir) {
+  const src = join(dir, "src");
+  const files = [];
+  const walk = (d) => readdirSync(d).forEach((f) => (statSync(join(d, f)).isDirectory() ? walk(join(d, f)) : /\.(ts|tsx)$/.test(f) && files.push(join(d, f))));
+  walk(src);
+  const exts = ["", ".ts", ".tsx", ".js", ".mjs", ".css", ".json", "/index.ts", "/index.tsx"];
+  const missing = [];
+  for (const f of files) {
+    for (const m of readFileSync(f, "utf8").matchAll(/(?:from|import)\s+["']@\/([^"']+)["']/g)) {
+      if (!exts.some((e) => existsSync(join(src, m[1] + e)))) missing.push(`${f.slice(dir.length + 1)} → @/${m[1]}`);
+    }
+  }
+  return missing;
+}
+
+test("every @/ import in a new app resolves (all templates, all features)", () => {
+  for (const template of ["docs", "starter"]) {
+    for (const stack of ["next-rust", "next"]) {
+      const dir = mkdtempSync(join(tmpdir(), "yuktai-imports-"));
+      try {
+        scaffold(dir, opts({ template, stack, features: [...FEATURES], host: "github-pages" }));
+        assert.deepEqual(missingImports(dir), [], `${template}/${stack}`);
+      } finally {
+        rmSync(dir, { recursive: true, force: true });
+      }
+    }
+  }
+});
+
+test("new apps: one settings file and a GitHub Pages workflow", () => {
+  const dir = mkdtempSync(join(tmpdir(), "yuktai-cfg-"));
+  try {
+    scaffold(dir, opts({ host: "github-pages" }));
+    for (const n of ["next.config.ts", "next.config.mjs", "next.config.js"]) assert.ok(!existsSync(join(dir, n)), n);
+    assert.ok(existsSync(join(dir, "yuktai.config.ts")));
+    assert.match(readFileSync(join(dir, ".gitignore"), "utf8"), /^\/next\.config\.mjs$/m);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("next.config: made for the run, removed after, the app's own file is kept", async () => {
+  const { ensureNextConfig } = await import("../src/nextConfig.mjs");
+  const { writeFileSync } = await import("node:fs");
+  const dir = mkdtempSync(join(tmpdir(), "yuktai-next-"));
+  try {
+    const remove = ensureNextConfig(dir);
+    assert.match(readFileSync(join(dir, "next.config.mjs"), "utf8"), /output: "export"/);
+    remove();
+    assert.ok(!existsSync(join(dir, "next.config.mjs")));
+    writeFileSync(join(dir, "next.config.ts"), "export default {};\n");
+    ensureNextConfig(dir)();
+    assert.ok(!existsSync(join(dir, "next.config.mjs")));
+    assert.equal(readFileSync(join(dir, "next.config.ts"), "utf8"), "export default {};\n");
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }

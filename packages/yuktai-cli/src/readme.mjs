@@ -232,11 +232,13 @@ export function readme(o) {
     `engine: "${rust ? "rust" : "ts"}",          // "rust" (WebAssembly) or "ts"`,
     "```",
     "",
+    "There is no `next.config` file to look after: `npm run dev` and `npm run build` make one for each run (static export, the GitHub Pages path) and remove it afterwards. Need a Next.js setting of your own? Add `next.config.ts`; YuktAI then uses yours and leaves it alone.",
+    "",
   );
 
   add("## Put it online", "");
   if (o.host === "netlify") add("Netlify: push to GitHub, then **Add new site → Import an existing project**. `netlify.toml` already has the build command and the `out` folder.", "");
-  else if (o.host === "github-pages") add("GitHub Pages: push to GitHub, then **Settings → Pages → Source: GitHub Actions**. `.github/workflows/deploy.yml` builds and publishes on every push to `main`.", "");
+  else if (o.host === "github-pages") add("GitHub Pages: push to GitHub, then **Settings → Pages → Source: GitHub Actions**. `.github/workflows/deploy.yml` builds and publishes on every push to `main`. Don't click **Configure** on the suggested Next.js workflow: this app already has its own. Renamed the repository? Run the workflow again (**Actions → Deploy to GitHub Pages → Run workflow**).", "");
   else add("`npm run build` makes a static site in `out/`. Upload that folder to any static host. To have the config made for you, create the app with `--host netlify` or `--host github-pages`.", "");
 
   add(

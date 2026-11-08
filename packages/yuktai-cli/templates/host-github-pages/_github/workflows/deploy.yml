@@ -20,8 +20,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      # the site lives at https://<user>.github.io/<repo>/
+      # the site lives at https://<user>.github.io/<repo>/ (renamed the repo? run this workflow again)
       NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
+      NEXT_TELEMETRY_DISABLED: 1
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -31,6 +32,11 @@ jobs:
       - name: Rust → WebAssembly target (only used when the app has rust/)
         if: hashFiles('rust/Cargo.toml') != ''
         run: rustup target add wasm32-unknown-unknown
+      - uses: actions/cache@v4
+        with:
+          path: .next/cache
+          key: nextjs-${{ hashFiles('package-lock.json') }}-${{ github.sha }}
+          restore-keys: nextjs-${{ hashFiles('package-lock.json') }}-
       - run: npm ci
       - run: npm run build
       - run: touch out/.nojekyll

@@ -5,6 +5,7 @@ import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync } from "
 import { join } from "node:path";
 import { run, runSync, win } from "./proc.mjs";
 import { startApi } from "./api.mjs";
+import { ensureNextConfig } from "./nextConfig.mjs";
 import { c, step, warn } from "./ui.mjs";
 
 function crateName(cargoToml) {
@@ -55,19 +56,21 @@ function stopChild(p) {
 // --no-api skips the Python API.
 export async function dev(args) {
   buildRust();
+  const removeConfig = ensureNextConfig();
   const api = args.includes("--no-api") ? null : await startApi();
   const stopApi = api?.stop;
   // the site calls the API where it really started (8001… when 8000 was busy)
   if (api && !process.env.NEXT_PUBLIC_API_URL) process.env.NEXT_PUBLIC_API_URL = api.url;
   let site = null;
   // Ctrl + C (or closing the terminal) stops the site and the API together
-  const stopAll = () => { stopApi?.(); stopChild(site); };
+  const stopAll = () => { stopApi?.(); stopChild(site); removeConfig(); };
   process.once("SIGINT", stopAll);
   process.once("SIGTERM", stopAll);
   try {
     await next(["dev", ...args.filter((a) => a !== "--no-api")], process.cwd(), (p) => { site = p; });
   } finally {
     stopApi?.();
+    removeConfig();
   }
 }
 
@@ -75,5 +78,10 @@ export async function build(args) {
   // --rust-required: fail the build when Rust can't be built (for CI that must ship the WASM)
   const required = args.includes("--rust-required");
   buildRust(process.cwd(), { required });
-  await next(["build", ...args.filter((a) => a !== "--rust-required")]);
+  const removeConfig = ensureNextConfig();
+  try {
+    await next(["build", ...args.filter((a) => a !== "--rust-required")]);
+  } finally {
+    removeConfig();
+  }
 }
