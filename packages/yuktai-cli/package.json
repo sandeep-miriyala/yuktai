@@ -1,6 +1,6 @@
 {
   "name": "yuktai",
-  "version": "1.3.1",
+  "version": "1.4.0",
   "description": "Create accessible, agentic web apps in one command: Next.js + Rust + Python agents, Indian languages, PWA. `npx yuktai init my-app`.",
   "type": "module",
   "bin": {
@@ -30,7 +30,9 @@
     "rag",
     "pwa",
     "create-app",
-    "cli"
+    "cli",
+    "vercel",
+    "github-pages"
   ],
   "author": "Sandeep Miriyala",
   "license": "GPL-3.0-only",

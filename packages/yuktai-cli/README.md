@@ -57,7 +57,7 @@ The Python API needs Python 3.10 or newer. The first `npm run dev` makes `backen
 | `--stack` | `next-rust`, `next` | `next-rust` |
 | `--template` | `docs`, `starter` | `docs` |
 | `--features` | `grid`, `page-tools`, `icons`, `backend` (comma-separated), or `none` | all |
-| `--host` | `github-pages`, `netlify`, `none` | `github-pages` |
+| `--host` | `github-pages`, `vercel`, `netlify`, `none` | `github-pages` |
 | `--accent` | `blue`, `violet`, `teal`, `orange` | `blue` |
 | `--title` | any text | from the folder name |
 | `--no-install`, `--no-git`, `--yes` | | |
@@ -79,7 +79,7 @@ my-app/
 ├── public/                 service worker, app icons
 ├── tests/                  checks for the built site
 ├── README.md               written for the choices you made
-└── netlify.toml  or  .github/workflows/deploy.yml
+└── .github/workflows/deploy.yml  or  vercel.json  or  netlify.toml
 ```
 
 ## Rust

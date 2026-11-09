@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.4.0
+- **Vercel hosting:** `--host vercel` (also in the questions) adds `vercel.json`. Push to GitHub, then on vercel.com/new import the repository and press Deploy: no settings to change. It is a static site (`"framework": null`, output `out/`), with the same security headers as Netlify (CSP that allows the Rust WebAssembly core and Ask this page's worker), long caching for `/_next/static/` and no caching for `sw.js`. Pull requests get preview links. No Vercel Analytics or Speed Insights: nothing about visitors is collected.
+- **Rust on Vercel:** Vercel's build machines have no Rust, so `vercel.json` runs `npm run build -- --setup-rust`. New `yuktai build --setup-rust` installs a minimal toolchain with the official rustup installer and adds the WebAssembly target, only when the app has `rust/` and cargo is missing. If that fails the build goes on with the TypeScript engine.
+- `yuktai init --host vercel` warns that Vercel's free Hobby plan is for personal, non-commercial sites only, and to open the site once on Jio and Vi mobile data in India (some custom domains on Vercel don't load there). The new app's README and the docs template's "Put it online" page say the same, and show `npm create yuktai@latest` for all three hosts.
+- `yuktai help` showed the old `--host` default (`none`); it is `github-pages`.
+- 2 new tests (9 in all).
+
 ## 1.3.1
 - **Fix: `npm run build` failed in new apps** with "Cannot find module '@/data/products'". Two old template files (`grid/ProductGrid.tsx`, `app/manifest.ts`) were still in the 1.3.0 package. They are gone, and a new test checks that every `@/` import in a new app points at a real file, for every template and feature, so this can't ship again.
 - **GitHub Pages by default:** `--yes` (and the first choice in the questions) adds `.github/workflows/deploy.yml`. Push, then Settings → Pages → Source: GitHub Actions. The workflow caches the Next.js build and turns telemetry off. The end of `yuktai init` says what to click, and the README warns not to use GitHub's suggested Next.js workflow.

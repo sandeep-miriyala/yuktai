@@ -10,7 +10,7 @@ import { c, step, info, warn, text, choose, chooseMany, closePrompts } from "./u
 export const STACKS = ["next-rust", "next"];
 export const TEMPLATES = ["docs", "starter"];
 export const FEATURES = ["grid", "page-tools", "icons", "backend"];
-export const HOSTS = ["none", "netlify", "github-pages"];
+export const HOSTS = ["none", "netlify", "github-pages", "vercel"];
 export const ACCENTS = ["blue", "violet", "teal", "orange"];
 
 export function parseFlags(args) {
@@ -79,6 +79,7 @@ export async function init(args, cliVersion) {
       ]) : [...FEATURES]),
       host: o.host ?? (interactive ? await choose("Hosting", [
         { value: "github-pages", label: "GitHub Pages", hint: "recommended: push, then Settings → Pages → GitHub Actions" },
+        { value: "vercel", label: "Vercel", hint: "adds vercel.json: push, then Import the repository on vercel.com" },
         { value: "netlify", label: "Netlify", hint: "adds netlify.toml" },
         { value: "none", label: "No hosting files", hint: "npm run build makes out/ for any static host" },
       ]) : "github-pages"),
@@ -88,6 +89,10 @@ export async function init(args, cliVersion) {
     closePrompts();
     console.log();
 
+    if (opts.host === "vercel") {
+      warn(`Vercel's free Hobby plan is for personal, non-commercial sites only (no ads, no selling, no paid work). ${c.cyan("https://vercel.com/docs/limits/fair-use-guidelines")}`);
+      warn("In India, open the site once on Jio and Vi mobile data: some custom domains on Vercel don't load there while the .vercel.app address does.");
+    }
     if (opts.stack === "next-rust") {
       const cargo = runSync("cargo", ["--version"], { stdio: "ignore" });
       if (cargo.status !== 0) warn(`Rust is not installed. The app works without it (TypeScript fallback). To build the Rust part: ${c.cyan("https://rustup.rs")}, then ${c.cyan("rustup target add wasm32-unknown-unknown")}`);
@@ -117,7 +122,7 @@ export async function init(args, cliVersion) {
     ${c.cyan("cd " + name)}
     ${o.install ? "" : "npm install\n    "}npm run dev        → http://localhost:3000
 ${opts.features.includes("grid") ? "                       → /grid/  25 lakh rows\n" : ""}${opts.features.includes("backend") ? "                       → Python API http://localhost:8000/docs\n" : ""}${opts.features.includes("page-tools") ? "                       → /qa/    QA report\n" : ""}${opts.features.includes("icons") ? "                       → /icons/ every icon\n" : ""}
-${opts.host === "github-pages" ? `  ${c.bold("Online")}  push to GitHub → Settings → Pages → Source: ${c.cyan("GitHub Actions")} (not the suggested Next.js workflow)\n` : ""}
+${opts.host === "github-pages" ? `  ${c.bold("Online")}  push to GitHub → Settings → Pages → Source: ${c.cyan("GitHub Actions")} (not the suggested Next.js workflow)\n` : ""}${opts.host === "vercel" ? `  ${c.bold("Online")}  push to GitHub → ${c.cyan("vercel.com/new")} → Import the repository → Deploy (vercel.json has the settings)\n` : ""}
   Settings: ${c.cyan("yuktai.config.ts")}   ·   Guide: README.md   ·   Docs: https://yuktaidocs.netlify.app
 `);
   } finally {

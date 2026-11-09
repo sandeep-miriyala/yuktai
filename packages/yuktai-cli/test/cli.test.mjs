@@ -160,3 +160,40 @@ test("next.config: made for the run, removed after, the app's own file is kept",
     rmSync(dir, { recursive: true, force: true });
   }
 });
+
+test("Vercel: --host vercel adds a vercel.json for a static site, with the Rust setup step", () => {
+  assert.equal(parseFlags(["--host", "vercel"]).host, "vercel");
+  assert.deepEqual(layersFor(opts({ host: "vercel" })), ["base", "stack-next-rust", "host-vercel"]);
+  for (const stack of ["next-rust", "next"]) {
+    const dir = mkdtempSync(join(tmpdir(), "yuktai-vercel-"));
+    try {
+      scaffold(dir, opts({ stack, host: "vercel" }));
+      const raw = readFileSync(join(dir, "vercel.json"), "utf8");
+      assert.doesNotMatch(raw, /\{\{\w+\}\}/);
+      const v = JSON.parse(raw);
+      assert.equal(v.framework, null, "static output, not the Next.js server preset");
+      assert.equal(v.outputDirectory, "out");
+      assert.equal(v.buildCommand, stack === "next-rust" ? "npm run build -- --setup-rust" : "npm run build");
+      const csp = v.headers[0].headers.find((h) => h.key === "Content-Security-Policy").value;
+      assert.match(csp, /'wasm-unsafe-eval'/);
+      assert.match(csp, /worker-src 'self' blob:/);
+      // no GitHub Pages workflow or Netlify file next to it, and no analytics
+      assert.ok(!existsSync(join(dir, ".github/workflows/deploy.yml")) && !existsSync(join(dir, "netlify.toml")));
+      assert.doesNotMatch(raw, /analytics|insights/i);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  }
+  const md = readme(opts({ host: "vercel" }));
+  for (const want of ["vercel.com/new", "non-commercial", "Jio and Vi", "--setup-rust"]) assert.ok(md.includes(want), want);
+});
+
+test("setupRust: does nothing for an app without rust/", async () => {
+  const { setupRust } = await import("../src/run.mjs");
+  const dir = mkdtempSync(join(tmpdir(), "yuktai-norust-"));
+  try {
+    assert.equal(setupRust(dir), false);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});

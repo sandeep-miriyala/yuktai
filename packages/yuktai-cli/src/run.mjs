@@ -2,11 +2,12 @@
 // When the app has rust/Cargo.toml: build it for WebAssembly and copy the .wasm into public/wasm/.
 // Then hand over to Next.js. Without Rust installed the app still works (TypeScript fallback).
 import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync } from "node:fs";
-import { join } from "node:path";
+import { delimiter, join } from "node:path";
+import { homedir } from "node:os";
 import { run, runSync, win } from "./proc.mjs";
 import { startApi } from "./api.mjs";
 import { ensureNextConfig } from "./nextConfig.mjs";
-import { c, step, warn } from "./ui.mjs";
+import { c, info, step, warn } from "./ui.mjs";
 
 function crateName(cargoToml) {
   const m = readFileSync(cargoToml, "utf8").match(/^\s*name\s*=\s*"([^"]+)"/m);
@@ -74,13 +75,42 @@ export async function dev(args) {
   }
 }
 
+/**
+ * --setup-rust: hosts whose build machines have no Rust (Vercel) install a minimal toolchain
+ * with the official rustup installer, then add the WebAssembly target. Only for apps with
+ * rust/Cargo.toml. Returns false when Rust is still missing; the build then uses TypeScript.
+ */
+export function setupRust(cwd = process.cwd()) {
+  if (!existsSync(join(cwd, "rust", "Cargo.toml"))) return false;
+  const cargoBin = join(process.env.CARGO_HOME || join(homedir(), ".cargo"), "bin");
+  const path = process.env.PATH ?? "";
+  if (!path.split(delimiter).includes(cargoBin)) process.env.PATH = cargoBin + delimiter + path;
+  const has = (cmd) => runSync(cmd, ["--version"], { stdio: "ignore" }).status === 0;
+  if (!has("cargo")) {
+    if (win) {
+      warn(`Rust is not installed. Install it from ${c.cyan("https://rustup.rs")}; the build uses TypeScript for now.`);
+      return false;
+    }
+    info("Rust is not installed here: installing a minimal toolchain (rustup.rs)…");
+    const r = runSync("sh", ["-c", "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain stable --no-modify-path"], { cwd, stdio: "inherit" });
+    if (r.status !== 0 || !has("cargo")) {
+      warn("Rust could not be installed. The build goes on with the TypeScript engine.");
+      return false;
+    }
+  }
+  if (has("rustup")) runSync("rustup", ["target", "add", "wasm32-unknown-unknown"], { cwd, stdio: "inherit" });
+  return true;
+}
+
 export async function build(args) {
   // --rust-required: fail the build when Rust can't be built (for CI that must ship the WASM)
+  // --setup-rust: install Rust first when it is missing (Vercel)
   const required = args.includes("--rust-required");
+  if (args.includes("--setup-rust")) setupRust();
   buildRust(process.cwd(), { required });
   const removeConfig = ensureNextConfig();
   try {
-    await next(["build", ...args.filter((a) => a !== "--rust-required")]);
+    await next(["build", ...args.filter((a) => a !== "--rust-required" && a !== "--setup-rust")]);
   } finally {
     removeConfig();
   }

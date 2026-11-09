@@ -239,7 +239,18 @@ export function readme(o) {
   add("## Put it online", "");
   if (o.host === "netlify") add("Netlify: push to GitHub, then **Add new site → Import an existing project**. `netlify.toml` already has the build command and the `out` folder.", "");
   else if (o.host === "github-pages") add("GitHub Pages: push to GitHub, then **Settings → Pages → Source: GitHub Actions**. `.github/workflows/deploy.yml` builds and publishes on every push to `main`. Don't click **Configure** on the suggested Next.js workflow: this app already has its own. Renamed the repository? Run the workflow again (**Actions → Deploy to GitHub Pages → Run workflow**).", "");
-  else add("`npm run build` makes a static site in `out/`. Upload that folder to any static host. To have the config made for you, create the app with `--host netlify` or `--host github-pages`.", "");
+  else if (o.host === "vercel") add(
+    "Vercel: push to GitHub, then on https://vercel.com/new **Import** the repository and press **Deploy**. `vercel.json` already has the build command and the `out` folder, so leave the settings as they are. Every push to `main` goes live; every pull request gets its own preview link.",
+    "",
+    ...(o.stack === "next-rust" ? ["Vercel's build machines have no Rust, so the build runs `npm run build -- --setup-rust`: it installs a minimal Rust toolchain first. If that ever fails, the site still builds and uses the TypeScript engine.", ""] : []),
+    "Good to know:",
+    "",
+    "- The free **Hobby** plan is for personal, non-commercial sites only: no ads, no selling, no being paid to build or host the site. Asking for donations is fine. See [Vercel's fair use guidelines](https://vercel.com/docs/limits/fair-use-guidelines).",
+    "- In India, open the site on **Jio and Vi mobile data** once. Some custom domains on Vercel don't load there while the `.vercel.app` address does.",
+    "- Vercel Analytics and Speed Insights are not added: nothing about your visitors is collected.",
+    "",
+  );
+  else add("`npm run build` makes a static site in `out/`. Upload that folder to any static host. To have the config made for you, create the app with `--host github-pages`, `--host vercel` or `--host netlify`.", "");
 
   add(
     "## Privacy",
