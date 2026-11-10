@@ -4,7 +4,7 @@
 // Popover, Popper, Accordion, Tabs, Tab, Pagination, Breadcrumbs.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import React, { cloneElement, createContext, isValidElement, useContext, useEffect, useRef, useState } from "react"
+import React, { cloneElement, createContext, isValidElement, useCallback, useContext, useEffect, useRef, useState } from "react"
 import { cap, colorClass, cx, flatChildren, mergeRefs, placeNear, Portal, ui, useId, useIsoLayoutEffect, useScrollLock, type UIProps } from "./base"
 import { Paper } from "./layout"
 import { Glyph, MenuContext } from "./inputs"
@@ -144,30 +144,41 @@ function anchorRect(anchorEl: unknown, anchorPosition?: { top: number; left: num
 }
 
 function useFloating(open: boolean, anchorEl: unknown, anchorOrigin: any, transformOrigin: any, anchorPosition?: any, anchorReference?: string) {
-  const box = useRef<HTMLDivElement>(null)
+  // The box mounts a moment after `open` (it lives in a portal), so it is kept in
+  // state: placement runs again as soon as it exists.
+  const [el, setEl] = useState<HTMLDivElement | null>(null)
+  const box = useRef<HTMLDivElement | null>(null)
+  const boxRef = useCallback((node: HTMLDivElement | null) => {
+    box.current = node
+    setEl(node)
+  }, [])
   const [pos, setPos] = useState<{ top: number; left: number } | null>(null)
   useIsoLayoutEffect(() => {
-    if (!open) return
+    if (!open || !el) return
     const place = () => {
       const a = anchorRect(anchorEl, anchorPosition, anchorReference)
-      const b = box.current
-      if (!b) return
-      if (!a) return setPos({ top: window.innerHeight / 2 - b.offsetHeight / 2, left: window.innerWidth / 2 - b.offsetWidth / 2 })
-      setPos(placeNear(a, { width: b.offsetWidth, height: b.offsetHeight }, anchorOrigin, transformOrigin))
+      if (!a) return setPos({ top: window.innerHeight / 2 - el.offsetHeight / 2, left: window.innerWidth / 2 - el.offsetWidth / 2 })
+      setPos(placeNear(a, { width: el.offsetWidth, height: el.offsetHeight }, anchorOrigin, transformOrigin))
     }
     place()
+    const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(place) : null
+    ro?.observe(el)
     window.addEventListener("resize", place)
     window.addEventListener("scroll", place, true)
     return () => {
+      ro?.disconnect()
       window.removeEventListener("resize", place)
       window.removeEventListener("scroll", place, true)
     }
-  }, [open, anchorEl])
-  return { box, pos }
+  }, [open, anchorEl, el])
+  useEffect(() => {
+    if (!open) setPos(null)
+  }, [open])
+  return { box, boxRef, pos }
 }
 
 export const Popover = ui("Popover", ({ ykClass, Comp: _c, className, open, onClose, anchorEl, anchorOrigin = { vertical: "top", horizontal: "left" }, transformOrigin = { vertical: "top", horizontal: "left" }, anchorPosition, anchorReference, PaperProps = {}, slotProps = {}, marginThreshold: _m, elevation = 8, TransitionComponent: _t, TransitionProps: _tp, transitionDuration: _td, disableScrollLock: _dl, disableRestoreFocus, disableAutoFocus, keepMounted: _k, container, disablePortal, role = "presentation", children, ...p }, ref) => {
-  const { box, pos } = useFloating(!!open, anchorEl, anchorOrigin, transformOrigin, anchorPosition, anchorReference)
+  const { box, boxRef, pos } = useFloating(!!open, anchorEl, anchorOrigin, transformOrigin, anchorPosition, anchorReference)
   const opener = useRef<Element | null>(null)
   useEffect(() => {
     if (!open) return
@@ -192,12 +203,12 @@ export const Popover = ui("Popover", ({ ykClass, Comp: _c, className, open, onCl
       <div ref={ref} role={role} className={cx("MuiPopover-root MuiModal-root", ykClass, className)} style={{ position: "fixed", inset: 0, zIndex: 1300 }} {...p}>
         <div className="MuiBackdrop-root MuiBackdrop-invisible" aria-hidden="true" onClick={(e) => onClose?.(e, "backdropClick")} />
         <Paper
-          ref={mergeRefs(box, pref)}
+          ref={mergeRefs(boxRef, pref)}
           tabIndex={-1}
           elevation={elevation}
           sx={psx}
           className={cx("MuiPopover-paper", pc)}
-          style={{ top: pos?.top ?? -9999, left: pos?.left ?? -9999, ...pstyle }}
+          style={{ top: pos?.top ?? 0, left: pos?.left ?? 0, visibility: pos ? undefined : "hidden", ...pstyle }}
           {...pRest}
         >
           {children}
@@ -237,12 +248,12 @@ export const MenuList = ui("MenuList", ({ ykClass, Comp, className, autoFocusIte
 export const Popper = ui("Popper", ({ ykClass, Comp: _c, className, style, open, anchorEl, placement = "bottom", children, transition: _t, disablePortal, modifiers: _m, popperOptions: _po, keepMounted: _k, container, ...p }, ref) => {
   const ao = { vertical: placement.startsWith("top") ? "top" : "bottom", horizontal: placement.endsWith("start") ? "left" : placement.endsWith("end") ? "right" : "center" }
   const to = { vertical: placement.startsWith("top") ? "bottom" : "top", horizontal: ao.horizontal }
-  const { box, pos } = useFloating(!!open, anchorEl, ao, to)
+  const { boxRef, pos } = useFloating(!!open, anchorEl, ao, to)
   if (!open) return null
   const content = typeof children === "function" ? (children as (a: unknown) => React.ReactNode)({ placement, TransitionProps: { in: true } }) : children
   return (
     <Portal disablePortal={disablePortal} container={container}>
-      <div ref={mergeRefs(box, ref)} role="tooltip" className={cx("MuiPopper-root", ykClass, className)} style={{ position: "fixed", zIndex: 1300, top: pos?.top ?? -9999, left: pos?.left ?? -9999, ...style }} {...p}>
+      <div ref={mergeRefs(boxRef, ref)} role="tooltip" className={cx("MuiPopper-root", ykClass, className)} style={{ position: "fixed", zIndex: 1300, top: pos?.top ?? -9999, left: pos?.left ?? -9999, ...style }} {...p}>
         {content}
       </div>
     </Portal>

@@ -159,6 +159,7 @@ export function Tooltip({ title, children, placement = "bottom", arrow: _a, ente
   const open = controlled ?? show
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const tip = useRef<HTMLDivElement | null>(null)
+  const [tipEl, setTipEl] = useState<HTMLDivElement | null>(null)
 
   const place = () => {
     const a = anchor.current?.getBoundingClientRect()
@@ -174,6 +175,7 @@ export function Tooltip({ title, children, placement = "bottom", arrow: _a, ente
   }
   useEffect(() => {
     if (!open) return setPos(null)
+    if (!tipEl) return
     place()
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -189,7 +191,7 @@ export function Tooltip({ title, children, placement = "bottom", arrow: _a, ente
       window.removeEventListener("resize", place)
       document.removeEventListener("keydown", onKey)
     }
-  }, [open])
+  }, [open, tipEl])
 
   if (!isValidElement(children)) return <>{children}</>
   const empty = title === "" || title === null || title === undefined || title === false
@@ -237,8 +239,8 @@ export function Tooltip({ title, children, placement = "bottom", arrow: _a, ente
       {cloneElement(children as React.ReactElement<any>, childProps)}
       {open && (
         <Portal>
-          <div className="MuiTooltip-popper" style={{ top: pos?.top ?? -9999, left: pos?.left ?? -9999 }}>
-            <div ref={tip} id={id} role="tooltip" {...tp} className={cx("MuiTooltip-tooltip", tp.className)}>
+          <div className="MuiTooltip-popper" style={{ top: pos?.top ?? 0, left: pos?.left ?? 0, visibility: pos ? undefined : "hidden" }}>
+            <div ref={(n) => { tip.current = n; setTipEl(n) }} id={id} role="tooltip" {...tp} className={cx("MuiTooltip-tooltip", tp.className)}>
               {title}
             </div>
           </div>

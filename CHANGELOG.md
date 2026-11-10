@@ -2,6 +2,12 @@
 
 All notable changes to `@yuktishaalaa/yuktai`. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow [Semantic Versioning](https://semver.org/).
 
+## 5.6.1
+
+### Fixed (YuktAI UI)
+- `Menu`, `Popover`, `Popper` and `Tooltip` opened off screen: the position was worked out before the portal had mounted, so it stayed at -9999px. They now place themselves as soon as they appear, follow size changes, and stay hidden until placed (no flash in a corner).
+- 1 new test.
+
 ## 5.6.0
 
 ### New: YuktAI UI (`@yuktishaalaa/yuktai/ui`)

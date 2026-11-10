@@ -3,7 +3,7 @@ import React, { act, useState } from "react"
 import { createRoot } from "react-dom/client"
 import { renderToString } from "react-dom/server"
 import { afterEach, describe, expect, it } from "vitest"
-import { alpha, Box, Button, Chip, MenuItem, Select, Slider, Stack, Switch, Tab, Tabs, TextField, ToggleButton, ToggleButtonGroup, Tooltip, Typography, sxToCss, getUiStyles, useTheme } from "../index"
+import { alpha, Box, Button, Chip, Menu, MenuItem, Select, Slider, Stack, Switch, Tab, Tabs, TextField, ToggleButton, ToggleButtonGroup, Tooltip, Typography, sxToCss, getUiStyles, useTheme } from "../index"
 
 ;(globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true
 
@@ -189,5 +189,25 @@ describe("components", () => {
     expect(host.querySelector("button.MuiChip-root")).not.toBeNull()
     const btns = host.querySelectorAll("button")
     expect(btns[1].getAttribute("aria-label")).toBeNull() // has visible text
+  })
+
+  it("Menu opens on screen next to its anchor, with menu items", async () => {
+    const anchor = document.createElement("button")
+    document.body.appendChild(anchor)
+    mount(
+      <Menu open anchorEl={anchor} onClose={() => {}} slotProps={{ paper: { className: "nav-menu" } }}>
+        <MenuItem>One</MenuItem>
+        <MenuItem>Two</MenuItem>
+      </Menu>,
+    )
+    await act(async () => {
+      await new Promise((r) => setTimeout(r, 30))
+    })
+    const paper = document.querySelector(".nav-menu") as HTMLElement
+    expect(paper).not.toBeNull()
+    expect(paper.style.visibility).toBe("")
+    expect(parseFloat(paper.style.top)).toBeGreaterThanOrEqual(0)
+    expect(document.querySelectorAll('[role="menuitem"]').length).toBe(2)
+    anchor.remove()
   })
 })
