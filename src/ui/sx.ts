@@ -245,21 +245,38 @@ const STYLE_ID = "yuktai-ui"
 const rules = new Map<string, string>() // key → css (every rule this process has seen)
 const touched = new Set<string>() // keys used since the last getUiStyles(): the page being rendered
 const ALWAYS = ["yk-base", "yk-type"]
-let sheet: HTMLStyleElement | null = null
+const sheets: Record<"layout" | "sx", HTMLStyleElement | null> = { layout: null, sx: null }
 const inDom = new Set<string>()
 
 const isBrowser = () => typeof document !== "undefined"
 
-function domSheet(): HTMLStyleElement {
-  if (sheet && sheet.isConnected) return sheet
-  sheet = document.getElementById(STYLE_ID) as HTMLStyleElement | null
-  if (!sheet) {
-    sheet = document.createElement("style")
-    sheet.id = STYLE_ID
-    // first in <head>, so the site's own CSS (globals.css) still wins
-    document.head.insertBefore(sheet, document.head.firstChild)
+/**
+ * Two sheets, in this order: "layout" (base look + layout from props) then
+ * "sx" (the sx prop), so sx wins when both set the same property.
+ */
+const sheetFor = (key: string): "layout" | "sx" => (key.startsWith("yk-base") || key.startsWith("yk-type") || key.startsWith("ykl-") || key.startsWith("ykg-") ? "layout" : "sx")
+
+function domSheet(kind: "layout" | "sx"): HTMLStyleElement {
+  const have = sheets[kind]
+  if (have && have.isConnected) return have
+  const id = kind === "sx" ? STYLE_ID : `${STYLE_ID}-layout`
+  let el = document.getElementById(id) as HTMLStyleElement | null
+  if (!el) {
+    el = document.createElement("style")
+    el.id = id
+    if (kind === "layout") {
+      // after the rules the server sent; with none, first in <head>
+      const sent = Array.from(document.querySelectorAll("style[data-yuktai-ui]"))
+      const last = sent.at(-1)
+      if (last?.parentNode) last.parentNode.insertBefore(el, last.nextSibling)
+      else document.head.insertBefore(el, document.head.firstChild)
+    } else {
+      const layout = domSheet("layout")
+      layout.parentNode!.insertBefore(el, layout.nextSibling)
+    }
   }
-  return sheet
+  sheets[kind] = el
+  return el
 }
 
 /** Adds a rule once. On the server it is only remembered (getUiStyles). `first` = before every other rule. */
@@ -275,7 +292,7 @@ export function insertRule(key: string, css: string, first = false): void {
       return
     }
   }
-  const s = domSheet()
+  const s = domSheet(sheetFor(key))
   const node = document.createTextNode(css)
   if (first) s.insertBefore(node, s.firstChild)
   else s.appendChild(node)
@@ -289,7 +306,9 @@ export function insertRule(key: string, css: string, first = false): void {
 export function getUiStyles(sent: Set<string> = new Set()): { css: string; keys: string[] } {
   const keys: string[] = []
   let css = ""
-  const wanted = [...ALWAYS, ...touched]
+  // base and layout first, then sx, so sx wins (same order as in the browser)
+  const used = [...touched]
+  const wanted = [...ALWAYS, ...used.filter((k) => sheetFor(k) === "layout"), ...used.filter((k) => sheetFor(k) === "sx")]
   touched.clear()
   for (const k of wanted) {
     const v = rules.get(k)

@@ -2,6 +2,15 @@
 
 All notable changes to `@yuktishaalaa/yuktai`. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow [Semantic Versioning](https://semver.org/).
 
+## 5.6.2
+
+### Fixed (YuktAI UI), found by comparing every Ratnalabala page with its old MUI version on desktop, tablet and phone
+- Layout props now win over the base look: `Stack direction="row"` and `spacing`, `Grid` sizes, `Container maxWidth` and `Typography color` were sometimes ignored (a row showed as a column).
+- Style order: rules written in the browser go after the rules the server sent, and `sx` always wins over layout props, as before.
+- `TextField`, `Select` and other inputs size to their content unless `fullWidth`; they stretched to full width and pushed toolbar items onto new lines.
+- Multiline `TextField` grows with its text between `minRows` and `maxRows` (fixed height only with `rows`), with no resize handle.
+- `Autocomplete` has the open/close arrow; `Select` uses a single down arrow.
+
 ## 5.6.1
 
 ### Fixed (YuktAI UI)

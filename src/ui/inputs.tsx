@@ -11,13 +11,15 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import React, { cloneElement, createContext, isValidElement, useContext, useEffect, useMemo, useRef, useState } from "react"
-import { cap, colorClass, cx, flatChildren, mergeRefs, textOf, ui, useId, type UIProps } from "./base"
+import { cap, colorClass, cx, flatChildren, mergeRefs, textOf, ui, useId, useIsoLayoutEffect, type UIProps } from "./base"
 import { ICON_PATHS } from "../icons/paths"
 import { CircularProgressInner } from "./feedback"
 
+const EXTRA: Record<string, string> = { down: '<path d="m6 9 6 6 6-6"/>' }
+
 /* a small chevron / close glyph drawn from the YuktAI icon set */
 export function Glyph({ name, className }: { name: keyof typeof ICON_PATHS | string; className?: string }) {
-  const d = (ICON_PATHS as Record<string, string>)[name] ?? ""
+  const d = EXTRA[name] ?? (ICON_PATHS as Record<string, string>)[name] ?? ""
   return (
     <svg className={cx("MuiSvgIcon-root", className)} viewBox="0 0 24 24" aria-hidden="true" focusable="false">
       <g fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" dangerouslySetInnerHTML={{ __html: d }} />
@@ -316,15 +318,59 @@ function InputShell({ variant = "outlined", size, error, disabled, fullWidth, mu
   )
 }
 
+/** A textarea that grows with its text between minRows and maxRows (as Material's multiline does). */
+const AutoTextarea = React.forwardRef<HTMLTextAreaElement, UIProps>(function AutoTextarea({ minRows = 1, maxRows, style, onChange, ...p }, ref) {
+  const own = useRef<HTMLTextAreaElement | null>(null)
+  const fit = () => {
+    const el = own.current
+    if (!el) return
+    const cs = getComputedStyle(el)
+    const line = parseFloat(cs.lineHeight) || parseFloat(cs.fontSize) * 1.6 || 24
+    const pad = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom)
+    el.style.height = "auto"
+    const min = Number(minRows) * line + pad
+    const max = maxRows ? Number(maxRows) * line + pad : Infinity
+    const h = Math.min(max, Math.max(min, el.scrollHeight))
+    el.style.height = `${h}px`
+    el.style.overflowY = el.scrollHeight > h + 1 ? "auto" : "hidden"
+  }
+  useIsoLayoutEffect(fit, [p.value])
+  useEffect(() => {
+    const el = own.current
+    if (!el || typeof ResizeObserver === "undefined") return
+    let w = el.clientWidth
+    const ro = new ResizeObserver(() => {
+      if (el.clientWidth !== w) {
+        w = el.clientWidth
+        fit()
+      }
+    })
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
+  return (
+    <textarea
+      ref={mergeRefs(ref, own)}
+      rows={Number(minRows) || 1}
+      style={{ resize: "none", ...style }}
+      onChange={(e) => {
+        onChange?.(e)
+        fit()
+      }}
+      {...p}
+    />
+  )
+})
+
 function inputElement({ multiline, rows, minRows, maxRows, inputRef, inputProps = {}, inputComponent, ...p }: UIProps, ref?: React.Ref<any>) {
-  const Tag = inputComponent ?? (multiline ? "textarea" : "input")
-  const rowCount = rows ?? minRows ?? (multiline ? 2 : undefined)
+  const autosize = multiline && !inputComponent && rows === undefined
+  const Tag = inputComponent ?? (autosize ? AutoTextarea : multiline ? "textarea" : "input")
   const { className: ic, ref: innerRef, style: istyle, ...ip } = inputProps
   return (
     <Tag
       ref={mergeRefs(ref, inputRef, innerRef)}
-      rows={multiline ? rowCount : undefined}
-      style={multiline && maxRows ? { maxHeight: `${Number(maxRows) * 1.6 + 1}em`, ...istyle } : istyle}
+      {...(autosize ? { minRows: minRows ?? 1, maxRows } : multiline ? { rows } : {})}
+      style={istyle}
       {...p}
       {...ip}
       className={cx("MuiInputBase-input", multiline && "MuiInputBase-inputMultiline", ic)}
@@ -427,7 +473,7 @@ export const Select = ui("Select", ({ ykClass, Comp: _c, className, value, defau
       error={error ?? f?.error}
       disabled={disabled ?? f?.disabled}
       fullWidth={fullWidth ?? f?.fullWidth}
-      endAdornment={IconComponent ? <IconComponent className="MuiSelect-icon" aria-hidden="true" /> : <Glyph name="chevrons" className="MuiSelect-icon" />}
+      endAdornment={IconComponent ? <IconComponent className="MuiSelect-icon" aria-hidden="true" /> : <Glyph name="down" className="MuiSelect-icon" />}
     >
       <select
         ref={mergeRefs(ref, innerRef)}
@@ -749,7 +795,28 @@ export const Autocomplete = ui("Autocomplete", ({ ykClass, Comp: _c, className, 
     size,
     fullWidth: fullWidth ?? true,
     InputLabelProps: {},
-    InputProps: { ref: undefined, className: "MuiAutocomplete-inputRoot", startAdornment: undefined, endAdornment: undefined },
+    InputProps: {
+      ref: undefined,
+      className: "MuiAutocomplete-inputRoot",
+      startAdornment: undefined,
+      endAdornment: (
+        <span className="MuiAutocomplete-endAdornment" style={{ display: "inline-flex", alignItems: "center", marginLeft: 4 }}>
+          <button
+            type="button"
+            tabIndex={-1}
+            aria-label={open ? "Close" : "Open"}
+            title={open ? "Close" : "Open"}
+            disabled={disabled}
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={() => setOpen((o) => !o)}
+            className="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall yk-c-default MuiAutocomplete-popupIndicator"
+            style={{ minWidth: 32, minHeight: 32, padding: 4, transform: open ? "rotate(180deg)" : undefined, transition: "transform .15s" }}
+          >
+            <Glyph name="down" />
+          </button>
+        </span>
+      ),
+    },
     inputProps: {
       role: "combobox",
       "aria-expanded": open,

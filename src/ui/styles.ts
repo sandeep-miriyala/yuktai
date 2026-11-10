@@ -138,7 +138,8 @@ ${colorVars}
 :where(.MuiFormControl-fullWidth,.MuiTextField-root.MuiFormControl-fullWidth){width:100%;}
 :where(.MuiFormLabel-root,.MuiInputLabel-root){display:block;font-size:.9rem;font-weight:600;color:${FG};margin-bottom:6px;line-height:1.4;}
 :where(.MuiFormLabel-root.Mui-error){color:var(--error,#a1271b);}
-:where(.MuiInputBase-root){display:inline-flex;align-items:center;position:relative;width:100%;font:inherit;color:${FG};cursor:text;}
+:where(.MuiInputBase-root){display:inline-flex;align-items:center;position:relative;max-width:100%;font:inherit;color:${FG};cursor:text;}
+:where(.MuiInputBase-fullWidth,.MuiFormControl-fullWidth>.MuiInputBase-root,.MuiAutocomplete-root .MuiInputBase-root){width:100%;}
 :where(.MuiOutlinedInput-root){background:${PAPER};border-radius:10px;min-height:44px;padding:0 12px;}
 :where(.MuiOutlinedInput-notchedOutline){position:absolute;inset:0;border:2px solid ${LINE_STRONG};border-radius:inherit;pointer-events:none;margin:0;padding:0;}
 :where(.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline){border-color:${FG};}

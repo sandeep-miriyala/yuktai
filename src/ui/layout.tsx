@@ -60,7 +60,7 @@ function useLayoutClass(styles: Record<string, unknown>): string {
 }
 
 function insertRuleFromStyles(name: string, styles: Record<string, unknown>) {
-  insertRule(name, globalCss({ [`:where(.${name})`]: styles }))
+  insertRule(name, globalCss({ [`.${name}`]: styles }))
 }
 
 /* ───────────── Grid (12 columns, gap based) ───────────── */
