@@ -8,6 +8,8 @@ const files = {
   "dist/icons.d.mts": 'export * from "./icons/index";\n',
   "dist/experience.d.ts": 'export * from "./experience/index";\n',
   "dist/experience.d.mts": 'export * from "./experience/index";\n',
+  "dist/ui.d.ts": 'export * from "./ui/index";\n',
+  "dist/ui.d.mts": 'export * from "./ui/index";\n',
   "dist/head.d.ts": 'export * from "./experience/head";\n',
   "dist/head.d.mts": 'export * from "./experience/head";\n',
   "dist/index.d.mts": 'export * from "./index";\nexport { default } from "./index";\n',

@@ -134,7 +134,7 @@ npx playwright test   # end-to-end tests in tests/e2e/ (if you kept them)`}</cod
           <code>untrustedContentHint</code> on every tool.
         </li>
         <li>
-          Chrome 149 to 156 need an <a href="https://developer.chrome.com/origintrials">origin trial</a> token for your site. Without
+          Chrome 149 to 162 need an <a href="https://developer.chrome.com/origintrials">origin trial</a> token for your site. Without
           one, WebMCP works only where the browser already turns it on. If WebMCP appears a moment after the page loads, the grid
           registers then.
         </li>

@@ -91,8 +91,27 @@ More diagrams (library modules, `npm run dev`, a new app) in [ARCHITECTURE.md](A
 | ♿ **Accessibility** | Contrast, text size, dyslexia font, colour-blind filters, WCAG audit |
 | 💬 **Ask this page** | Answers questions from your page content |
 | 🎨 **163 icons** | Any size and colour, safe in Server Components |
+| 🧩 **YuktAI UI** | 80+ accessible components (buttons, forms, dialogs, tabs, menus…) with the names Material code already uses: change one import line, drop MUI and emotion |
 
 Optional, when you need them: a grid assistant that understands plain words, a loading screen, and a Python API with agents in apps made by `npx yuktai`. See the [docs](https://sandeep-miriyala.github.io/yuktai/).
+
+### YuktAI UI
+
+```tsx
+import { Box, Button, Dialog, Stack, Tabs, Tab, TextField } from "@yuktishaalaa/yuktai/ui"
+
+<Stack direction={{ xs: "column", sm: "row" }} spacing={2} sx={{ p: 2, bgcolor: "background.paper" }}>
+  <TextField label="Name" helperText="As on your ID" />
+  <Button variant="contained">Save</Button>
+</Stack>
+```
+
+- Same component names and props as Material, so moving an app is a find-and-replace of the import. Ratnalabala moved 91 files this way.
+- No runtime dependencies: one small engine for `sx` and system props (spacing, theme colours, responsive values, nested selectors, keyframes).
+- Real elements: `<button>`, `<select>`, `<input type="range">`, `<dialog>` (focus trap, Esc, focus goes back).
+- WCAG 2.2 by default: 44px targets, 3px focus ring, labels wired to inputs, arrow keys in Tabs and Menus, reduced motion.
+- Your CSS variables (`--primary`, `--foreground`, `--border`…) are the theme, so dark mode needs no JavaScript.
+- Next.js: send the styles with the server HTML using `getUiStyles()` inside `useServerInsertedHTML` (see the docs).
 
 ### Ready for AI browsers (WebMCP)
 
@@ -103,7 +122,7 @@ Add `webmcp` and browser AI agents (Gemini in Chrome and others that speak [WebM
 ```
 
 - Uses `document.modelContext.registerTool` (falls back to `navigator.modelContext` in older Chrome). Tools return JSON strings and are marked `readOnlyHint` / `untrustedContentHint`.
-- Chrome 149–156 need an [origin trial](https://developer.chrome.com/origintrials) token for your site; pass it as `webmcpToken`. Without one, WebMCP works only where the browser already enables it.
+- Chrome 149–162 need an [origin trial](https://developer.chrome.com/origintrials) token for your site; pass it as `webmcpToken`. Without one, WebMCP works only where the browser already enables it.
 - `onWebMCPStatusChange` reports the real state: `unsupported`, `registering`, `ready`, `partial` or `error`.
 - Agents only get what the grid already shows. Nothing the visitor types is read or sent.
 
@@ -161,6 +180,7 @@ The last five come with the `backend` feature.
 | `@yuktishaalaa/yuktai` | Grid, accessibility, page tools |
 | `@yuktishaalaa/yuktai/icons` | 163 icons |
 | `@yuktishaalaa/yuktai/experience` | Loading screen, language and animation picker |
+| `@yuktishaalaa/yuktai/ui` | YuktAI UI: 80+ accessible components, `sx`, `useTheme`, `useMediaQuery` |
 | `@yuktishaalaa/yuktai/head` | Small scripts for `<head>` |
 
 ## Live demos

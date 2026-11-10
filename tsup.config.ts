@@ -2,9 +2,9 @@ import { defineConfig } from "tsup";
 
 export default defineConfig([
   {
-    // @yuktishaalaa/yuktai/experience: client components, marked "use client"
+    // @yuktishaalaa/yuktai/experience and /ui: client components, marked "use client"
     // so a Next.js Server Component (layout.tsx) can render them directly.
-    entry:     { experience: "src/experience/index.ts" },
+    entry:     { experience: "src/experience/index.ts", ui: "src/ui/index.ts" },
     format:    ["esm", "cjs"],
     dts:       false,
     minify:    true,
