@@ -3,7 +3,7 @@ import React, { act, useState } from "react"
 import { createRoot } from "react-dom/client"
 import { renderToString } from "react-dom/server"
 import { afterEach, describe, expect, it } from "vitest"
-import { alpha, Box, Button, Chip, Menu, MenuItem, Select, Slider, Stack, Switch, Tab, Tabs, TextField, ToggleButton, ToggleButtonGroup, Tooltip, Typography, sxToCss, getUiStyles, useTheme } from "../index"
+import { alpha, Autocomplete, Box, Button, Chip, Menu, MenuItem, Select, Slider, Stack, Switch, Tab, Tabs, TextField, ToggleButton, ToggleButtonGroup, Tooltip, Typography, sxToCss, getUiStyles, useTheme } from "../index"
 
 ;(globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true
 
@@ -209,5 +209,31 @@ describe("components", () => {
     expect(parseFloat(paper.style.top)).toBeGreaterThanOrEqual(0)
     expect(document.querySelectorAll('[role="menuitem"]').length).toBe(2)
     anchor.remove()
+  })
+})
+
+describe("Autocomplete", () => {
+  const fonts = [
+    { label: "ధూర్జటి", group: "తెలుగు" },
+    { label: "మండలి", group: "తెలుగు" },
+    { label: "నా ఫాంట్", group: "నావి" },
+  ]
+  it("opens on click and shows every option even when one is chosen", () => {
+    let opened = 0
+    mount(
+      <Autocomplete
+        options={fonts}
+        value={fonts[0]}
+        groupBy={(o: { group: string }) => o.group}
+        onOpen={() => opened++}
+        renderInput={(params: any) => <TextField {...params} />}
+      />,
+    )
+    const input = host.querySelector("input")!
+    act(() => input.dispatchEvent(new MouseEvent("mousedown", { bubbles: true })))
+    expect(opened).toBe(1)
+    expect(host.querySelectorAll("[role=option]").length).toBe(3)
+    expect(host.querySelectorAll(".MuiAutocomplete-groupLabel").length).toBe(2)
+    expect(host.querySelector("[onopen]")).toBeNull()
   })
 })

@@ -765,20 +765,35 @@ export const Slider = ui("Slider", ({ ykClass, Comp: _c, className, value, defau
 
 /* ───────────── Autocomplete (combobox + listbox, ARIA 1.2) ───────────── */
 
-export const Autocomplete = ui("Autocomplete", ({ ykClass, Comp: _c, className, options = [], value, defaultValue, onChange, inputValue, onInputChange, getOptionLabel = (o: any) => (typeof o === "string" ? o : (o?.label ?? String(o ?? ""))), renderInput, renderOption, filterOptions, isOptionEqualToValue = (a: any, b: any) => a === b, freeSolo, disableClearable: _dc, noOptionsText = "No options", loading, loadingText = "Loading…", disabled, size, fullWidth, autoHighlight, openOnFocus, blurOnSelect: _bs, clearOnBlur: _cb, selectOnFocus: _sf, handleHomeEndKeys: _he, includeInputInList: _ii, ListboxProps: _lp, slotProps: _sp, PaperComponent: _pc, groupBy: _g, id, ...p }, ref) => {
+export const Autocomplete = ui("Autocomplete", ({ ykClass, Comp: _c, className, options = [], value, defaultValue, onChange, inputValue, onInputChange, getOptionLabel = (o: any) => (typeof o === "string" ? o : (o?.label ?? String(o ?? ""))), renderInput, renderOption, filterOptions, isOptionEqualToValue = (a: any, b: any) => a === b, freeSolo, disableClearable: _dc, noOptionsText = "No options", loading, loadingText = "Loading…", disabled, size, fullWidth, autoHighlight, openOnFocus, open: openProp, onOpen, onClose, onHighlightChange: _hc, renderTags: _rt, multiple: _mu, limitTags: _lt, autoSelect: _as, disablePortal: _dp, forcePopupIcon: _fp, popupIcon: _pi, clearIcon: _ci, componentsProps: _cp, slots: _sl, blurOnSelect: _bs, clearOnBlur: _cb, selectOnFocus: _sf, handleHomeEndKeys: _he, includeInputInList: _ii, ListboxProps: _lp, slotProps: _sp, PaperComponent: _pc, groupBy, id, ...p }, ref) => {
   const auto = useId(id)
   const [inner, setInner] = useState(defaultValue ?? null)
   const [text, setText] = useState(inputValue ?? (value != null ? getOptionLabel(value) : ""))
-  const [open, setOpen] = useState(false)
+  const [openInner, setOpenInner] = useState(false)
+  const open = openProp ?? openInner
+  // Like MUI: the list is filtered only after the user types. Opening it with a
+  // value already chosen shows every option, not just the chosen one.
+  const [dirty, setDirty] = useState(false)
   const [active, setActive] = useState(-1)
   const current = value !== undefined ? value : inner
   const typed = inputValue ?? text
+  const setOpen = (next: boolean | ((o: boolean) => boolean), e?: React.SyntheticEvent) => {
+    const v = typeof next === "function" ? next(open) : next
+    if (v === open) return
+    if (openProp === undefined) setOpenInner(v)
+    if (v) onOpen?.(e)
+    else {
+      onClose?.(e, "blur")
+      setDirty(false)
+    }
+  }
   useEffect(() => {
     if (inputValue === undefined && current != null && !open) setText(getOptionLabel(current))
   }, [current])
+  const query = dirty ? String(typed) : ""
   const list: any[] = filterOptions
-    ? filterOptions(options, { inputValue: typed, getOptionLabel })
-    : options.filter((o: any) => getOptionLabel(o).toLowerCase().includes(String(typed).toLowerCase()))
+    ? filterOptions(options, { inputValue: query, getOptionLabel })
+    : options.filter((o: any) => getOptionLabel(o).toLowerCase().includes(query.toLowerCase()))
   const listId = `${auto}-listbox`
   const choose = (e: React.SyntheticEvent, o: any) => {
     if (value === undefined) setInner(o)
@@ -786,7 +801,7 @@ export const Autocomplete = ui("Autocomplete", ({ ykClass, Comp: _c, className, 
     const label = o == null ? "" : getOptionLabel(o)
     if (inputValue === undefined) setText(label)
     onInputChange?.(e, label, "reset")
-    setOpen(false)
+    setOpen(false, e)
     setActive(-1)
   }
   const params = {
@@ -808,7 +823,7 @@ export const Autocomplete = ui("Autocomplete", ({ ykClass, Comp: _c, className, 
             title={open ? "Close" : "Open"}
             disabled={disabled}
             onMouseDown={(e) => e.preventDefault()}
-            onClick={() => setOpen((o) => !o)}
+            onClick={(e) => setOpen((o) => !o, e)}
             className="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall yk-c-default MuiAutocomplete-popupIndicator"
             style={{ minWidth: 32, minHeight: 32, padding: 4, transform: open ? "rotate(180deg)" : undefined, transition: "transform .15s" }}
           >
@@ -828,16 +843,23 @@ export const Autocomplete = ui("Autocomplete", ({ ykClass, Comp: _c, className, 
       onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
         if (inputValue === undefined) setText(e.target.value)
         onInputChange?.(e, e.target.value, "input")
-        setOpen(true)
+        setDirty(true)
+        setOpen(true, e)
         setActive(autoHighlight ? 0 : -1)
         if (freeSolo) onChange?.(e, e.target.value, "createOption")
       },
-      onFocus: () => openOnFocus && setOpen(true),
-      onBlur: () => setTimeout(() => setOpen(false), 120),
+      onFocus: (e: React.FocusEvent) => openOnFocus && setOpen(true, e),
+      onMouseDown: (e: React.MouseEvent) => {
+        if (!disabled) setOpen((o) => !o, e)
+      },
+      onBlur: (e: React.FocusEvent) => {
+        setTimeout(() => setOpen(false, e), 120)
+        if (inputValue === undefined && !freeSolo) setText(current != null ? getOptionLabel(current) : "")
+      },
       onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === "ArrowDown") {
           e.preventDefault()
-          setOpen(true)
+          setOpen(true, e)
           setActive((a) => Math.min(list.length - 1, a + 1))
         } else if (e.key === "ArrowUp") {
           e.preventDefault()
@@ -846,7 +868,7 @@ export const Autocomplete = ui("Autocomplete", ({ ykClass, Comp: _c, className, 
           e.preventDefault()
           choose(e, list[active])
         } else if (e.key === "Escape") {
-          setOpen(false)
+          setOpen(false, e)
         }
       },
     },
@@ -856,12 +878,19 @@ export const Autocomplete = ui("Autocomplete", ({ ykClass, Comp: _c, className, 
       {renderInput?.(params)}
       {open && (
         <ul id={listId} role="listbox" className="MuiAutocomplete-listbox MuiPaper-root">
-          {loading ? (
+          {loading && list.length === 0 ? (
             <li className="MuiAutocomplete-loading">{loadingText}</li>
           ) : list.length === 0 ? (
             <li className="MuiAutocomplete-noOptions">{noOptionsText}</li>
           ) : (
-            list.map((o, i) => {
+            list.flatMap((o, i) => {
+              const group = groupBy ? groupBy(o) : undefined
+              const header =
+                groupBy && (i === 0 || groupBy(list[i - 1]) !== group) ? (
+                  <li key={`g-${i}`} role="presentation" className="MuiAutocomplete-groupLabel">
+                    {group}
+                  </li>
+                ) : null
               const sel = current != null && isOptionEqualToValue(o, current)
               const props = {
                 key: i,
@@ -872,7 +901,8 @@ export const Autocomplete = ui("Autocomplete", ({ ykClass, Comp: _c, className, 
                 onMouseDown: (e: React.MouseEvent) => e.preventDefault(),
                 onClick: (e: React.MouseEvent) => choose(e, o),
               }
-              return renderOption ? renderOption(props, o, { selected: sel, index: i, inputValue: typed }) : <li {...props}>{getOptionLabel(o)}</li>
+              const item = renderOption ? renderOption(props, o, { selected: sel, index: i, inputValue: typed }) : <li {...props}>{getOptionLabel(o)}</li>
+              return header ? [header, item] : [item]
             })
           )}
         </ul>

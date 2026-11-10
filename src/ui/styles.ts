@@ -164,6 +164,7 @@ ${colorVars}
 :where(.MuiAutocomplete-root){position:relative;width:100%;}
 :where(.MuiAutocomplete-listbox){position:absolute;z-index:1300;left:0;right:0;top:100%;margin:4px 0 0;padding:6px;list-style:none;max-height:320px;overflow:auto;
   background:${PAPER};color:${FG};border:1px solid ${LINE};border-radius:12px;box-shadow:0 10px 30px rgba(15,23,42,.18);}
+:where(.MuiAutocomplete-groupLabel){position:sticky;top:-6px;z-index:1;padding:8px 12px 4px;font-size:.8rem;font-weight:700;color:var(--muted-text,#555);background:var(--surface-elevated,#fff);}
 :where(.MuiAutocomplete-option){padding:10px 12px;border-radius:8px;cursor:pointer;min-height:44px;display:flex;align-items:center;}
 :where(.MuiAutocomplete-option[aria-selected="true"],.MuiAutocomplete-option.Mui-focused){background:${mix(PRIMARY, 12)};}
 

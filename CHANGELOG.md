@@ -2,6 +2,16 @@
 
 All notable changes to `@yuktishaalaa/yuktai`. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow [Semantic Versioning](https://semver.org/).
 
+## 5.6.3
+
+### Fixed (YuktAI UI)
+- `Autocomplete` opens when the field is clicked, not only from the arrow.
+- With a value already chosen, opening the list shows every option; filtering starts only once the user types (the list showed just the chosen option).
+- `onOpen`, `onClose` and controlled `open` work, and they no longer reach the DOM as unknown attributes.
+- `groupBy` shows group headings.
+- `loading` text shows only while the list is empty.
+- If the field loses focus without a choice, it goes back to the chosen option's name.
+
 ## 5.6.2
 
 ### Fixed (YuktAI UI), found by comparing every Ratnalabala page with its old MUI version on desktop, tablet and phone

@@ -2,7 +2,7 @@
 // Change a release here and every page follows.
 
 export const VERSIONS = {
-  yuktai: "5.6.2",
+  yuktai: "5.6.3",
   askPage: "1.0.0",
   cli: "1.4.0",
 } as const;
@@ -63,7 +63,7 @@ export const WEB_SHARE = [
 
 // Automated tests run before a release
 export const TESTS = [
-  { name: "TypeScript unit (Vitest)", value: 159, tone: "c1" },
+  { name: "TypeScript unit (Vitest)", value: 160, tone: "c1" },
   { name: "Rust (cargo)", value: 13, tone: "c2" },
   { name: "Browser end-to-end", value: 37, tone: "c3" },
   { name: "Strict CSP + extension", value: 4, tone: "c4" },
