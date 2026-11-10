@@ -8,7 +8,7 @@ calls, no telemetry.
     import yuktai
     yuktai.script_tag(position="right", show_page_tools=True)
 
-See https://yuktaidocs.netlify.app/ for every feature.
+See https://sandeep-miriyala.github.io/yuktai/ for every feature.
 """
 
 from __future__ import annotations

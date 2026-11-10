@@ -1,0 +1,121 @@
+{
+  "name": "YuktAI: docs, demos and guides",
+  "short_name": "YuktAI",
+  "description": "YuktAI docs with live demos: accessibility, data grid, agents, page Q&A, page tools, icons and Rust engines. Works offline.",
+  "lang": "en",
+  "dir": "ltr",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#000633",
+  "theme_color": "#000633",
+  "categories": [
+    "developer",
+    "productivity",
+    "education"
+  ],
+  "icons": [
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "./icons/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "./icons/monochrome-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "monochrome"
+    },
+    {
+      "src": "./icons/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Create an app",
+      "url": "./create/",
+      "icons": [
+        {
+          "src": "./icons/shortcut-create.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Data grid",
+      "url": "./grid/",
+      "icons": [
+        {
+          "src": "./icons/shortcut-grid.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Ask page",
+      "url": "./ask/",
+      "icons": [
+        {
+          "src": "./icons/shortcut-ask.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Icon studio",
+      "url": "./icons/",
+      "icons": [
+        {
+          "src": "./icons/shortcut-icons.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "display_override": [
+    "window-controls-overlay",
+    "standalone"
+  ],
+  "screenshots": [
+    {
+      "src": "./screenshots/wide.png",
+      "sizes": "1280x800",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "YuktAI site on a computer"
+    },
+    {
+      "src": "./screenshots/narrow.png",
+      "sizes": "540x1080",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "YuktAI site on a phone"
+    }
+  ]
+}

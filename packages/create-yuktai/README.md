@@ -20,10 +20,10 @@ The same as `npx yuktai@latest init my-app`. Every option of `yuktai init` works
 
 - [miriyalas.github.io/yuktai](https://miriyalas.github.io/yuktai/): made with no laptop. Created, built and published from a browser with GitHub Codespaces
 - [పద్యాలవాల](https://sandeep-miriyala.github.io/padyalavala/): Telugu poetry site with Rust search and the Grid AI Assistant in Telugu
-- [YuktaiDocs](https://yuktaidocs.netlify.app/): docs and playgrounds
+- [YuktaiDocs](https://sandeep-miriyala.github.io/yuktai/): docs and playgrounds
 
-**No laptop?** Open [GitHub Codespaces](https://github.com/codespaces) → Blank, run `npm create yuktai@latest my-app -- --yes`, push, then Settings → Pages → Source: GitHub Actions. [Step by step](https://yuktaidocs.netlify.app/create/#codespaces)
+**No laptop?** Open [GitHub Codespaces](https://github.com/codespaces) → Blank, run `npm create yuktai@latest my-app -- --yes`, push, then Settings → Pages → Source: GitHub Actions. [Step by step](https://sandeep-miriyala.github.io/yuktai/create/#codespaces)
 
-Docs: https://yuktaidocs.netlify.app/create/
+Docs: https://sandeep-miriyala.github.io/yuktai/create/
 
 License: GPL-3.0

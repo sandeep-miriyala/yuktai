@@ -40,7 +40,7 @@ const HELP = `
     --no-git                        skip git init
     --yes, -y                       use defaults for anything not given
 
-  Docs: https://yuktaidocs.netlify.app
+  Docs: https://sandeep-miriyala.github.io/yuktai/
 `;
 
 export async function main(argv) {

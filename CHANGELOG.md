@@ -2,6 +2,10 @@
 
 All notable changes to `@yuktishaalaa/yuktai`. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow [Semantic Versioning](https://semver.org/).
 
+## Unreleased
+- `<YuktaiPreferences>` button: the accessible name now starts with the visible language code ("En: Language and animations"), so speech users can say what they see (WCAG 2.5.3).
+- One website: docs, guides and demos live in `site/` and publish to https://sandeep-miriyala.github.io/yuktai/ through one GitHub Action that tests everything end to end first. New End-to-end guide.
+
 ## 5.5.4
 
 ### WebMCP (grid, React and plain HTML)

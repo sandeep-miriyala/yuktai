@@ -12,7 +12,7 @@ export function readme(o) {
   add(
     `# ${o.title}`,
     "",
-    `Made with [YuktAI](https://yuktaidocs.netlify.app) ${o.cliVersion}: Next.js${rust ? " + Rust (WebAssembly)" : ""}, accessible by default, with AI that runs in the visitor's browser. Nothing a visitor types is sent anywhere.`,
+    `Made with [YuktAI](https://sandeep-miriyala.github.io/yuktai/) ${o.cliVersion}: Next.js${rust ? " + Rust (WebAssembly)" : ""}, accessible by default, with AI that runs in the visitor's browser. Nothing a visitor types is sent anywhere.`,
     "",
     "## Start",
     "",
@@ -259,7 +259,7 @@ export function readme(o) {
     "",
     "## Learn more",
     "",
-    "- Docs and live demos: https://yuktaidocs.netlify.app",
+    "- Docs and live demos: https://sandeep-miriyala.github.io/yuktai/",
     "- [@yuktishaalaa/yuktai](https://www.npmjs.com/package/@yuktishaalaa/yuktai) · [@yuktishaalaa/ask-page](https://www.npmjs.com/package/@yuktishaalaa/ask-page) · [yuktai CLI](https://www.npmjs.com/package/yuktai)",
     "",
   );

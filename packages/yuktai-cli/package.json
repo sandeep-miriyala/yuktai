@@ -41,6 +41,6 @@
     "url": "git+https://github.com/sandeep-miriyala/yuktai.git",
     "directory": "packages/yuktai-cli"
   },
-  "homepage": "https://yuktaidocs.netlify.app",
+  "homepage": "https://sandeep-miriyala.github.io/yuktai/",
   "bugs": "https://github.com/sandeep-miriyala/yuktai/issues"
 }

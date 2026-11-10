@@ -1,0 +1,40 @@
+/* Design tokens: every colour, radius and font in one place.
+   Text pairs are at least 7:1 in both themes; borders and icons at least 3:1. */
+:root {
+  --bg: #f7f7fb; --panel: #ffffff; --panel2: #eef2fa; --chip: #e6eefc;
+  --text: #0d0b1f; --muted: #3d3a56; --link: #1d3fb8; --accent: #0038B4;
+  --line: #7c78a0; --line-soft: #d9d6ea; --focus: #7a3e00;
+  --btn-text: #ffffff; --code-bg: #0d0b1f; --code-text: #e9e6ff;
+  --grad: linear-gradient(135deg, #000633 0%,#0038B4 100%);
+  --glow1: rgba(0,83,237, .16); --glow2: rgba(37, 99, 235, .14);
+  --shadow: 0 24px 60px rgba(0,6,51, .12);
+  --c1: #0038B4; --c2: #c2410c; --c3: #0e7490; --c4: #1e293b;
+  --radius: 18px; --max: 1200px;
+  --font: "Inter", "Segoe UI Variable", "Segoe UI", system-ui, -apple-system, "Noto Sans Telugu", "Nirmala UI", sans-serif;
+  --mono: ui-monospace, "Cascadia Code", SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #08081a; --panel: #12122a; --panel2: #0e0e22; --chip: #1d1b3d;
+    --text: #f4f3ff; --muted: #cbc8e6; --link: #93c5fd; --accent: #93c5fd;
+    --line: #6a6696; --line-soft: #2b2950; --focus: #ffe066;
+    --btn-text: #000633; --code-bg: #05050f; --code-text: #e9e6ff;
+    --grad: linear-gradient(135deg, #93c5fd 0%,#67e8f9 100%);
+    --glow1: rgba(103,232,249, .22); --glow2: rgba(59, 130, 246, .18);
+    --shadow: 0 24px 70px rgba(0, 0, 0, .5);
+    --c1: #93c5fd; --c2: #fdba74; --c3: #67e8f9; --c4: #e2e8f0;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #08081a; --panel: #12122a; --panel2: #0e0e22; --chip: #1d1b3d;
+  --text: #f4f3ff; --muted: #cbc8e6; --link: #93c5fd; --accent: #93c5fd;
+  --line: #6a6696; --line-soft: #2b2950; --focus: #ffe066;
+  --btn-text: #000633; --code-bg: #05050f; --code-text: #e9e6ff;
+  --grad: linear-gradient(135deg, #93c5fd 0%,#67e8f9 100%);
+  --glow1: rgba(103,232,249, .22); --glow2: rgba(59, 130, 246, .18);
+  --shadow: 0 24px 70px rgba(0, 0, 0, .5);
+  --c1: #93c5fd; --c2: #fdba74; --c3: #67e8f9; --c4: #e2e8f0;
+  color-scheme: dark;
+}

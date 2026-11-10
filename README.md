@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://yuktaidocs.netlify.app/">
+  <a href="https://sandeep-miriyala.github.io/yuktai/">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/sandeep-miriyala/yuktai/main/brand/yuktai-logo-dark.png">
       <img src="https://raw.githubusercontent.com/sandeep-miriyala/yuktai/main/brand/yuktai-logo-light.png" alt="YuktAI" width="420">
@@ -17,13 +17,13 @@
   <a href="https://www.npmjs.com/package/@yuktishaalaa/yuktai"><img src="https://img.shields.io/npm/dm/@yuktishaalaa/yuktai" alt="npm downloads"></a>
   <a href="https://github.com/sandeep-miriyala/yuktai/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-blue" alt="License: GPL-3.0"></a>
   <a href="https://github.com/sandeep-miriyala/yuktai/actions/workflows/ci.yml"><img src="https://github.com/sandeep-miriyala/yuktai/actions/workflows/ci.yml/badge.svg" alt="CI status"></a>
-  <a href="https://yuktaidocs.netlify.app/"><img src="https://img.shields.io/badge/docs-live%20demos-0038b4" alt="Docs"></a>
+  <a href="https://sandeep-miriyala.github.io/yuktai/"><img src="https://img.shields.io/badge/docs-live%20demos-0038b4" alt="Docs"></a>
 </p>
 
 <p align="center">
-  <a href="https://yuktaidocs.netlify.app/">Documentation</a> ·
-  <a href="https://yuktaidocs.netlify.app/create/">Create an app</a> ·
-  <a href="https://yuktaidocs.netlify.app/grid/">Demos</a> ·
+  <a href="https://sandeep-miriyala.github.io/yuktai/">Documentation</a> ·
+  <a href="https://sandeep-miriyala.github.io/yuktai/create/">Create an app</a> ·
+  <a href="https://sandeep-miriyala.github.io/yuktai/grid/">Demos</a> ·
   <a href="CHANGELOG.md">Changelog</a>
 </p>
 
@@ -92,7 +92,7 @@ More diagrams (library modules, `npm run dev`, a new app) in [ARCHITECTURE.md](A
 | 💬 **Ask this page** | Answers questions from your page content |
 | 🎨 **163 icons** | Any size and colour, safe in Server Components |
 
-Optional, when you need them: a grid assistant that understands plain words, a loading screen, and a Python API with agents in apps made by `npx yuktai`. See the [docs](https://yuktaidocs.netlify.app/).
+Optional, when you need them: a grid assistant that understands plain words, a loading screen, and a Python API with agents in apps made by `npx yuktai`. See the [docs](https://sandeep-miriyala.github.io/yuktai/).
 
 ### Ready for AI browsers (WebMCP)
 
@@ -169,16 +169,16 @@ The last five come with the `backend` feature.
 |---|---|
 | [miriyalas.github.io/yuktai](https://miriyalas.github.io/yuktai/) | Made with no laptop: created, built and published from a browser with GitHub Codespaces |
 | [పద్యాలవాల](https://sandeep-miriyala.github.io/padyalavala/) | Telugu poetry site: Rust search, Grid AI Assistant in Telugu, listen and share |
-| [YuktaiDocs](https://yuktaidocs.netlify.app/) | Docs and playgrounds |
+| [YuktAI site](https://sandeep-miriyala.github.io/yuktai/) | Docs, guides, playgrounds and live demos, in one place |
 | [Plain HTML demo](https://sandeep-miriyala.github.io/yuktai/vanilla/) | No framework, one script |
 
-**No laptop?** Open [GitHub Codespaces](https://github.com/codespaces) → Blank, run `npm create yuktai@latest my-app -- --yes`, push, then Settings → Pages → Source: GitHub Actions. [Step by step](https://yuktaidocs.netlify.app/create/#codespaces)
+**No laptop?** Open [GitHub Codespaces](https://github.com/codespaces) → Blank, run `npm create yuktai@latest my-app -- --yes`, push, then Settings → Pages → Source: GitHub Actions. [Step by step](https://sandeep-miriyala.github.io/yuktai/create/#codespaces)
 
 ## Documentation
 
 Everything else (grid options, styling, accessibility tools, jQuery, the CLI, agents) lives in the docs:
 
-**https://yuktaidocs.netlify.app/**
+**https://sandeep-miriyala.github.io/yuktai/**
 
 ## Packages
 

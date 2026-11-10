@@ -31,5 +31,5 @@ text{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;text-anchor:middl
 <g class="c-purple"><rect x="505" y="240" width="135" height="56" rx="8"/><text class="th" x="572.5" y="259">ask-page</text><text class="ts" x="572.5" y="278">Separate package</text></g>
 <line x1="107.5" y1="296" x2="107.5" y2="338" class="arr"/>
 <g class="c-teal"><rect x="40" y="340" width="135" height="56" rx="8"/><text class="th" x="107.5" y="359">Python API</text><text class="ts" x="107.5" y="378">Optional, agents</text></g>
-<g class="c-teal"><rect x="195" y="340" width="290" height="56" rx="8"/><text class="th" x="340" y="359">Sites</text><text class="ts" x="340" y="378">YuktaiDocs, GitHub Pages demos</text></g>
+<g class="c-teal"><rect x="195" y="340" width="290" height="56" rx="8"/><text class="th" x="340" y="359">Sites</text><text class="ts" x="340" y="378">Docs, demos, guides (one site)</text></g>
 </svg>

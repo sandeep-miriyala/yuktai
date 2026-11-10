@@ -1,0 +1,129 @@
+# One workflow for the whole website: https://sandeep-miriyala.github.io/yuktai/
+#
+# On every push to main it
+#   1. builds the library and the plain HTML bundle from this commit,
+#   2. runs the library tests and the browser end-to-end tests of every feature,
+#   3. builds the docs site (site/, made with YuktAI) with exactly that build,
+#      not the copy on npm, so every live demo shows the code in main,
+#   4. adds the static demos (vanilla/, ask-page/) next to it,
+#   5. opens every page in a browser: no errors, no broken links, no serious
+#      accessibility problems (axe-core),
+#   6. publishes to GitHub Pages, only when everything passed.
+# Pull requests run steps 1–5 without publishing.
+#
+# Setup (once): Settings → Pages → Build and deployment → Source: GitHub Actions.
+
+name: Site
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: site-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build and test end to end
+    runs-on: ubuntu-latest
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+      NEXT_PUBLIC_BASE_PATH: /yuktai
+      CHROME: /usr/bin/google-chrome
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            packages/ask-page/package-lock.json
+            site/package-lock.json
+
+      - name: Stable Rust with the WebAssembly target (for the site's Rust core)
+        run: rustup show active-toolchain || rustup toolchain install
+
+      - name: Next.js build cache
+        uses: actions/cache@v4
+        with:
+          path: site/.next/cache
+          key: next-${{ runner.os }}-${{ hashFiles('site/package-lock.json') }}-${{ hashFiles('site/src/**') }}
+          restore-keys: next-${{ runner.os }}-${{ hashFiles('site/package-lock.json') }}-
+
+      # ── 1 + 2: the library from this commit ──
+      - name: Install (library)
+        run: npm ci
+
+      - name: Library unit tests
+        run: npm test
+
+      - name: Build the library and the plain HTML bundle
+        run: npm run build:all
+
+      - name: Every feature end to end (plain HTML, real browser, axe-core)
+        run: node vanilla/test/e2e.mjs
+
+      - name: Pack this commit's packages
+        run: |
+          npm pack
+          (cd packages/ask-page && npm ci && npm run build && npm pack)
+          (cd packages/yuktai-cli && npm pack)
+
+      # ── 3: the docs site, with this commit's packages ──
+      - name: Install (site) with this commit's packages
+        working-directory: site
+        run: |
+          npm ci
+          npm install --no-save ../yuktishaalaa-yuktai-*.tgz ../packages/ask-page/yuktishaalaa-ask-page-*.tgz ../packages/yuktai-cli/yuktai-*.tgz
+
+      - name: Build the site (static export to site/out)
+        working-directory: site
+        run: npm run build
+
+      - name: Site build checks
+        working-directory: site
+        run: npm test
+
+      # ── 4: the static demos next to the site ──
+      - name: Add the plain HTML and Ask page demos
+        run: |
+          mkdir -p site/out/vanilla site/out/ask-page site/out/brand site/out/docs
+          cp -r vanilla/index.html vanilla/index.js vanilla/index.min.js vanilla/icons vanilla/manifest.webmanifest vanilla/sw.js site/out/vanilla/
+          cp -r ask-page/. site/out/ask-page/
+          cp -r brand/. site/out/brand/
+          cp -r docs/diagrams site/out/docs/
+          touch site/out/.nojekyll
+
+      # ── 5: every page in a browser ──
+      - name: Site end to end (every page, links, axe-core)
+        run: node scripts/site-e2e.mjs site/out /yuktai
+
+      - name: Upload the site
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site/out
+
+  # ── 6: publish ──
+  deploy:
+    name: Publish to GitHub Pages
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

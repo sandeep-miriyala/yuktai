@@ -46,5 +46,5 @@ export const GUIDES = [
 export const LINKS = {
   yuktai: "https://www.npmjs.com/package/@yuktishaalaa/yuktai",
   askPage: "https://www.npmjs.com/package/@yuktishaalaa/ask-page",
-  docs: "https://yuktaidocs.netlify.app",
+  docs: "https://sandeep-miriyala.github.io/yuktai/",
 };

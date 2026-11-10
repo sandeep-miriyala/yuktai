@@ -123,7 +123,7 @@ export async function init(args, cliVersion) {
     ${o.install ? "" : "npm install\n    "}npm run dev        → http://localhost:3000
 ${opts.features.includes("grid") ? "                       → /grid/  25 lakh rows\n" : ""}${opts.features.includes("backend") ? "                       → Python API http://localhost:8000/docs\n" : ""}${opts.features.includes("page-tools") ? "                       → /qa/    QA report\n" : ""}${opts.features.includes("icons") ? "                       → /icons/ every icon\n" : ""}
 ${opts.host === "github-pages" ? `  ${c.bold("Online")}  push to GitHub → Settings → Pages → Source: ${c.cyan("GitHub Actions")} (not the suggested Next.js workflow)\n` : ""}${opts.host === "vercel" ? `  ${c.bold("Online")}  push to GitHub → ${c.cyan("vercel.com/new")} → Import the repository → Deploy (vercel.json has the settings)\n` : ""}
-  Settings: ${c.cyan("yuktai.config.ts")}   ·   Guide: README.md   ·   Docs: https://yuktaidocs.netlify.app
+  Settings: ${c.cyan("yuktai.config.ts")}   ·   Guide: README.md   ·   Docs: https://sandeep-miriyala.github.io/yuktai/
 `);
   } finally {
     closePrompts();

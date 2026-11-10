@@ -130,7 +130,8 @@ export function YuktaiPreferences({ icon, text, language = true, motion = true, 
         className="yk-pref__btn"
         aria-expanded={open}
         aria-controls={id}
-        aria-label={t("settings")}
+        // Label in Name (WCAG 2.5.3): the visible short language code starts the name
+        aria-label={`${short}: ${t("settings")}`}
         title={t("settings")}
         onClick={() => setOpen((o) => !o)}
       >

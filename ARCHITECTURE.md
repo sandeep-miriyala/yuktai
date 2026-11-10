@@ -66,11 +66,14 @@ These files are the live demos at https://sandeep-miriyala.github.io/yuktai/. Mo
 
 | Path | Demo |
 |---|---|
-| `index.html`, `404.html`, `.nojekyll` | Home page of the demo site |
+| `site/` | The whole website: docs, guides, live demos. Made with YuktAI (Next.js static export + Rust) |
 | `vanilla/` | Plain HTML demo, and the source of the one-file CDN build |
 | `ask-page/` | "Ask this page" demo (uses the built `ask-page.global.js`) |
+| `scripts/site-e2e.mjs` | Opens every page of the built site: errors, broken links, axe-core |
 
-The documentation site lives in a separate repository and is published at https://yuktaidocs.netlify.app.
+One website, one address: https://sandeep-miriyala.github.io/yuktai/. `.github/workflows/site.yml` builds the library from the
+commit, runs the unit and browser end-to-end tests, builds `site/` with that build, adds `vanilla/` and `ask-page/`, checks every
+page and publishes to GitHub Pages only when everything passed. It replaces yuktaidocs.netlify.app and the old one-page home.
 
 ## The library
 

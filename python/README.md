@@ -8,7 +8,7 @@ YuktAI runs in the visitor's browser: no API keys, no server calls, no telemetry
 pip install yuktai
 ```
 
-📖 Docs and live demos: https://yuktaidocs.netlify.app/ · npm: `@yuktishaalaa/yuktai`
+📖 Docs and live demos: https://sandeep-miriyala.github.io/yuktai/ · npm: `@yuktishaalaa/yuktai`
 
 ## Any Python template
 

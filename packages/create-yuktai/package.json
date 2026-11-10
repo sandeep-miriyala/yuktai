@@ -32,6 +32,6 @@
     "url": "git+https://github.com/sandeep-miriyala/yuktai.git",
     "directory": "packages/create-yuktai"
   },
-  "homepage": "https://yuktaidocs.netlify.app/create/",
+  "homepage": "https://sandeep-miriyala.github.io/yuktai/create/",
   "bugs": "https://github.com/sandeep-miriyala/yuktai/issues"
 }
