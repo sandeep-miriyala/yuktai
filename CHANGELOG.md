@@ -2,7 +2,17 @@
 
 All notable changes to `@yuktishaalaa/yuktai`. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow [Semantic Versioning](https://semver.org/).
 
-## Unreleased
+## 5.5.4
+
+### WebMCP (grid, React and plain HTML)
+- Tool results are JSON strings, as the WebMCP draft requires (they were objects, which some agents showed as "[object Object]").
+- Tools carry `annotations`: `readOnlyHint` (search, count, columns, get_row) and `untrustedContentHint` (search, get_row return row text, which agents must treat as data).
+- Falls back to `navigator.modelContext` in older Chrome builds.
+- Late arrival: when WebMCP appears a moment after load (origin trial, extension, polyfill), the grid registers then. Status stays honest: `unsupported` until it really arrives.
+- New `webmcpToken` prop (React) / option (plain HTML): adds your Chrome origin trial meta tag once.
+- The agent's cancel `signal` is honoured.
+- One implementation (`src/grid/webmcp.ts`) for React and plain HTML; plain HTML gets `yuktai.hasWebMCP()`.
+- 10 new tests.
 - No more `console.log` messages from the on-device AI (Transformers.js) loader.
 - Shorter package description; simpler README with a cheat sheet and architecture diagrams.
 - Open-source docs: CONTRIBUTING, CODE_OF_CONDUCT, ARCHITECTURE, ROADMAP, SECURITY, issue and pull request templates.

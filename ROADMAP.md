@@ -33,4 +33,5 @@ The focus is a smaller, clearer first experience.
 - [x] Loading screen, 7 languages, animations the visitor controls (5.5.0)
 - [x] Stable Rust only, Oxlint and Biome, CI on every push (5.5.2)
 - [x] Keyboard and screen-reader fixes for the grid (5.5.3)
+- [x] WebMCP grid tools follow the current draft: string results, annotations, navigator fallback, origin trial token (5.5.4)
 - [x] One-command apps with `yuktai`, with a Python API and LangGraph agents (CLI 1.3.0)

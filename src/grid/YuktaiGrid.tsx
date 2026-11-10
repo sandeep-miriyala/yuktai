@@ -387,6 +387,7 @@ export function YuktaiGrid<
   toolName = "yuktai_grid",
   toolDescriptions,
   webmcp = false,
+  webmcpToken,
   onWebMCPStatusChange,
   onAgentResult,
   customRules = [],
@@ -1025,6 +1026,7 @@ export function YuktaiGrid<
           <YuktaiGridWebMCP<T>
             tools={webmcpTools}
             onStatusChange={onWebMCPStatusChange}
+            originTrialToken={webmcpToken}
           />
         )}
         <div
@@ -1063,6 +1065,7 @@ export function YuktaiGrid<
         <YuktaiGridWebMCP<T>
           tools={webmcpTools}
           onStatusChange={onWebMCPStatusChange}
+          originTrialToken={webmcpToken}
         />
       )}
 

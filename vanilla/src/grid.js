@@ -827,6 +827,7 @@ export function renderGrid(container, rowsOrOptions, columnsArg, optionsArg) {
   let webmcp = { status: { state: "unsupported", registered: [], errors: [] }, unregister() {} }
   if (opts.webmcp) {
     webmcp = registerWebMCP(() => toolList, {
+      originTrialToken: opts.webmcpToken,
       onStatusChange: (s) => {
         opts.onWebMCPStatusChange && opts.onWebMCPStatusChange(s)
         host.dispatchEvent(new CustomEvent("yuktai:webmcp", { detail: s, bubbles: true }))
@@ -1079,7 +1080,7 @@ const ASSISTANT_TEXT = {
     noVoice: "Voice input is not available in this browser. Type your question instead.",
     history: "History",
     clear: "Clear history",
-    webmcp: { unsupported: "WebMCP: not available in this browser (no document.modelContext).", registering: "WebMCP: registering tools…", ready: "WebMCP: tools ready", partial: "WebMCP: some tools failed", error: "WebMCP: registration failed" },
+    webmcp: { unsupported: "WebMCP: not available in this browser (yet).", registering: "WebMCP: registering tools…", ready: "WebMCP: tools ready", partial: "WebMCP: some tools failed", error: "WebMCP: registration failed" },
   },
   te: {
     title: "గ్రిడ్‌ను అడగండి",
