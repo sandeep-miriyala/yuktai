@@ -74,6 +74,8 @@ code,pre{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
 pre{white-space:pre;overflow:auto;background:var(--navy);color:#E6EEF8;border-left:4px solid var(--gold);padding:14px;border-radius:10px;font-size:.85rem;margin:10px 0 0}
 .out{white-space:pre-wrap;overflow-wrap:anywhere;background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;min-height:60px;font-size:.85rem;max-height:420px;overflow:auto}
 .play{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:8px;margin-bottom:10px}
+/* long function names (createContextIndex()…) wrap inside the button instead of pushing the page sideways on phones */
+.play .btn{min-width:0;max-width:100%;text-align:left;overflow-wrap:anywhere}
 .icon-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}
 .icon-card{background:#fff;border:1px solid var(--line);border-radius:9px;min-height:82px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--blue)}
 .icon-card code{font-size:11px;color:#334155}
