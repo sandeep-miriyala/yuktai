@@ -8,6 +8,7 @@
 // The behaviour follows the React versions line by line. Instead of React
 // state, each object keeps plain state and calls subscribe() listeners.
 
+import { registerGridWebMCP, getModelContext, hasWebMCP, addOriginTrial } from "../../src/grid/webmcp"
 import {
   answerGridQuestion,
   applyGridFilters,
@@ -286,67 +287,20 @@ export function createGridAgent(options = {}) {
 /* ───────────────────────── WebMCP ───────────────────────── */
 
 /**
- * Register grid tools with WebMCP (document.modelContext).
+ * Register grid tools with WebMCP. Same code as the React grid (src/grid/webmcp.ts):
+ * document.modelContext (navigator.modelContext as fallback), results as JSON
+ * strings, readOnlyHint / untrustedContentHint, late arrival, origin trial token.
  * Reports the REAL status: unsupported | registering | ready | partial | error.
- * Returns { status, unregister() }.
+ * Returns { status, done, unregister() }.
  *
  * `tools` may be an array or a function returning the current array; the
  * registered tools always call the latest version, so data changes do not
  * need a new registration.
+ *
+ * options: { onStatusChange, originTrialToken, retries }
  */
 export function registerWebMCP(tools, options = {}) {
-  const read = () => (typeof tools === "function" ? tools() : tools) || []
-  const report = (status) => {
-    current.status = status
-    options.onStatusChange && options.onStatusChange(status)
-  }
-  const current = {
-    status: { state: "unsupported", registered: [], errors: [] },
-    done: Promise.resolve(),
-    unregister() {
-      controller.abort()
-    },
-  }
-  const modelContext = typeof document !== "undefined" ? document.modelContext : undefined
-  const controller = new AbortController()
-
-  if (!modelContext || typeof modelContext.registerTool !== "function") {
-    report({ state: "unsupported", registered: [], errors: [] })
-    return current
-  }
-
-  current.done = (async () => {
-    report({ state: "registering", registered: [], errors: [] })
-    const registered = []
-    const errors = []
-    for (const tool of read()) {
-      if (controller.signal.aborted) return
-      try {
-        await modelContext.registerTool(
-          {
-            name: tool.name,
-            title: tool.title,
-            description: tool.description,
-            inputSchema: tool.inputSchema,
-            execute: (input) => {
-              const latest = read().find((t) => t.name === tool.name)
-              return latest
-                ? latest.execute(input || {})
-                : { success: false, message: `Tool "${tool.name}" is no longer available.`, error: { code: "NOT_SUPPORTED" } }
-            },
-          },
-          { signal: controller.signal }
-        )
-        registered.push(tool.name)
-      } catch (error) {
-        errors.push({ tool: tool.name, message: toError(error).message })
-      }
-    }
-    if (controller.signal.aborted) return
-    report({ state: errors.length === 0 ? "ready" : registered.length ? "partial" : "error", registered, errors })
-  })()
-
-  return current
+  return registerGridWebMCP(tools, options)
 }
 
 /* ───────────────────────── agentic grid (useAgenticGrid) ───────────────────────── */
@@ -534,4 +488,4 @@ export function createAgenticGrid(options = {}) {
   }
 }
 
-export { createGridTools }
+export { createGridTools, getModelContext, hasWebMCP, addOriginTrial }

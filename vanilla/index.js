@@ -73,6 +73,8 @@
   });
 
   // src/grid/gridTools.ts
+  var READ_ONLY = /* @__PURE__ */ new Set(["search", "count", "columns", "get_row"]);
+  var RETURNS_ROW_TEXT = /* @__PURE__ */ new Set(["search", "get_row"]);
   var MESSAGES = {
     en: {
       found: (n) => `${n} row(s) found.`,
@@ -486,6 +488,7 @@
       description: describe(t.id),
       label: labels[t.id],
       inputSchema: t.schema,
+      annotations: { readOnlyHint: READ_ONLY.has(t.id), untrustedContentHint: RETURNS_ROW_TEXT.has(t.id) },
       execute: (input) => safe(context, () => t.run(input ?? {}))
     }));
   }
@@ -5251,6 +5254,134 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
     };
   }
 
+  // src/grid/webmcp.ts
+  var DEFAULT_RETRIES = [0, 300, 1e3, 2500, 5e3];
+  function getModelContext(doc) {
+    var _a;
+    const d = doc ?? (typeof document !== "undefined" ? document : void 0);
+    if ((d == null ? void 0 : d.modelContext) && typeof d.modelContext.registerTool === "function") return d.modelContext;
+    const nav = ((_a = d == null ? void 0 : d.defaultView) == null ? void 0 : _a.navigator) ?? (typeof navigator !== "undefined" ? navigator : void 0);
+    if ((nav == null ? void 0 : nav.modelContext) && typeof nav.modelContext.registerTool === "function") return nav.modelContext;
+    return null;
+  }
+  function hasWebMCP(doc) {
+    return getModelContext(doc) !== null;
+  }
+  function addOriginTrial(token, doc) {
+    const d = doc ?? (typeof document !== "undefined" ? document : void 0);
+    if (!token || !(d == null ? void 0 : d.head)) return;
+    const metas = Array.from(d.head.querySelectorAll("meta[http-equiv='origin-trial']"));
+    if (metas.some((m2) => m2.getAttribute("content") === token)) return;
+    const m = d.createElement("meta");
+    m.setAttribute("http-equiv", "origin-trial");
+    m.setAttribute("content", token);
+    d.head.appendChild(m);
+  }
+  function toWebMCPResult(result) {
+    if (typeof result === "string") return result;
+    try {
+      return JSON.stringify(result ?? { success: false, message: "No result." });
+    } catch {
+      return JSON.stringify({ success: false, message: "The result could not be converted to text." });
+    }
+  }
+  var cancelled = () => ({
+    success: false,
+    message: "Cancelled by the agent.",
+    error: { code: "NOT_SUPPORTED" }
+  });
+  function toModelContextTool(tool, latest) {
+    const out = {
+      name: tool.name,
+      title: tool.title,
+      description: tool.description,
+      inputSchema: tool.inputSchema,
+      async execute(input, ctx) {
+        var _a, _b;
+        if ((_a = ctx == null ? void 0 : ctx.signal) == null ? void 0 : _a.aborted) return toWebMCPResult(cancelled());
+        const current = latest().find((t) => t.name === tool.name);
+        if (!current) {
+          return toWebMCPResult({
+            success: false,
+            message: `Tool "${tool.name}" is no longer available.`,
+            error: { code: "NOT_SUPPORTED" }
+          });
+        }
+        const result = await current.execute(input ?? {});
+        if ((_b = ctx == null ? void 0 : ctx.signal) == null ? void 0 : _b.aborted) return toWebMCPResult(cancelled());
+        return toWebMCPResult(result);
+      }
+    };
+    if (tool.annotations) out.annotations = { ...tool.annotations };
+    return out;
+  }
+  function registerGridWebMCP(tools, options = {}) {
+    const read = () => (typeof tools === "function" ? tools() : tools) || [];
+    const controller = new AbortController();
+    const timers = [];
+    let status = { state: "unsupported", registered: [], errors: [] };
+    let started = false;
+    let resolveDone = () => {
+    };
+    const done = new Promise((r) => resolveDone = r);
+    const report = (s) => {
+      var _a;
+      status = s;
+      (_a = options.onStatusChange) == null ? void 0 : _a.call(options, s);
+    };
+    if (options.originTrialToken) addOriginTrial(options.originTrialToken, options.doc);
+    const register = async (mc) => {
+      started = true;
+      report({ state: "registering", registered: [], errors: [] });
+      const registered = [];
+      const errors = [];
+      for (const tool of read()) {
+        if (controller.signal.aborted) return;
+        try {
+          await mc.registerTool(toModelContextTool(tool, read), { signal: controller.signal });
+          registered.push(tool.name);
+        } catch (error) {
+          errors.push({ tool: tool.name, message: error instanceof Error ? error.message : String(error) });
+        }
+      }
+      if (controller.signal.aborted) return;
+      report({
+        state: errors.length === 0 ? "ready" : registered.length > 0 ? "partial" : "error",
+        registered,
+        errors
+      });
+    };
+    const now = getModelContext(options.doc);
+    if (now) {
+      register(now).finally(resolveDone);
+    } else {
+      report({ state: "unsupported", registered: [], errors: [] });
+      const retries = (options.retries ?? DEFAULT_RETRIES).filter((ms) => ms > 0);
+      if (retries.length === 0) resolveDone();
+      retries.forEach((ms, i) => {
+        timers.push(
+          setTimeout(() => {
+            if (started || controller.signal.aborted) return;
+            const mc = getModelContext(options.doc);
+            if (mc) register(mc).finally(resolveDone);
+            else if (i === retries.length - 1) resolveDone();
+          }, ms)
+        );
+      });
+    }
+    return {
+      get status() {
+        return status;
+      },
+      done,
+      unregister() {
+        timers.forEach(clearTimeout);
+        controller.abort();
+        resolveDone();
+      }
+    };
+  }
+
   // vanilla/src/agent.js
   function emitter() {
     const listeners = /* @__PURE__ */ new Set();
@@ -5476,53 +5607,7 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
     };
   }
   function registerWebMCP(tools, options = {}) {
-    const read = () => (typeof tools === "function" ? tools() : tools) || [];
-    const report = (status) => {
-      current.status = status;
-      options.onStatusChange && options.onStatusChange(status);
-    };
-    const current = {
-      status: { state: "unsupported", registered: [], errors: [] },
-      done: Promise.resolve(),
-      unregister() {
-        controller.abort();
-      }
-    };
-    const modelContext = typeof document !== "undefined" ? document.modelContext : void 0;
-    const controller = new AbortController();
-    if (!modelContext || typeof modelContext.registerTool !== "function") {
-      report({ state: "unsupported", registered: [], errors: [] });
-      return current;
-    }
-    current.done = (async () => {
-      report({ state: "registering", registered: [], errors: [] });
-      const registered = [];
-      const errors = [];
-      for (const tool of read()) {
-        if (controller.signal.aborted) return;
-        try {
-          await modelContext.registerTool(
-            {
-              name: tool.name,
-              title: tool.title,
-              description: tool.description,
-              inputSchema: tool.inputSchema,
-              execute: (input) => {
-                const latest = read().find((t) => t.name === tool.name);
-                return latest ? latest.execute(input || {}) : { success: false, message: `Tool "${tool.name}" is no longer available.`, error: { code: "NOT_SUPPORTED" } };
-              }
-            },
-            { signal: controller.signal }
-          );
-          registered.push(tool.name);
-        } catch (error) {
-          errors.push({ tool: tool.name, message: toError(error).message });
-        }
-      }
-      if (controller.signal.aborted) return;
-      report({ state: errors.length === 0 ? "ready" : registered.length ? "partial" : "error", registered, errors });
-    })();
-    return current;
+    return registerGridWebMCP(tools, options);
   }
   var BI_PATTERN = /\b(trend|over time|this (week|month|quarter|year)|last (week|month|quarter|year)|compare|versus|vs)\b|\b(by|per|each|which)\b.*\b(total|average|avg|sum|drop|increase|growth|highest|lowest|most|least)\b|\b(total|average|avg|sum)\b.*\b(by|per|each)\b/i;
   var EMPTY_QUERY = { filters: [], search: [], sort: null, limit: null, notes: [], explanation: "" };
@@ -6976,6 +7061,7 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
     } };
     if (opts.webmcp) {
       webmcp = registerWebMCP(() => toolList, {
+        originTrialToken: opts.webmcpToken,
         onStatusChange: (s) => {
           opts.onWebMCPStatusChange && opts.onWebMCPStatusChange(s);
           host.dispatchEvent(new CustomEvent("yuktai:webmcp", { detail: s, bubbles: true }));
@@ -7212,7 +7298,7 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
       noVoice: "Voice input is not available in this browser. Type your question instead.",
       history: "History",
       clear: "Clear history",
-      webmcp: { unsupported: "WebMCP: not available in this browser (no document.modelContext).", registering: "WebMCP: registering tools\u2026", ready: "WebMCP: tools ready", partial: "WebMCP: some tools failed", error: "WebMCP: registration failed" }
+      webmcp: { unsupported: "WebMCP: not available in this browser (yet).", registering: "WebMCP: registering tools\u2026", ready: "WebMCP: tools ready", partial: "WebMCP: some tools failed", error: "WebMCP: registration failed" }
     },
     te: {
       title: "\u0C17\u0C4D\u0C30\u0C3F\u0C21\u0C4D\u200C\u0C28\u0C41 \u0C05\u0C21\u0C17\u0C02\u0C21\u0C3F",
@@ -7991,6 +8077,8 @@ ${command ? command.say : "Not a voice command. Try: make text bigger, high cont
       parseGridIntent,
       registerWebMCP,
       //     <YuktaiGridWebMCP>
+      hasWebMCP,
+      //          document / navigator.modelContext present?
       // ── icons ──
       icon,
       iconNames: ICON_NAMES2.slice(),
@@ -8018,7 +8106,7 @@ ${command ? command.say : "Not a voice command. Try: make text bigger, high cont
         voiceCommands: true,
         voice: !!(window.SpeechRecognition || window.webkitSpeechRecognition),
         speech: "speechSynthesis" in window,
-        webMCP: !!(document.modelContext && typeof document.modelContext.registerTool === "function"),
+        webMCP: hasWebMCP(),
         modelConnected: false
       })
     };

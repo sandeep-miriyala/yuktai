@@ -82,8 +82,19 @@ export type GridTool = {
   /** Short label for the UI, in the grid's locale. */
   label: string;
   inputSchema: Record<string, unknown>;
+  /**
+   * WebMCP hints. readOnlyHint: the tool only reads (search, count…).
+   * untrustedContentHint: the result contains row text from the page, which
+   * an agent must treat as data, never as instructions.
+   */
+  annotations?: { readOnlyHint?: boolean; untrustedContentHint?: boolean };
   execute: (input: Record<string, unknown>) => Promise<GridToolResult>;
 };
+
+/** Tools that only read; the rest change what the grid shows (filter, sort, select…). */
+const READ_ONLY: ReadonlySet<GridToolId> = new Set<GridToolId>(["search", "count", "columns", "get_row"]);
+/** Tools whose result includes row text. */
+const RETURNS_ROW_TEXT: ReadonlySet<GridToolId> = new Set<GridToolId>(["search", "get_row"]);
 
 export type CreateGridToolsOptions = {
   /** Tool name prefix, e.g. "ratnalabala_poems" → "ratnalabala_poems_search". */
@@ -629,6 +640,7 @@ export function createGridTools<T extends Record<string, unknown>>(
       description: describe(t.id),
       label: labels[t.id],
       inputSchema: t.schema,
+      annotations: { readOnlyHint: READ_ONLY.has(t.id), untrustedContentHint: RETURNS_ROW_TEXT.has(t.id) },
       execute: (input: Record<string, unknown>) => safe(context, () => t.run(input ?? {})),
     }));
 }

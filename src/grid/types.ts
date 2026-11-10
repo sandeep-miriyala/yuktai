@@ -449,6 +449,13 @@ export interface YuktaiGridProps<
   webmcp?: boolean
 
   /**
+   * WebMCP origin trial token for your site (Chrome 149–156). Get one at
+   * developer.chrome.com/origintrials; without it WebMCP only works where the
+   * browser already enables it.
+   */
+  webmcpToken?: string
+
+  /**
    * Real WebMCP registration status.
    */
   onWebMCPStatusChange?: (

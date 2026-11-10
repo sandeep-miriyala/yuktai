@@ -6,7 +6,7 @@
 // Everything runs in the browser: no API keys, no server calls, no telemetry.
 
 import * as core from "./core.js"
-import { createAgenticGrid, createGridAgent, parseGridIntent, registerWebMCP } from "./agent.js"
+import { createAgenticGrid, createGridAgent, hasWebMCP, parseGridIntent, registerWebMCP } from "./agent.js"
 import { mountAgenticGridBar } from "./bar.js"
 import { addStyles, icon, ICON_NAMES, isBrowser, safeColor } from "./dom.js"
 import { mountGridAssistant, renderGrid } from "./grid.js"
@@ -58,6 +58,7 @@ const VERSION = "5.3.12"
     createGridAgent, //    useYuktaiGridAgent
     parseGridIntent,
     registerWebMCP, //     <YuktaiGridWebMCP>
+    hasWebMCP, //          document / navigator.modelContext present?
 
     // ── icons ──
     icon,
@@ -89,7 +90,7 @@ const VERSION = "5.3.12"
       voiceCommands: true,
       voice: !!(window.SpeechRecognition || window.webkitSpeechRecognition),
       speech: "speechSynthesis" in window,
-      webMCP: !!(document.modelContext && typeof document.modelContext.registerTool === "function"),
+      webMCP: hasWebMCP(),
       modelConnected: false,
     }),
   }

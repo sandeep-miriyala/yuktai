@@ -72,7 +72,7 @@ The v5.1 vanilla signature `renderGrid(container, rows, columns, options)` still
 | `ai`, `inputLanguage`, `assistantExamples` | Built-in assistant with voice input |
 | `customRules` | `[{ name, phrases, description, execute({ input, data, columns, executeTool }) }]`, in any language |
 | `parseIntent(text, ctx)` | Replace the built-in phrase parser |
-| `webmcp`, `toolName`, `toolDescriptions`, `onWebMCPStatusChange` | Expose the 11 grid tools to browser AI agents |
+| `webmcp`, `webmcpToken`, `toolName`, `toolDescriptions`, `onWebMCPStatusChange` | Expose the grid tools to browser AI agents (WebMCP). `webmcpToken`: your Chrome origin trial token |
 | `engine` | `"ts"` (default), `"rust"`, or `"auto"` (Rust from 10,000 rows). Rust runs the same search and number/date sort faster; results are identical. `grid.engine` tells you which one is active, `await grid.whenEngineReady()` waits for it |
 | `showSearchTime`, `onSearchTime` | Show "· 0.9 ms · Rust" next to the row count after each search or sort, and/or get `{ query, ms, rows, engine }` in a callback. `grid.getSearchTime()` returns the last one |
 | `referenceDate` | "Now" for "this month" questions |
@@ -160,6 +160,6 @@ Edit `vanilla/src/*` or `src/*`, then rebuild. Do not edit `vanilla/index.js` by
 - Questions are understood with rules, not a language model, so unusual phrasing may need rewording. Telugu and Hindi data questions need custom rules.
 - QA, form and design checks are heuristics. Test with a keyboard and a screen reader before release.
 - Voice depends on the browser's speech recognition. Typed commands always work.
-- WebMCP needs `document.modelContext`. The real status is always reported.
+- WebMCP needs `document.modelContext` (or `navigator.modelContext` in older Chrome). Tools return JSON strings and carry `readOnlyHint` / `untrustedContentHint`. If the browser offers WebMCP a moment late, the grid registers then. The real status is always reported; `yuktai.hasWebMCP()` tells you if it is there now.
 - Filtering and paging run in the browser and suit a few thousand rows. For 100K+ rows, page on the server and call `grid.refresh(pageRows)`.
 - The floating buttons are added under `<html>` (not `<body>`), so the colour-blind filter on `<body>` cannot move them.

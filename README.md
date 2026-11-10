@@ -55,7 +55,7 @@ That's it. Search, sort, pages, keyboard navigation and phone cards work out of 
 **No build step?** Use one script tag:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@yuktishaalaa/yuktai@5.5.3/vanilla/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@yuktishaalaa/yuktai@5.5.4/vanilla/index.min.js"></script>
 <script>yuktai.renderGrid("#orders", { data: rows, columns })</script>
 ```
 
@@ -93,6 +93,19 @@ More diagrams (library modules, `npm run dev`, a new app) in [ARCHITECTURE.md](A
 | 🎨 **163 icons** | Any size and colour, safe in Server Components |
 
 Optional, when you need them: a grid assistant that understands plain words, a loading screen, and a Python API with agents in apps made by `npx yuktai`. See the [docs](https://yuktaidocs.netlify.app/).
+
+### Ready for AI browsers (WebMCP)
+
+Add `webmcp` and browser AI agents (Gemini in Chrome and others that speak [WebMCP](https://github.com/webmachinelearning/webmcp)) can search, count, filter and sort your grid through the same tools as the built-in assistant:
+
+```tsx
+<YuktaiGrid data={rows} columns={columns} rowKey="id" webmcp webmcpToken={process.env.NEXT_PUBLIC_WEBMCP_TOKEN} />
+```
+
+- Uses `document.modelContext.registerTool` (falls back to `navigator.modelContext` in older Chrome). Tools return JSON strings and are marked `readOnlyHint` / `untrustedContentHint`.
+- Chrome 149–156 need an [origin trial](https://developer.chrome.com/origintrials) token for your site; pass it as `webmcpToken`. Without one, WebMCP works only where the browser already enables it.
+- `onWebMCPStatusChange` reports the real state: `unsupported`, `registering`, `ready`, `partial` or `error`.
+- Agents only get what the grid already shows. Nothing the visitor types is read or sent.
 
 ## Cheat sheet
 
