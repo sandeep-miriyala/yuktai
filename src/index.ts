@@ -147,7 +147,36 @@ export type {
   GridSearchTime,
   YuktaiGridRule,
   YuktaiGridRuleContext,
+  GridDownloadFormat,
 } from "./grid/types";
+
+// ─── v5.7.0: grid AI planner, evals, downloads, settings ─────────────────────
+export {
+  createChromeGridPlanner,
+  gridPlannerAvailable,
+  validatePlan,
+  buildPlannerPrompt,
+  planSchema,
+  MAX_STEPS as GRID_PLAN_MAX_STEPS,
+} from "./grid/gridPlanner";
+export type {
+  GridPlan,
+  GridPlanStep,
+  GridPlanner,
+  GridPlannerContext,
+  GridPlannerTool,
+  GridPlannerColumn,
+  GridPlannerTurn,
+  ChromePlannerOptions,
+} from "./grid/gridPlanner";
+export { GRID_EVAL_SET, EVAL_COLUMNS, runGridEvals, scorePlan } from "./grid/gridEvals";
+export type { GridEvalCase, GridEvalReport, ExpectedStep } from "./grid/gridEvals";
+export { toCSV, toJSON, toXLSX, toPrintHTML, downloadTable, safeSpreadsheetText } from "./grid/gridExport";
+export type { ExportTable, ExportCell } from "./grid/gridExport";
+export { accentText, contrastRatio, ACCENT_PRESETS } from "./grid/gridPrefs";
+export type { GridPrefs, GridDensity } from "./grid/gridPrefs";
+export { compareEngines } from "./grid/gridBench";
+export type { EngineComparison, EngineTiming } from "./grid/gridBench";
 // ─── Icons ───────────────────────────────────────────────────────────────────
 export {
   IconBase,

@@ -149,6 +149,14 @@ export interface AIFeatures {
   summary?: boolean
   anomaly?: boolean
   suggest?: boolean
+  /**
+   * v5.7.0: let the browser's built-in AI (Chrome) plan requests in plain
+   * words, step by step, with the grid's tools. Without it, or where the
+   * browser has no AI, the built-in rules answer. Default: true.
+   */
+  planner?: boolean
+  /** Show the assistant when the grid first appears. Default: false (a button opens it). */
+  assistantOpen?: boolean
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -449,7 +457,7 @@ export interface YuktaiGridProps<
   webmcp?: boolean
 
   /**
-   * WebMCP origin trial token for your site (Chrome 149–156). Get one at
+   * WebMCP origin trial token for your site (Chrome 149–162). Get one at
    * developer.chrome.com/origintrials; without it WebMCP only works where the
    * browser already enables it.
    */
@@ -510,10 +518,11 @@ export interface YuktaiGridProps<
   /**
    * Search and sort engine.
    *
-   * - "rust" (default since v5.3.11): the Rust (WebAssembly) engine, about
-   *   13 KB, embedded. Falls back to TypeScript when WebAssembly is missing
-   *   or blocked by a Content Security Policy.
-   * - "auto": Rust from 10,000 rows, TypeScript below
+   * - "auto" (default since v5.7.0): Rust from 10,000 rows, TypeScript below.
+   *   Small tables skip starting WebAssembly.
+   * - "rust": the Rust (WebAssembly) engine, about 13 KB, embedded. Falls back
+   *   to TypeScript when WebAssembly is missing or blocked by a Content
+   *   Security Policy.
    * - "ts": TypeScript only, as before v5.3.11
    *
    * Results are identical. Rust handles search and sorting. Since 5.3.13
@@ -533,6 +542,54 @@ export interface YuktaiGridProps<
   onSearchTime?: (info: GridSearchTime) => void
 
   // ───────────────────────────────────────────────────────────────────────────
+  // v5.7.0: name, settings, downloads, parent and child rows
+  // ───────────────────────────────────────────────────────────────────────────
+
+  /**
+   * The table's name for screen readers (a hidden caption), e.g. "Orders".
+   * Two grids on one page need different names. Default: "Data grid".
+   */
+  label?: string
+
+  /**
+   * The ⚙ settings button at the top right: show or hide the assistant,
+   * colour, row spacing and downloads. Default: true.
+   */
+  settings?: boolean
+
+  /** Let readers pick their own accent colour in ⚙ settings. Default: true. */
+  allowCustomColor?: boolean
+
+  /**
+   * Downloads offered in ⚙ settings, of the rows the grid shows now (after
+   * search, filters and sort). Default: all four. `false` hides downloads.
+   */
+  downloads?: false | GridDownloadFormat[]
+
+  /** File name for downloads, without the extension. Default: the label. */
+  downloadName?: string
+
+  /**
+   * Developer settings in ⚙: choose the engine (Auto, Rust, TypeScript), show
+   * search time, and compare TypeScript and Rust on this grid's data.
+   * Default: false (readers do not need them).
+   */
+  devTools?: boolean
+
+  /**
+   * Remember each reader's ⚙ choices in this browser under this key.
+   * Default: "yk-grid:" + toolName. `false` keeps nothing.
+   */
+  storageKey?: string | false
+
+  /**
+   * Child rows of a row (parent and child). A row with children gets a ▶
+   * button that shows them under it. Search also looks inside children, and
+   * a parent whose child matches is shown open.
+   */
+  getChildren?: (row: T) => T[] | undefined | null
+
+  // ───────────────────────────────────────────────────────────────────────────
   // Agent Result
   // ───────────────────────────────────────────────────────────────────────────
 
@@ -547,3 +604,6 @@ export interface YuktaiGridProps<
     }
   ) => void
 }
+
+/** Download formats in ⚙ settings. "pdf" opens the browser's print dialog (Save as PDF). */
+export type GridDownloadFormat = "csv" | "xlsx" | "json" | "pdf"

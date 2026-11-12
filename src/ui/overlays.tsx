@@ -345,6 +345,8 @@ export const Tabs = ui("Tabs", ({ ykClass, Comp, className, value, onChange, var
     <TabsContext.Provider value={{ value, onChange, color: indicatorColor === "secondary" || textColor === "secondary" ? "secondary" : "primary", fullWidth: variant === "fullWidth", orientation }}>
       <Comp ref={ref} className={cx("MuiTabs-root", orientation === "vertical" && "MuiTabs-vertical", ykClass, className)} {...p}>
         <div className={cx("MuiTabs-scroller", variant === "scrollable" && (orientation === "vertical" ? "MuiTabs-scrollableY" : "MuiTabs-scrollableX"))} style={variant === "scrollable" && orientation === "vertical" ? { overflowY: "auto" } : undefined}>
+          {/* the tabs inside take focus (roving tabindex); the tablist itself need not */}
+          {/* oxlint-disable-next-line jsx-a11y/interactive-supports-focus */}
           <div role="tablist" aria-label={ariaLabel} aria-labelledby={ariaLabelledby} aria-orientation={orientation} onKeyDown={onKeyDown} className={cx("MuiTabs-flexContainer", orientation === "vertical" && "MuiTabs-flexContainerVertical", centered && "MuiTabs-centered")}>
             {kids}
           </div>

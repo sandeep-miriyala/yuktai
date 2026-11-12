@@ -113,6 +113,26 @@ import { Box, Button, Dialog, Stack, Tabs, Tab, TextField } from "@yuktishaalaa/
 - Your CSS variables (`--primary`, `--foreground`, `--border`…) are the theme, so dark mode needs no JavaScript.
 - Next.js: send the styles with the server HTML using `getUiStyles()` inside `useServerInsertedHTML` (see the docs).
 
+### Grid that understands plain words (5.7.0)
+
+```tsx
+<YuktaiGrid
+  data={orders}
+  columns={columns}
+  rowKey="id"
+  label="Orders"                 // the table's name for screen readers
+  ai                              // ✨ Assistant button; Chrome's built-in AI plans requests
+  getChildren={(o) => o.items}    // ▶ parent and child rows
+  devTools                        // ⚙ Developer: Auto / Rust / TypeScript, TS vs Rust chart
+/>
+```
+
+- **Ask in English or Telugu:** "Hyderabad orders above 1 lakh, biggest first" becomes three checked steps (filter, filter, sort), shown as chips you can remove one by one, with **Undo** and **Reset view**.
+- **Safe by design:** the model must answer in a JSON schema; every step is checked against the real tools and columns; at most 5 steps; row text is passed as data, never instructions; downloads ask **Yes / No** first (WebMCP agents too). Unclear requests get a question, not a guess. No browser AI? The built-in rules answer.
+- **⚙ settings, top right:** show or hide the assistant, your own colour (text colour picked for 4.5:1), row spacing, and **CSV, Excel, JSON, PDF** downloads of what the grid shows.
+- **Accessible:** sort buttons work from the keyboard and announce `aria-sort`; result counts and "no rows match" are announced.
+- **Evals:** `runGridEvals(planner, tools)` scores any planner on 50 English and Telugu requests (`GRID_EVAL_SET`).
+
 ### Ready for AI browsers (WebMCP)
 
 Add `webmcp` and browser AI agents (Gemini in Chrome and others that speak [WebMCP](https://github.com/webmachinelearning/webmcp)) can search, count, filter and sort your grid through the same tools as the built-in assistant:
@@ -211,7 +231,7 @@ Everything else (grid options, styling, accessibility tools, jQuery, the CLI, ag
 
 ## Compatibility
 
-Next.js 13–16 · React 17–19 · Node 18+ · All modern browsers · jQuery 1.12–4.0
+Next.js 13–16 · React 18–19 · Node 18+ · All modern browsers · jQuery 1.12–4.0
 
 ## Contributing
 

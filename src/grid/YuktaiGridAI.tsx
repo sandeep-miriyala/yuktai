@@ -73,6 +73,12 @@ export interface YuktaiGridAIProps<T> {
   onInputLanguageChange?: (
     language: InputLanguage
   ) => void;
+
+  /**
+   * v5.7.0: voice languages to offer (e.g. only the scripts found in the
+   * grid's data, plus English). Default: all.
+   */
+  languages?: ReadonlySet<string>;
 }
 
 const translations: Record<
@@ -85,6 +91,7 @@ const translations: Record<
     listening: string;
     send: string;
     close: string;
+    messages: string;
     open: string;
     inputLanguage: string;
     speakNow: string;
@@ -137,6 +144,7 @@ const translations: Record<
     listening: "Listening...",
     send: "Send",
     close: "Close",
+    messages: "Conversation",
     open: "Open AI assistant",
     inputLanguage: "Input language",
     speakNow: "Speak your question",
@@ -198,6 +206,7 @@ const translations: Record<
     listening: "వింటున్నాను...",
     send: "పంపండి",
     close: "మూసివేయండి",
+    messages: "సంభాషణ",
     open: "AI సహాయకుడిని తెరవండి",
     inputLanguage: "ఇన్‌పుట్ భాష",
     speakNow: "మీ ప్రశ్న చెప్పండి",
@@ -1042,6 +1051,7 @@ export function YuktaiGridAI<
   embedded = false,
   agent,
   onInputLanguageChange,
+  languages,
 }: YuktaiGridAIProps<T>) {
   const t = translations[language];
 
@@ -1092,10 +1102,12 @@ export function YuktaiGridAI<
         border: v("border", dark ? "#334155" : "#E2E8F0"),
         text: v("text", dark ? "#F1F5F9" : "#0F172A"),
         muted: v("muted", dark ? "#94A3B8" : "#64748B"),
-        // 5.3.12: white text on the accent needs 4.5:1 (WCAG 1.4.3); #10B981 gave 2.5:1
-        accent: v("accent", "#047857"),
+        // 5.7.0: the assistant follows the grid's accent (and a reader's own
+        // colour from ⚙ settings) instead of a fixed green.
+        accent: v("accent", "var(--yk-grid-accent, #2563eb)"),
+        accentText: v("accent-text", "var(--yk-grid-accent-text, #FFFFFF)"),
         userMsg: v("user-bg", dark ? "#334155" : "#DBEAFE"),
-        aiMsg: v("ai-bg", dark ? "#1E293B" : "#F0FDF4"),
+        aiMsg: v("ai-bg", dark ? "#1E293B" : "#F1F5F9"),
       };
     },
     [dark]
@@ -1351,7 +1363,7 @@ export function YuktaiGridAI<
         style={{
           padding: "12px 14px",
           background: colors.accent,
-          color: "#FFFFFF",
+          color: colors.accentText,
           display: "flex",
           alignItems: "center",
           gap: 10,
@@ -1392,7 +1404,7 @@ export function YuktaiGridAI<
           <div
             style={{
               fontSize: 11,
-              opacity: 0.9,
+              opacity: 1,
             }}
           >
             {t.subtitle}
@@ -1414,7 +1426,7 @@ export function YuktaiGridAI<
               borderRadius: 8,
               background:
                 "rgba(255,255,255,0.12)",
-              color: "#FFFFFF",
+              color: colors.accentText,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -1469,7 +1481,7 @@ export function YuktaiGridAI<
             fontSize: 11,
           }}
         >
-          {INPUT_LANGUAGES.map((l) => (
+          {INPUT_LANGUAGES.filter((l) => !languages || languages.has(l.code) || l.code === voiceLanguage).map((l) => (
             <option key={l.code} value={l.code} lang={l.code}>
               {l.native === l.english ? l.english : `${l.native} · ${l.english}`}
             </option>
@@ -1478,6 +1490,11 @@ export function YuktaiGridAI<
       </div>
 
       <div
+        role="log"
+        aria-label={t.messages}
+        // a scrolling region must take focus so keyboard users can scroll it (WCAG 2.1.1)
+        // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex
+        tabIndex={0}
         style={{
           flex: 1,
           overflowY: "auto",
@@ -1519,7 +1536,7 @@ export function YuktaiGridAI<
                 style={{
                   marginTop: 3,
                   fontSize: 10,
-                  opacity: 0.55,
+                  opacity: 0.8,
                   textAlign: "right",
                 }}
               >
@@ -1637,7 +1654,20 @@ export function YuktaiGridAI<
             flex: 1,
           }}
         >
-          <SearchIcon />
+          <span
+            aria-hidden="true"
+            style={{
+              position: "absolute",
+              left: 10,
+              top: "50%",
+              transform: "translateY(-50%)",
+              display: "flex",
+              color: colors.muted,
+              pointerEvents: "none",
+            }}
+          >
+            <SearchIcon />
+          </span>
 
           <input
             type="text"
@@ -1707,7 +1737,7 @@ export function YuktaiGridAI<
                   ? "#B91C1C"
                   : colors.accent,
               color:
-                "#FFFFFF",
+                listening ? "#FFFFFF" : colors.accentText,
               display:
                 "flex",
               alignItems:
@@ -1747,7 +1777,7 @@ export function YuktaiGridAI<
                 ? colors.accent
                 : colors.muted,
             color:
-              "#FFFFFF",
+              input.trim() ? colors.accentText : "#FFFFFF",
             display:
               "flex",
             alignItems:
@@ -1845,7 +1875,7 @@ export function YuktaiGridAI<
             background:
               colors.accent,
             color:
-              "#FFFFFF",
+              colors.accentText,
             border: "none",
             cursor:
               "pointer",

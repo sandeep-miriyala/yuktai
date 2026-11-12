@@ -12,10 +12,38 @@ import { applyGridFilters, type GridToolColumn, type GridToolFilter } from "./gr
 import { pickRows, SEARCH_SEPARATOR, type GridCore } from "./rust/engine"
 
 /** One search text per row, built with <YuktaiGrid>'s own search rule. */
-export function yuktaiGridSearchTexts<T>(data: readonly T[], columns: readonly GridColumn<T>[]): string[] {
-  return data.map((row) =>
-    columns.map((column) => String(row[column.key as keyof T] ?? "").toLowerCase()).join(SEARCH_SEPARATOR)
-  )
+export function yuktaiGridSearchTexts<T>(
+  data: readonly T[],
+  columns: readonly GridColumn<T>[],
+  extraText?: (row: T) => string
+): string[] {
+  return data.map((row) => {
+    const own = columns.map((column) => String(row[column.key as keyof T] ?? "").toLowerCase()).join(SEARCH_SEPARATOR)
+    const extra = extraText ? extraText(row).toLowerCase() : ""
+    return extra ? own + SEARCH_SEPARATOR + extra : own
+  })
+}
+
+/**
+ * v5.7.0: the text of a row's children (and their children), so search finds
+ * a parent whose child matches. Depth is capped so a cycle cannot loop.
+ */
+export function childSearchText<T>(
+  row: T,
+  columns: readonly GridColumn<T>[],
+  getChildren: (row: T) => T[] | undefined | null,
+  depth = 0
+): string {
+  if (depth > 6) return ""
+  const kids = getChildren(row)
+  if (!kids || !kids.length) return ""
+  return kids
+    .map((kid) => {
+      const own = columns.map((column) => String(kid[column.key as keyof T] ?? "")).join(SEARCH_SEPARATOR)
+      const deeper = childSearchText(kid, columns, getChildren, depth + 1)
+      return deeper ? own + SEARCH_SEPARATOR + deeper : own
+    })
+    .join(SEARCH_SEPARATOR)
 }
 
 /**
@@ -111,6 +139,8 @@ export interface YuktaiGridRowsInput<T> {
   searchReady?: boolean
   /** Filled in with the engine that really answered search and sort */
   stats?: GridRunStats
+  /** v5.7.0: more text to search per row (e.g. its children's text) */
+  extraText?: (row: T) => string
 }
 
 /** Which engine answered, per step (null = step not run). */
@@ -137,6 +167,7 @@ export function yuktaiGridRows<T>({
   core = null,
   searchReady = false,
   stats,
+  extraText,
 }: YuktaiGridRowsInput<T>): T[] {
   let result = [...data]
   if (stats) {
@@ -152,12 +183,13 @@ export function yuktaiGridRows<T>({
     if (hits) {
       result = pickRows(data, hits)
     } else {
-      result = result.filter((row) =>
-        columns.some((column) =>
-          String(row[column.key as keyof T] ?? "")
-            .toLowerCase()
-            .includes(query)
-        )
+      result = result.filter(
+        (row) =>
+          columns.some((column) =>
+            String(row[column.key as keyof T] ?? "")
+              .toLowerCase()
+              .includes(query)
+          ) || (extraText ? extraText(row).toLowerCase().includes(query) : false)
       )
     }
   }

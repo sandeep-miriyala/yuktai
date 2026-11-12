@@ -3,6 +3,7 @@
 import React, {
   useCallback,
   useEffect,
+  useId,
   useMemo,
   useRef,
   useState,
@@ -10,8 +11,15 @@ import React, {
 
 import type {
   GridColumn,
+  GridDownloadFormat,
   YuktaiGridProps,
 } from "./types";
+import { GridSettingsButton, GridSettingsPanel } from "./GridSettings";
+import { DENSITY_PADDING, accentText, useGridPrefs } from "./gridPrefs";
+import { DOWNLOAD_FORMATS, downloadTable, type ExportCell, type ExportTable } from "./gridExport";
+import { languagesForData } from "./gridScripts";
+import { compareEngines } from "./gridBench";
+import { createChromeGridPlanner } from "./gridPlanner";
 
 import YuktaiGridAI from "./YuktaiGridAI";
 import { useYuktaiGridAgent } from "./YuktaiGridAgent";
@@ -25,7 +33,7 @@ import {
   type GridToolSort,
 } from "./gridTools";
 import { useGridCore } from "./rust/useGridCore";
-import { engineUsed, yuktaiGridRows, yuktaiGridSearchTexts, type GridRunStats } from "./yuktaiGridRows";
+import { childSearchText, engineUsed, yuktaiGridRows, yuktaiGridSearchTexts, type GridRunStats } from "./yuktaiGridRows";
 import { formatSearchTime } from "./rust/engine";
 
 type Language = "en-US" | "te-IN";
@@ -62,6 +70,27 @@ const translations: Record<
     sortDescending: string;
     filtersActive: (count: number) => string;
     clearFilters: string;
+    tableLabel: string;
+    results: (count: string) => string;
+    noResults: string;
+    assistant: string;
+    showChildren: (id: string) => string;
+    childOf: (id: string) => string;
+    children: (n: number) => string;
+    downloaded: (n: string, format: string) => string;
+    activeView: string;
+    undo: string;
+    reset: string;
+    removeChip: (what: string) => string;
+    sortedBy: (label: string, dir: "asc" | "desc") => string;
+    highlighted: (n: number) => string;
+    ops: Record<string, string>;
+    confirmDownload: (n: string, format: string) => string;
+    confirmAction: (label: string) => string;
+    yesDo: string;
+    noCancel: string;
+    viewUndone: string;
+    viewReset: string;
   }
 > = {
   "en-US": {
@@ -94,6 +123,27 @@ const translations: Record<
     sortDescending: "Sort descending",
     filtersActive: (count) => `${count} filter(s) applied`,
     clearFilters: "Clear filters",
+    tableLabel: "Data grid",
+    results: (count) => `${count} row(s) shown.`,
+    noResults: "No rows match.",
+    assistant: "Assistant",
+    showChildren: (id) => `Rows under ${id}`,
+    childOf: (id) => `Under ${id}:`,
+    children: (n) => `${n} more row(s)`,
+    downloaded: (n, format) => `${n} row(s) downloaded as ${format}.`,
+    activeView: "What the grid shows",
+    undo: "Undo",
+    reset: "Reset view",
+    removeChip: (what) => `Remove: ${what}`,
+    sortedBy: (label, dir) => `${label} ${dir === "asc" ? "↑" : "↓"}`,
+    highlighted: (n) => `${n} highlighted`,
+    ops: { contains: "has", equals: "=", startsWith: "starts with", endsWith: "ends with", greaterThan: ">", lessThan: "<", between: "between" },
+    confirmDownload: (n, format) => `Download ${n} row(s) as ${format}?`,
+    confirmAction: (label) => `Run "${label}"?`,
+    yesDo: "Yes",
+    noCancel: "No",
+    viewUndone: "Last change undone.",
+    viewReset: "View reset: all rows, no filters or sort.",
   },
   "te-IN": {
     search: "శోధించండి...",
@@ -125,6 +175,27 @@ const translations: Record<
     sortDescending: "అవరోహణ క్రమంలో అమర్చండి",
     filtersActive: (count) => `${count} ఫిల్టర్(లు) వేశారు`,
     clearFilters: "ఫిల్టర్లు తీసేయండి",
+    tableLabel: "డేటా గ్రిడ్",
+    results: (count) => `${count} వరుసలు చూపిస్తున్నాం.`,
+    noResults: "సరిపోయే వరుసలు లేవు.",
+    assistant: "సహాయకుడు",
+    showChildren: (id) => `${id} కింది వరుసలు`,
+    childOf: (id) => `${id} కింద:`,
+    children: (n) => `ఇంకా ${n} వరుసలు`,
+    downloaded: (n, format) => `${n} వరుసలు ${format} గా డౌన్‌లోడ్ అయ్యాయి.`,
+    activeView: "గ్రిడ్ ఇప్పుడు చూపిస్తున్నది",
+    undo: "వెనక్కి",
+    reset: "మొదటి చూపు",
+    removeChip: (what) => `తీసేయి: ${what}`,
+    sortedBy: (label, dir) => `${label} ${dir === "asc" ? "↑" : "↓"}`,
+    highlighted: (n) => `${n} గుర్తించినవి`,
+    ops: { contains: "లో ఉంది", equals: "=", startsWith: "తో మొదలు", endsWith: "తో ముగింపు", greaterThan: ">", lessThan: "<", between: "మధ్య" },
+    confirmDownload: (n, format) => `${n} వరుసలను ${format} గా డౌన్‌లోడ్ చేయనా?`,
+    confirmAction: (label) => `"${label}" చేయనా?`,
+    yesDo: "అవును",
+    noCancel: "వద్దు",
+    viewUndone: "చివరి మార్పు వెనక్కి తీసుకున్నాం.",
+    viewReset: "మొదటి చూపు: అన్ని వరుసలు, ఫిల్టర్లు, క్రమం లేకుండా.",
   },
 };
 
@@ -391,9 +462,17 @@ export function YuktaiGrid<
   onWebMCPStatusChange,
   onAgentResult,
   customRules = [],
-  engine = "rust",
-  showSearchTime = false,
+  engine: engineProp = "auto",
+  showSearchTime: showSearchTimeProp = false,
   onSearchTime,
+  label,
+  settings = true,
+  allowCustomColor = true,
+  downloads,
+  downloadName,
+  devTools = false,
+  storageKey,
+  getChildren,
 }: YuktaiGridProps<T>) {
   const language: Language =
     locale === "te-IN" ? "te-IN" : "en-US";
@@ -403,6 +482,43 @@ export function YuktaiGrid<
   const aiEnabled =
     ai === true ||
     (typeof ai === "object" && ai !== null);
+
+  // v5.7.0: a reader's ⚙ choices, remembered in this browser
+  const prefsKey = storageKey === false ? false : storageKey ?? `yk-grid:${toolName}`;
+  const [prefs, updatePrefs, resetPrefs] = useGridPrefs(prefsKey);
+  const engine = (devTools && prefs.engine) || engineProp;
+  const showSearchTime = devTools && prefs.showTime !== undefined ? prefs.showTime : showSearchTimeProp;
+  const aiOptions = typeof ai === "object" && ai !== null ? ai : {};
+  const assistantOn = aiEnabled && (prefs.assistant ?? aiOptions.assistantOpen ?? false);
+  const cellPad = DENSITY_PADDING[prefs.density ?? "normal"];
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const settingsButtonRef = useRef<HTMLButtonElement>(null);
+  const uid = useId();
+  const settingsPanelId = `${uid}-settings`;
+  const assistantId = `${uid}-assistant`;
+  const downloadFormats: GridDownloadFormat[] = downloads === false ? [] : downloads ?? [...DOWNLOAD_FORMATS];
+  const tableName = label ?? undefined;
+
+  // The assistant's voice languages: English plus the scripts in this data
+  const voiceLanguages = useMemo(
+    () => (aiEnabled ? languagesForData(data as Record<string, unknown>[], columns.map((c) => String(c.key)), [inputLanguage, language]) : undefined),
+    [aiEnabled, data, columns, inputLanguage, language]
+  );
+
+  // Parent and child rows: which parents are open
+  const [expanded, setExpanded] = useState<ReadonlySet<string>>(() => new Set());
+  const extraText = useMemo(
+    () => (getChildren ? (row: T) => childSearchText(row, columns, getChildren) : undefined),
+    [getChildren, columns]
+  );
+
+  // A table wider than its box scrolls sideways; keyboard users can then
+  // focus it and use the arrow keys (WCAG 2.1.1)
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [sideScroll, setSideScroll] = useState(false);
+
+  // One spoken status line: result counts, downloads, agent steps
+  const [announcement, setAnnouncement] = useState("");
 
   const paginationEnabled =
     pagination !== false &&
@@ -474,8 +590,8 @@ export function YuktaiGrid<
 
   // Rust keeps this grid's search text; rebuilt only when data or columns change
   const rustSearchReady = useMemo(
-    () => (core ? core.setSearchTexts(yuktaiGridSearchTexts(data, columns)) : false),
-    [core, data, columns]
+    () => (core ? core.setSearchTexts(yuktaiGridSearchTexts(data, columns, extraText)) : false),
+    [core, data, columns, extraText]
   );
 
   // Rows + how long search/sort took and which engine answered
@@ -495,6 +611,7 @@ export function YuktaiGrid<
         core,
         searchReady: rustSearchReady,
         stats,
+        extraText,
       });
       const ms = (typeof performance !== "undefined" ? performance.now() : Date.now()) - t0;
       return { rows: result, ms, engine: engineUsed(stats) };
@@ -510,9 +627,25 @@ export function YuktaiGrid<
       locale,
       core,
       rustSearchReady,
+      extraText,
     ]
   );
   const rows = run.rows;
+
+  // Tell screen readers how many rows a search or filter left (WCAG 4.1.3).
+  // Not on the first render, and only after typing pauses.
+  const firstCount = useRef(true);
+  useEffect(() => {
+    if (firstCount.current) {
+      firstCount.current = false;
+      return;
+    }
+    const id = setTimeout(() => {
+      setAnnouncement(rows.length ? t.results(rows.length.toLocaleString(locale)) : t.noResults);
+    }, 500);
+    return () => clearTimeout(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rows.length, searchText, filters]);
 
   // Report each search/sort run (only when something actually ran)
   useEffect(() => {
@@ -884,34 +1017,202 @@ export function YuktaiGrid<
     ]
   );
 
+  /* ───── v5.7.0: undo, reset, confirm, planner, extra tools ───── */
+
+  type ViewState = {
+    searchText: string;
+    filters: GridToolFilter[];
+    sortKey?: string;
+    sortDirection: "asc" | "desc";
+    highlight: string[];
+  };
+  const viewRef = useRef<ViewState>({ searchText, filters, sortKey, sortDirection, highlight: agentHighlight });
+  viewRef.current = { searchText, filters, sortKey, sortDirection, highlight: agentHighlight };
+  const undoStack = useRef<ViewState[]>([]);
+  const [undoCount, setUndoCount] = useState(0);
+
+  const restoreView = useCallback((v: ViewState) => {
+    setSearchText(v.searchText);
+    setFilters(v.filters);
+    setSortKey(v.sortKey);
+    setSortDirection(v.sortDirection);
+    setAgentHighlight(v.highlight);
+    setPage(1);
+  }, []);
+
+  /** Remember the view before something changes it. */
+  const pushUndo = useCallback(() => {
+    const now = viewRef.current;
+    const last = undoStack.current[undoStack.current.length - 1];
+    if (last && JSON.stringify(last) === JSON.stringify(now)) return;
+    undoStack.current = [...undoStack.current, now].slice(-20);
+    setUndoCount(undoStack.current.length);
+  }, []);
+
+  // Snapshots equal to the current view (a request that changed nothing)
+  // are skipped by Undo and never make the Undo button appear.
+  const sameView = (a: ViewState, b: ViewState) => JSON.stringify(a) === JSON.stringify(b);
+  const canUndo = undoCount > 0 && undoStack.current.some((v) => !sameView(v, viewRef.current));
+
+  const undoView = useCallback((): boolean => {
+    const stack = [...undoStack.current];
+    while (stack.length) {
+      const last = stack.pop()!;
+      if (!sameView(last, viewRef.current)) {
+        undoStack.current = stack;
+        setUndoCount(stack.length);
+        restoreView(last);
+        return true;
+      }
+    }
+    undoStack.current = [];
+    setUndoCount(0);
+    return false;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [restoreView]);
+
+  const resetView = useCallback(() => {
+    pushUndo();
+    restoreView({ searchText: "", filters: [], sortKey: undefined, sortDirection: "asc", highlight: [] });
+  }, [pushUndo, restoreView]);
+
+  // Ask the reader before big actions (downloads): an inline Yes / No
+  const [confirmAsk, setConfirmAsk] = useState<{ message: string; resolve: (ok: boolean) => void } | null>(null);
+  const confirmYesRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (confirmAsk) confirmYesRef.current?.focus();
+  }, [confirmAsk]);
+  const rowCountRef = useRef(0);
+  const exportCountRef = useRef<() => number>(() => rowCountRef.current);
+  const confirmTool = useCallback(
+    (tool: { name: string; label?: string }, input: Record<string, unknown>) =>
+      new Promise<boolean>((resolve) => {
+        const names: Record<string, string> = { csv: "CSV", xlsx: "Excel", json: "JSON", pdf: "PDF" };
+        const message = tool.name.endsWith("_download")
+          ? t.confirmDownload(exportCountRef.current().toLocaleString(locale), names[String(input.format)] ?? String(input.format))
+          : t.confirmAction(tool.label ?? tool.name);
+        setConfirmAsk((current) => {
+          current?.resolve(false);
+          return { message, resolve };
+        });
+      }),
+    [t, locale]
+  );
+  const answerConfirm = (ok: boolean) => {
+    confirmAsk?.resolve(ok);
+    setConfirmAsk(null);
+  };
+
+  // Actions the extra tools call; filled in on every render below
+  const actionsRef = useRef<{ download: (format: GridDownloadFormat) => number; expand: (id: string, open?: boolean) => boolean }>({
+    download: () => 0,
+    expand: () => false,
+  });
+
+  const allTools = useMemo<GridTool[]>(() => {
+    const te = language === "te-IN";
+    const extra: GridTool[] = [];
+    if (downloadFormats.length) {
+      extra.push({
+        name: `${toolName}_download`,
+        title: "Download",
+        description:
+          "Download the rows the grid shows now (after search, filters and sort) as a file. format: csv, xlsx (Excel), json, or pdf (opens the print dialog). The reader is asked to confirm.",
+        label: te ? "డౌన్‌లోడ్" : "Download",
+        inputSchema: { type: "object", properties: { format: { type: "string", enum: downloadFormats } }, required: ["format"] },
+        annotations: { readOnlyHint: true },
+        needsConfirmation: true,
+        execute: async (input) => {
+          const format = String(input.format) as GridDownloadFormat;
+          if (!downloadFormats.includes(format)) return { success: false, message: `"${format}"?`, error: { code: "INVALID_INPUT" } };
+          const n = actionsRef.current.download(format);
+          const names: Record<string, string> = { csv: "CSV", xlsx: "Excel", json: "JSON", pdf: "PDF" };
+          return { success: true, message: t.downloaded(n.toLocaleString(locale), names[format]) };
+        },
+      });
+    }
+    extra.push(
+      {
+        name: `${toolName}_reset_view`,
+        title: "Reset view",
+        description: "Show all rows again: clears search, filters, sort and highlights.",
+        label: t.reset,
+        inputSchema: { type: "object", properties: {} },
+        execute: async () => {
+          resetView();
+          return { success: true, message: t.viewReset };
+        },
+      },
+      {
+        name: `${toolName}_undo`,
+        title: "Undo",
+        description: "Undo the last change to what the grid shows (search, filters, sort, highlights).",
+        label: t.undo,
+        inputSchema: { type: "object", properties: {} },
+        execute: async () =>
+          undoView() ? { success: true, message: t.viewUndone } : { success: false, message: t.viewUndone, error: { code: "NOT_FOUND" } },
+      }
+    );
+    if (getChildren) {
+      extra.push({
+        name: `${toolName}_expand`,
+        title: "Show child rows",
+        description: "Show (open: true) or hide (open: false) the child rows under the row with this id.",
+        label: te ? "కింది వరుసలు" : "Child rows",
+        inputSchema: { type: "object", properties: { id: { type: "string", description: "Row ID" }, open: { type: "boolean" } }, required: ["id"] },
+        execute: async (input) =>
+          actionsRef.current.expand(String(input.id), input.open === undefined ? true : Boolean(input.open))
+            ? { success: true, message: t.showChildren(String(input.id)) }
+            : { success: false, message: String(input.id), error: { code: "NOT_FOUND" } },
+      });
+    }
+    return [...tools, ...extra];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tools, toolName, language, downloadFormats.join(","), getChildren, resetView, undoView, t, locale]);
+
+  // The browser's AI plans requests when it can (ai={{ planner: false }} turns it off)
+  const plannerOn = aiEnabled && aiOptions.planner !== false;
+  const planner = useMemo(() => (plannerOn ? createChromeGridPlanner() : undefined), [plannerOn]);
+
   const agent = useYuktaiGridAgent<T>({
-    tools,
+    tools: allTools,
     data,
     locale: toolLocale,
     columns: toolColumns,
     rowKey: String(rowKey),
     customRules,
     onResult: onAgentResult,
+    planner,
+    confirm: confirmTool,
   });
+
+  /** Assistant requests: remember the view first, so Undo can return to it. */
+  const askAgent = useCallback(
+    async (text: string) => {
+      pushUndo();
+      const result = await agent.ask(text);
+      setAnnouncement(result.message);
+      return result;
+    },
+    [agent.ask, pushUndo]
+  );
 
   // WebMCP calls go through the Agent too, so history / loading / onAgentResult
   // cover assistant AND external agents. Names/schemas are unchanged, so data
   // changes never cause re-registration.
   const webmcpTools = useMemo<GridTool[]>(
     () =>
-      tools.map((tool) => ({
+      allTools.map((tool) => ({
         ...tool,
         // executeTool never returns NOT_UNDERSTOOD (only ask() does), so this is a GridToolResult
-        execute: (input: Record<string, unknown>) =>
-          agent.executeTool(tool.name, input) as Promise<GridToolResult>,
+        execute: async (input: Record<string, unknown>) => {
+          if (!tool.annotations?.readOnlyHint) pushUndo();
+          const result = (await agent.executeTool(tool.name, input)) as GridToolResult;
+              return result;
+        },
       })),
-    [tools, agent.executeTool]
+    [allTools, agent.executeTool, pushUndo]
   );
-
-  const clearAgentFilters = () => {
-    setFilters([]);
-    setPage(1);
-  };
 
   const renderValue = (
     row: T,
@@ -965,9 +1266,22 @@ export function YuktaiGrid<
   // fallback, so the grid looks the same until an app sets --yk-grid-* in CSS.
   const C = gridColors(dark);
 
+  // A reader's own accent (⚙ settings): the text on it is picked for 4.5:1
+  const accentVars: Record<string, string> = {};
+  if (prefs.accent) {
+    accentVars["--yk-grid-accent"] = prefs.accent;
+    accentVars["--yk-grid-accent-text"] = accentText(prefs.accent).text;
+  }
+
   const containerStyle: React.CSSProperties =
     {
+      ...(accentVars as React.CSSProperties),
       width: "100%",
+      // v5.7.0: may shrink inside flex layouts (phones, installed apps), so
+      // the table scrolls sideways inside the grid instead of widening the page
+      minWidth: 0,
+      maxWidth: "100%",
+      boxSizing: "border-box",
       overflow: "hidden",
       border: highContrast
         ? `2px solid ${C.hcBorder}`
@@ -1014,6 +1328,217 @@ export function YuktaiGrid<
         : "pointer",
       opacity: disabled ? 0.55 : 1,
     });
+
+  /* ───── v5.7.0: downloads, engine comparison, parent and child rows ───── */
+
+  const visibleColumns = columns.filter((column) => !(isMobile && column.hiddenOnMobile));
+
+  const exportCell = (row: T, column: GridColumn<T>): ExportCell => {
+    const value = row[column.key as keyof T] as unknown;
+    if (value == null) return null;
+    if (typeof value === "number") return Number.isFinite(value) ? value : null;
+    if (column.type === "boolean" || typeof value === "boolean") return value ? t.yes : t.no;
+    if (value instanceof Date) return Number.isNaN(value.getTime()) ? null : value.toISOString();
+    if (typeof value === "object") return JSON.stringify(value);
+    return String(value);
+  };
+
+  const exportTable = (): ExportTable => {
+    const out: ExportTable["rows"] = [];
+    const add = (row: T, level: number) => {
+      out.push({ cells: columns.map((c) => exportCell(row, c)), level });
+      if (getChildren && level < 6) for (const kid of getChildren(row) ?? []) add(kid, level + 1);
+    };
+    for (const row of rows) add(row, 0);
+    return {
+      name: downloadName ?? tableName ?? t.tableLabel,
+      headers: columns.map((c) => c.label),
+      rows: out,
+      lang: language === "te-IN" ? "te" : "en",
+    };
+  };
+
+  const runDownload = (format: GridDownloadFormat) => {
+    const table = exportTable();
+    downloadTable(table, format);
+    const names: Record<GridDownloadFormat, string> = { csv: "CSV", xlsx: "Excel", json: "JSON", pdf: "PDF" };
+    setAnnouncement(t.downloaded(table.rows.length.toLocaleString(locale), names[format]));
+    return table.rows.length;
+  };
+
+  // Rows a download would hold (children included), for "Download 19 rows?"
+  const exportCount = () => (getChildren ? exportTable().rows.length : rows.length);
+  rowCountRef.current = rows.length;
+  exportCountRef.current = exportCount;
+  actionsRef.current = {
+    download: runDownload,
+    expand: (id, open = true) => {
+      const has = (list: T[], depth: number): boolean =>
+        depth < 6 && list.some((row) => getId(row) === id || has(childRowsOf(row), depth + 1));
+      if (!has(data, 0)) return false;
+      setExpanded((current) => {
+        const next = new Set(current);
+        if (open) next.add(id);
+        else next.delete(id);
+        return next;
+      });
+      return true;
+    },
+  };
+
+  const compare = () =>
+    compareEngines({
+      data,
+      columns,
+      toolColumns,
+      filters,
+      searchText,
+      sortKey,
+      sortDirection,
+      locale,
+    });
+
+  const childRowsOf = (row: T): T[] => (getChildren ? getChildren(row) ?? [] : []);
+
+  // While searching, a parent shown only because a child matched opens by itself
+  const query = searchText.trim().toLowerCase();
+  const isOpen = (row: T): boolean => {
+    const id = getId(row);
+    if (expanded.has(id)) return true;
+    if (!query || !extraText) return false;
+    return extraText(row).toLowerCase().includes(query);
+  };
+
+  const toggleExpanded = (id: string) =>
+    setExpanded((current) => {
+      const next = new Set(current);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    const check = () => setSideScroll(el.scrollWidth > el.clientWidth + 1);
+    check();
+    const ro = new ResizeObserver(check);
+    ro.observe(el);
+    if (el.firstElementChild) ro.observe(el.firstElementChild);
+    return () => ro.disconnect();
+  }, [isCardView, virtual, rows.length, visibleColumns.length, cellPad]);
+
+  /** Child rows under an open parent (indented; a hidden "Under …" for screen readers). */
+  const renderChildRows = (parent: T, level: number): React.ReactNode =>
+    level > 6
+      ? null
+      : childRowsOf(parent).map((kid, k) => {
+          const kidId = getId(kid) || `${getId(parent)}-${k}`;
+          const grandKids = childRowsOf(kid);
+          const kidOpen = grandKids.length > 0 && isOpen(kid);
+          return (
+            <React.Fragment key={`${getId(parent)}>${kidId}`}>
+              <tr className="yk-grid__row yk-grid__row--child" data-yuktai-row-id={kidId} data-level={level} style={{ background: C.chip }}>
+                {/* empty cell under the selection column (child rows are not selected) */}
+                {/* oxlint-disable-next-line jsx-a11y/control-has-associated-label */}
+                {selectable && <td className="yk-grid__cell" style={{ padding: cellPad, borderBottom: `1px solid ${C.border}` }} />}
+                {visibleColumns.map((column, colIndex) => (
+                  <td
+                    className="yk-grid__cell"
+                    key={String(column.key)}
+                    style={{
+                      padding: cellPad,
+                      paddingLeft: colIndex === 0 ? cellPad + level * 22 : cellPad,
+                      textAlign: column.align ?? "left",
+                      borderBottom: `1px solid ${C.border}`,
+                    }}
+                  >
+                    {colIndex === 0 && <span style={srOnly}>{t.childOf(getId(parent))} </span>}
+                    {colIndex === 0 && grandKids.length > 0 && (
+                      <button
+                        type="button"
+                        className="yk-grid__expand"
+                        aria-expanded={kidOpen}
+                        aria-label={t.showChildren(kidId)}
+                        onClick={() => toggleExpanded(kidId)}
+                        style={{ width: 28, height: 28, marginRight: 6, padding: 0, verticalAlign: "middle", borderRadius: 6, border: `1px solid ${C.control}`, background: C.controlBg, color: C.controlText, cursor: "pointer" }}
+                      >
+                        <span aria-hidden="true" style={{ display: "inline-block", transform: kidOpen ? "rotate(90deg)" : "none" }}>▶</span>
+                      </button>
+                    )}
+                    {renderValue(kid, column, k)}
+                  </td>
+                ))}
+              </tr>
+              {kidOpen && renderChildRows(kid, level + 1)}
+            </React.Fragment>
+          );
+        });
+
+  const chipStyle: React.CSSProperties = {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: 4,
+    minHeight: 32,
+    padding: "0 4px 0 10px",
+    borderRadius: 999,
+    border: `1px solid ${C.control}`,
+    background: C.chip,
+    fontSize: 13,
+  };
+  const chipX: React.CSSProperties = {
+    width: 28,
+    height: 28,
+    padding: 0,
+    border: 0,
+    borderRadius: 999,
+    background: "transparent",
+    color: "inherit",
+    cursor: "pointer",
+  };
+  const smallButton: React.CSSProperties = {
+    minHeight: 36,
+    padding: "0 12px",
+    borderRadius: 8,
+    border: `1px solid ${C.control}`,
+    background: C.controlBg,
+    color: C.controlText,
+    fontSize: 13,
+    cursor: "pointer",
+  };
+
+  const settingsPanel = settings && settingsOpen && (
+    <GridSettingsPanel
+      id={settingsPanelId}
+      language={language}
+      locale={locale}
+      colors={{ bg: C.bg, text: C.text, border: C.border, control: C.control, controlBg: C.controlBg, muted: C.muted, accent: C.accent, accentText: C.accentText }}
+      dark={dark}
+      prefs={prefs}
+      onChange={updatePrefs}
+      onReset={resetPrefs}
+      assistantAvailable={aiEnabled}
+      assistantOn={assistantOn}
+      allowCustomColor={allowCustomColor}
+      downloads={downloadFormats}
+      rowCount={exportCount()}
+      onDownload={runDownload}
+      devTools={devTools}
+      engine={engine}
+      showTime={showSearchTime}
+      onCompare={compare}
+      onClose={() => {
+        setSettingsOpen(false);
+        settingsButtonRef.current?.focus();
+      }}
+    />
+  );
+
+  const statusRegion = (
+    <div role="status" aria-live="polite" aria-atomic="true" style={srOnly}>
+      {announcement}
+    </div>
+  );
 
   if (loading) {
     return (
@@ -1069,7 +1594,9 @@ export function YuktaiGrid<
         />
       )}
 
-      {(search || aiEnabled || filters.length > 0) && (
+      {statusRegion}
+
+      {(search || aiEnabled || settings || filters.length > 0) && (
         <div className="yk-grid__toolbar" style={headerStyle}>
           {search && (
             <div
@@ -1124,24 +1651,7 @@ export function YuktaiGrid<
             </div>
           )}
 
-          {filters.length > 0 && (
-            <button
-              type="button"
-              onClick={clearAgentFilters}
-              title={t.clearFilters}
-              style={{
-                padding: "6px 10px",
-                borderRadius: 999,
-                border: `1px solid ${C.control}`,
-                background: C.chip,
-                color: "inherit",
-                fontSize: 12,
-                cursor: "pointer",
-              }}
-            >
-              {t.filtersActive(filters.length)} ✕
-            </button>
-          )}
+
 
           <div
             style={{
@@ -1166,24 +1676,189 @@ export function YuktaiGrid<
           </div>
 
           {aiEnabled && (
-            <YuktaiGridAI<T>
-              data={data}
-              columns={aiColumns}
-              onSearch={handleAISearch}
-              onSort={handleAISort}
-              theme={
-                dark
-                  ? "dark"
-                  : "light"
-              }
+            <button
+              type="button"
+              className="yk-grid__assistant-toggle"
+              aria-expanded={assistantOn}
+              aria-controls={assistantId}
+              onClick={() => updatePrefs({ assistant: !assistantOn })}
+              style={{
+                minHeight: 40,
+                padding: "0 12px",
+                borderRadius: 8,
+                border: `1px solid ${assistantOn ? C.accent : C.control}`,
+                background: assistantOn ? C.accent : C.controlBg,
+                color: assistantOn ? C.accentText : C.controlText,
+                fontWeight: 600,
+                cursor: "pointer",
+              }}
+            >
+              <span aria-hidden="true">✨ </span>
+              {t.assistant}
+            </button>
+          )}
+
+          {settings && (
+            <GridSettingsButton
+              open={settingsOpen}
+              onToggle={() => setSettingsOpen((o) => !o)}
+              panelId={settingsPanelId}
               language={language}
-              inputLanguage={inputLanguage ?? language}
-              agent={{ ask: agent.ask, loading: agent.loading }}
-              embedded
+              colors={{ bg: C.bg, text: C.text, border: C.border, control: C.control, controlBg: C.controlBg, muted: C.muted, accent: C.accent, accentText: C.accentText }}
+              buttonRef={settingsButtonRef}
             />
+          )}
+
+          {(filters.length > 0 || sortKey || agentHighlight.length > 0 || canUndo) && (
+            <div style={{ width: "100%", display: "flex", flexWrap: "wrap", gap: 6, alignItems: "center" }}>
+              <ul aria-label={t.activeView} style={{ display: "flex", flexWrap: "wrap", gap: 6, listStyle: "none", margin: 0, padding: 0 }}>
+                {filters.map((f, i) => {
+                  const col = columns.find((c) => String(c.key) === f.key);
+                  const value = Array.isArray(f.value) ? f.value.join(" – ") : String(f.value);
+                  const text = `${col?.label ?? f.key} ${t.ops[f.operator] ?? f.operator} ${value}`;
+                  return (
+                    <li key={`f${i}`}>
+                      <span style={chipStyle}>
+                        {text}
+                        <button
+                          type="button"
+                          aria-label={t.removeChip(text)}
+                          onClick={() => {
+                            pushUndo();
+                            setFilters((current) => current.filter((_, j) => j !== i));
+                            setPage(1);
+                          }}
+                          style={chipX}
+                        >
+                          <span aria-hidden="true">✕</span>
+                        </button>
+                      </span>
+                    </li>
+                  );
+                })}
+                {sortKey && (
+                  <li>
+                    <span style={chipStyle}>
+                      {t.sortedBy(columns.find((c) => String(c.key) === sortKey)?.label ?? sortKey, sortDirection)}
+                      <button
+                        type="button"
+                        aria-label={t.removeChip(t.sortedBy(columns.find((c) => String(c.key) === sortKey)?.label ?? sortKey, sortDirection))}
+                        onClick={() => {
+                          pushUndo();
+                          setSortKey(undefined);
+                          setSortDirection("asc");
+                          onSortChange?.(null);
+                        }}
+                        style={chipX}
+                      >
+                        <span aria-hidden="true">✕</span>
+                      </button>
+                    </span>
+                  </li>
+                )}
+                {agentHighlight.length > 0 && (
+                  <li>
+                    <span style={chipStyle}>
+                      {t.highlighted(agentHighlight.length)}
+                      <button
+                        type="button"
+                        aria-label={t.removeChip(t.highlighted(agentHighlight.length))}
+                        onClick={() => {
+                          pushUndo();
+                          setAgentHighlight([]);
+                        }}
+                        style={chipX}
+                      >
+                        <span aria-hidden="true">✕</span>
+                      </button>
+                    </span>
+                  </li>
+                )}
+              </ul>
+              {canUndo && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (undoView()) setAnnouncement(t.viewUndone);
+                  }}
+                  style={smallButton}
+                >
+                  <span aria-hidden="true">↶ </span>
+                  {t.undo}
+                </button>
+              )}
+              {(filters.length > 0 || sortKey || agentHighlight.length > 0 || searchText) && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    resetView();
+                    setAnnouncement(t.viewReset);
+                  }}
+                  style={smallButton}
+                >
+                  {t.reset}
+                </button>
+              )}
+            </div>
+          )}
+
+          {confirmAsk && (
+            <div
+              role="group"
+              aria-labelledby={`${uid}-confirm`}
+              style={{ width: "100%", display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center", padding: 10, borderRadius: 8, border: `2px solid ${C.accent}`, background: C.controlBg }}
+            >
+              <span id={`${uid}-confirm`} style={{ fontWeight: 600 }}>
+                {confirmAsk.message}
+              </span>
+              <button
+                ref={confirmYesRef}
+                type="button"
+                onClick={() => answerConfirm(true)}
+                onKeyDown={(event) => {
+                  if (event.key === "Escape") answerConfirm(false);
+                }}
+                style={{ ...smallButton, background: C.accent, color: C.accentText, borderColor: C.accent }}
+              >
+                {t.yesDo}
+              </button>
+              <button
+                type="button"
+                onClick={() => answerConfirm(false)}
+                onKeyDown={(event) => {
+                  if (event.key === "Escape") answerConfirm(false);
+                }}
+                style={smallButton}
+              >
+                {t.noCancel}
+              </button>
+            </div>
+          )}
+
+          {aiEnabled && assistantOn && (
+            <div id={assistantId} style={{ width: "100%" }}>
+              <YuktaiGridAI<T>
+                data={data}
+                columns={aiColumns}
+                onSearch={handleAISearch}
+                onSort={handleAISort}
+                theme={
+                  dark
+                    ? "dark"
+                    : "light"
+                }
+                language={language}
+                inputLanguage={inputLanguage ?? language}
+                languages={voiceLanguages}
+                agent={{ ask: askAgent, loading: agent.loading }}
+                embedded
+              />
+            </div>
           )}
         </div>
       )}
+
+      {settingsPanel}
 
       {rows.length === 0 ? (
         <div
@@ -1320,6 +1995,42 @@ export function YuktaiGrid<
                       </div>
                     )
                   )}
+                  {(() => {
+                    const kids = childRowsOf(row);
+                    if (!kids.length) return null;
+                    const open = isOpen(row);
+                    return (
+                      <div style={{ marginTop: 8 }}>
+                        <button
+                          type="button"
+                          className="yk-grid__expand"
+                          aria-expanded={open}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            toggleExpanded(id);
+                          }}
+                          style={{ minHeight: 40, padding: "0 12px", borderRadius: 8, border: `1px solid ${C.control}`, background: C.controlBg, color: C.controlText, cursor: "pointer" }}
+                        >
+                          <span aria-hidden="true">{open ? "▼ " : "▶ "}</span>
+                          {t.children(kids.length)}
+                        </button>
+                        {open && (
+                          <ul aria-label={t.showChildren(id)} style={{ listStyle: "none", margin: "8px 0 0", padding: 0, display: "grid", gap: 8 }}>
+                            {kids.map((kid, k) => (
+                              <li key={getId(kid) || k} style={{ padding: 10, borderRadius: 8, border: `1px solid ${C.border}`, background: C.chip }}>
+                                {columns.map((column) => (
+                                  <div key={String(column.key)} style={{ display: "flex", gap: 8, padding: "3px 0" }}>
+                                    <strong style={{ minWidth: 100, opacity: 0.7 }}>{column.label}</strong>
+                                    <span>{renderValue(kid, column, k)}</span>
+                                  </div>
+                                ))}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    );
+                  })()}
                 </div>
               );
             }
@@ -1327,13 +2038,18 @@ export function YuktaiGrid<
         </div>
       ) : (
         <div className={virtual ? "yk-grid__scroll yk-grid__scroll--all" : "yk-grid__scroll"}
-          ref={virtual ? listRef : undefined}
+          ref={virtual ? listRef : scrollRef}
           {...(virtual
             ? { tabIndex: 0, role: "region", "aria-label": t.listLabel }
+            : sideScroll
+            ? { tabIndex: 0, role: "region", "aria-label": tableName ?? t.tableLabel }
             : {})}
           style={{
             width: "100%",
             overflowX: "auto",
+            // v5.7.0: touch scrolling in both directions inside installed apps (PWA)
+            touchAction: "pan-x pan-y",
+            WebkitOverflowScrolling: "touch",
             ...(virtual
               ? { height: listHeight, overflowY: "auto" as const, overscrollBehavior: "contain" as const }
               : {}),
@@ -1348,6 +2064,8 @@ export function YuktaiGrid<
               ...(virtual ? { tableLayout: "fixed" as const, minWidth: tableMinWidth } : {}),
             }}
           >
+            {/* v5.7.0: the table's name for screen readers (WCAG 1.3.1) */}
+            <caption style={srOnly}>{tableName ?? t.tableLabel}</caption>
             <thead className="yk-grid__head"
               style={
                 virtual
@@ -1360,7 +2078,7 @@ export function YuktaiGrid<
                   <th
                     scope="col"
                     style={{
-                      padding: 10,
+                      padding: cellPad,
                       borderBottom:
                         `1px solid ${C.border}`,
                       width: 52,
@@ -1386,18 +2104,25 @@ export function YuktaiGrid<
                           column.key
                         );
 
+                      const sortable = column.sortable !== false;
+                      const sortIcon = active ? (
+                        sortDirection === "asc" ? (
+                          <SortUpIcon size={17} />
+                        ) : (
+                          <SortDownIcon size={17} />
+                        )
+                      ) : null;
+
                       return (
                         <th
                           key={String(
                             column.key
                           )}
-                          onClick={() =>
-                            handleSort(
-                              column
-                            )
-                          }
+                          scope="col"
+                          // v5.7.0: screen readers hear which column is sorted (WCAG 4.1.2)
+                          aria-sort={sortable ? (active ? (sortDirection === "asc" ? "ascending" : "descending") : "none") : undefined}
                           style={{
-                            padding: 10,
+                            padding: sortable ? 0 : cellPad,
                             textAlign:
                               column.align ??
                               "left",
@@ -1405,51 +2130,38 @@ export function YuktaiGrid<
                               `1px solid ${C.border}`,
                             whiteSpace:
                               "nowrap",
-                            cursor:
-                              column.sortable ===
-                              false
-                                ? "default"
-                                : "pointer",
                             width:
                               column.width ?? (virtual ? 140 : undefined),
-                            userSelect:
-                              "none",
                             ...(virtual ? { overflow: "hidden", textOverflow: "ellipsis" } : {}),
                           }}
                         >
-                          <span
-                            style={{
-                              display:
-                                "inline-flex",
-                              alignItems:
-                                "center",
-                              gap: 5,
-                            }}
-                          >
-                            {column.label}
-
-                            {active &&
-                              (sortDirection ===
-                              "asc" ? (
-                                <SortUpIcon
-                                  size={
-                                    17
-                                  }
-                                  label={
-                                    t.sortAscending
-                                  }
-                                />
-                              ) : (
-                                <SortDownIcon
-                                  size={
-                                    17
-                                  }
-                                  label={
-                                    t.sortDescending
-                                  }
-                                />
-                              ))}
-                          </span>
+                          {sortable ? (
+                            // v5.7.0: a real button, so keyboard users can sort (WCAG 2.1.1)
+                            <button
+                              type="button"
+                              className="yk-grid__sort"
+                              onClick={() => handleSort(column)}
+                              style={{
+                                all: "unset",
+                                boxSizing: "border-box",
+                                display: "flex",
+                                width: "100%",
+                                minHeight: 44,
+                                padding: cellPad,
+                                alignItems: "center",
+                                justifyContent: column.align === "right" ? "flex-end" : column.align === "center" ? "center" : "flex-start",
+                                gap: 5,
+                                font: "inherit",
+                                fontWeight: 700,
+                                cursor: "pointer",
+                              }}
+                            >
+                              {column.label}
+                              {sortIcon}
+                            </button>
+                          ) : (
+                            <span style={{ fontWeight: 700 }}>{column.label}</span>
+                          )}
                         </th>
                       );
                     }
@@ -1476,7 +2188,11 @@ export function YuktaiGrid<
                   const highlighted =
                     isHighlighted(id);
 
+                  const kids = virtual ? [] : childRowsOf(row);
+                  const open = kids.length > 0 && isOpen(row);
+
                   return (
+                    <React.Fragment key={id}>
                     <tr className="yk-grid__row"
                       key={id}
                       data-yuktai-row-id={id}
@@ -1506,7 +2222,7 @@ export function YuktaiGrid<
                       {selectable && (
                         <td className="yk-grid__cell"
                           style={{
-                            padding: virtual ? "0 10px" : 10,
+                            padding: virtual ? `0 ${cellPad}px` : cellPad,
                             borderBottom:
                               `1px solid ${C.border}`,
                             ...(virtual ? cellClip(rowHeight) : {}),
@@ -1572,14 +2288,15 @@ export function YuktaiGrid<
                         )
                         .map(
                           (
-                            column
+                            column,
+                            colIndex
                           ) => (
                             <td className="yk-grid__cell"
                               key={String(
                                 column.key
                               )}
                               style={{
-                                padding: virtual ? "0 10px" : 10,
+                                padding: virtual ? `0 ${cellPad}px` : cellPad,
                                 textAlign:
                                   column.align ??
                                   "left",
@@ -1588,6 +2305,32 @@ export function YuktaiGrid<
                                 ...(virtual ? cellClip(rowHeight) : {}),
                               }}
                             >
+                              {colIndex === 0 && kids.length > 0 && (
+                                <button
+                                  type="button"
+                                  className="yk-grid__expand"
+                                  aria-expanded={open}
+                                  aria-label={t.showChildren(id)}
+                                  onClick={(event) => {
+                                    event.stopPropagation();
+                                    toggleExpanded(id);
+                                  }}
+                                  style={{
+                                    width: 28,
+                                    height: 28,
+                                    marginRight: 6,
+                                    padding: 0,
+                                    verticalAlign: "middle",
+                                    borderRadius: 6,
+                                    border: `1px solid ${C.control}`,
+                                    background: C.controlBg,
+                                    color: C.controlText,
+                                    cursor: "pointer",
+                                  }}
+                                >
+                                  <span aria-hidden="true" style={{ display: "inline-block", transform: open ? "rotate(90deg)" : "none" }}>▶</span>
+                                </button>
+                              )}
                               {renderValue(
                                 row,
                                 column,
@@ -1597,6 +2340,8 @@ export function YuktaiGrid<
                           )
                         )}
                     </tr>
+                    {open && renderChildRows(row, 1)}
+                    </React.Fragment>
                   );
                 }
               )}

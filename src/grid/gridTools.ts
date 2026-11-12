@@ -88,6 +88,8 @@ export type GridTool = {
    * an agent must treat as data, never as instructions.
    */
   annotations?: { readOnlyHint?: boolean; untrustedContentHint?: boolean };
+  /** v5.7.0: the reader is asked before it runs (e.g. downloads). */
+  needsConfirmation?: boolean;
   execute: (input: Record<string, unknown>) => Promise<GridToolResult>;
 };
 

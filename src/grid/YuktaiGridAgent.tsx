@@ -45,6 +45,13 @@ import type {
   YuktaiGridRuleContext,
 } from "./types";
 
+import {
+  MAX_HISTORY,
+  type GridPlanner,
+  type GridPlannerContext,
+  type GridPlannerTurn,
+} from "./gridPlanner";
+
 /* ================= TYPES ================= */
 
 export type GridAgentTool = {
@@ -57,6 +64,9 @@ export type GridAgentTool = {
   /** Optional JSON schema; its `required` list is checked before running. */
   inputSchema?: Record<string, unknown>;
 
+  /** v5.7.0: ask the reader before running (downloads, changes to data). */
+  needsConfirmation?: boolean;
+
   execute: (
     input: Record<string, unknown>
   ) => Promise<unknown> | unknown;
@@ -64,7 +74,11 @@ export type GridAgentTool = {
 
 export type GridAgentErrorCode =
   | GridToolErrorCode
-  | "NOT_UNDERSTOOD";
+  | "NOT_UNDERSTOOD"
+  /** v5.7.0: the planner needs more detail; `message` is its question */
+  | "NEEDS_INPUT"
+  /** v5.7.0: the reader said no when asked to confirm */
+  | "CANCELLED";
 
 export type GridAgentResult<T = unknown> =
   Omit<GridToolResult<T>, "error"> & {
@@ -74,6 +88,12 @@ export type GridAgentResult<T = unknown> =
 
     /** Full name of the tool that produced this result */
     tool?: string;
+
+    /** v5.7.0: every step of a planned request, in order */
+    steps?: GridAgentResult[];
+
+    /** v5.7.0: "planner" when the browser's AI planned it, "rules" otherwise */
+    via?: "planner" | "rules";
   };
 
 export type GridAgentStep = {
@@ -130,6 +150,7 @@ export type YuktaiGridAgentProps<
   columns?: {
     key: string;
     label: string;
+    type?: string;
   }[];
 
   /** Row ID field — must match the grid's rowKey (default "id"). */
@@ -146,6 +167,19 @@ export type YuktaiGridAgentProps<
 
   /** How many steps to keep in history (default 20). */
   historyLimit?: number;
+
+  /**
+   * v5.7.0: plan requests with AI (e.g. createChromeGridPlanner()). Tried
+   * after customRules; when it returns null the built-in rules answer.
+   */
+  planner?: GridPlanner;
+
+  /**
+   * v5.7.0: called before a tool marked `needsConfirmation` runs, from
+   * ask() and executeTool() alike (so WebMCP agents are asked too).
+   * Resolve true to go ahead. Without it such tools are refused.
+   */
+  confirm?: (tool: GridAgentTool, input: Record<string, unknown>) => Promise<boolean>;
 };
 
 /* ================= MESSAGES ================= */
@@ -163,6 +197,8 @@ const MESSAGES = {
       `Nothing matched "${text}".`,
     failed:
       "Something went wrong while running this action.",
+    cancelled: "Cancelled. Nothing was changed.",
+    stopped: (n: number, total: number) => `Stopped after step ${n} of ${total}.`,
   },
 
   te: {
@@ -177,6 +213,8 @@ const MESSAGES = {
       `"${text}" కి ఏమీ సరిపోలేదు.`,
     failed:
       "ఈ పని చేస్తుండగా సమస్య వచ్చింది.",
+    cancelled: "రద్దు చేశాం. ఏమీ మారలేదు.",
+    stopped: (n: number, total: number) => `${total} దశల్లో ${n} వ దశ దగ్గర ఆగాం.`,
   },
 };
 
@@ -462,6 +500,8 @@ export function useYuktaiGridAgent<
   parseIntent: customParseIntent,
   customRules = [],
   historyLimit = 20,
+  planner,
+  confirm,
 }: YuktaiGridAgentProps<T>) {
   const m = MESSAGES[locale];
 
@@ -492,6 +532,8 @@ export function useYuktaiGridAgent<
     historyLimit,
     m,
     locale,
+    planner,
+    confirm,
   });
 
   latest.current = {
@@ -507,7 +549,12 @@ export function useYuktaiGridAgent<
     historyLimit,
     m,
     locale,
+    planner,
+    confirm,
   };
+
+  // v5.7.0: the planner's memory of this conversation (newest last)
+  const turns = useRef<GridPlannerTurn[]>([]);
 
   const mounted = useRef(true);
 
@@ -643,6 +690,28 @@ export function useYuktaiGridAgent<
         onRes?.(result);
 
         return result;
+      }
+
+      // v5.7.0: ask the reader first (downloads and other big actions)
+      if (tool.needsConfirmation) {
+        const askReader = latest.current.confirm;
+        let yes = false;
+        try {
+          yes = askReader ? await askReader(tool, input) : false;
+        } catch {
+          yes = false;
+        }
+        if (!yes) {
+          const result: GridAgentResult = {
+            success: false,
+            message: msg.cancelled,
+            error: { code: "CANCELLED" },
+            tool: tool.name,
+          };
+          record(tool.name, input, result, source, id);
+          onRes?.(result);
+          return result;
+        }
       }
 
       if (mounted.current) {
@@ -857,6 +926,103 @@ export function useYuktaiGridAgent<
       }
 
       /*
+       * v5.7.0: the browser's AI plans the request, step by step.
+       * Null (no AI, model busy, invalid answer) → the rules below answer.
+       */
+      const plannerFn = latest.current.planner;
+      if (plannerFn) {
+        const sampleOf = (key: string): string[] => {
+          const out: string[] = [];
+          for (const row of rowsData as Record<string, unknown>[]) {
+            const v = row?.[key];
+            if (v == null || v === "") continue;
+            const text = String(v);
+            if (!out.includes(text)) out.push(text);
+            if (out.length >= 3) break;
+          }
+          return out;
+        };
+        const plannerContext: GridPlannerContext = {
+          tools: latest.current.tools.map((tool) => ({
+            name: tool.name,
+            description: tool.description,
+            inputSchema: tool.inputSchema,
+            needsConfirmation: tool.needsConfirmation,
+          })),
+          columns: cols.map((c) => ({ key: c.key, label: c.label, type: c.type, samples: sampleOf(c.key) })),
+          history: turns.current.slice(-MAX_HISTORY),
+          locale: loc,
+        };
+
+        let plan = null as Awaited<ReturnType<GridPlanner>>;
+        if (mounted.current) setPending((p) => p + 1);
+        try {
+          plan = await plannerFn(text, plannerContext);
+        } catch {
+          plan = null;
+        } finally {
+          if (mounted.current) setPending((p) => Math.max(0, p - 1));
+        }
+
+        if (plan?.question && !plan.steps.length) {
+          const result: GridAgentResult = {
+            success: false,
+            message: plan.question,
+            error: { code: "NEEDS_INPUT" },
+            via: "planner",
+          };
+          record("ask", { text }, result, "ask", ++stepId.current);
+          turns.current = [...turns.current, { user: text, plan, outcome: plan.question }].slice(-MAX_HISTORY);
+          return result;
+        }
+
+        if (plan && plan.steps.length) {
+          const done: GridAgentResult[] = [];
+          let steps = plan.steps;
+          let retried = false;
+          for (let i = 0; i < steps.length; i++) {
+            const step = steps[i];
+            const result = await run(step.tool, step.input, "ask");
+            done.push(result);
+            if (result.success) continue;
+            if (result.error?.code === "CANCELLED") break;
+            // Agent loop: one corrected plan when a step fails
+            if (!retried) {
+              retried = true;
+              let again = null as Awaited<ReturnType<GridPlanner>>;
+              try {
+                again = await plannerFn(text, { ...plannerContext, error: `Step "${step.tool}" failed: ${result.message}` });
+              } catch {
+                again = null;
+              }
+              if (again && again.steps.length) {
+                steps = again.steps;
+                i = -1;
+                continue;
+              }
+            }
+            break;
+          }
+          const allOk = done.length > 0 && done.every((r) => r.success);
+          const last = done[done.length - 1];
+          const total = steps.length;
+          const parts = [plan.say, ...done.map((r) => r.message)].filter(Boolean) as string[];
+          if (!allOk && last && last.error?.code !== "CANCELLED") parts.push(msg.stopped(done.length, total));
+          const result: GridAgentResult = {
+            success: allOk,
+            message: parts.join(" "),
+            tool: last?.tool,
+            data: last?.data,
+            steps: done,
+            via: "planner",
+            ...(allOk ? {} : { error: last?.error ?? { code: "INTERNAL" } }),
+          };
+          turns.current = [...turns.current, { user: text, plan, outcome: result.message }].slice(-MAX_HISTORY);
+          return result;
+        }
+      }
+
+      /*
        * No application rule matched —
        * continue with the generic Grid Agent.
        */
@@ -973,6 +1139,7 @@ export function useYuktaiGridAgent<
 
   const clearHistory =
     useCallback(() => {
+      turns.current = [];
       setHistory([]);
       setLastResult(null);
       setLastError(null);

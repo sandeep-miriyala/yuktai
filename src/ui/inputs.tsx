@@ -219,6 +219,12 @@ export const Chip = ui("Chip", ({ ykClass, Comp, ykHasComp, className, label, ic
         <span
           role="button"
           tabIndex={-1}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault()
+              onDelete(e)
+            }
+          }}
           aria-label="Remove"
           className="MuiChip-deleteIcon"
           onClick={(e) => {
@@ -289,6 +295,8 @@ export const InputAdornment = ui("InputAdornment", ({ ykClass, Comp, className, 
 function InputShell({ variant = "outlined", size, error, disabled, fullWidth, multiline, startAdornment, endAdornment, className, sxClass, style, children, shellRef, onClick }: UIProps) {
   const [focused, setFocused] = useState(false)
   return (
+    // a click on the frame focuses the input inside; the input itself is the keyboard target
+    // oxlint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
     <div
       ref={shellRef}
       onFocus={() => setFocused(true)}
@@ -450,7 +458,7 @@ function renderOpt(o: Opt, i: number): React.ReactNode {
   return <option key={o.key} value={o.key} disabled={o.disabled}>{o.label}</option>
 }
 
-export const Select = ui("Select", ({ ykClass, Comp: _c, className, value, defaultValue, onChange, children, label, labelId, id, name, displayEmpty, multiple, native, renderValue, input, variant, size, fullWidth, disabled, error, inputProps = {}, MenuProps: _m, IconComponent, autoWidth: _a, open: _o, onOpen: _on, onClose: _oc, style, "aria-label": ariaLabel, "aria-labelledby": ariaLabelledby, slotProps: _sp, ...rest }, ref) => {
+export const Select = ui("Select", ({ ykClass, Comp: _c, className, value, defaultValue, onChange, children, label, labelId, id, name, displayEmpty, multiple, native, renderValue, input: _input, variant, size, fullWidth, disabled, error, inputProps = {}, MenuProps: _m, IconComponent, autoWidth: _a, open: _o, onOpen: _on, onClose: _oc, style, "aria-label": ariaLabel, "aria-labelledby": ariaLabelledby, slotProps: _sp, ...rest }, ref) => {
   const f = useFormControl()
   const opts = useMemo(() => readOptions(children), [children])
   const flat = flatOpts(opts)
@@ -877,6 +885,8 @@ export const Autocomplete = ui("Autocomplete", ({ ykClass, Comp: _c, className, 
     <div ref={ref} className={cx("MuiAutocomplete-root", fullWidth && "MuiAutocomplete-fullWidth", ykClass, className)} {...p}>
       {renderInput?.(params)}
       {open && (
+        // the combobox pattern: a list with role="listbox"
+        // oxlint-disable-next-line jsx-a11y/no-noninteractive-element-to-interactive-role
         <ul id={listId} role="listbox" className="MuiAutocomplete-listbox MuiPaper-root">
           {loading && list.length === 0 ? (
             <li className="MuiAutocomplete-loading">{loadingText}</li>

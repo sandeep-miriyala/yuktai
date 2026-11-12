@@ -2,6 +2,34 @@
 
 All notable changes to `@yuktishaalaa/yuktai`. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow [Semantic Versioning](https://semver.org/).
 
+## 5.7.0
+
+### Grid: agentic AI (browser's own AI, with rules as the fallback)
+- `ai` grids plan plain-language requests with Chrome's built-in AI (`createChromeGridPlanner`): structured JSON output, tool calling, up to 5 checked steps, one corrected re-plan when a step fails, a short memory of the conversation ("same, but only Guntur"), and a question instead of a guess when a request is unclear. Telugu is translated to English first when the browser can. Without browser AI the built-in rules answer, as before. `ai={{ planner: false }}` turns it off.
+- Every step shows as a chip (filters, sort, highlights), each removable; **Undo** and **Reset view** buttons; spoken status after each request.
+- New tools for the assistant and WebMCP: `download` (asks Yes / No first, for WebMCP agents too), `reset_view`, `undo`, `expand` (with `getChildren`).
+- Agent: `planner` and `confirm` options; results carry `steps` and `via`; new error codes `NEEDS_INPUT` and `CANCELLED`.
+- `GRID_EVAL_SET` (50 English and Telugu requests), `runGridEvals`, `scorePlan`.
+
+### Grid: settings, downloads, parent and child rows
+- ⚙ settings at the top right: show or hide the assistant, accent colour (7 presets or your own; the text colour on it is picked for at least 4.5:1, with a note when the colour is faint on the background), row spacing, downloads. Remembered per grid (`storageKey`).
+- Downloads of the rows shown (after search, filters, sort): CSV (with BOM for Telugu; formula injection blocked), Excel `.xlsx` (no extra library), JSON, PDF (print). Props `downloads`, `downloadName`.
+- `devTools`: engine choice (Auto, Rust, TypeScript), search time, and a TypeScript vs Rust chart (with the same numbers as a table) on this grid's data.
+- `getChildren`: ▶ shows child rows (tables and phone cards); search looks inside children and opens the parents that match; downloads include children with their level.
+- The assistant starts hidden behind a ✨ Assistant button (`ai={{ assistantOpen: true }}` to start open); it follows the grid's accent instead of a fixed green; its voice language list shows only English and the scripts found in the data.
+
+### Grid: accessibility fixes
+- Sortable headers are real buttons (keyboard sorting, WCAG 2.1.1) with `aria-sort` (4.1.2).
+- Tables have a name (hidden caption; `label` prop, default "Data grid").
+- Result counts and "No rows match." are announced (4.1.3).
+- A table wider than its box becomes a focusable scroll region (2.1.1); the grid can shrink inside flex layouts, so phones and installed apps scroll inside the grid instead of widening the page.
+- Assistant: timestamp contrast, conversation log focusable, search icon placed inside the input.
+
+### Other
+- Grid `engine` default is now `"auto"` (Rust from 10,000 rows); small tables skip starting WebAssembly.
+- `peerDependencies`: React 18 or newer (the library already used React 18 APIs).
+- WebMCP note in the grid types: Chrome 149–162.
+
 ## 5.6.3
 
 ### Fixed (YuktAI UI)
