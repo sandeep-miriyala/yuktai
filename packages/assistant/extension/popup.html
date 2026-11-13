@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>YuktAI Assistant</title>
+<style>
+  :root{color-scheme:light dark}
+  body{margin:0;width:320px;font:14px/1.45 system-ui,"Noto Sans Telugu",sans-serif;background:#fff;color:#16181D}
+  @media (prefers-color-scheme:dark){body{background:#16181D;color:#ECEDF1}.hint{color:#A9AFBD!important}.btn{background:#24262D!important;color:#ECEDF1!important;border-color:#3A3E48!important}}
+  header{display:flex;align-items:center;gap:10px;padding:14px 16px 6px}
+  h1{font-size:16px;margin:0}
+  main{padding:8px 16px 16px;display:flex;flex-direction:column;gap:10px}
+  .btn{height:44px;border-radius:10px;border:1px solid #C9CBD3;background:#fff;color:#16181D;font:inherit;font-weight:600;cursor:pointer}
+  .btn.primary{background:#2F43C4;border-color:#2F43C4;color:#fff}
+  label.row{display:flex;align-items:center;gap:12px;min-height:48px;cursor:pointer}
+  label.row span{flex:1;display:flex;flex-direction:column}
+  input[type=checkbox]{width:22px;height:22px;accent-color:#2F43C4}
+  .hint{font-size:12.5px;color:#5B6170;margin:0}
+  :focus-visible{outline:3px solid #2F43C4;outline-offset:2px}
+</style>
+</head>
+<body>
+<header>
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2F43C4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="4.5" r="1.8"></circle><path d="M5 8.5c2.3.7 4.6 1 7 1s4.7-.3 7-1"></path><path d="M12 9.5V14"></path><path d="m9 21 3-7 3 7"></path></svg>
+  <h1>YuktAI Assistant</h1>
+</header>
+<main>
+  <button type="button" class="btn primary" id="open">Open on this page</button>
+  <button type="button" class="btn" id="ask">Ask this page <span aria-hidden="true">(Alt+Shift+A)</span></button>
+  <label class="row" for="always">
+    <span><b>Always on for <span id="site">this site</span></b><small class="hint">The browser asks you once, for this site only.</small></span>
+    <input type="checkbox" role="switch" id="always">
+  </label>
+  <p class="hint" id="status" role="status" aria-live="polite"></p>
+  <p class="hint">Runs on your device. Nothing is collected or sent.</p>
+</main>
+<script src="popup.js"></script>
+</body>
+</html>

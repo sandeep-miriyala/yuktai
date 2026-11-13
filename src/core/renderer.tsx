@@ -24,6 +24,8 @@ import { summarizePage, removeSummaryBox, checkSummarizerSupport } from "./ai/su
 import { translatePage, restoreOriginalText, SUPPORTED_LANGUAGES } from "./ai/translator"
 import { startVoiceControl, stopVoiceControl, checkVoiceSupport }  from "./ai/voice"
 import { applySmartLabels, removeSmartLabels, checkLabellerSupport } from "./ai/labeller"
+// v6: language detection and "do no harm" rules come from the shared engine
+import { annotateLanguages } from "@yuktishaalaa/a11y"
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -1192,16 +1194,23 @@ export const wcagPlugin = {
       report.details.push({ tag, fix, severity, element: el.outerHTML.slice(0, 100) })
       report.fixed++
     }
+    // v6 "do no harm": problems only a person can fix are reported, not
+    // papered over with made-up labels ("button", "link", "embedded content")
+    // or by hiding images that may carry meaning.
+    const flag = (tag: string, fix: string, severity: Severity, el: HTMLElement) => {
+      if (el.hasAttribute("data-yuktai-flagged")) return
+      report.details.push({ tag, fix: `check: ${fix}`, severity, element: el.outerHTML.slice(0, 100) })
+    }
+
+    // ── Language (WCAG 3.1.1, 3.1.2): from the text, never a blind "en" ──
+    for (const c of annotateLanguages(document)) {
+      push(c.scope === "page" ? "html" : c.el.tagName.toLowerCase(), `lang="${c.lang}" added (detected from the text)`, c.scope === "page" ? "critical" : "moderate", c.el as HTMLElement)
+    }
 
     elements.forEach((el) => {
       const h   = el as HTMLElement
       const tag = h.tagName.toLowerCase()
-
-      // ── Document level ──
-      if (tag === "html" && !h.getAttribute("lang")) {
-        h.setAttribute("lang", "en")
-        push(tag, 'lang="en" added', "critical", h)
-      }
+      if (h.closest("[data-yuktai-a11y='off']")) return
 
       if (tag === "meta") {
         const name    = h.getAttribute("name")
@@ -1223,10 +1232,8 @@ export const wcagPlugin = {
 
       // ── Images ──
       if (tag === "img") {
-        if (!h.hasAttribute("alt")) {
-          h.setAttribute("alt", "")
-          h.setAttribute("aria-hidden", "true")
-          push(tag, 'alt="" aria-hidden="true"', "serious", h)
+        if (!h.hasAttribute("alt") && !h.getAttribute("aria-label") && !h.getAttribute("aria-labelledby")) {
+          flag(tag, 'image has no alt: describe it, or alt="" if it is decoration', "serious", h)
         }
       }
 
@@ -1240,18 +1247,14 @@ export const wcagPlugin = {
 
       if (tag === "iframe") {
         if (!h.getAttribute("title") && !h.getAttribute("aria-label")) {
-          h.setAttribute("title", "embedded content")
-          h.setAttribute("aria-label", "embedded content")
-          push(tag, 'title + aria-label added', "serious", h)
+          flag(tag, "iframe has no title saying what it shows", "serious", h)
         }
       }
 
       // ── Interactive ──
       if (tag === "button") {
         if (!hasAccessibleName(h)) {
-          const label = h.getAttribute("title") || "button"
-          h.setAttribute("aria-label", label)
-          push(tag, `aria-label="${label}" (empty button)`, "critical", h)
+          flag(tag, "button has no name a screen reader can say (add text or aria-label)", "critical", h)
         }
         if (h.hasAttribute("disabled") && !h.getAttribute("aria-disabled")) {
           h.setAttribute("aria-disabled", "true")
@@ -1261,9 +1264,8 @@ export const wcagPlugin = {
 
       if (tag === "a") {
         const anchor = h as HTMLAnchorElement
-        if (!hasAccessibleName(h)) {
-          h.setAttribute("aria-label", h.getAttribute("title") || "link")
-          push(tag, "aria-label added (empty link)", "critical", h)
+        if (!hasAccessibleName(h) && anchor.hasAttribute("href")) {
+          flag(tag, "link has no name a screen reader can say", "critical", h)
         }
         if (anchor.target === "_blank" && !anchor.rel?.includes("noopener")) {
           anchor.rel = "noopener noreferrer"
@@ -1279,9 +1281,7 @@ export const wcagPlugin = {
           !!h.getAttribute("title") ||
           input.type === "hidden" || input.type === "submit" || input.type === "button" || input.type === "reset"
         if (!hasLabel && !h.getAttribute("aria-label") && !h.getAttribute("aria-labelledby")) {
-          const label = h.getAttribute("placeholder") || h.getAttribute("name") || tag
-          h.setAttribute("aria-label", label)
-          push(tag, `aria-label="${label}"`, "serious", h)
+          flag(tag, "form field has no label (a placeholder is not a label)", "serious", h)
         }
         if (h.hasAttribute("required") && !h.getAttribute("aria-required")) {
           h.setAttribute("aria-required", "true")
@@ -1322,8 +1322,7 @@ export const wcagPlugin = {
       const role = h.getAttribute("role") || ""
 
       if (role === "tab" && !h.getAttribute("aria-selected")) {
-        h.setAttribute("aria-selected", "false")
-        report.fixed++
+        flag(tag, "tab has no aria-selected", "moderate", h)
       }
 
       if (["alert","status","log"].includes(role) && !h.getAttribute("aria-live")) {
@@ -1331,14 +1330,13 @@ export const wcagPlugin = {
         push(tag, `aria-live added on role=${role}`, "moderate", h)
       }
 
+      // A made-up state ("not expanded", "not checked") can be a lie, so these are reported.
       if (role === "combobox" && !h.getAttribute("aria-expanded")) {
-        h.setAttribute("aria-expanded", "false")
-        push(tag, 'aria-expanded="false" on combobox', "serious", h)
+        flag(tag, "combobox has no aria-expanded", "serious", h)
       }
 
       if ((role === "checkbox" || role === "radio") && !h.getAttribute("aria-checked")) {
-        h.setAttribute("aria-checked", "false")
-        push(tag, `aria-checked="false" on role=${role}`, "serious", h)
+        flag(tag, `role=${role} has no aria-checked`, "serious", h)
       }
     })
 

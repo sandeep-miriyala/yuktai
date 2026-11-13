@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>YuktAI Assistant: plain HTML</title>
+</head>
+<body>
+  <main>
+    <h1>వేమన శతకం</h1>
+    <p>ఉప్పు కప్పురంబు నొక్కపోలికనుండు, చూడ చూడ రుచుల జాడ వేరు.</p>
+    <p>Meaning: salt and camphor look alike, but taste tells them apart.</p>
+  </main>
+
+  <!-- YuktAI Assistant: accessibility + Ask this page. No lang needed: it is found from the text. -->
+  <script>
+    window.YuktaiAssistantConfig = { features: ["ask", "a11y"], level: "AA", contrast: "check" };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@yuktishaalaa/assistant@6/dist/assistant.global.js" defer></script>
+</body>
+</html>

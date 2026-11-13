@@ -2,6 +2,30 @@
 
 All notable changes to `@yuktishaalaa/yuktai`. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow [Semantic Versioning](https://semver.org/).
 
+## 6.0.0
+
+YuktAI 6.0: the **YuktAI Assistant** and a new accessibility engine, **@yuktishaalaa/a11y**, shared by everything.
+
+### New packages
+- **`@yuktishaalaa/a11y` 6.0.0**: web accessibility for any page from one attribute (`<body data-yuktai-a11y="auto" data-yuktai-level="AA">`). Safe ARIA ("do no harm"), WCAG AA/AAA contrast (check or fix; text over images is reported as *not checked*, never *pass*), `lang` found from the text for the page and each part (WCAG 3.1.1, 3.1.2, `dir="rtl"` for Urdu/Arabic), read aloud with the browser's Web Speech in the right voice for each part, visitor preferences (text size, spacing, motion, focus ring, themes, dark mode), a report in three groups (fixed / check / unknown) with WCAG numbers and English/Telugu messages, `undo()` and `destroy()`.
+- **`@yuktishaalaa/assistant` 6.0.0**: one panel for accessibility and Ask this page. Three ways to use it: npm (`mountAssistant()`, `<YuktaiAssistant />` for Next.js and React), a script for any website (`assistant.global.js` + `window.YuktaiAssistantConfig`), and a browser extension zip for Chrome, Edge and Brave (popup, Alt+Shift+Y, Alt+Shift+A for Ask, "Always on for this site" with a per-site permission; works on pages with a strict CSP).
+
+### Changed (breaking: why this is 6.0)
+- **The accessibility engine no longer invents labels or states.** Before, it added `aria-label="button"`, `"link"`, `"embedded content"`, form labels from field names, `alt="" aria-hidden="true"` on every image without alt, and `aria-checked/expanded/selected="false"` on custom widgets. A made-up label or state is worse than none, so these are now reported in the details as `check: …` and not counted as fixed.
+- **`<html lang>` is detected from the page text** (Telugu pages get `te`), not set to `"en"`; parts in another language get their own `lang`.
+- The language detection of `@yuktishaalaa/a11y` is bundled into `@yuktishaalaa/yuktai` (no new runtime dependency).
+
+### Docs site
+- New page **YuktAI Assistant** (`/assistant/`) with the extension zip to download, the script and the npm setup; first entry in Get started.
+
+### Fixed
+- Telugu and other IME keyboards: Enter that finishes a word no longer sends half a word (Autocomplete, Grid AI Assistant, YuktAI agent and RAG boxes, widget panel).
+- Grid: ArrowDown/ArrowUp move between clickable rows and cards, Home/End to the first and last.
+
+### Migration from 5.x
+- If you relied on the engine adding `aria-label` to empty buttons, links and fields, or hiding images without `alt`: read `report.details` entries that start with `check:` and fix them in your HTML. Nothing else changes in the API.
+- To keep a part of the page untouched: `data-yuktai-a11y="off"` on it.
+
 ## 5.7.0
 
 ### Grid: agentic AI (browser's own AI, with rules as the fallback)

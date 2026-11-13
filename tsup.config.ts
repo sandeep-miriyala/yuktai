@@ -33,7 +33,10 @@ export default defineConfig([
     ],
     // ── Ensure browser-compatible build ──
     platform: "browser",
+    // v6: the shared accessibility engine is bundled from packages/a11y/src
+    noExternal: ["@yuktishaalaa/a11y"],
     esbuildOptions(options) {
+      options.alias = { ...(options.alias ?? {}), "@yuktishaalaa/a11y": "./packages/a11y/src/index.ts" }
       options.define = {
         "process.env.NODE_ENV": '"production"',
         "process": '{"env":{"NODE_ENV":"production"}}',
@@ -55,7 +58,10 @@ export default defineConfig([
       "onnxruntime-web",
       "onnxruntime-common",
     ],
+    // v6: the shared accessibility engine is bundled from packages/a11y/src
+    noExternal: ["@yuktishaalaa/a11y"],
     esbuildOptions(options) {
+      options.alias = { ...(options.alias ?? {}), "@yuktishaalaa/a11y": "./packages/a11y/src/index.ts" }
       options.define = {
         "process.env.NODE_ENV": '"production"',
         "process": '{"env":{"NODE_ENV":"production"}}',

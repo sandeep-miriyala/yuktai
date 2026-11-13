@@ -20,6 +20,8 @@ const common = {
   platform: "browser",
   target: ["chrome90", "firefox90", "safari15", "edge90"],
   external: ["@huggingface/transformers", "onnxruntime-node", "onnxruntime-web", "onnxruntime-common"],
+  // v6: the shared accessibility engine is bundled from its source
+  alias: { "@yuktishaalaa/a11y": join(here, "..", "packages", "a11y", "src", "index.ts") },
   define: { "process.env.NODE_ENV": '"production"' },
   banner: { js: banner },
   legalComments: "none",

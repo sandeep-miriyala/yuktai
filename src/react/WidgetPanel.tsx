@@ -491,7 +491,7 @@ export const WidgetPanel = forwardRef<HTMLDivElement, Props>(
               type="text"
               value={ragQuestion}
               onChange={e => setRagQuestion(e.target.value)}
-              onKeyDown={e => { if (e.key === "Enter") handleAsk() }}
+              onKeyDown={e => { if (e.key === "Enter" && !(e.nativeEvent.isComposing || e.keyCode === 229)) handleAsk() }}
               placeholder="e.g. What does this page do?"
               disabled={ragLoading || !ragEngine}
               aria-label="Ask a question about this page"

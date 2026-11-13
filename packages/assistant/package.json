@@ -1,0 +1,93 @@
+{
+  "name": "@yuktishaalaa/assistant",
+  "version": "6.0.0",
+  "description": "YuktAI Assistant: web accessibility (safe ARIA, WCAG AA/AAA, automatic lang, read aloud, colours, dark mode) and Ask this page, in one panel. npm for React and Next.js, a script for any website, a browser extension for everyone. Runs on the device.",
+  "author": "Sandeep Miriyala — Yuktishaalaa AI Lab",
+  "license": "GPL-3.0-only",
+  "homepage": "https://sandeep-miriyala.github.io/yuktai/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sandeep-miriyala/yuktai.git",
+    "directory": "packages/assistant"
+  },
+  "bugs": {
+    "url": "https://github.com/sandeep-miriyala/yuktai/issues"
+  },
+  "keywords": [
+    "accessibility",
+    "a11y",
+    "wcag",
+    "assistant",
+    "ask-page",
+    "text-to-speech",
+    "dark-mode",
+    "telugu",
+    "nextjs",
+    "react",
+    "browser-extension"
+  ],
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "unpkg": "./dist/assistant.global.js",
+  "jsdelivr": "./dist/assistant.global.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./next": {
+      "types": "./dist/next.d.ts",
+      "import": "./dist/next.js",
+      "require": "./dist/next.cjs"
+    },
+    "./global": "./dist/assistant.global.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "!dist/extension",
+    "!dist/*.zip",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": [
+    "./dist/assistant.global.js"
+  ],
+  "scripts": {
+    "build": "tsup && npm run build:types",
+    "build:types": "tsc -p tsconfig.build.json",
+    "build:extension": "node scripts/build-extension.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@yuktishaalaa/a11y": "^6.0.0",
+    "@yuktishaalaa/ask-page": "^1.0.0"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.3",
+    "happy-dom": "^21.0.4",
+    "react": "^19.3.1",
+    "tsup": "^9.0.0",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.5"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

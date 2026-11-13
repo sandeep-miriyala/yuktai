@@ -3388,8 +3388,8 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
         error: "Chrome Built-in AI Summarizer not available. Enable via chrome://flags."
       };
     }
-    const pageText = getPageText();
-    if (!pageText || pageText.length < 100) {
+    const pageText2 = getPageText();
+    if (!pageText2 || pageText2.length < 100) {
       return {
         success: false,
         summary: "",
@@ -3405,7 +3405,7 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
         length: "short",
         outputLanguage: "en"
       });
-      const summary = await summarizer.summarize(pageText, {
+      const summary = await summarizer.summarize(pageText2, {
         context: "Summarise this page in 2-3 simple sentences for a screen reader user who wants to know if this page is relevant to them."
       });
       summarizer.destroy();
@@ -3989,6 +3989,203 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
       }
       delete el.dataset.yuktaiLabelOriginal;
     }
+  }
+
+  // packages/a11y/src/language.ts
+  var SCRIPTS = [
+    { script: "Telugu", lang: "te", shared: false, from: 3072, to: 3199 },
+    { script: "Kannada", lang: "kn", shared: false, from: 3200, to: 3327 },
+    { script: "Tamil", lang: "ta", shared: false, from: 2944, to: 3071 },
+    { script: "Malayalam", lang: "ml", shared: false, from: 3328, to: 3455 },
+    { script: "Devanagari", lang: "hi", shared: true, from: 2304, to: 2431 },
+    { script: "Bengali", lang: "bn", shared: true, from: 2432, to: 2559 },
+    { script: "Gurmukhi", lang: "pa", shared: false, from: 2560, to: 2687 },
+    { script: "Gujarati", lang: "gu", shared: false, from: 2688, to: 2815 },
+    { script: "Oriya", lang: "or", shared: false, from: 2816, to: 2943 },
+    { script: "Sinhala", lang: "si", shared: false, from: 3456, to: 3583 },
+    { script: "Arabic", lang: "ar", shared: true, from: 1536, to: 1791 },
+    { script: "Hebrew", lang: "he", shared: true, from: 1424, to: 1535 },
+    { script: "Thai", lang: "th", shared: false, from: 3584, to: 3711 },
+    { script: "Greek", lang: "el", shared: false, from: 880, to: 1023 },
+    { script: "Cyrillic", lang: "ru", shared: true, from: 1024, to: 1279 },
+    { script: "Hangul", lang: "ko", shared: false, from: 44032, to: 55215 },
+    { script: "Kana", lang: "ja", shared: false, from: 12352, to: 12543 },
+    { script: "Han", lang: "zh", shared: true, from: 19968, to: 40959 },
+    { script: "Latin", lang: "en", shared: true, from: 65, to: 591 }
+  ];
+  var RTL = /* @__PURE__ */ new Set(["ar", "ur", "fa", "he", "sd", "ks", "ps", "yi", "dv", "ug"]);
+  var isRtl = (lang) => RTL.has(primary(lang));
+  var primary = (lang) => (lang || "").toLowerCase().split(/[-_]/)[0];
+  function scriptOf(ch) {
+    const cp = ch.codePointAt(0);
+    if (cp < 128 && !/[A-Za-z]/.test(ch)) return null;
+    if (cp >= 128 && cp < 192) return null;
+    for (const s of SCRIPTS) if (cp >= s.from && cp <= s.to) return { script: s.script, lang: s.lang, shared: s.shared };
+    return null;
+  }
+  function detectText(text, minLetters = 3) {
+    const counts = /* @__PURE__ */ new Map();
+    let letters = 0;
+    for (const ch of text) {
+      const info = scriptOf(ch);
+      if (!info) continue;
+      letters++;
+      const c = counts.get(info.script);
+      if (c) c.n++;
+      else counts.set(info.script, { n: 1, info });
+    }
+    if (letters < minLetters) return null;
+    let best = null;
+    for (const c of counts.values()) if (!best || c.n > best.n) best = c;
+    if (!best) return null;
+    return { lang: best.info.lang, script: best.info.script, confidence: best.n / letters, letters, shared: best.info.shared };
+  }
+  var LATIN_LANGS = /* @__PURE__ */ new Set(["en", "fr", "de", "es", "pt", "it", "nl", "sv", "da", "no", "nb", "fi", "pl", "cs", "ro", "hu", "tr", "id", "ms", "vi", "sw", "tl"]);
+  var isLatinLang = (lang) => LATIN_LANGS.has(primary(lang));
+  function inheritedLang(el) {
+    let node = el;
+    while (node) {
+      const l = node.getAttribute("lang");
+      if (l !== null && l !== "") return l;
+      node = node.parentElement ?? (node.getRootNode().host ?? null);
+    }
+    return "";
+  }
+  var SKIP = "script,style,noscript,template,code,pre,kbd,samp,var,textarea,input,select,option,[contenteditable=''],[contenteditable='true'],[data-yuktai-a11y='off'],svg,math";
+  function isSkipped(el) {
+    try {
+      return !!el.closest(SKIP);
+    } catch {
+      return false;
+    }
+  }
+  function ownText(el) {
+    let t = "";
+    for (const n of Array.from(el.childNodes)) {
+      if (n.nodeType === 3) t += n.textContent ?? "";
+      else if (n.nodeType === 1) {
+        const c = n;
+        if (BLOCKS.has(c.tagName.toLowerCase()) || c.hasAttribute("lang") || isSkipped(c)) continue;
+        t += ownText(c);
+      }
+    }
+    return t;
+  }
+  var BLOCKS = /* @__PURE__ */ new Set([
+    "p",
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+    "li",
+    "dt",
+    "dd",
+    "td",
+    "th",
+    "caption",
+    "figcaption",
+    "blockquote",
+    "q",
+    "label",
+    "legend",
+    "button",
+    "a",
+    "summary",
+    "div",
+    "section",
+    "article",
+    "aside",
+    "header",
+    "footer",
+    "nav",
+    "main",
+    "span",
+    "em",
+    "strong",
+    "b",
+    "i",
+    "small",
+    "cite",
+    "title"
+  ]);
+  function pageText(doc, limit = 2e4) {
+    const body = doc.body;
+    if (!body) return "";
+    const walker = doc.createTreeWalker(
+      body,
+      4
+      /* SHOW_TEXT */
+    );
+    let out = "";
+    while (walker.nextNode() && out.length < limit) {
+      const parent = walker.currentNode.parentElement;
+      if (parent && !isSkipped(parent)) out += walker.currentNode.textContent + " ";
+    }
+    return out;
+  }
+  function sameScriptFamily(lang, d) {
+    const p = primary(lang);
+    if (p === d.lang) return true;
+    const byScript = {
+      Devanagari: ["hi", "mr", "ne", "sa", "kok", "mai", "doi", "brx", "bho"],
+      Bengali: ["bn", "as", "mni"],
+      Arabic: ["ar", "ur", "fa", "sd", "ks", "ps"],
+      Latin: Array.from(LATIN_LANGS),
+      Cyrillic: ["ru", "uk", "bg", "sr", "be", "kk"],
+      Han: ["zh", "ja"],
+      Hebrew: ["he", "yi"]
+    };
+    return (byScript[d.script] ?? []).includes(p);
+  }
+  function annotateLanguages(doc, opts = { apply: true }) {
+    const changes = [];
+    const html = doc.documentElement;
+    if (!html.getAttribute("lang")) {
+      const d = detectText(pageText(doc), 20);
+      if (d) {
+        changes.push({ el: html, lang: d.lang, scope: "page" });
+        if (opts.apply) {
+          html.setAttribute("lang", d.lang);
+          html.setAttribute("data-yuktai-lang", "added");
+        }
+      }
+    }
+    const root = opts.root ?? doc.body;
+    if (!root) return changes;
+    const els = Array.from(root.querySelectorAll("*"));
+    for (const el of els) {
+      const tag = el.tagName.toLowerCase();
+      if (!BLOCKS.has(tag) || el.hasAttribute("lang") || isSkipped(el)) continue;
+      const d = detectText(ownText(el), 3);
+      if (!d || d.confidence < 0.6) continue;
+      const inherited = opts.apply ? inheritedLang(el) : inheritedLangPlanned(el, changes);
+      if (!inherited || !sameScriptFamily(inherited, d)) {
+        if (d.script === "Latin" && inherited && isLatinLang(inherited)) continue;
+        changes.push({ el, lang: d.lang, scope: "part" });
+        if (opts.apply) {
+          el.setAttribute("lang", d.lang);
+          el.setAttribute("data-yuktai-lang", "added");
+          if (isRtl(d.lang) && !el.hasAttribute("dir")) {
+            el.setAttribute("dir", "rtl");
+            el.setAttribute("data-yuktai-lang", "added-dir");
+          }
+        }
+      }
+    }
+    return changes;
+  }
+  function inheritedLangPlanned(el, planned) {
+    let node = el.parentElement;
+    while (node) {
+      const hit = planned.find((c) => c.el === node);
+      if (hit) return hit.lang;
+      const l = node.getAttribute("lang");
+      if (l) return l;
+      node = node.parentElement;
+    }
+    return "";
   }
 
   // src/core/renderer.tsx
@@ -4916,14 +5113,18 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
         report.details.push({ tag, fix, severity, element: el.outerHTML.slice(0, 100) });
         report.fixed++;
       };
+      const flag = (tag, fix, severity, el) => {
+        if (el.hasAttribute("data-yuktai-flagged")) return;
+        report.details.push({ tag, fix: `check: ${fix}`, severity, element: el.outerHTML.slice(0, 100) });
+      };
+      for (const c of annotateLanguages(document)) {
+        push(c.scope === "page" ? "html" : c.el.tagName.toLowerCase(), `lang="${c.lang}" added (detected from the text)`, c.scope === "page" ? "critical" : "moderate", c.el);
+      }
       elements.forEach((el) => {
         var _a, _b;
         const h2 = el;
         const tag = h2.tagName.toLowerCase();
-        if (tag === "html" && !h2.getAttribute("lang")) {
-          h2.setAttribute("lang", "en");
-          push(tag, 'lang="en" added', "critical", h2);
-        }
+        if (h2.closest("[data-yuktai-a11y='off']")) return;
         if (tag === "meta") {
           const name = h2.getAttribute("name");
           const content = h2.getAttribute("content") || "";
@@ -4941,10 +5142,8 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
           if (!h2.getAttribute("id")) h2.setAttribute("id", "main-content");
         }
         if (tag === "img") {
-          if (!h2.hasAttribute("alt")) {
-            h2.setAttribute("alt", "");
-            h2.setAttribute("aria-hidden", "true");
-            push(tag, 'alt="" aria-hidden="true"', "serious", h2);
+          if (!h2.hasAttribute("alt") && !h2.getAttribute("aria-label") && !h2.getAttribute("aria-labelledby")) {
+            flag(tag, 'image has no alt: describe it, or alt="" if it is decoration', "serious", h2);
           }
         }
         if (tag === "svg") {
@@ -4956,16 +5155,12 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
         }
         if (tag === "iframe") {
           if (!h2.getAttribute("title") && !h2.getAttribute("aria-label")) {
-            h2.setAttribute("title", "embedded content");
-            h2.setAttribute("aria-label", "embedded content");
-            push(tag, "title + aria-label added", "serious", h2);
+            flag(tag, "iframe has no title saying what it shows", "serious", h2);
           }
         }
         if (tag === "button") {
           if (!hasAccessibleName(h2)) {
-            const label = h2.getAttribute("title") || "button";
-            h2.setAttribute("aria-label", label);
-            push(tag, `aria-label="${label}" (empty button)`, "critical", h2);
+            flag(tag, "button has no name a screen reader can say (add text or aria-label)", "critical", h2);
           }
           if (h2.hasAttribute("disabled") && !h2.getAttribute("aria-disabled")) {
             h2.setAttribute("aria-disabled", "true");
@@ -4974,9 +5169,8 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
         }
         if (tag === "a") {
           const anchor = h2;
-          if (!hasAccessibleName(h2)) {
-            h2.setAttribute("aria-label", h2.getAttribute("title") || "link");
-            push(tag, "aria-label added (empty link)", "critical", h2);
+          if (!hasAccessibleName(h2) && anchor.hasAttribute("href")) {
+            flag(tag, "link has no name a screen reader can say", "critical", h2);
           }
           if (anchor.target === "_blank" && !((_a = anchor.rel) == null ? void 0 : _a.includes("noopener"))) {
             anchor.rel = "noopener noreferrer";
@@ -4987,9 +5181,7 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
           const input = h2;
           const hasLabel = !!(input.labels && input.labels.length) || !!h2.getAttribute("title") || input.type === "hidden" || input.type === "submit" || input.type === "button" || input.type === "reset";
           if (!hasLabel && !h2.getAttribute("aria-label") && !h2.getAttribute("aria-labelledby")) {
-            const label = h2.getAttribute("placeholder") || h2.getAttribute("name") || tag;
-            h2.setAttribute("aria-label", label);
-            push(tag, `aria-label="${label}"`, "serious", h2);
+            flag(tag, "form field has no label (a placeholder is not a label)", "serious", h2);
           }
           if (h2.hasAttribute("required") && !h2.getAttribute("aria-required")) {
             h2.setAttribute("aria-required", "true");
@@ -5015,20 +5207,17 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
         }
         const role = h2.getAttribute("role") || "";
         if (role === "tab" && !h2.getAttribute("aria-selected")) {
-          h2.setAttribute("aria-selected", "false");
-          report.fixed++;
+          flag(tag, "tab has no aria-selected", "moderate", h2);
         }
         if (["alert", "status", "log"].includes(role) && !h2.getAttribute("aria-live")) {
           h2.setAttribute("aria-live", role === "alert" ? "assertive" : "polite");
           push(tag, `aria-live added on role=${role}`, "moderate", h2);
         }
         if (role === "combobox" && !h2.getAttribute("aria-expanded")) {
-          h2.setAttribute("aria-expanded", "false");
-          push(tag, 'aria-expanded="false" on combobox', "serious", h2);
+          flag(tag, "combobox has no aria-expanded", "serious", h2);
         }
         if ((role === "checkbox" || role === "radio") && !h2.getAttribute("aria-checked")) {
-          h2.setAttribute("aria-checked", "false");
-          push(tag, `aria-checked="false" on role=${role}`, "serious", h2);
+          flag(tag, `role=${role} has no aria-checked`, "serious", h2);
         }
       });
       report.renderTime = parseFloat((performance.now() - start).toFixed(2));
@@ -6093,12 +6282,12 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
     if (list[0]) list[0].scrollIntoView({ block: "center", behavior: prefersReducedMotion() ? "auto" : "smooth" });
     return list.length;
   }
-  function addStyles(primary, side) {
+  function addStyles(primary2, side) {
     if (!isBrowser2() || document.getElementById("yuktai-vanilla-css")) return;
     const s = document.createElement("style");
     s.id = "yuktai-vanilla-css";
     s.textContent = `
-:root{--yv-primary:${primary}}
+:root{--yv-primary:${primary2}}
 .yv-sr{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
 .yv-ic{display:inline-flex;line-height:0}
 [data-yv-flash]{outline:3px solid #d97706!important;outline-offset:3px!important;background-color:#fef3c7!important;color:#111!important}
@@ -7808,7 +7997,7 @@ ${command ? command.say : "Not a voice command. Try: make text bigger, high cont
   function createWidget(userConfig = {}) {
     const cfg = { position: "left", title: "Accessibility", showPageTools: false, ...userConfig };
     const side = cfg.position === "right" ? "right" : "left";
-    const primary = safeColor(cfg.primaryColor, "#005A9C");
+    const primary2 = safeColor(cfg.primaryColor, "#005A9C");
     const base = {
       enabled: true,
       autoFix: true,
@@ -8003,7 +8192,7 @@ ${command ? command.say : "Not a voice command. Try: make text bigger, high cont
     const layer = () => document.documentElement || document.body;
     function init() {
       if (!isBrowser2() || fab || !document.body) return;
-      addStyles(primary, side);
+      addStyles(primary2, side);
       fabs = h("div", { class: "yv-fabs", "data-yuktai-fabs": "" });
       fab = h("button", { type: "button", class: "yv-fab", "aria-label": "Accessibility settings", title: "Accessibility settings", "aria-haspopup": "dialog", "aria-expanded": "false", html: icon("accessibility", 26) });
       fab.addEventListener("click", () => dialog ? closeSettings() : openSettings());
@@ -8040,10 +8229,10 @@ ${command ? command.say : "Not a voice command. Try: make text bigger, high cont
     if (!isBrowser2()) return;
     if (window.yuktai && window.yuktai.__vanillaInitialized) return;
     const cfg = window.YUKTAI_CONFIG || {};
-    const primary = safeColor(cfg.primaryColor, "#005A9C");
+    const primary2 = safeColor(cfg.primaryColor, "#005A9C");
     const side = cfg.position === "right" ? "right" : "left";
     const widget = createWidget(cfg);
-    const ensureStyles = () => addStyles(primary, side);
+    const ensureStyles = () => addStyles(primary2, side);
     const withStyles = (fn) => (...args) => {
       ensureStyles();
       return fn(...args);

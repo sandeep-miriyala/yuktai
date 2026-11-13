@@ -1,0 +1,9 @@
+export default function Page() {
+  return (
+    <main>
+      <h1>వేమన శతకం</h1>
+      <p>ఉప్పు కప్పురంబు నొక్కపోలికనుండు, చూడ చూడ రుచుల జాడ వేరు.</p>
+      <p>Meaning: salt and camphor look alike, but taste tells them apart.</p>
+    </main>
+  )
+}

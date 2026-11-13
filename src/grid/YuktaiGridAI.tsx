@@ -1678,9 +1678,11 @@ export function YuktaiGridAI<
               )
             }
             onKeyDown={(event) => {
+              // Telugu/Hindi keyboards (IME): Enter that finishes a word must not send half a word.
               if (
                 event.key ===
-                "Enter"
+                  "Enter" &&
+                !(event.nativeEvent.isComposing || event.keyCode === 229)
               ) {
                 handleSubmit();
               }

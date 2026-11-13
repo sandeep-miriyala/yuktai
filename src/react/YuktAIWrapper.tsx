@@ -691,7 +691,7 @@ export function YuktAIWrapper({
               type="text"
               value={agentTask}
               onChange={e => setAgentTask(e.target.value)}
-              onKeyDown={e => { if (e.key === "Enter") handleAgentRun() }}
+              onKeyDown={e => { if (e.key === "Enter" && !(e.nativeEvent.isComposing || e.keyCode === 229)) handleAgentRun() }}
               placeholder="e.g. Help me fill this form"
               disabled={agentLoading || !agentEngine}
               aria-label="Tell the agent what to do"
@@ -809,7 +809,7 @@ export function YuktAIWrapper({
               type="text"
               value={ragQuestion}
               onChange={e => setRagQuestion(e.target.value)}
-              onKeyDown={e => { if (e.key === "Enter") handleRagAsk() }}
+              onKeyDown={e => { if (e.key === "Enter" && !(e.nativeEvent.isComposing || e.keyCode === 229)) handleRagAsk() }}
               placeholder="e.g. What does this page do?"
               disabled={ragLoading || !canAsk}
               aria-label="Ask a question about this page"

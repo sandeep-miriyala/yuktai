@@ -2,7 +2,9 @@
 // Change a release here and every page follows.
 
 export const VERSIONS = {
-  yuktai: "5.7.0",
+  yuktai: "6.0.0",
+  a11y: "6.0.0",
+  assistant: "6.0.0",
   askPage: "1.0.0",
   cli: "1.4.0",
 } as const;
@@ -11,6 +13,8 @@ export const LINKS = {
   github: "https://github.com/sandeep-miriyala/yuktai",
   npmYuktai: "https://www.npmjs.com/package/@yuktishaalaa/yuktai",
   npmAsk: "https://www.npmjs.com/package/@yuktishaalaa/ask-page",
+  npmAssistant: "https://www.npmjs.com/package/@yuktishaalaa/assistant",
+  npmA11y: "https://www.npmjs.com/package/@yuktishaalaa/a11y",
   npmCli: "https://www.npmjs.com/package/yuktai",
   w3techs: "https://w3techs.com/technologies/overview/javascript_library",
   site: "https://sandeep-miriyala.github.io/yuktai/",
@@ -28,6 +32,7 @@ export type IconKey =
 
 // The guides (src/app/(guides)/<name>/page.tsx)
 export const GUIDES: { href: string; title: string; text: string; icon: IconKey }[] = [
+  { href: "/assistant/", title: "YuktAI Assistant (new in 6.0)", text: "Accessibility and Ask this page in one panel. Download the browser extension, paste one script, or npm install for React and Next.js.", icon: "accessibility" },
   { href: "/guide/", title: "End-to-end guide", text: "From an empty folder to a live site: create, build, test, publish on GitHub Pages or Vercel, and make it ready for AI browsers.", icon: "wand" },
   { href: "/create/", title: "Create an app", text: "npm create yuktai@latest my-app: Next.js + Rust + Python, a 25 lakh row grid, LangGraph agents, RAG, QA report, icons and a PWA in one command.", icon: "install" },
   { href: "/accessibility/", title: "Accessibility", text: "Floating ♿ button: contrast, text size, dyslexia font, colour-blind filters, reduced motion, speak on focus.", icon: "accessibility" },
@@ -63,7 +68,7 @@ export const WEB_SHARE = [
 
 // Automated tests run before a release
 export const TESTS = [
-  { name: "TypeScript unit (Vitest)", value: 183, tone: "c1" },
+  { name: "TypeScript unit (Vitest)", value: 221, tone: "c1" },
   { name: "Rust (cargo)", value: 13, tone: "c2" },
   { name: "Browser end-to-end", value: 37, tone: "c3" },
   { name: "Strict CSP + extension", value: 4, tone: "c4" },
@@ -137,6 +142,17 @@ export const PACKAGES: readonly {
     onThisSite: "\"Ask these docs\", the hero box and Ctrl + K",
     icon: "chat",
   },
+  {
+    name: "@yuktishaalaa/assistant",
+    version: VERSIONS.assistant,
+    text: "YuktAI Assistant: accessibility (safe ARIA, WCAG AA/AAA, automatic lang, read aloud in the right voice, colours, dark mode) and Ask this page in one panel. npm, one script, or a browser extension.",
+    install: `npm i @yuktishaalaa/assistant@${VERSIONS.assistant}`,
+    npm: LINKS.npmAssistant,
+    cdn: `https://www.jsdelivr.com/package/npm/@yuktishaalaa/assistant`,
+    guide: "/assistant/",
+    onThisSite: "the download page",
+    icon: "accessibility",
+  },
 ];
 
 // The header menu (src/components/yuktai/Header.tsx). A group with `children` is a ▾ submenu.
@@ -150,6 +166,7 @@ export const NAV: NavItem[] = [
     label: "Get started",
     key: "getStarted",
     children: [
+      { href: "/assistant/", label: "YuktAI Assistant", hint: "New in 6.0: download, script or npm" },
       { href: "/guide/", label: "End-to-end guide", hint: "Create, test, publish, AI-browser ready" },
       { href: "/create/", label: "Create an app", key: "createApp", hint: "npm create yuktai@latest my-app" },
       { href: "/nextjs/", label: "Next.js setup", hint: "YuktAIWrapper for the App Router" },

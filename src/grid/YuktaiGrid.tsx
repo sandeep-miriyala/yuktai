@@ -388,7 +388,24 @@ function openOnKey(event: React.KeyboardEvent<HTMLElement>, open: () => void) {
   if (event.key === "Enter" || event.key === " ") {
     event.preventDefault();
     open();
+    return;
   }
+  // v6.0.0: arrow keys move between rows (or cards), Home/End to the first/last.
+  const keys = ["ArrowDown", "ArrowUp", "Home", "End"];
+  if (!keys.includes(event.key)) return;
+  const here = event.currentTarget;
+  const items = Array.from(here.parentElement?.children ?? []).filter(
+    (el): el is HTMLElement => el instanceof HTMLElement && el.tabIndex === 0
+  );
+  const at = items.indexOf(here);
+  if (at < 0 || !items.length) return;
+  const next =
+    event.key === "Home" ? 0
+    : event.key === "End" ? items.length - 1
+    : event.key === "ArrowDown" ? Math.min(items.length - 1, at + 1)
+    : Math.max(0, at - 1);
+  event.preventDefault();
+  items[next].focus();
 }
 
 const srOnly: React.CSSProperties = { position: "absolute", width: 1, height: 1, padding: 0, margin: -1, overflow: "hidden", clip: "rect(0 0 0 0)", whiteSpace: "nowrap", border: 0 };

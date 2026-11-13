@@ -872,7 +872,7 @@ export const Autocomplete = ui("Autocomplete", ({ ykClass, Comp: _c, className, 
         } else if (e.key === "ArrowUp") {
           e.preventDefault()
           setActive((a) => Math.max(0, a - 1))
-        } else if (e.key === "Enter" && open && active >= 0 && list[active] !== undefined) {
+        } else if (e.key === "Enter" && !(e.nativeEvent.isComposing || e.keyCode === 229) && open && active >= 0 && list[active] !== undefined) {
           e.preventDefault()
           choose(e, list[active])
         } else if (e.key === "Escape") {

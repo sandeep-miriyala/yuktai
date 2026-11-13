@@ -7,7 +7,7 @@ const out = new URL("../out/", import.meta.url);
 const has = (p) => existsSync(new URL(p, out));
 
 test("the site was built", { skip: !has("index.html") && "run npm run build first" }, () => {
-  const guides = ["guide", "create", "accessibility", "grid", "agents", "ask", "page-tools", "nextjs", "python", "php", "jquery", "icons", "playground", "rust"];
+  const guides = ["assistant", "guide", "create", "accessibility", "grid", "agents", "ask", "page-tools", "nextjs", "python", "php", "jquery", "icons", "playground", "rust"];
   for (const f of ["index.html", "about/index.html", "404.html", "manifest.json", "icons/icon-512.png", "icons/maskable-512.png", "sw.js", ...guides.map((g) => `${g}/index.html`)]) assert.ok(has(f), `missing out/${f}`);
 });
 
