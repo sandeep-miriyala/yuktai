@@ -1,6 +1,6 @@
 {
   "name": "@yuktishaalaa/assistant",
-  "version": "6.0.0",
+  "version": "6.0.2",
   "description": "YuktAI Assistant: web accessibility (safe ARIA, WCAG AA/AAA, automatic lang, read aloud, colours, dark mode) and Ask this page, in one panel. npm for React and Next.js, a script for any website, a browser extension for everyone. Runs on the device.",
   "author": "Sandeep Miriyala — Yuktishaalaa AI Lab",
   "license": "GPL-3.0-only",
@@ -65,8 +65,8 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@yuktishaalaa/a11y": "^6.0.0",
-    "@yuktishaalaa/ask-page": "^1.0.0"
+    "@yuktishaalaa/a11y": "^6.0.2",
+    "@yuktishaalaa/ask-page": "^1.0.2"
   },
   "peerDependencies": {
     "react": ">=18.0.0"

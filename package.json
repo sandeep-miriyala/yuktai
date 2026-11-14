@@ -1,6 +1,6 @@
 {
   "name": "@yuktishaalaa/yuktai",
-  "version": "6.0.0",
+  "version": "6.0.2",
   "description": "Free, open-source toolkit for accessible web apps in Next.js, React and plain HTML: a Rust-fast data grid (10 lakh rows), WCAG 2.2 accessibility tools, 163 icons and Indian languages. Runs in the browser.",
   "author": "Sandeep Miriyala — Yuktishaalaa AI Lab",
   "license": "GPL-3.0-only",

@@ -23,6 +23,8 @@ export interface SpeakOptions {
   onEnd?: () => void
   /** Called before each part is read. */
   onPart?: (part: Segment, index: number, total: number) => void
+  /** Leave out navigation, footers and sidebars (reading a whole page). */
+  skipChrome?: boolean
 }
 
 export interface Speaker {
@@ -82,9 +84,31 @@ export async function speakableLanguages(): Promise<string[]> {
   return Array.from(new Set(voices.map((v) => primary(v.lang)))).sort()
 }
 
+/**
+ * v6.0.1: what a voice should not say. Emojis ("open book", "check mark"),
+ * arrows, stars, bullets, box-drawing and icon-font characters are removed;
+ * separators ("|", "•", "·", "→") become a short pause. Letters, digits,
+ * currency (₹) and normal punctuation stay.
+ */
+export function cleanForSpeech(text: string): string {
+  return text
+    .replace(/[\u{1F1E6}-\u{1F1FF}]{2}/gu, " ") // flags
+    .replace(/[#*0-9]️?⃣/gu, " ") // keycaps
+    .replace(/\p{Extended_Pictographic}(️|‍\p{Extended_Pictographic}|[\u{1F3FB}-\u{1F3FF}])*/gu, " ")
+    .replace(/[︎️‍]/g, "")
+    .replace(/[-\u{F0000}-\u{FFFFD}]/gu, " ") // icon fonts (private use)
+    .replace(/\s*[|•·▪▫◦‣⁃→←↑↓⇒⇐»«›‹]+\s*/g, ", ")
+    .replace(/[←-⇿─-◿☀-⛿✀-➿⬀-⯿★☆✓✔✗✘]/g, " ")
+    .replace(/(,\s*){2,}/g, ", ")
+    .replace(/^\s*,\s*|\s*,\s*$/gm, "")
+    .replace(/[ \t]+/g, " ")
+    .trim()
+}
+
 /** Cuts text into sentences of at most `max` characters (Telugu, Hindi and English stops). */
 export function sentences(text: string, max = 220): string[] {
-  const parts = text.replace(/\s+/g, " ").trim().split(/(?<=[.!?।॥\n])\s+/)
+  // Line breaks (headings, list items, table cells) end a sentence too.
+  const parts = text.split(/\n+|(?<=[.!?।॥])\s+/).map((s) => s.replace(/\s+/g, " ").trim())
   const out: string[] = []
   for (const p of parts) {
     if (!p) continue
@@ -106,17 +130,76 @@ export function sentences(text: string, max = 220): string[] {
   return out
 }
 
-/** The readable text of an element, without typing areas, code or switched-off parts. */
-export function readableText(el: Element): string {
+const BLOCK = /^(P|H[1-6]|LI|DT|DD|TD|TH|TR|CAPTION|FIGCAPTION|BLOCKQUOTE|PRE|DIV|SECTION|ARTICLE|HEADER|FOOTER|NAV|ASIDE|MAIN|LABEL|LEGEND|SUMMARY|BUTTON|TABLE|UL|OL|DL|FORM|FIELDSET|BR|HR)$/
+
+/** True when a person can see the element (v6.0.1: closed <details>, display:none, hidden menus are skipped). */
+function visible(el: Element, cache: Map<Element, boolean>): boolean {
+  const hit = cache.get(el)
+  if (hit !== undefined) return hit
+  let v = true
+  if (el.closest("[hidden],[inert],[aria-hidden='true'],template")) v = false
+  else if (typeof (el as Element & { checkVisibility?: (o?: object) => boolean }).checkVisibility === "function") {
+    v = (el as Element & { checkVisibility: (o?: object) => boolean }).checkVisibility({ visibilityProperty: true, contentVisibilityAuto: false })
+  } else {
+    const win = el.ownerDocument.defaultView
+    const cs = win?.getComputedStyle(el)
+    v = !cs || (cs.display !== "none" && cs.visibility !== "hidden")
+  }
+  cache.set(el, v)
+  return v
+}
+
+export interface ReadableOptions {
+  /** Leave out navigation, footers and sidebars (used when reading a whole page). */
+  skipChrome?: boolean
+}
+
+/**
+ * The text of an element as a person sees it: no typing areas, code,
+ * switched-off or hidden parts, and no emojis or symbols. Blocks (headings,
+ * paragraphs, list items, cells) end with a line break so each is read as
+ * its own sentence.
+ */
+export function readableText(el: Element, opts: ReadableOptions = {}): string {
   const doc = el.ownerDocument
+  const cache = new Map<Element, boolean>()
+  const skipChrome = opts.skipChrome ? "nav,[role=navigation],footer,[role=contentinfo],aside,[role=complementary],[data-yuktai-ui]" : "[data-yuktai-ui]"
   const walker = doc.createTreeWalker(el, 4 /* SHOW_TEXT */)
   let out = ""
+  let lastBlock: Element | null = null
   while (walker.nextNode()) {
     const parent = (walker.currentNode as Text).parentElement
-    if (!parent || isSkipped(parent) || parent.closest("[data-yuktai-speak='off'],[aria-hidden='true']")) continue
+    if (!parent || isSkipped(parent) || parent.closest("[data-yuktai-speak='off']") || parent.closest(skipChrome) || !visible(parent, cache)) continue
+    let block: Element | null = parent
+    while (block && block !== el && !BLOCK.test(block.tagName)) block = block.parentElement
+    if (lastBlock && block !== lastBlock) out += "\n"
+    lastBlock = block
     out += walker.currentNode.textContent + " "
   }
-  return out.replace(/\s+/g, " ").trim()
+  return cleanForSpeech(out.replace(/[ \t\r\f\v]+/g, " ").replace(/ ?\n ?/g, "\n").trim())
+}
+
+/**
+ * v6.0.1: the part of a page to read for "read this page": <main> (or
+ * role=main) when it holds real text, else the article with the most text,
+ * else the whole body without navigation, footers and sidebars. An <article>
+ * that appears before <main> (an ad, a card) is no longer picked.
+ */
+export function readTarget(doc: Document = document): { el: Element; skipChrome: boolean } {
+  const len = (e: Element) => readableText(e).length
+  const main = doc.querySelector("main,[role=main]")
+  if (main && len(main) >= 80) return { el: main, skipChrome: false }
+  let best: Element | null = null
+  let bestLen = 0
+  doc.querySelectorAll("article").forEach((a) => {
+    const n = len(a)
+    if (n > bestLen) {
+      best = a
+      bestLen = n
+    }
+  })
+  if (best && bestLen >= 200) return { el: best, skipChrome: false }
+  return { el: doc.body, skipChrome: true }
 }
 
 /** Reads text (or an element's text) aloud, part by part, each in its own language. */
@@ -127,7 +210,7 @@ export function speak(target: string | Element, options: SpeakOptions = {}): Spe
     (typeof target === "string" ? "" : inheritedLang(target)) ??
     ""
   const fallback = base || (typeof document !== "undefined" ? document.documentElement.lang : "") || "en"
-  const text = typeof target === "string" ? target : readableText(target)
+  const text = typeof target === "string" ? cleanForSpeech(target) : readableText(target, { skipChrome: options.skipChrome })
   const parts = splitByLanguage(text, fallback)
   let stopped = false
   const speaker: Speaker = {

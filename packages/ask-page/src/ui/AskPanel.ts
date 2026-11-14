@@ -20,6 +20,7 @@ import { escapeHtml, renderMarkdown } from "./markdown"
 import { icon } from "./icons"
 import { STYLES } from "./styles"
 import { replaceWithHTML, setHTML } from "./dom"
+import { crossLanguageHint } from "../search/crossLanguage"
 
 interface Msg {
   id: number
@@ -189,6 +190,7 @@ export class YuktaiAskElement extends HTMLElement {
     this.$(".panel").style.setProperty("--scale", String(p.settings.fontScale))
     this.$("#ask-title span").textContent = p.config.title || t.title
     this.$(".ai-label").textContent = t.aiLabel
+    void this.showAiStatus()
     const set = (sel: string, name: Parameters<typeof icon>[0], label: string) => {
       const b = this.$(sel)
       setHTML(b, icon(name, 22))
@@ -236,8 +238,30 @@ export class YuktaiAskElement extends HTMLElement {
     setHTML(this.$(".notices"), items.map((n) => `<div class="notice">${icon("info", 18)}<span>${escapeHtml(n)}</span></div>`).join(""))
   }
 
+  /** v1.0.1: the "AI" badge only when this browser really has on-device AI; else say answers come from search. */
+  private async showAiStatus() {
+    const LM = (globalThis as { LanguageModel?: { availability?: () => Promise<string> } }).LanguageModel
+    let ai = false
+    try {
+      ai = !!LM?.availability && (await LM.availability()) !== "unavailable"
+    } catch {
+      ai = false
+    }
+    const badge = this.$(".badge")
+    if (badge) badge.hidden = !ai
+    this.$(".ai-label").textContent = ai ? this.t.aiLabel : this.t.searchLabel
+  }
+
   // ── open / close ──────────────────────────────────────────────────────────
+  /** Where focus was before the panel opened (v6.0.1: restored on close when there is no launcher). */
+  private returnFocus: HTMLElement | null = null
+
   async openPanel(focus = true) {
+    if (!this.isOpen) {
+      let a = document.activeElement as HTMLElement | null
+      while (a?.shadowRoot?.activeElement) a = a.shadowRoot.activeElement as HTMLElement
+      this.returnFocus = a && a !== document.body ? a : null
+    }
     const panel = this.$(".panel")
     panel.hidden = false
     this.$(".launcher").hidden = true
@@ -262,6 +286,9 @@ export class YuktaiAskElement extends HTMLElement {
     this.isOpen = false
     if (!keepHighlight) clearHighlight(document)
     if (this.page!.config.launcher) l.focus()
+    else if (this.returnFocus?.isConnected) this.returnFocus.focus()
+    this.returnFocus = null
+    this.dispatchEvent(new CustomEvent("yuktai-ask-close", { bubbles: true, composed: true }))
   }
 
   /** Opens the panel and asks a question, as if the visitor typed it. */
@@ -311,7 +338,7 @@ export class YuktaiAskElement extends HTMLElement {
         },
       })
       bot.answer = answer
-      bot.text = answer.kind === "unknown" ? this.t.unknown : answer.text
+      bot.text = answer.kind === "unknown" ? this.unknownText(q) : answer.text
     } catch {
       bot.text = this.t.unknown
     } finally {
@@ -322,7 +349,22 @@ export class YuktaiAskElement extends HTMLElement {
       this.updateMsg(bot)
       this.announce(bot)
       if (bot.answer?.sources[0]?.elements?.length && bot.answer.kind !== "unknown") highlightElements(bot.answer.sources[0].elements!, document)
+      // v1.0.1: no answer → the previous answer's highlight must not stay on the page
+      else clearHighlight(document)
     }
+  }
+
+  /**
+   * v1.0.2 (A3): Fast mode matches words, so an English question can never
+   * match a Telugu page. Say so, and point to Balanced mode, which
+   * understands both languages, instead of a plain "no answer".
+   */
+  private unknownText(question: string): string {
+    const p = this.page!
+    const hint = crossLanguageHint(question, document, p.settings.mode, p.config.modes)
+    if (!hint) return this.t.unknown
+    const name = (l: string) => ({ te: "తెలుగు", hi: "हिन्दी", en: "English" })[l] ?? l
+    return fill(hint.balanced ? this.t.crossLangBalanced : this.t.crossLang, { asked: name(hint.asked), page: name(hint.page) })
   }
 
   private announce(m: Msg) {

@@ -116,8 +116,11 @@ export function auditAria(doc: Document, elements: Element[], opts: AriaOptions)
       out.push(finding("img-alt-missing", "check", el))
     }
 
-    if ((tag === "button" || (tag === "a" && el.hasAttribute("href")) || el.getAttribute("role") === "button" || el.getAttribute("role") === "link") && !accessibleName(el)) {
-      out.push(finding("control-name-missing", "check", el, { tag: el.getAttribute("role") || tag }))
+    if (tag === "button" || (tag === "a" && el.hasAttribute("href")) || el.getAttribute("role") === "button" || el.getAttribute("role") === "link") {
+      const name = accessibleName(el)
+      if (!name) out.push(finding("control-name-missing", "check", el, { tag: el.getAttribute("role") || tag }))
+      // v6.0.1: "❌", "→", "☰" alone: a screen reader says "cross mark", not what the button does
+      else if (!/[\p{L}\p{N}]/u.test(name)) out.push(finding("control-name-symbols", "check", el, { tag: el.getAttribute("role") || tag, text: name.slice(0, 8) }))
     }
 
     if (tag === "a" && el.hasAttribute("href")) {
@@ -155,6 +158,13 @@ export function auditAria(doc: Document, elements: Element[], opts: AriaOptions)
         out.push(finding(name ? "clickable-not-focusable" : "control-name-missing", "check", el, { tag }))
       }
     }
+  }
+  // v6.0.1: a "skip to content" link that leads nowhere (WCAG 2.4.1)
+  for (const a of Array.from(doc.querySelectorAll("a[href^='#']")).slice(0, 5)) {
+    const text = (a.textContent ?? "").toLowerCase()
+    if (!/skip|jump|main content|ప్రధాన|దాటవేయి|मुख्य/.test(text)) continue
+    const id = decodeURIComponent((a.getAttribute("href") ?? "").slice(1))
+    if (id && !doc.getElementById(id) && !doc.getElementsByName(id).length) out.push(finding("skip-link-broken", "check", a, { target: "#" + id }))
   }
   if (h1s !== 1 && elements.length) out.push(finding("h1-count", "check", doc.body ?? doc.documentElement, { count: h1s }))
   if (doc.body && !doc.querySelector("main,[role='main']")) out.push(finding("main-landmark-missing", "check", doc.body))

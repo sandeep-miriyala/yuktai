@@ -112,13 +112,33 @@ export function splitByLanguage(text: string, fallback: string): Segment[] {
     cur += ch
   }
   if (cur) out.push({ text: cur, lang: curLang ?? fallback })
-  // Merge pieces with almost no letters into their neighbour.
-  return out.filter((s) => s.text.trim()).reduce<Segment[]>((acc, s) => {
-    const prev = acc[acc.length - 1]
-    if (prev && prev.lang === s.lang) prev.text += s.text
-    else acc.push({ ...s })
-    return acc
-  }, [])
+  const merge = (list: Segment[]) =>
+    list.filter((s) => s.text.trim()).reduce<Segment[]>((acc, s) => {
+      const prev = acc[acc.length - 1]
+      if (prev && prev.lang === s.lang) prev.text += s.text
+      else acc.push({ ...s })
+      return acc
+    }, [])
+  const merged = merge(out)
+  // v6.0.1: a few English words inside a sentence ("…మూసి ఉన్న details లోపలి text…")
+  // stay with the sentence, so the voice does not switch for one or two words.
+  // Only Latin-script parts are folded (Indian-language voices read English
+  // words; an English voice cannot read Telugu), when they have fewer than
+  // SHORT_WORDS words and do not end a sentence.
+  const SHORT_WORDS = 3
+  for (let i = 0; i < merged.length; i++) {
+    const s = merged[i]
+    const words = s.text.trim().split(/\s+/).filter((w) => /\p{L}/u.test(w)).length
+    const endsSentence = /[.!?।॥\n]\s*$/.test(s.text)
+    const prev = merged[i - 1]
+    const next = merged[i + 1]
+    const host = prev && (!next || prev.lang === next.lang || !endsSentence) ? prev : next
+    const latin = !/[^\p{Script=Latin}\P{L}]/u.test(s.text)
+    if (merged.length > 1 && latin && words < SHORT_WORDS && !endsSentence && host && host !== s && !LATIN_LANGS.has(primary(host.lang))) {
+      s.lang = host.lang
+    }
+  }
+  return merge(merged)
 }
 
 /** The language for letters of one script: the fallback when it is written in that script (Marathi stays Marathi), else the script's own. */

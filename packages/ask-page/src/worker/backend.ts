@@ -5,6 +5,7 @@
 // when workers are unavailable. Same class either way.
 // ─────────────────────────────────────────────────────────────────────────────
 
+import { keywordQuestion } from "../search/questionWords"
 import { createSearchEngine, MODE_KEYWORD, type RawHit, type SearchEngine, type SearchMode } from "../search/engine"
 import { loadTransformersEmbedder, type EmbedProgress, type Embedder, type EmbedderConfig } from "../embed/embedder"
 
@@ -73,7 +74,8 @@ export class Backend {
     const e = this.need()
     let qvec: Float32Array | null = null
     if (mode !== MODE_KEYWORD && this.hasVectors && this.embedder) qvec = await this.embedder.embedQuery(question)
-    const res = e.search(question, qvec, qvec ? mode : MODE_KEYWORD, k)
+    // v1.0.1: keyword search without question words (ఎన్ని, అంటే…); vectors keep the whole question
+    const res = e.search(keywordQuestion(question), qvec, qvec ? mode : MODE_KEYWORD, k)
     return { ...res, usedVectors: !!qvec }
   }
 

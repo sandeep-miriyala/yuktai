@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.0.2 (2026-11-14)
+
+- **Question in another language** (A3): in Fast mode, an English question on a Telugu page (or the other way round) used to get a plain "no answer". Ask page now says why (Fast mode matches words) and suggests asking in the page's language, or turning on Balanced mode, whose multilingual model understands both.
+
+## 1.0.1 (2026-11-14)
+
+- **Telugu and Hindi questions find their answers.** Words that only make a sentence a question (ఎన్ని, ఎంత, అంటే, ఉన్నాయా, कितने, क्या…) are no longer required in the answer, so "గణాలు ఎన్ని?" finds "గణాలు ఎనిమిది".
+- **Focus goes back** to where it was when the panel closes; a `yuktai-ask-close` event is sent.
+- **Old highlight is cleared** when a question has no answer.
+- **Honest label**: when the browser has no built-in AI, the header says the answers come from search on this page, not "AI".
+- Clearer message on pages with a password or account area.
+
 ## 1.0.0 (2026-11-02)
 
 First stable release. The options in `OwnerConfig`, `mountAskPage`, `AskPage.ask()`, the `<yuktai-ask>` element and the WebMCP tool names now follow semantic versioning.

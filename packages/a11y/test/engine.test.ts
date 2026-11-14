@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest"
-import { createA11y, prefsCss, readAttributes, toJSON, message } from "../src/index"
+import { createA11y, prefsCss, readAttributes, toJSON, message, wantsDark } from "../src/index"
 
 const reset = (html: string, attrs: Record<string, string> = {}) => {
   document.documentElement.removeAttribute("lang")
@@ -94,9 +94,16 @@ describe("visitor preferences", () => {
   it("builds CSS only for what is chosen", () => {
     const base = { textSize: 100, spacing: false, reduceMotion: "off" as const, focusRing: false, theme: "default" as const, dark: "off" as const, level: "AA" as const }
     expect(prefsCss(base)).toBe("")
-    expect(prefsCss({ ...base, textSize: 150 })).toMatch(/font-size:150%/)
+    expect(prefsCss({ ...base, textSize: 150 })).toMatch(/zoom:1.5/)
+    // dark mode is not a page-wide filter any more
+    expect(prefsCss({ ...base, dark: "on" })).not.toMatch(/invert/)
     expect(prefsCss({ ...base, reduceMotion: "device" })).toMatch(/prefers-reduced-motion/)
-    expect(prefsCss({ ...base, dark: "on" })).toMatch(/invert/)
+    // smart dark mode: only with the Default theme, never on a dark page
+    expect(wantsDark({ ...base, dark: "on" })).toBe(true)
+    expect(wantsDark({ ...base, dark: "on" }, { alreadyDark: true })).toBe(false)
+    expect(wantsDark({ ...base, dark: "on", theme: "soft" })).toBe(false)
+    expect(wantsDark({ ...base, dark: "device" }, { deviceDark: true })).toBe(true)
+    expect(wantsDark({ ...base, dark: "device" }, { deviceDark: false })).toBe(false)
     // a faint custom text colour is darkened until it passes AA
     const css = prefsCss({ ...base, theme: "custom", custom: { text: "#bbbbbb", background: "#ffffff" } })
     expect(css).not.toMatch(/#bbbbbb/)
@@ -109,5 +116,37 @@ describe("visitor preferences", () => {
     expect(document.getElementById("yuktai-a11y-prefs")).toBeTruthy()
     a11y.destroy()
     expect(document.getElementById("yuktai-a11y-prefs")).toBeNull()
+  })
+})
+
+describe("v6.0.1 engine", () => {
+  it("flags a button named only by a symbol", () => {
+    reset(`<main><h1>x</h1><button id="b">❌</button><a href="/next">→</a></main>`)
+    const r = createA11y({ observe: false }).run()
+    expect(r.check.filter((f) => f.rule === "control-name-symbols")).toHaveLength(2)
+  })
+  it("flags a skip link whose target is missing", () => {
+    reset(`<a href="#content">Skip to main content</a><main><h1>x</h1></main>`)
+    const r = createA11y({ observe: false }).run()
+    expect(r.check.some((f) => f.rule === "skip-link-broken")).toBe(true)
+  })
+  it("re-detects the page language when a single-page app swaps the text", () => {
+    reset(`<main><h1>వనరులు</h1><p id="p">ఇది తెలుగు పేరా, చాలా పదాలు ఉన్నాయి ఇక్కడ చూడండి</p></main>`)
+    const a = createA11y({ observe: false })
+    a.run()
+    expect(document.documentElement.lang).toBe("te")
+    document.querySelector("h1")!.textContent = "Resources"
+    document.getElementById("p")!.textContent = "This is now an English paragraph with many words in it"
+    a.run()
+    expect(document.documentElement.lang).toBe("en")
+    expect(document.getElementById("p")!.hasAttribute("lang")).toBe(false)
+    a.destroy()
+  })
+  it("adds lang inside open shadow roots (web components)", () => {
+    reset(`<main><h1>Hello world page</h1><p>Some English words on the page here</p><div id="host"></div></main>`)
+    const sr = document.getElementById("host")!.attachShadow({ mode: "open" })
+    sr.innerHTML = `<p id="in">ఇది web component లోపలి తెలుగు వాక్యం ఇక్కడ ఉంది</p>`
+    createA11y({ observe: false }).run()
+    expect(sr.getElementById("in")!.getAttribute("lang")).toBe("te")
   })
 })

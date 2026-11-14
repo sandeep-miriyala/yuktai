@@ -1,6 +1,6 @@
 {
   "name": "@yuktishaalaa/a11y",
-  "version": "6.0.0",
+  "version": "6.0.2",
   "description": "Web accessibility for any page, in the browser: safe ARIA, WCAG AA/AAA contrast, automatic lang for every part, read aloud in the right voice, visitor preferences. One attribute, no server.",
   "author": "Sandeep Miriyala — Yuktishaalaa AI Lab",
   "license": "GPL-3.0-only",

@@ -18,7 +18,7 @@ async function inject(tab, action) {
   try {
     const loaded = await run(tab.id, { func: () => !!document.querySelector("yuktai-assistant") })
     if (!loaded) {
-      await run(tab.id, { func: () => { window.YuktaiAssistantConfig = Object.assign({ features: ["a11y", "ask"] }, window.YuktaiAssistantConfig) } })
+      await run(tab.id, { func: () => { window.YuktaiAssistantConfig = Object.assign({ features: ["a11y", "ask"], shortcut: false }, window.YuktaiAssistantConfig) } })
       await run(tab.id, { files: ["assistant.global.js"] })
     }
     await run(tab.id, {

@@ -2,6 +2,22 @@
 
 All notable changes to `@yuktishaalaa/yuktai`. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow [Semantic Versioning](https://semver.org/).
 
+## 6.0.2 (2026-11-14)
+
+- **`@yuktishaalaa/a11y` 6.0.2: smart dark mode.** Colours are changed one by one instead of inverting the page: photos, videos, emoji and brand colours keep their real colours, and text keeps WCAG AA/AAA contrast on the new dark backgrounds. New content is darkened as it arrives.
+- **`@yuktishaalaa/assistant` 6.0.2** uses it.
+- **`@yuktishaalaa/ask-page` 1.0.2**: a clear message when the question and the page are in different languages in Fast mode.
+- `@yuktishaalaa/yuktai` bundles the a11y 6.0.2 engine.
+
+## 6.0.1 (2026-11-14)
+
+Bug fixes for the YuktAI Assistant, found by testing on real sites.
+
+- **`@yuktishaalaa/a11y` 6.0.1**: read aloud skips emoji and symbols, reads only what is visible and the main content, keeps short English words in a Telugu sentence; text size works on `px` sites; no dark mode on already-dark pages; new checks for symbol-only buttons and broken skip links; single-page apps and shadow roots.
+- **`@yuktishaalaa/assistant` 6.0.1**: site title and brand colour, draggable text-size slider, messages that stay, panel language picker, Windows High Contrast, the panel follows dark/high contrast, "Go to main content", Alt+Shift+Y, one Ask button.
+- **`@yuktishaalaa/ask-page` 1.0.1**: Telugu/Hindi question words, focus returns on close, honest "search" label without built-in AI.
+- `@yuktishaalaa/yuktai` bundles the a11y 6.0.1 engine.
+
 ## 6.0.0
 
 YuktAI 6.0: the **YuktAI Assistant** and a new accessibility engine, **@yuktishaalaa/a11y**, shared by everything.

@@ -23,13 +23,14 @@ export * from "./contrast"
 export * from "./language"
 export * from "./speak"
 export * from "./prefs"
+export { darkBackground, lightText, enableDark, disableDark, isDarkOn } from "./darkmode"
 export * from "./attributes"
 export { accessibleName, auditAria, undoAria } from "./aria"
 export { findAll, type FoundTree } from "./finder"
 export { addSpeakButtons, type SpeakButtonsOptions } from "./speakButtons"
 export { message, describe, toJSON, MESSAGES, WCAG, type Finding, type Report, type RuleId, type FindingStatus } from "./report"
 
-export const VERSION = "6.0.0"
+export const VERSION = "6.0.2"
 
 export interface A11yOptions extends Partial<A11ySettings> {
   /** Document to work on. Default: the current document. */
@@ -84,9 +85,19 @@ export function createA11y(options: A11yOptions = {}): A11y {
 
       // Language (3.1.1, 3.1.2)
       if (settings.lang === "auto") {
+        // v6.0.1: languages YuktAI added earlier are worked out again on every
+        // run, so a single-page app that swaps the text (a Telugu page becomes
+        // an English page) gets the right <html lang> and part langs (bugs 24, 25).
+        if (fix) undoLanguages(doc)
         const page = pageLanguage(doc)
         if (page.mismatch && page.detected) add({ rule: "page-lang-mismatch", status: "check", wcag: WCAG["page-lang-mismatch"], where: "html", data: { declared: page.declared, detected: page.detected.lang }, el: doc.documentElement })
-        for (const c of annotateLanguages(doc, { apply: fix })) {
+        const changes = annotateLanguages(doc, { apply: fix })
+        // v6.0.1: inside open shadow roots (web components) too (bug 28)
+        for (const host of tree.elements) {
+          const sr = (host as Element & { shadowRoot: ShadowRoot | null }).shadowRoot
+          if (sr) changes.push(...annotateLanguages(doc, { apply: fix, root: sr }).filter((c) => c.scope === "part"))
+        }
+        for (const c of changes) {
           const rule = c.scope === "page" ? "page-lang-missing" : "part-lang-missing"
           add({ rule, status: fix ? "fixed" : "check", wcag: WCAG[rule], where: c.scope === "page" ? "html" : describe(c.el), data: { lang: c.lang }, el: c.el })
         }
@@ -145,11 +156,20 @@ export function createA11y(options: A11yOptions = {}): A11y {
   }
 
   if (options.observe !== false && typeof MutationObserver !== "undefined" && settings.mode !== "off") {
+    // v6.0.1: wait for the page to settle (400 ms), but never longer than
+    // 2 s, so a live feed that changes every few hundred ms is still checked.
+    let firstPending = 0
     observer = new MutationObserver((records) => {
       if (running) return
       if (!records.some((r) => r.type === "childList" && r.addedNodes.length)) return
       if (timer) clearTimeout(timer)
-      timer = setTimeout(run, 400)
+      const now = Date.now()
+      if (!firstPending) firstPending = now
+      const wait = now - firstPending >= 2000 ? 0 : 400
+      timer = setTimeout(() => {
+        firstPending = 0
+        run()
+      }, wait)
     })
     // Started after the first run by the caller of run(); watching body subtree.
     queueMicrotask(() => doc.body && observer?.observe(doc.body, { childList: true, subtree: true }))

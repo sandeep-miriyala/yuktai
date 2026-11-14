@@ -70,10 +70,13 @@ useEffect(() => {
 | `side` | `"right"`, `"left"` | `"right"` |
 | `ask` | Ask this page options (`modes`, `exclude`, `webmcp`, `webmcpToken`…) | |
 | `launcher` | show the ♿ button | `true` |
+| `title` | panel title, e.g. your site's name | `"YuktAI Assistant"` |
+| `color` | brand colour for the button and selected items, e.g. `"#B3261E"` | blue |
+| `shortcut` | Alt+Shift+Y opens and closes the panel | `true` |
 
 ## What visitors get
 
-- **Accessibility tab:** WCAG level (Off / AA / AAA), fix low contrast, reduce motion, clear focus ring, wider spacing, page language (found automatically), read the page aloud, and a report: fixed / please check / not checked.
+- **Accessibility tab:** go to main content, WCAG level (Off / AA / AAA), fix low contrast, reduce motion, clear focus ring, wider spacing, page language (found automatically), read the page aloud, panel language (English, తెలుగు, हिन्दी), and a report: fixed / please check / not checked.
 - **Colours tab:** Default, High contrast or Soft theme; dark mode (Off / On / Device); text size 100–200%. Saved on the device only.
 - **Ask tab:** Ask this page, answers with the source highlighted.
 

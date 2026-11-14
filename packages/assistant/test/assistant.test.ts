@@ -44,11 +44,11 @@ describe("mountAssistant", () => {
     a.open()
     click("#tab-colours")
     click("#dark-on")
-    expect(document.getElementById("yuktai-a11y-prefs")!.textContent).toMatch(/invert/)
+    expect(document.getElementById("yuktai-a11y-dark")).not.toBeNull()
     expect(JSON.parse(localStorage.getItem("yuktai-assistant:prefs")!).dark).toBe("on")
     click("#reset")
     // back to defaults: no dark mode; only "follow the device" motion setting remains
-    expect(document.getElementById("yuktai-a11y-prefs")?.textContent ?? "").not.toMatch(/invert/)
+    expect(document.getElementById("yuktai-a11y-dark")).toBeNull()
   })
 
   it("destroy removes the panel and every change", () => {
@@ -57,5 +57,98 @@ describe("mountAssistant", () => {
     a.destroy()
     expect(document.querySelector("yuktai-assistant")).toBeNull()
     expect(document.documentElement.hasAttribute("lang")).toBe(false)
+  })
+
+  describe("v6.0.1", () => {
+    it("site title and brand colour, with readable text on the colour", () => {
+      document.body.innerHTML = `<main><h1>Hello</h1><p>Some English text</p></main>`
+      const a = mountAssistant({ features: ["a11y"], title: "Chandamu Help", color: "#FFD400" })
+      a.open()
+      expect(shadow().querySelector("h2")!.textContent).toBe("Chandamu Help")
+      expect(shadow().querySelector(".launch")!.getAttribute("aria-label")).toMatch(/Chandamu Help/)
+      const host = document.querySelector("yuktai-assistant") as HTMLElement
+      expect(host.style.getPropertyValue("--accent")).toBe("#FFD400")
+      expect(host.style.getPropertyValue("--on-accent")).toBe("#000000")
+    })
+
+    it("tabs: arrow keys move only between the tabs that exist (no Ask)", () => {
+      document.body.innerHTML = `<main><h1>Hello</h1></main>`
+      const a = mountAssistant({ features: ["a11y"] })
+      a.open()
+      expect(shadow().querySelectorAll("[role=tab]").length).toBe(2)
+      const key = (k: string) => shadow().activeElement!.dispatchEvent(new KeyboardEvent("keydown", { key: k, bubbles: true, composed: true }))
+      ;(shadow().querySelector("#tab-a11y") as HTMLElement).focus()
+      key("ArrowRight")
+      expect(shadow().activeElement!.id).toBe("tab-colours")
+      key("ArrowRight")
+      expect(shadow().activeElement!.id).toBe("tab-a11y")
+      key("ArrowLeft")
+      expect(shadow().activeElement!.id).toBe("tab-colours")
+      // one Ask button only: none in the footer
+      expect(shadow().querySelector(".foot [data-act=ask]")).toBeNull()
+    })
+
+    it("text size slider applies while dragging without redrawing the panel", () => {
+      document.body.innerHTML = `<main><h1>Hello</h1></main>`
+      const a = mountAssistant({ features: ["a11y"] })
+      a.open()
+      click("#tab-colours")
+      const slider = shadow().querySelector("#size") as HTMLInputElement
+      slider.value = "150"
+      slider.dispatchEvent(new Event("input", { bubbles: true }))
+      expect(shadow().querySelector("#size")).toBe(slider) // same element: not redrawn
+      expect(document.getElementById("yuktai-a11y-prefs")!.textContent).toMatch(/zoom:1\.5/)
+      expect(shadow().querySelector("#size-label")!.textContent).toMatch(/150%/)
+      slider.dispatchEvent(new Event("change", { bubbles: true }))
+      expect(JSON.parse(localStorage.getItem("yuktai-assistant:prefs")!).textSize).toBe(150)
+    })
+
+    it("messages stay: the live region survives redraws and a notice is shown", () => {
+      document.body.innerHTML = `<main><h1>Hello</h1></main>`
+      const a = mountAssistant({ features: ["a11y"] })
+      a.open()
+      const status = shadow().querySelector("[role=status]")
+      a.element.announce("No voice for te", true)
+      click("#tab-colours")
+      click("#tab-a11y")
+      expect(shadow().querySelector("[role=status]")).toBe(status)
+      expect(shadow().querySelector(".notice")!.textContent).toBe("No voice for te")
+    })
+
+    it("panel language: lang matches the words, and the visitor can pick it", () => {
+      document.documentElement.lang = "te"
+      document.body.innerHTML = `<main><h1>Hello</h1></main>`
+      const a = mountAssistant({ features: ["a11y"] })
+      a.open()
+      expect(shadow().querySelector(".chip")!.textContent).toMatch(/పేజీ/)
+      const sel = shadow().querySelector("#uilang") as HTMLSelectElement
+      sel.value = "en"
+      sel.dispatchEvent(new Event("change", { bubbles: true }))
+      expect(shadow().querySelector("[role=dialog]")!.getAttribute("lang")).toBe("en")
+      expect(shadow().querySelector(".chip")!.textContent).toMatch(/set by the page/)
+      expect(localStorage.getItem("yuktai-assistant:uiLang")).toBe("en")
+    })
+
+    it("dark mode is held back with another theme, and the panel follows high contrast", () => {
+      document.body.innerHTML = `<main><h1>Hello</h1></main>`
+      const a = mountAssistant({ features: ["a11y"] })
+      a.open()
+      click("#tab-colours")
+      click("#theme-high-contrast")
+      expect(shadow().querySelector(".wrap")!.classList.contains("hc")).toBe(true)
+      expect(shadow().querySelector("#dark-on")!.getAttribute("aria-disabled")).toBe("true")
+      expect(shadow().textContent).toMatch(/Default theme/)
+    })
+
+    it("skip to main content moves focus to <main>; Alt+Shift+Y toggles the panel", () => {
+      document.body.innerHTML = `<nav><a href="/">Home</a></nav><main><h1>Hello</h1><p>${"Real content here. ".repeat(10)}</p></main>`
+      const a = mountAssistant({ features: ["a11y"] })
+      a.open()
+      click("#skip")
+      expect(document.activeElement!.tagName).toBe("MAIN")
+      expect(a.element.isOpen).toBe(false)
+      document.dispatchEvent(new KeyboardEvent("keydown", { code: "KeyY", key: "Y", altKey: true, shiftKey: true }))
+      expect(a.element.isOpen).toBe(true)
+    })
   })
 })

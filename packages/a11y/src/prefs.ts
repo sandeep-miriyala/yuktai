@@ -6,7 +6,8 @@
 // operating system setting (prefers-reduced-motion, prefers-color-scheme).
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { contrastRatio, nearestPassingColor, parseColor, requiredRatio, toHex, type Level } from "./contrast"
+import { DARK_STYLE_ID, disableDark, enableDark } from "./darkmode"
+import { contrastRatio, luminance, nearestPassingColor, parseColor, requiredRatio, toHex, type Level } from "./contrast"
 
 export type Tristate = "off" | "on" | "device"
 export type Theme = "default" | "high-contrast" | "soft" | "custom"
@@ -38,10 +39,11 @@ export const DEFAULT_PREFS: Prefs = {
 const STYLE_ID = "yuktai-a11y-prefs"
 
 /** The CSS for a set of preferences (exported for tests). */
-export function prefsCss(p: Prefs): string {
+export function prefsCss(p: Prefs, page: { alreadyDark?: boolean } = {}): string {
   const css: string[] = []
   const size = Math.min(200, Math.max(100, Math.round(p.textSize || 100)))
-  if (size !== 100) css.push(`html{font-size:${size}% !important}`)
+  // v6.0.1: zoom, not html font-size, so sites sized in px grow too (bug 5)
+  if (size !== 100) css.push(`body>*:not([data-yuktai-ui]){zoom:${size / 100} !important}`)
   if (p.spacing) {
     css.push(
       `body *:not([data-yuktai-ui]):not([data-yuktai-ui] *){line-height:1.5 !important;letter-spacing:.12em !important;word-spacing:.16em !important}`,
@@ -73,35 +75,86 @@ export function prefsCss(p: Prefs): string {
     }
   }
 
-  const dark = `html{filter:invert(1) hue-rotate(180deg) !important;background:#FFF}img,video,picture,canvas,iframe,svg image,[style*="background-image"],[data-yuktai-ui]{filter:invert(1) hue-rotate(180deg) !important}`
-  // Dark mode only when the theme does not already set colours.
-  if (p.theme === "default") {
-    if (p.dark === "on") css.push(dark)
-    if (p.dark === "device") css.push(`@media (prefers-color-scheme: dark){${dark}}`)
-  }
+  // Dark mode is not CSS any more (v6.0.2): see darkmode.ts and applyPrefs.
+  void page
   return css.join("\n")
 }
+
+/** Should smart dark mode be on for these preferences on this page? (exported for tests) */
+export function wantsDark(p: Prefs, page: { alreadyDark?: boolean; deviceDark?: boolean } = {}): boolean {
+  // Only with the Default theme (the others set their own colours), and never
+  // on a page that is already dark: that would make it light (bugs 20, 21).
+  if (p.theme !== "default" || page.alreadyDark) return false
+  return p.dark === "on" || (p.dark === "device" && !!page.deviceDark)
+}
+
+const deviceWatch = new WeakMap<Document, { mql: MediaQueryList; on: () => void }>()
 
 /** Applies preferences to the page (replacing earlier ones). */
 export function applyPrefs(doc: Document, p: Prefs): void {
   const css = prefsCss(p)
   let style = doc.getElementById(STYLE_ID) as HTMLStyleElement | null
-  if (!css) {
-    style?.remove()
-    return
+  if (!css) style?.remove()
+  else {
+    if (!style) {
+      style = doc.createElement("style")
+      style.id = STYLE_ID
+      style.setAttribute("data-yuktai-ui", "")
+      ;(doc.head ?? doc.documentElement).appendChild(style)
+    }
+    style.textContent = css
   }
-  if (!style) {
-    style = doc.createElement("style")
-    style.id = STYLE_ID
-    style.setAttribute("data-yuktai-ui", "")
-    ;(doc.head ?? doc.documentElement).appendChild(style)
+  // Smart dark mode
+  const win = doc.defaultView
+  const mql = win && typeof win.matchMedia === "function" ? win.matchMedia("(prefers-color-scheme: dark)") : null
+  const old = deviceWatch.get(doc)
+  if (old) {
+    old.mql.removeEventListener?.("change", old.on)
+    deviceWatch.delete(doc)
   }
-  style.textContent = css
+  if (p.dark === "device" && mql) {
+    // Follow the device when it switches between light and dark
+    const on = () => applyPrefs(doc, p)
+    mql.addEventListener?.("change", on)
+    deviceWatch.set(doc, { mql, on })
+  }
+  if (wantsDark(p, { alreadyDark: pageIsDark(doc), deviceDark: !!mql?.matches })) enableDark(doc, p.level)
+  else disableDark(doc)
+}
+
+/**
+ * True when the page shows itself dark already: its own dark colour scheme is
+ * on, or the page background is dark. Read with YuktAI's own style removed,
+ * so our dark mode does not count.
+ */
+export function pageIsDark(doc: Document): boolean {
+  const win = doc.defaultView
+  if (!win) return false
+  // Read with YuktAI's own styles off, so our dark mode does not count
+  const ours = [STYLE_ID, DARK_STYLE_ID].map((id) => doc.getElementById(id) as HTMLStyleElement | null).filter((s): s is HTMLStyleElement => !!s)
+  const saved = ours.map((s) => s.disabled)
+  ours.forEach((s) => (s.disabled = true))
+  try {
+    for (const el of [doc.body, doc.documentElement]) {
+      if (!el) continue
+      const bg = parseColor(win.getComputedStyle(el).backgroundColor)
+      if (bg && bg.a > 0.5) return luminance(bg) < 0.2
+    }
+    return false
+  } finally {
+    ours.forEach((s, i) => (s.disabled = saved[i]))
+  }
 }
 
 /** Takes every preference off the page. */
 export function clearPrefs(doc: Document): void {
   doc.getElementById(STYLE_ID)?.remove()
+  disableDark(doc)
+  const w = deviceWatch.get(doc)
+  if (w) {
+    w.mql.removeEventListener?.("change", w.on)
+    deviceWatch.delete(doc)
+  }
 }
 
 /** Reads saved preferences; storage may be blocked, so this never throws. */

@@ -41,6 +41,8 @@ export type RuleId =
   | "contrast-unknown"
   | "img-alt-missing"
   | "control-name-missing"
+  | "control-name-symbols"
+  | "skip-link-broken"
   | "fake-button"
   | "clickable-not-focusable"
   | "field-label-missing"
@@ -64,6 +66,8 @@ export const WCAG: Record<RuleId, string> = {
   "contrast-unknown": "1.4.3",
   "img-alt-missing": "1.1.1",
   "control-name-missing": "4.1.2",
+  "control-name-symbols": "2.4.6",
+  "skip-link-broken": "2.4.1",
   "fake-button": "4.1.2",
   "clickable-not-focusable": "2.1.1",
   "field-label-missing": "3.3.2",
@@ -92,6 +96,8 @@ export const MESSAGES: Record<Lang, Record<RuleId, string>> = {
     "contrast-unknown": "Contrast not checked: {reason}.",
     "img-alt-missing": "Image has no alt text. Describe it, or use alt=\"\" if it is decoration.",
     "control-name-missing": "A {tag} has no name a screen reader can say.",
+    "control-name-symbols": "A {tag} is named only by \"{text}\": a screen reader says the symbol's name, not what it does. Add aria-label.",
+    "skip-link-broken": "The \"skip to content\" link points to \"{target}\", which is not on the page.",
     "fake-button": "A clickable {tag} was not a button. Added role, focus and Enter/Space. A real <button> is better.",
     "clickable-not-focusable": "Something clickable ({tag}) cannot be reached by keyboard.",
     "field-label-missing": "A form field has no label.",
@@ -115,6 +121,8 @@ export const MESSAGES: Record<Lang, Record<RuleId, string>> = {
     "contrast-unknown": "Contrast check చేయలేకపోయాం: {reason}.",
     "img-alt-missing": "Image కి alt లేదు. వివరణ రాయండి, అలంకారమైతే alt=\"\" పెట్టండి.",
     "control-name-missing": "{tag} కి screen reader చెప్పగలిగే పేరు లేదు.",
+    "control-name-symbols": "{tag} పేరు \"{text}\" అనే గుర్తు మాత్రమే: screen reader ఆ గుర్తు పేరు చెప్తుంది, button పని కాదు. aria-label జోడించండి.",
+    "skip-link-broken": "\"Skip to content\" link \"{target}\" కి వెళ్తుంది, అది page లో లేదు.",
     "fake-button": "Click చేసే {tag} button కాదు. Role, focus, Enter/Space జోడించాం. నిజమైన <button> ఇంకా మంచిది.",
     "clickable-not-focusable": "Click చేసే {tag} ని keyboard తో చేరలేము.",
     "field-label-missing": "Form field కి label లేదు.",

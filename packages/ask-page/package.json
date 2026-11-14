@@ -1,6 +1,6 @@
 {
   "name": "@yuktishaalaa/ask-page",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Ask any web page. A side panel that answers from the page itself, with sources highlighted. Rust/WASM search, on-device AI, nothing sent anywhere.",
   "author": "Sandeep Miriyala — Yuktishaalaa AI Lab",
   "license": "GPL-3.0-only",
