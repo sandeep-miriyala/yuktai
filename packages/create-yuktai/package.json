@@ -1,7 +1,7 @@
 {
   "name": "create-yuktai",
   "version": "1.0.0",
-  "description": "npm create yuktai@latest: create a YuktAI app (Next.js, accessible, Indian languages) in one command.",
+  "description": "YuktAI starter: npm create yuktai@latest makes a new accessible Next.js app in Indian languages, in one command.",
   "type": "module",
   "bin": {
     "create-yuktai": "bin/create-yuktai.mjs"

@@ -1,7 +1,7 @@
 {
   "name": "@yuktishaalaa/a11y",
-  "version": "6.0.2",
-  "description": "Web accessibility for any page, in the browser: safe ARIA, WCAG AA/AAA contrast, automatic lang for every part, read aloud in the right voice, visitor preferences. One attribute, no server.",
+  "version": "6.0.3",
+  "description": "YuktAI engine (accessibility): safe ARIA, WCAG AA/AAA contrast, automatic lang for every part, read aloud in the right voice, smart dark mode and visitor preferences for any page. One attribute, no server.",
   "author": "Sandeep Miriyala — Yuktishaalaa AI Lab",
   "license": "GPL-3.0-only",
   "homepage": "https://sandeep-miriyala.github.io/yuktai/",

@@ -32,7 +32,7 @@ export default function StackTable({ rows }: { rows: StackRow[] }) {
   const table = useTable({ features, columns, data });
 
   return (
-    <div className="table-box">
+    <div className="table-box" tabIndex={0} role="region" aria-label="Stack table (scrolls sideways)">
       <table className="compare stack-table">
         <caption className="sr-only">The tools this site is built with. Layer and Tool columns can be sorted.</caption>
         <thead>

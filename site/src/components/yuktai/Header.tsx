@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { ChatIcon, GlobeIcon } from "@yuktishaalaa/yuktai/icons";
 import { YuktaiPreferences, useUiText } from "@yuktishaalaa/yuktai/experience";
@@ -20,6 +21,23 @@ export default function Header() {
     const page = href.split("#")[0];
     return href.startsWith("/") && page !== "/" && !href.startsWith("/#") && path.startsWith(page);
   };
+  // Links to a section (#packages) and keyboard focus must not end up under this
+  // sticky header (WCAG 2.4.11). On phones it wraps to two or three rows, so the
+  // space the page keeps for it follows its real height.
+  useEffect(() => {
+    const h = document.querySelector<HTMLElement>("header.topbar");
+    if (!h || typeof ResizeObserver === "undefined") return;
+    const set = () => document.documentElement.style.setProperty("scroll-padding-top", `${Math.ceil(h.getBoundingClientRect().height) + 16}px`);
+    set();
+    // opened with #section in the address: the browser jumped before this ran
+    if (location.hash.length > 1) {
+      try { document.querySelector(decodeURIComponent(location.hash))?.scrollIntoView(); } catch {}
+    }
+    const ro = new ResizeObserver(set);
+    ro.observe(h);
+    return () => ro.disconnect();
+  }, []);
+
   return (
     <header className="topbar" data-lang={lang}>
       <div className="topbar-in">

@@ -1,5 +1,11 @@
 # Changelog
 
+## 6.0.4 (2026-11-14)
+
+- **"What to check" list** under the report counts: each item that needs a person, with its WCAG number and where it is. It stays open while you change settings.
+- The first tab's name is translated: "అందుబాటు" in Telugu, "सुलभता" in Hindi (it said "Accessibility" in every language).
+- Uses `@yuktishaalaa/a11y` 6.0.3: dark mode for CSS icons and gradient text.
+
 ## 6.0.3 (2026-11-14)
 
 - **New options:** `panelLang` (the panel language new visitors start with) and `offset` (move the ♿ button, e.g. above a chat button).

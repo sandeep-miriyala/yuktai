@@ -212,7 +212,7 @@ export function addStyles(primary, side) {
 .yv-empty,.yv-loading{padding:28px 16px;text-align:center;color:var(--yv-muted)}
 .yv-cards{display:grid;gap:10px;padding:12px;list-style:none;margin:0}
 .yv-card{border:1px solid var(--yv-border);border-radius:10px;padding:10px 12px;background:var(--yv-surface)}
-.yv-card[aria-selected=true]{background:var(--yv-sel-bg);border-color:var(--yv-primary)}
+.yv-card[data-selected=true]{background:var(--yv-sel-bg);border-color:var(--yv-primary)}
 .yv-card.yv-hl{border-left:6px solid var(--yv-hl-edge)}
 .yv-card:focus{outline:3px solid #2563eb;outline-offset:2px}
 .yv-card-head{display:flex;align-items:center;justify-content:space-between;gap:8px}

@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { CheckIcon, ArrowRightIcon } from "@yuktishaalaa/yuktai/icons";
 import {
-  COMPARE, GUIDES, LINKS, PACKAGES, STACKS, STATS, STEPS, TESTS, TEST_TOTAL, VERSIONS, WEB_SHARE,
+  COMPARE, GUIDES, LINKS, PACKAGE_GROUPS, PACKAGES, STACKS, STATS, STEPS, TESTS, TEST_TOTAL, VERSIONS, WEB_SHARE,
 } from "@/data/site";
+import { CountUp, InView } from "./Motion";
 import { GuideIcon } from "@/components/ui/Icon";
 import { asset } from "@/lib/base";
 
@@ -15,7 +16,7 @@ export function Stats() {
     <section className="wrap stats" aria-label="At a glance">
       {STATS.map((s) => (
         <div key={s.label} className="stat">
-          <span className="num grad">{s.value}</span>
+          <CountUp value={s.value} className="num grad" />
           <span>{s.label}</span>
         </div>
       ))}
@@ -106,7 +107,7 @@ export function Compare() {
     <section className="wrap">
       <Kicker>Why YuktAI</Kicker>
       <h2>AI help on your site, without sending anything away</h2>
-      <div className="table-box">
+      <div className="table-box" tabIndex={0} role="region" aria-label="Comparison table (scrolls sideways)">
         <table className="compare">
           <thead>
             <tr><td /><th scope="col" className="us">YuktAI</th><th scope="col">Typical cloud AI widget</th></tr>
@@ -162,38 +163,73 @@ export function Start() {
 }
 
 export function Packages() {
+  const byName = (n: string) => PACKAGES.find((p) => p.name === n)!;
+  const node = (n: string, cls: string) => {
+    const p = byName(n);
+    return (
+      <a className={`fam-node ${cls}`} href={`#pkg-${p.name.replace(/[@/]/g, "")}`}>
+        <strong>{p.short}</strong>
+        <span className="fam-pkg">{p.name}</span>
+        <span className="fam-ver">v{p.version}</span>
+      </a>
+    );
+  };
   return (
     <section id="packages" className="wrap">
       <Kicker>npm packages</Kicker>
-      <h2>Three packages, all free on npm</h2>
-      <p className="lead">Start a new app with the <code>yuktai</code> command, or add the two libraries to a site you already have.</p>
-      <ul className="pkg-grid">
-        {PACKAGES.map((p) => (
-          <li key={p.name} className={p.cli ? "pkg pkg-cli yk-lift" : "pkg yk-lift"}>
-            <div className="pkg-head">
-              <span className="iconbox"><GuideIcon name={p.icon} /></span>
-              <div>
-                <strong className="pkg-name">{p.name}</strong>
-                <span className="pkg-ver">v{p.version} · GPL-3.0{p.cli ? " · command line" : ""}</span>
-              </div>
-            </div>
-            <p>{p.text}</p>
-            {p.cli ? (
-              <pre className="pkg-steps"><code>{`${p.install}
-cd my-app
-npm run dev        # http://localhost:3000`}</code></pre>
-            ) : (
-              <code className="pkg-install">{p.install}</code>
-            )}
-            <p className="pkg-site"><strong>On this site:</strong> {p.onThisSite}</p>
-            <p className="pkg-links">
-              <a href={p.npm}>npm <ArrowRightIcon size={16} aria-hidden="true" /></a>
-              {p.guide && <Link href={p.guide}>How to create an app <ArrowRightIcon size={16} aria-hidden="true" /></Link>}
-              {p.cdn && <a href={p.cdn}>jsDelivr <ArrowRightIcon size={16} aria-hidden="true" /></a>}
-            </p>
-          </li>
-        ))}
-      </ul>
+      <h2>
+        <CountUp value={PACKAGES.length} /> free packages, one family
+      </h2>
+      <p className="lead">
+        Two main products: the <strong>Toolkit</strong> for apps you build, the <strong>Assistant</strong> for websites you already have. Both run on the same two engines.
+      </p>
+
+      <InView className="family" label="The YuktAI family: YuktAI on top; the Toolkit and the Assistant under it; both use the accessibility engine, and the Assistant also uses the Ask engine. Two starters make a new app.">
+        <div className="fam-root"><span>YuktAI</span></div>
+        <div className="fam-row fam-main">
+          {node("@yuktishaalaa/yuktai", "is-main")}
+          {node("@yuktishaalaa/assistant", "is-main")}
+        </div>
+        <p className="fam-label">both run on</p>
+        <div className="fam-row fam-engines">
+          {node("@yuktishaalaa/a11y", "is-engine")}
+          {node("@yuktishaalaa/ask-page", "is-engine")}
+        </div>
+        <p className="fam-label">start a new app with</p>
+        <div className="fam-row fam-start">
+          {node("create-yuktai", "is-start")}
+          {node("yuktai", "is-start")}
+        </div>
+      </InView>
+
+      {PACKAGE_GROUPS.map((g) => (
+        <div key={g.key} className="pkg-group">
+          <h3>{g.title}</h3>
+          <p className="pkg-group-text">{g.text}</p>
+          <ul className="pkg-grid">
+            {PACKAGES.filter((p) => p.group === g.key).map((p) => (
+              <li key={p.name} id={`pkg-${p.name.replace(/[@/]/g, "")}`} className={`pkg pkg-${p.group} yk-lift`}>
+                <div className="pkg-head">
+                  <span className="iconbox"><GuideIcon name={p.icon} /></span>
+                  <div>
+                    <strong className="pkg-name">{p.short}</strong>
+                    <span className="pkg-ver"><code>{p.name}</code> · v{p.version} · GPL-3.0</span>
+                  </div>
+                </div>
+                <p className="pkg-who">{p.who}</p>
+                <p>{p.text}</p>
+                <code className="pkg-install">{p.install}</code>
+                {p.onThisSite && <p className="pkg-site"><strong>On this site:</strong> {p.onThisSite}</p>}
+                <p className="pkg-links">
+                  <a href={p.npm}>npm <span className="sr-only">: {p.name}</span><ArrowRightIcon size={16} aria-hidden="true" /></a>
+                  {p.guide && <Link href={p.guide.href}>{p.guide.label} <ArrowRightIcon size={16} aria-hidden="true" /></Link>}
+                  {p.cdn && <a href={p.cdn}>jsDelivr <span className="sr-only">: {p.name}</span><ArrowRightIcon size={16} aria-hidden="true" /></a>}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
     </section>
   );
 }

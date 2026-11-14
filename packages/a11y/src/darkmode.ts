@@ -143,7 +143,7 @@ export function enableDark(doc: Document, level: Level = "AA"): void {
           const list = [...s.pending].filter((e) => e.isConnected)
           s.pending.clear()
           if (list.length) paint(doc, s, list)
-        }, 150)
+        }, 300)
       }
     })
     st.observer.observe(doc.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["class", "style"] })
@@ -212,7 +212,14 @@ function paint(doc: Document, st: State, roots: Element[]): void {
   if (added || !style.textContent) {
     const sel = (i: number) => `[${ATTR}="${i}"]`.repeat(3)
     const out = [":root{color-scheme:dark}", "::placeholder{color:#9AA0A6 !important}"]
-    for (const [rule, i] of st.rules) out.push(`${sel(i)}{${rule}}`)
+    for (const [rule, i] of st.rules) {
+      const [main, ...pseudos] = rule.split(";\u0001").join("\u0001").split("\u0001")
+      if (main) out.push(`${sel(i)}{${main}}`)
+      for (const p of pseudos) {
+        const m = p.match(/^(before|after)\{(.*)\}$/)
+        if (m) out.push(`${sel(i)}::${m[1]}{${m[2]}}`)
+      }
+    }
     style.textContent = out.join("\n")
   }
 }
@@ -256,6 +263,17 @@ function read(el: Element, parent: Info | null, level: Level, win: Window): { in
   if (!isRoot && !isSvg) {
     const image = cs.backgroundImage
     let own = parseColor(cs.backgroundColor)
+    const clipText = cs.getPropertyValue("background-clip") === "text" || cs.getPropertyValue("-webkit-background-clip") === "text"
+    if (clipText && image && image !== "none" && !/url\(/i.test(image)) {
+      // Gradient text (a heading or a big number painted with a gradient):
+      // keep the gradient, just make each of its colours light.
+      const lit = image.replace(/rgba?\([^)]*\)/gi, (m) => {
+        const c = parseColor(m)
+        return c ? css(lightText(c)) : m
+      })
+      out.push(`background-image:${lit} !important`)
+      return { info: { fg, shown: parent?.shown ?? fg, bg, picture }, rule: [...out, ...pseudo(el, bg, picture, level, win)].join(";") }
+    }
     if (image && image !== "none") {
       if (/url\(/i.test(image)) {
         picture = true
@@ -315,5 +333,42 @@ function read(el: Element, parent: Info | null, level: Level, win: Window): { in
     }
   }
 
-  return { info: { fg, shown, bg, picture }, rule: out.join(";") }
+  return { info: { fg, shown, bg, picture }, rule: [...out, ...pseudo(el, bg, picture, level, win)].join(";") }
+}
+
+/**
+ * ::before and ::after: icon fonts (★, Font Awesome), badges and bullets are
+ * often drawn there. They get the same treatment as text and backgrounds.
+ * Returned as "\u0001before{…}" parts that paint() turns into their own rules.
+ */
+function pseudo(el: Element, bg: RGBA, picture: boolean, level: Level, win: Window): string[] {
+  if (el.namespaceURI === SVG_NS) return []
+  const parts: string[] = []
+  for (const which of ["before", "after"] as const) {
+    const ps = win.getComputedStyle(el, `::${which}`)
+    const content = ps.content
+    if (!content || content === "none" || content === "normal") continue
+    const rules: string[] = []
+    let pbg = bg
+    const own = parseColor(ps.backgroundColor)
+    if (own && own.a > 0) {
+      const dark = darkBackground(own)
+      rules.push(`background-color:${css(dark)} !important`)
+      pbg = dark.a >= 1 ? { ...dark, a: 1 } : { ...blend(dark, bg), a: 1 }
+    }
+    const fg = parseColor(ps.color)
+    if (fg && fg.a > 0 && !picture) {
+      const light = lightText(fg)
+      const solid = light.a < 1 ? { ...blend(light, pbg), a: 1 } : light
+      const need = requiredRatio(level === "off" ? "AA" : level, isLargeText(parseFloat(ps.fontSize) || 16, parseInt(ps.fontWeight, 10) || 400))
+      const want = contrastRatio(solid, pbg) + 1e-9 >= need ? light : nearestPassingColor(solid, pbg, need)
+      rules.push(`color:${css(want)} !important`)
+    }
+    if (parseFloat(ps.borderTopWidth) > 0) {
+      const b = parseColor(ps.borderTopColor)
+      if (b && b.a > 0) rules.push(`border-color:${css(darkBorder(b))} !important`)
+    }
+    if (rules.length) parts.push(`\u0001${which}{${rules.join(";")}}`)
+  }
+  return parts
 }

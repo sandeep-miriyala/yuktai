@@ -178,16 +178,16 @@
     const raw = cellValue(row, column.key);
     const kind = column.type ?? "text";
     if (kind === "number" || kind === "date") {
-      const read = kind === "number" ? toNumber : toTime;
-      const cell = read(raw);
+      const read2 = kind === "number" ? toNumber : toTime;
+      const cell = read2(raw);
       if (cell === null) return false;
       if (filter.operator === "between") {
         const [a, b] = filter.value;
-        const lo = read(a);
-        const hi = read(b);
+        const lo = read2(a);
+        const hi = read2(b);
         return lo !== null && hi !== null && cell >= Math.min(lo, hi) && cell <= Math.max(lo, hi);
       }
-      const target2 = read(filter.value);
+      const target2 = read2(filter.value);
       if (target2 === null) return false;
       switch (filter.operator) {
         case "equals":
@@ -217,13 +217,13 @@
   }
   function isValidFilter(filter, column) {
     const kind = column.type ?? "text";
-    const read = kind === "date" ? toTime : toNumber;
+    const read2 = kind === "date" ? toTime : toNumber;
     if (filter.operator === "between") {
       if (kind === "text" || !Array.isArray(filter.value) || filter.value.length !== 2) return false;
-      return read(filter.value[0]) !== null && read(filter.value[1]) !== null;
+      return read2(filter.value[0]) !== null && read2(filter.value[1]) !== null;
     }
     if (filter.operator === "greaterThan" || filter.operator === "lessThan") {
-      return kind !== "text" && read(filter.value) !== null;
+      return kind !== "text" && read2(filter.value) !== null;
     }
     return !Array.isArray(filter.value) && String(filter.value).trim() !== "";
   }
@@ -1306,11 +1306,11 @@ ${summarizeRows(rows, columns)}` };
     return { r: mix(top.r, bottom.r), g: mix(top.g, bottom.g), b: mix(top.b, bottom.b), a };
   }
   function relativeLuminance(c) {
-    const channel = (v) => {
+    const channel2 = (v) => {
       const s = v / 255;
       return s <= 0.04045 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
     };
-    return 0.2126 * channel(c.r) + 0.7152 * channel(c.g) + 0.0722 * channel(c.b);
+    return 0.2126 * channel2(c.r) + 0.7152 * channel2(c.g) + 0.0722 * channel2(c.b);
   }
   function contrastRatio(fg, bg) {
     const opaqueBg = bg.a < 1 ? blend(bg, { r: 255, g: 255, b: 255, a: 1 }) : bg;
@@ -4188,6 +4188,350 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
     return "";
   }
 
+  // packages/a11y/src/contrast.ts
+  function parseColor2(value) {
+    if (!value) return null;
+    const v = value.trim().toLowerCase();
+    if (v === "transparent") return { r: 0, g: 0, b: 0, a: 0 };
+    const rgb = v.match(/^rgba?\(\s*([\d.]+)[\s,]+([\d.]+)[\s,]+([\d.]+)(?:\s*[,/]\s*([\d.]+%?))?\s*\)$/);
+    if (rgb) {
+      let a = 1;
+      if (rgb[4] !== void 0) a = rgb[4].endsWith("%") ? parseFloat(rgb[4]) / 100 : parseFloat(rgb[4]);
+      return { r: +rgb[1], g: +rgb[2], b: +rgb[3], a };
+    }
+    const hex = v.match(/^#([0-9a-f]{3,8})$/);
+    if (hex) {
+      let h2 = hex[1];
+      if (h2.length === 3 || h2.length === 4) h2 = h2.split("").map((c) => c + c).join("");
+      if (h2.length !== 6 && h2.length !== 8) return null;
+      return {
+        r: parseInt(h2.slice(0, 2), 16),
+        g: parseInt(h2.slice(2, 4), 16),
+        b: parseInt(h2.slice(4, 6), 16),
+        a: h2.length === 8 ? parseInt(h2.slice(6, 8), 16) / 255 : 1
+      };
+    }
+    return null;
+  }
+  var channel = (v) => {
+    const c = v / 255;
+    return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+  };
+  function luminance(c) {
+    return 0.2126 * channel(c.r) + 0.7152 * channel(c.g) + 0.0722 * channel(c.b);
+  }
+  function contrastRatio2(a, b) {
+    const l1 = luminance(a);
+    const l2 = luminance(b);
+    const [hi, lo] = l1 > l2 ? [l1, l2] : [l2, l1];
+    return (hi + 0.05) / (lo + 0.05);
+  }
+  function blend2(top, bottom) {
+    const a = top.a;
+    return {
+      r: Math.round(top.r * a + bottom.r * (1 - a)),
+      g: Math.round(top.g * a + bottom.g * (1 - a)),
+      b: Math.round(top.b * a + bottom.b * (1 - a)),
+      a: 1
+    };
+  }
+  function isLargeText2(fontSizePx, fontWeight) {
+    return fontSizePx >= 24 || fontSizePx >= 18.66 && fontWeight >= 700;
+  }
+  function requiredRatio(level, large) {
+    if (level === "AAA") return large ? 4.5 : 7;
+    return large ? 3 : 4.5;
+  }
+  var WHITE = { r: 255, g: 255, b: 255, a: 1 };
+  var toHex = (c) => "#" + [c.r, c.g, c.b].map((v) => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, "0")).join("");
+  function nearestPassingColor(fg, bg, required) {
+    if (contrastRatio2(fg, bg) >= required) return { ...fg, a: 1 };
+    const towardsBlack = luminance(bg) > 0.18;
+    const target = towardsBlack ? { r: 0, g: 0, b: 0, a: 1 } : WHITE;
+    for (let t = 0.05; t <= 1.0001; t += 0.05) {
+      const c = {
+        r: fg.r + (target.r - fg.r) * t,
+        g: fg.g + (target.g - fg.g) * t,
+        b: fg.b + (target.b - fg.b) * t,
+        a: 1
+      };
+      const rounded = { r: Math.round(c.r), g: Math.round(c.g), b: Math.round(c.b), a: 1 };
+      if (contrastRatio2(rounded, bg) >= required) return rounded;
+    }
+    return contrastRatio2({ r: 0, g: 0, b: 0, a: 1 }, bg) >= contrastRatio2(WHITE, bg) ? { r: 0, g: 0, b: 0, a: 1 } : WHITE;
+  }
+
+  // packages/a11y/src/darkmode.ts
+  var DARK_STYLE_ID = "yuktai-a11y-dark";
+  var ATTR = "data-yuktai-dk";
+  var MAX_ELEMENTS = 25e3;
+  var SKIP2 = /* @__PURE__ */ new Set(["SCRIPT", "STYLE", "NOSCRIPT", "TEMPLATE", "HEAD", "META", "LINK", "TITLE", "BR", "WBR"]);
+  var MEDIA = /* @__PURE__ */ new Set(["IMG", "PICTURE", "VIDEO", "CANVAS", "IFRAME", "OBJECT", "EMBED", "AUDIO"]);
+  var SVG_NS = "http://www.w3.org/2000/svg";
+  function toHsl({ r, g, b }) {
+    const R = r / 255, G = g / 255, B = b / 255;
+    const max = Math.max(R, G, B), min = Math.min(R, G, B);
+    const l = (max + min) / 2;
+    if (max === min) return { h: 0, s: 0, l };
+    const d = max - min;
+    const s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    const h2 = max === R ? (G - B) / d + (G < B ? 6 : 0) : max === G ? (B - R) / d + 2 : (R - G) / d + 4;
+    return { h: h2 / 6, s, l };
+  }
+  function fromHsl({ h: h2, s, l }, a) {
+    if (s === 0) return { r: l * 255, g: l * 255, b: l * 255, a };
+    const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+    const p = 2 * l - q;
+    const f = (t) => {
+      if (t < 0) t += 1;
+      if (t > 1) t -= 1;
+      if (t < 1 / 6) return p + (q - p) * 6 * t;
+      if (t < 1 / 2) return q;
+      if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+      return p;
+    };
+    return { r: f(h2 + 1 / 3) * 255, g: f(h2) * 255, b: f(h2 - 1 / 3) * 255, a };
+  }
+  function darkBackground(c) {
+    const hsl = toHsl(c);
+    if (hsl.l <= 0.45) return c;
+    return fromHsl({ h: hsl.h, s: hsl.s * 0.75, l: 0.1 + (1 - hsl.l) * 0.3 }, c.a);
+  }
+  function lightText(c) {
+    const hsl = toHsl(c);
+    if (hsl.l >= 0.55) return c;
+    return fromHsl({ h: hsl.h, s: hsl.s, l: 0.92 - hsl.l * 0.35 }, c.a);
+  }
+  function darkBorder(c) {
+    const hsl = toHsl(c);
+    if (hsl.l <= 0.5) return lightText(c);
+    return fromHsl({ h: hsl.h, s: hsl.s * 0.6, l: 0.22 + (1 - hsl.l) * 0.3 }, c.a);
+  }
+  var css = (c) => c.a >= 1 ? toHex(c) : `rgba(${Math.round(c.r)},${Math.round(c.g)},${Math.round(c.b)},${+c.a.toFixed(3)})`;
+  var same = (a, b) => !!a && !!b && Math.round(a.r) === Math.round(b.r) && Math.round(a.g) === Math.round(b.g) && Math.round(a.b) === Math.round(b.b) && Math.abs(a.a - b.a) < 0.01;
+  var states = /* @__PURE__ */ new WeakMap();
+  function enableDark(doc, level = "AA") {
+    const win = doc.defaultView;
+    if (!win || !doc.body) return;
+    let st = states.get(doc);
+    if (st && st.level === level) return;
+    if (st) disableDark(doc);
+    st = { level, info: /* @__PURE__ */ new WeakMap(), rules: /* @__PURE__ */ new Map(), observer: null, pending: /* @__PURE__ */ new Set(), timer: null };
+    states.set(doc, st);
+    const style = doc.createElement("style");
+    style.id = DARK_STYLE_ID;
+    style.setAttribute("data-yuktai-ui", "");
+    (doc.head ?? doc.documentElement).appendChild(style);
+    paint(doc, st, [doc.documentElement]);
+    if (typeof win.MutationObserver === "function") {
+      st.observer = new win.MutationObserver((records) => {
+        const s = states.get(doc);
+        if (!s) return;
+        for (const r of records) {
+          if (r.type === "childList") r.addedNodes.forEach((n) => n.nodeType === 1 && !isOurs(n) && s.pending.add(n));
+          else if (r.target.nodeType === 1 && !isOurs(r.target)) s.pending.add(r.target);
+        }
+        if (s.pending.size && !s.timer) {
+          s.timer = setTimeout(() => {
+            s.timer = null;
+            const list = [...s.pending].filter((e) => e.isConnected);
+            s.pending.clear();
+            if (list.length) paint(doc, s, list);
+          }, 300);
+        }
+      });
+      st.observer.observe(doc.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["class", "style"] });
+    }
+  }
+  function disableDark(doc) {
+    var _a, _b;
+    const st = states.get(doc);
+    if (!st) return;
+    (_a = st.observer) == null ? void 0 : _a.disconnect();
+    if (st.timer) clearTimeout(st.timer);
+    states.delete(doc);
+    (_b = doc.getElementById(DARK_STYLE_ID)) == null ? void 0 : _b.remove();
+    doc.querySelectorAll(`[${ATTR}]`).forEach((e) => e.removeAttribute(ATTR));
+  }
+  var isOurs = (el) => {
+    var _a;
+    return !!((_a = el.closest) == null ? void 0 : _a.call(el, "[data-yuktai-ui]"));
+  };
+  function paint(doc, st, roots) {
+    const win = doc.defaultView;
+    const style = doc.getElementById(DARK_STYLE_ID);
+    if (!style) return;
+    roots = roots.filter((r) => !roots.some((o) => o !== r && o.contains(r)));
+    const writes = [];
+    style.disabled = true;
+    try {
+      let count = 0;
+      for (const root of roots) {
+        const parentInfo = root === doc.documentElement ? null : infoFor(root.parentElement, st, win);
+        const walk = (el, parent) => {
+          if (count++ > MAX_ELEMENTS) return;
+          if (SKIP2.has(el.tagName) || el.hasAttribute("data-yuktai-ui")) return;
+          const { info, rule } = read(el, parent, st.level, win);
+          st.info.set(el, info);
+          writes.push([el, rule]);
+          if (MEDIA.has(el.tagName)) return;
+          for (let c = el.firstElementChild; c; c = c.nextElementSibling) walk(c, info);
+        };
+        walk(root, parentInfo);
+      }
+    } finally {
+      style.disabled = false;
+    }
+    let added = false;
+    for (const [el, rule] of writes) {
+      if (!rule) {
+        if (el.hasAttribute(ATTR)) el.removeAttribute(ATTR);
+        continue;
+      }
+      let id = st.rules.get(rule);
+      if (id === void 0) {
+        id = st.rules.size;
+        st.rules.set(rule, id);
+        added = true;
+      }
+      if (el.getAttribute(ATTR) !== String(id)) el.setAttribute(ATTR, String(id));
+    }
+    if (added || !style.textContent) {
+      const sel = (i) => `[${ATTR}="${i}"]`.repeat(3);
+      const out = [":root{color-scheme:dark}", "::placeholder{color:#9AA0A6 !important}"];
+      for (const [rule, i] of st.rules) {
+        const [main, ...pseudos] = rule.split(";").join("").split("");
+        if (main) out.push(`${sel(i)}{${main}}`);
+        for (const p of pseudos) {
+          const m = p.match(/^(before|after)\{(.*)\}$/);
+          if (m) out.push(`${sel(i)}::${m[1]}{${m[2]}}`);
+        }
+      }
+      style.textContent = out.join("\n");
+    }
+  }
+  function infoFor(el, st, win) {
+    if (!el) return null;
+    const known = st.info.get(el);
+    if (known) return known;
+    const parent = infoFor(el.parentElement, st, win);
+    const { info } = read(el, parent, st.level, win);
+    st.info.set(el, info);
+    return info;
+  }
+  var PAGE_BG = { r: 255, g: 255, b: 255, a: 1 };
+  function read(el, parent, level, win) {
+    const cs = win.getComputedStyle(el);
+    const out = [];
+    const isRoot = el === el.ownerDocument.documentElement;
+    let bg = (parent == null ? void 0 : parent.bg) ?? darkBackground(PAGE_BG);
+    let picture = (parent == null ? void 0 : parent.picture) ?? false;
+    const fg = parseColor2(cs.color);
+    if (isRoot) {
+      const own = parseColor2(cs.backgroundColor);
+      bg = darkBackground(own && own.a > 0 ? { ...blend2(own, PAGE_BG), a: 1 } : PAGE_BG);
+      out.push(`background-color:${css(bg)} !important`);
+    }
+    if (MEDIA.has(el.tagName)) {
+      if (el.tagName === "IMG" || el.tagName === "VIDEO" || el.tagName === "PICTURE") out.push("filter:brightness(.9)");
+      return { info: { fg, shown: (parent == null ? void 0 : parent.shown) ?? fg, bg, picture }, rule: out.join(";") };
+    }
+    const isSvg = el.namespaceURI === SVG_NS;
+    if (!isRoot && !isSvg) {
+      const image = cs.backgroundImage;
+      let own = parseColor2(cs.backgroundColor);
+      const clipText = cs.getPropertyValue("background-clip") === "text" || cs.getPropertyValue("-webkit-background-clip") === "text";
+      if (clipText && image && image !== "none" && !/url\(/i.test(image)) {
+        const lit = image.replace(/rgba?\([^)]*\)/gi, (m) => {
+          const c = parseColor2(m);
+          return c ? css(lightText(c)) : m;
+        });
+        out.push(`background-image:${lit} !important`);
+        return { info: { fg, shown: (parent == null ? void 0 : parent.shown) ?? fg, bg, picture }, rule: [...out, ...pseudo(el, bg, picture, level, win)].join(";") };
+      }
+      if (image && image !== "none") {
+        if (/url\(/i.test(image)) {
+          picture = true;
+        } else {
+          const first = image.match(/rgba?\([^)]*\)|#[0-9a-f]{3,8}\b/i);
+          const c = first ? parseColor2(first[0]) : null;
+          if (c && c.a > 0) {
+            own = c;
+            out.push("background-image:none !important");
+          } else picture = true;
+        }
+      }
+      if (own && own.a > 0) {
+        const dark = darkBackground(own);
+        out.push(`background-color:${css(dark)} !important`);
+        bg = dark.a >= 1 ? { ...dark, a: 1 } : { ...blend2(dark, bg), a: 1 };
+        if (dark.a >= 0.9 && !(image && /url\(/i.test(image))) picture = false;
+      }
+      if (parseFloat(cs.borderTopWidth) > 0 || parseFloat(cs.borderBottomWidth) > 0 || parseFloat(cs.borderLeftWidth) > 0) {
+        const b = parseColor2(cs.borderTopColor) ?? parseColor2(cs.borderBottomColor);
+        if (b && b.a > 0) out.push(`border-color:${css(darkBorder(b))} !important`);
+      }
+      const outline = parseFloat(cs.outlineWidth) > 0 ? parseColor2(cs.outlineColor) : null;
+      if (outline && outline.a > 0 && cs.outlineStyle !== "none") out.push(`outline-color:${css(lightText(outline))} !important`);
+    }
+    let shown = (parent == null ? void 0 : parent.shown) ?? fg;
+    if (fg) {
+      let want;
+      if (picture) want = fg;
+      else {
+        const light = lightText(fg);
+        const solid = light.a < 1 ? { ...blend2(light, bg), a: 1 } : light;
+        const size = parseFloat(cs.fontSize) || 16;
+        const weight = parseInt(cs.fontWeight, 10) || (cs.fontWeight === "bold" ? 700 : 400);
+        const need = requiredRatio(level === "off" ? "AA" : level, isLargeText2(size, weight));
+        want = contrastRatio2(solid, bg) + 1e-9 >= need ? light : nearestPassingColor(solid, bg, need);
+      }
+      out.push(`color:${css(want)} !important`);
+      shown = want;
+    }
+    if (isSvg && !picture) {
+      for (const prop of ["fill", "stroke"]) {
+        const c = parseColor2(cs.getPropertyValue(prop));
+        if (c && c.a > 0) {
+          const light = lightText(c);
+          if (!same(light, c)) out.push(`${prop}:${css(light)} !important`);
+        }
+      }
+    }
+    return { info: { fg, shown, bg, picture }, rule: [...out, ...pseudo(el, bg, picture, level, win)].join(";") };
+  }
+  function pseudo(el, bg, picture, level, win) {
+    if (el.namespaceURI === SVG_NS) return [];
+    const parts = [];
+    for (const which of ["before", "after"]) {
+      const ps = win.getComputedStyle(el, `::${which}`);
+      const content = ps.content;
+      if (!content || content === "none" || content === "normal") continue;
+      const rules = [];
+      let pbg = bg;
+      const own = parseColor2(ps.backgroundColor);
+      if (own && own.a > 0) {
+        const dark = darkBackground(own);
+        rules.push(`background-color:${css(dark)} !important`);
+        pbg = dark.a >= 1 ? { ...dark, a: 1 } : { ...blend2(dark, bg), a: 1 };
+      }
+      const fg = parseColor2(ps.color);
+      if (fg && fg.a > 0 && !picture) {
+        const light = lightText(fg);
+        const solid = light.a < 1 ? { ...blend2(light, pbg), a: 1 } : light;
+        const need = requiredRatio(level === "off" ? "AA" : level, isLargeText2(parseFloat(ps.fontSize) || 16, parseInt(ps.fontWeight, 10) || 400));
+        const want = contrastRatio2(solid, pbg) + 1e-9 >= need ? light : nearestPassingColor(solid, pbg, need);
+        rules.push(`color:${css(want)} !important`);
+      }
+      if (parseFloat(ps.borderTopWidth) > 0) {
+        const b = parseColor2(ps.borderTopColor);
+        if (b && b.a > 0) rules.push(`border-color:${css(darkBorder(b))} !important`);
+      }
+      if (rules.length) parts.push(`${which}{${rules.join(";")}}`);
+    }
+    return parts;
+  }
+
   // src/core/renderer.tsx
   var _liveRegionNode = null;
   var _colorBlindSvgNode = null;
@@ -4451,15 +4795,8 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
       filter: contrast(1.4) brightness(1.05) !important;
     }
 
-    /* \u2500\u2500 Dark mode \u2500\u2500 */
-    [data-yuktai-dark] {
-      filter: invert(1) hue-rotate(180deg) !important;
-    }
-    [data-yuktai-dark] img,
-    [data-yuktai-dark] video,
-    [data-yuktai-dark] canvas {
-      filter: invert(1) hue-rotate(180deg) !important;
-    }
+    /* \u2500\u2500 Dark mode: smart dark from @yuktishaalaa/a11y (see applyConfigToDOM).
+       No page-wide invert filter: photos, emoji and brand colours stay right. \u2500\u2500 */
 
     /* \u2500\u2500 Dyslexia font \u2500\u2500 */
     [data-yuktai-dyslexia] * {
@@ -4902,6 +5239,8 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
     const root = document.documentElement;
     root.toggleAttribute("data-yuktai-high-contrast", !!config.highContrast);
     root.toggleAttribute("data-yuktai-dark", !!config.darkMode);
+    if (config.darkMode) enableDark(document, "AA");
+    else disableDark(document);
     root.toggleAttribute("data-yuktai-reduce-motion", !!config.reduceMotion);
     root.toggleAttribute("data-yuktai-large-targets", !!config.largeTargets);
     root.toggleAttribute("data-yuktai-keyboard", !!config.keyboardHints);
@@ -5505,7 +5844,7 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
     return out;
   }
   function registerGridWebMCP(tools, options = {}) {
-    const read = () => (typeof tools === "function" ? tools() : tools) || [];
+    const read2 = () => (typeof tools === "function" ? tools() : tools) || [];
     const controller = new AbortController();
     const timers = [];
     let status = { state: "unsupported", registered: [], errors: [] };
@@ -5524,10 +5863,10 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
       report({ state: "registering", registered: [], errors: [] });
       const registered = [];
       const errors = [];
-      for (const tool of read()) {
+      for (const tool of read2()) {
         if (controller.signal.aborted) return;
         try {
-          await mc.registerTool(toModelContextTool(tool, read), { signal: controller.signal });
+          await mc.registerTool(toModelContextTool(tool, read2), { signal: controller.signal });
           registered.push(tool.name);
         } catch (error) {
           errors.push({ tool: tool.name, message: error instanceof Error ? error.message : String(error) });
@@ -5675,7 +6014,7 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
     );
   }
   function createGridAgent(options = {}) {
-    const read = (value) => typeof value === "function" ? value() : value;
+    const read2 = (value) => typeof value === "function" ? value() : value;
     const opts = { locale: "en", rowKey: "id", historyLimit: 20, customRules: [], ...options };
     const events = emitter();
     let pending = 0;
@@ -5684,7 +6023,7 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
     let history = [];
     let stepId = 0;
     const m = () => MESSAGES2[opts.locale === "te" ? "te" : "en"];
-    const tools = () => read(opts.tools) || [];
+    const tools = () => read2(opts.tools) || [];
     const state = () => ({ loading: pending > 0, lastResult, lastError, history: history.slice() });
     const changed = () => events.emit(state());
     function record(tool, input, result, source, id) {
@@ -5731,12 +6070,12 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
     }
     const executeTool = (name, input = {}) => run(name, input || {}, "tool");
     async function ask(text) {
-      const columns = read(opts.columns) || [];
+      const columns = read2(opts.columns) || [];
       const rule = findCustomRule(text, opts.customRules);
       if (rule) {
         const id = ++stepId;
         try {
-          const message = await rule.execute({ input: text, data: read(opts.data) || [], columns, executeTool });
+          const message = await rule.execute({ input: text, data: read2(opts.data) || [], columns, executeTool });
           const result = { success: true, message: String(message ?? m().done), tool: `rule:${rule.name}` };
           record(`rule:${rule.name}`, { text }, result, "ask", id);
           opts.onResult && opts.onResult(result);
@@ -6133,7 +6472,7 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
 
   // src/icons/variant.ts
   var ICON_MIN_CONTRAST = 3;
-  var WHITE = "#ffffff";
+  var WHITE2 = "#ffffff";
   var INK = "#111827";
   function iconContrast(fg, bg) {
     const a = parseColor(fg);
@@ -6141,10 +6480,10 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
     return a && b ? contrastRatio(a, b) : null;
   }
   function pickGlyphColor(background) {
-    const white = iconContrast(WHITE, background);
+    const white = iconContrast(WHITE2, background);
     const ink = iconContrast(INK, background);
-    if (white === null || ink === null) return WHITE;
-    return white >= ink ? WHITE : INK;
+    if (white === null || ink === null) return WHITE2;
+    return white >= ink ? WHITE2 : INK;
   }
   var warned = /* @__PURE__ */ new Set();
   function warnOnce(key, message) {
@@ -6352,7 +6691,7 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
 .yv-empty,.yv-loading{padding:28px 16px;text-align:center;color:var(--yv-muted)}
 .yv-cards{display:grid;gap:10px;padding:12px;list-style:none;margin:0}
 .yv-card{border:1px solid var(--yv-border);border-radius:10px;padding:10px 12px;background:var(--yv-surface)}
-.yv-card[aria-selected=true]{background:var(--yv-sel-bg);border-color:var(--yv-primary)}
+.yv-card[data-selected=true]{background:var(--yv-sel-bg);border-color:var(--yv-primary)}
 .yv-card.yv-hl{border-left:6px solid var(--yv-hl-edge)}
 .yv-card:focus{outline:3px solid #2563eb;outline-offset:2px}
 .yv-card-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
@@ -6468,7 +6807,7 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
       extra
     );
     target.appendChild(box);
-    function paint(state) {
+    function paint2(state) {
       askBtn.disabled = !!state.busy;
       box.setAttribute("aria-busy", String(!!state.busy));
       if (state.busy) return;
@@ -6492,7 +6831,7 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
         );
       }
     }
-    const unsubscribe = agentic.subscribe(paint);
+    const unsubscribe = agentic.subscribe(paint2);
     form.addEventListener("submit", (e) => {
       e.preventDefault();
       agentic.ask(input.value);
@@ -6912,7 +7251,8 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
           class: `yv-card${isHl ? " yv-hl" : ""}`,
           "data-yuktai-row-id": key,
           "aria-labelledby": headingId,
-          "aria-selected": selectable ? String(isSel) : null,
+          // aria-selected is not allowed on a list item; the card's checkbox says "selected"
+          "data-selected": selectable ? String(isSel) : null,
           tabindex: -1
         });
         const head = h("div", { class: "yv-card-head" }, h("p", { class: "yv-card-title", id: headingId }, titleOf(row), isHl ? h("span", { class: "yv-sr" }, ` (${t.highlighted})`) : null));
@@ -7705,9 +8045,9 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
       copilot = createA11yCopilot({
         defaultLang: options.defaultLang,
         debounceMs: 600,
-        onUpdate: (state) => paint(state)
+        onUpdate: (state) => paint2(state)
       });
-      function paint(state) {
+      function paint2(state) {
         const report = state.report;
         watchBtn.setAttribute("aria-pressed", String(state.watching));
         statusLine.textContent = report ? `${report.summary} Fixes applied: ${state.appliedFixes}.${state.watching ? " Watching for page changes." : ""}` : "Scan the page to see issues.";
@@ -7744,7 +8084,7 @@ Missing landmarks: ${missing.join(", ")}.` : ""}`,
         list
       );
       watchBtn.addEventListener("click", () => copilot.getState().watching ? copilot.stop() : copilot.start());
-      paint(copilot.getState());
+      paint2(copilot.getState());
     }
     function buildQa(panel) {
       const out = h("div", { "aria-live": "polite" });

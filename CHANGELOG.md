@@ -4,6 +4,24 @@ All notable changes to `@yuktishaalaa/yuktai`. The format follows [Keep a Change
 
 ## 6.0.3 (2026-11-14)
 
+Fixes from a full scan of the website (18 pages, desktop and phone, light and dark) and the packages.
+
+**Packages**
+- **`@yuktishaalaa/yuktai` 6.0.3**: the ♿ widget's dark mode is now the smart dark mode (no page-wide invert: photos, emoji and brand colours stay right, AA contrast kept). Grid card view (phones): `aria-selected` is no longer put on list items (axe: critical); the selection is told by each card's checkbox. The plain HTML demo, its offline cache and the jQuery example take their version from package.json at build time.
+- **`@yuktishaalaa/a11y` 6.0.3**: dark mode for CSS icons (`::before`/`::after`) and gradient text.
+- **`@yuktishaalaa/assistant` 6.0.4**: "What to check" list in the report; translated tab name.
+- npm descriptions say which part of the YuktAI family each package is.
+
+**Website**
+- The loading screen on a first visit is 1.5 s (was 15 s); Tab goes to "Skip to content" again.
+- Home: the six packages as one family (diagram that draws itself, counts that count up, both only when the visitor allows motion), grouped as main products, engines and starters, with the right links; new hero text; Assistant in the badge and the footer; 313 unit tests.
+- Assistant guide: code blocks no longer push the page sideways (was 798 px on phones).
+- jQuery and Next.js guides install the current versions; jQuery 1.12.4, 2.2.4, 3.7.1 and 4.0.0 re-tested with YuktAI 6.0.2 and Ask page 1.0.2.
+- Code wraps instead of scrolling sideways, and the wide tables can be scrolled with the keyboard (axe: scrollable-region-focusable).
+- Share preview image (WhatsApp, LinkedIn, X) and sitemap.xml.
+
+## 6.0.3 (2026-11-14)
+
 - **`@yuktishaalaa/assistant` 6.0.3**: new `panelLang` and `offset` options; wrong options and values are reported in the console instead of failing silently; Ask opens on the same side as the ♿ button; docs show every option (`title`, `color` and the rest).
 
 ## 6.0.2 (2026-11-14)

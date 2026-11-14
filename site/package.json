@@ -12,8 +12,8 @@
   "dependencies": {
     "@tanstack/react-query": "^5.106.1",
     "@tanstack/react-table": "^9.3.1",
-    "@yuktishaalaa/ask-page": "^1.0.0",
-    "@yuktishaalaa/yuktai": "^5.5.4",
+    "@yuktishaalaa/ask-page": "^1.0.2",
+    "@yuktishaalaa/yuktai": "^6.0.2",
     "next": "16.4.5",
     "react": "19.3.0",
     "react-dom": "19.3.0"

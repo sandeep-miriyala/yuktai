@@ -63,7 +63,7 @@ const attrCode = `<!-- accessibility only, no panel: one attribute + one script 
 
 function Code({ name, code }: { name: string; code: string }) {
   return (
-    <div className={"codefile"}>
+    <div className={"codetabs"}><div className={"codefile"}>
       <div className={"codehead"}>
         <span className={"file"}>{name}</span>
         <button type={"button"} className={"copy-btn"} data-what={name}>
@@ -73,7 +73,7 @@ function Code({ name, code }: { name: string; code: string }) {
         </button>
       </div>
       <pre><code>{code}</code></pre>
-    </div>
+    </div></div>
   );
 }
 

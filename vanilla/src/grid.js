@@ -468,7 +468,8 @@ export function renderGrid(container, rowsOrOptions, columnsArg, optionsArg) {
         class: `yv-card${isHl ? " yv-hl" : ""}`,
         "data-yuktai-row-id": key,
         "aria-labelledby": headingId,
-        "aria-selected": selectable ? String(isSel) : null,
+        // aria-selected is not allowed on a list item; the card's checkbox says "selected"
+        "data-selected": selectable ? String(isSel) : null,
         tabindex: -1,
       })
       const head = h("div", { class: "yv-card-head" }, h("p", { class: "yv-card-title", id: headingId }, titleOf(row), isHl ? h("span", { class: "yv-sr" }, ` (${t.highlighted})`) : null))

@@ -2,11 +2,12 @@
 // Change a release here and every page follows.
 
 export const VERSIONS = {
-  yuktai: "6.0.2",
-  a11y: "6.0.2",
-  assistant: "6.0.3",
+  yuktai: "6.0.3",
+  a11y: "6.0.3",
+  assistant: "6.0.4",
   askPage: "1.0.2",
   cli: "1.4.0",
+  create: "1.0.0",
 } as const;
 
 export const LINKS = {
@@ -16,6 +17,7 @@ export const LINKS = {
   npmAssistant: "https://www.npmjs.com/package/@yuktishaalaa/assistant",
   npmA11y: "https://www.npmjs.com/package/@yuktishaalaa/a11y",
   npmCli: "https://www.npmjs.com/package/yuktai",
+  npmCreate: "https://www.npmjs.com/package/create-yuktai",
   w3techs: "https://w3techs.com/technologies/overview/javascript_library",
   site: "https://sandeep-miriyala.github.io/yuktai/",
   codespacesApp: "https://miriyalas.github.io/yuktai/",
@@ -68,7 +70,7 @@ export const WEB_SHARE = [
 
 // Automated tests run before a release
 export const TESTS = [
-  { name: "TypeScript unit (Vitest)", value: 221, tone: "c1" },
+  { name: "TypeScript unit (Vitest)", value: 315, tone: "c1" },
   { name: "Rust (cargo)", value: 13, tone: "c2" },
   { name: "Browser end-to-end", value: 37, tone: "c3" },
   { name: "Strict CSP + extension", value: 4, tone: "c4" },
@@ -76,10 +78,11 @@ export const TESTS = [
 export const TEST_TOTAL = TESTS.reduce((n, t) => n + t.value, 0);
 
 export const STATS = [
-  { value: String(STACKS.length), label: "languages and stacks" },
-  { value: String(TEST_TOTAL), label: "automated tests per release" },
-  { value: "163", label: "accessible icons" },
-  { value: "0", label: "servers, API keys or tracking" },
+  { value: 6, label: "free npm packages, one family" },
+  { value: STACKS.length, label: "languages and stacks" },
+  { value: TEST_TOTAL, label: "automated tests per release" },
+  { value: 163, label: "accessible icons" },
+  { value: 0, label: "servers, API keys or tracking" },
 ];
 
 export const STEPS = [
@@ -100,58 +103,104 @@ export const COMPARE: [string, string, string][] = [
 ];
 
 export const QUESTIONS = [
+  { label: "Which package?", ask: "Which YuktAI package should I use?" },
   { label: "How do I install?", ask: "How do I install YuktAI?" },
   { label: "Is my data safe?", ask: "Is my data sent to a server?" },
   { label: "Works with jQuery?", ask: "Does it work with jQuery?" },
   { label: "Why Rust?", ask: "Why does YuktAI use Rust?" },
 ];
 
-// The npm packages: the CLI that made this site, and the two libraries it runs on (all in package.json)
+// The npm packages: six, in one family. Two main products, the two engines
+// inside them, and two ways to start a new app.
+export type PackageGroup = "main" | "engine" | "start";
+
+export const PACKAGE_GROUPS: { key: PackageGroup; title: string; text: string }[] = [
+  { key: "main", title: "Main products", text: "Pick one. Each brings everything it needs." },
+  { key: "engine", title: "Engines", text: "Inside both main products. Use one on its own if that is all you need." },
+  { key: "start", title: "Start a new app", text: "One command makes a ready Next.js app with YuktAI set up." },
+];
+
 export const PACKAGES: readonly {
-  name: string; version: string; text: string; install: string; npm: string; onThisSite: string; icon: IconKey;
-  cdn?: string; guide?: string; cli?: boolean;
+  name: string; short: string; version: string; group: PackageGroup; who: string; text: string; install: string;
+  npm: string; onThisSite?: string; icon: IconKey; cdn?: string; guide?: { href: string; label: string };
 }[] = [
   {
-    name: "yuktai",
-    version: VERSIONS.cli,
-    text: "Create a YuktAI app in one command: Next.js + Rust + a Python API, a 25 lakh row grid with the Grid AI Assistant (🎤 voice, 24 languages, WebMCP), LangGraph agents (Grid Agent, RAG, Testing Agent, YuktAI Assistant), PostgreSQL basics, Playwright tests, QA report, icons guide and a complete PWA.",
-    install: "npm create yuktai@latest my-app",
-    npm: LINKS.npmCli,
-    guide: "/create/",
-    onThisSite: "this site was created with it",
-    icon: "install",
-    cli: true,
-  },
-  {
     name: "@yuktishaalaa/yuktai",
+    short: "YuktAI Toolkit",
     version: VERSIONS.yuktai,
-    text: "Accessibility, AI and data toolkit for Next.js, React and plain HTML: WCAG 2.2 auto-fix, agentic data grid, accessibility copilot, QA reports, page RAG and 163 icons. Rust engines in WebAssembly. Zero API keys.",
+    group: "main",
+    who: "For developers building an app",
+    text: "Accessibility, AI and data toolkit for Next.js, React and plain HTML: the agentic data grid (10 lakh rows, Rust), accessibility copilot, QA reports, page tools and 163 icons. Includes the accessibility engine.",
     install: `npm i @yuktishaalaa/yuktai@${VERSIONS.yuktai}`,
     npm: LINKS.npmYuktai,
-    cdn: `https://www.jsdelivr.com/package/npm/@yuktishaalaa/yuktai`,
-    onThisSite: "♿ and 🛠 buttons, the data grid, agents, icon studio, every icon",
+    cdn: "https://www.jsdelivr.com/package/npm/@yuktishaalaa/yuktai",
+    guide: { href: "/guide/", label: "End-to-end guide" },
+    onThisSite: "the ♿ and 🛠 buttons, the data grid, agents, icon studio, every icon",
+    icon: "grid",
+  },
+  {
+    name: "@yuktishaalaa/assistant",
+    short: "YuktAI Assistant",
+    version: VERSIONS.assistant,
+    group: "main",
+    who: "For any website you already have",
+    text: "Accessibility (safe ARIA, WCAG AA/AAA, read aloud in the right voice, colours, smart dark mode) and Ask this page in one panel, with your name and colour. One script, npm, or a browser extension.",
+    install: `npm i @yuktishaalaa/assistant@${VERSIONS.assistant}`,
+    npm: LINKS.npmAssistant,
+    cdn: "https://www.jsdelivr.com/package/npm/@yuktishaalaa/assistant",
+    guide: { href: "/assistant/", label: "Script, npm and extension" },
+    onThisSite: "the download page and the extension",
+    icon: "accessibility",
+  },
+  {
+    name: "@yuktishaalaa/a11y",
+    short: "Accessibility engine",
+    version: VERSIONS.a11y,
+    group: "engine",
+    who: "Inside the Toolkit and the Assistant",
+    text: "Safe ARIA fixes, WCAG AA/AAA contrast, the language of every part, read aloud, visitor preferences and smart dark mode. One attribute, no server.",
+    install: `npm i @yuktishaalaa/a11y@${VERSIONS.a11y}`,
+    npm: LINKS.npmA11y,
+    guide: { href: "/accessibility/", label: "Accessibility guide" },
     icon: "accessibility",
   },
   {
     name: "@yuktishaalaa/ask-page",
+    short: "Ask engine",
     version: VERSIONS.askPage,
-    text: "Ask any web page. A side panel that answers from the page itself with sources highlighted. Rust/WASM search, on-device AI, WebMCP tools, nothing sent anywhere.",
+    group: "engine",
+    who: "Inside the Assistant",
+    text: "Answers from the page itself with the source highlighted. Rust/WebAssembly search, on-device AI, WebMCP tools for agents, nothing sent anywhere.",
     install: `npm i @yuktishaalaa/ask-page@${VERSIONS.askPage}`,
     npm: LINKS.npmAsk,
-    cdn: `https://www.jsdelivr.com/package/npm/@yuktishaalaa/ask-page`,
+    guide: { href: "/ask/", label: "Ask page guide" },
     onThisSite: "\"Ask these docs\", the hero box and Ctrl + K",
     icon: "chat",
   },
   {
-    name: "@yuktishaalaa/assistant",
-    version: VERSIONS.assistant,
-    text: "YuktAI Assistant: accessibility (safe ARIA, WCAG AA/AAA, automatic lang, read aloud in the right voice, colours, dark mode) and Ask this page in one panel. npm, one script, or a browser extension.",
-    install: `npm i @yuktishaalaa/assistant@${VERSIONS.assistant}`,
-    npm: LINKS.npmAssistant,
-    cdn: `https://www.jsdelivr.com/package/npm/@yuktishaalaa/assistant`,
-    guide: "/assistant/",
-    onThisSite: "the download page",
-    icon: "accessibility",
+    name: "create-yuktai",
+    short: "App starter",
+    version: VERSIONS.create,
+    group: "start",
+    who: "The usual way to start",
+    text: "npm create yuktai@latest: a new Next.js app with YuktAI, Rust and Python ready, in one command.",
+    install: "npm create yuktai@latest my-app",
+    npm: LINKS.npmCreate,
+    guide: { href: "/create/", label: "Create an app" },
+    onThisSite: "this site was made with it",
+    icon: "install",
+  },
+  {
+    name: "yuktai",
+    short: "Command line",
+    version: VERSIONS.cli,
+    group: "start",
+    who: "Runs your YuktAI app",
+    text: "yuktai init, dev and build: the commands inside every YuktAI app (Next.js + Rust + a Python API, grid, agents, tests, PWA). Not the Toolkit: for that, install @yuktishaalaa/yuktai.",
+    install: "npx yuktai init my-app",
+    npm: LINKS.npmCli,
+    guide: { href: "/create/", label: "Create an app" },
+    icon: "tools",
   },
 ];
 

@@ -25,7 +25,7 @@ import { translatePage, restoreOriginalText, SUPPORTED_LANGUAGES } from "./ai/tr
 import { startVoiceControl, stopVoiceControl, checkVoiceSupport }  from "./ai/voice"
 import { applySmartLabels, removeSmartLabels, checkLabellerSupport } from "./ai/labeller"
 // v6: language detection and "do no harm" rules come from the shared engine
-import { annotateLanguages } from "@yuktishaalaa/a11y"
+import { annotateLanguages, disableDark, enableDark } from "@yuktishaalaa/a11y"
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -402,15 +402,8 @@ function injectFocusStyles(): void {
       filter: contrast(1.4) brightness(1.05) !important;
     }
 
-    /* ── Dark mode ── */
-    [data-yuktai-dark] {
-      filter: invert(1) hue-rotate(180deg) !important;
-    }
-    [data-yuktai-dark] img,
-    [data-yuktai-dark] video,
-    [data-yuktai-dark] canvas {
-      filter: invert(1) hue-rotate(180deg) !important;
-    }
+    /* ── Dark mode: smart dark from @yuktishaalaa/a11y (see applyConfigToDOM).
+       No page-wide invert filter: photos, emoji and brand colours stay right. ── */
 
     /* ── Dyslexia font ── */
     [data-yuktai-dyslexia] * {
@@ -922,6 +915,9 @@ function applyConfigToDOM(config: A11yConfig): void {
 
   root.toggleAttribute("data-yuktai-high-contrast", !!config.highContrast)
   root.toggleAttribute("data-yuktai-dark",          !!config.darkMode)
+  // v6.0.4: smart dark mode (each colour on its own, AA contrast kept) instead of invert
+  if (config.darkMode) enableDark(document, "AA")
+  else disableDark(document)
   root.toggleAttribute("data-yuktai-reduce-motion", !!config.reduceMotion)
   root.toggleAttribute("data-yuktai-large-targets", !!config.largeTargets)
   root.toggleAttribute("data-yuktai-keyboard",      !!config.keyboardHints)

@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="YuktAI in plain HTML: an accessible data grid you can talk to, page tools and WCAG accessibility fixes. One script, no framework.">
 <title>YuktAI plain HTML demo · grid, accessibility and page tools</title>
+<meta property="og:title" content="YuktAI plain HTML demo: grid, accessibility and page tools">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="YuktAI">
+<meta property="og:image" content="https://sandeep-miriyala.github.io/yuktai/opengraph-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+
 <meta name="theme-color" content="#000633">
 <meta name="application-name" content="yuktai">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -71,7 +79,7 @@ section.block>h2::after{content:"";display:block;width:56px;height:3px;backgroun
 .controls select{min-height:44px;padding:6px 10px;border:1px solid #94A3B8;border-radius:8px;background:#fff;font:inherit}
 .stack>*+*{margin-top:12px}
 code,pre{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
-pre{white-space:pre;overflow:auto;background:var(--navy);color:#E6EEF8;border-left:4px solid var(--gold);padding:14px;border-radius:10px;font-size:.85rem;margin:10px 0 0}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;background:var(--navy);color:#E6EEF8;border-left:4px solid var(--gold);padding:14px;border-radius:10px;font-size:.85rem;margin:10px 0 0}
 .out{white-space:pre-wrap;overflow-wrap:anywhere;background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;min-height:60px;font-size:.85rem;max-height:420px;overflow:auto}
 .play{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:8px;margin-bottom:10px}
 /* long function names (createContextIndex()…) wrap inside the button instead of pushing the page sideways on phones */
@@ -122,7 +130,7 @@ footer :focus-visible{outline-color:var(--gold)}
   <div class="wrap hero">
     <div>
       <div class="brand-line">
-        <p class="brand-name"><a href="../" style="color:inherit">YuktAI</a> · plain HTML demo · v5.5.4</p>
+        <p class="brand-name"><a href="../" style="color:inherit">YuktAI</a> · plain HTML demo · v6.0.3</p>
         <div class="badges">
       <a href="https://hub.xerj.org/contributors/sandeepmiriyala03" rel="noopener" target="_blank" aria-label="XERJ Corpus Hub contributor profile of Sandeep Miriyala (opens in a new tab)">
         <img src="https://hub.xerj.org/contributors/sandeepmiriyala03/badge.svg" alt="XERJ Corpus Hub contributor" height="28" decoding="async">
@@ -295,7 +303,7 @@ yuktai.mountAgenticPanel("#tools", { defaultTab: "qa", voiceLang: "te-IN" })</co
   <div class="wrap foot">
     <img src="./icons/icon-192.png" alt="" width="56" height="56">
     <div>
-      <p><span class="gold">YuktAI</span> · plain HTML build 5.5.4 · <a href="../">YuktAI home</a> · <a href="https://sandeep-miriyala.github.io/yuktai/">Docs</a></p>
+      <p><span class="gold">YuktAI</span> · plain HTML build 6.0.3 · <a href="../">YuktAI home</a> · <a href="https://sandeep-miriyala.github.io/yuktai/">Docs</a></p>
       <p>© Sandeep Miriyala, Yuktishaalaa AI Lab · <a href="https://github.com/sandeep-miriyala/yuktai">GitHub</a> · <a href="https://www.npmjs.com/package/@yuktishaalaa/yuktai">npm</a> · <a href="https://hub.xerj.org/contributors/sandeepmiriyala03">XERJ Corpus Hub</a></p>
     </div>
   </div>

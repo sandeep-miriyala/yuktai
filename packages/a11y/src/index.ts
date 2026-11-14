@@ -30,7 +30,7 @@ export { findAll, type FoundTree } from "./finder"
 export { addSpeakButtons, type SpeakButtonsOptions } from "./speakButtons"
 export { message, describe, toJSON, MESSAGES, WCAG, type Finding, type Report, type RuleId, type FindingStatus } from "./report"
 
-export const VERSION = "6.0.2"
+export const VERSION = "6.0.3"
 
 export interface A11yOptions extends Partial<A11ySettings> {
   /** Document to work on. Default: the current document. */

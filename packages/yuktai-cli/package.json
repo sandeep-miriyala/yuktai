@@ -1,7 +1,7 @@
 {
   "name": "yuktai",
   "version": "1.4.0",
-  "description": "Create accessible, agentic web apps in one command: Next.js + Rust + Python agents, Indian languages, PWA. `npx yuktai init my-app`.",
+  "description": "YuktAI command line: yuktai init, dev and build for YuktAI apps (Next.js + Rust + Python agents, Indian languages, PWA). For the Toolkit library, install @yuktishaalaa/yuktai.",
   "type": "module",
   "bin": {
     "yuktai": "bin/yuktai.mjs"

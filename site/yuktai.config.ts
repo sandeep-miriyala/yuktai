@@ -4,7 +4,7 @@ const config = {
   name: "yuktai-site",
   title: "YuktAI",
   description:
-    "YuktAI: open-source accessibility widget, data grid, page Q&A and agents with Rust search in WebAssembly. One script tag, no server, no API key.",
+    "Web apps everyone can use, in Indian languages. Free, open-source toolkit for Next.js, React and plain HTML: WCAG 2.2 accessibility, a Rust-fast data grid for 10 lakh rows, and AI that answers from your own data, all in the browser.",
 
   theme: {
     accent: "blue", // blue | violet | teal | orange (colours in src/styles/tokens.css)

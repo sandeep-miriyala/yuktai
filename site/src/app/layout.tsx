@@ -11,8 +11,9 @@ import { MOTION_SCRIPT, SPLASH_SCRIPT } from "@yuktishaalaa/yuktai/head";
 import { YuktaiSplash } from "@yuktishaalaa/yuktai/experience";
 import { LINKS, VERSIONS } from "@/data/site";
 
-// How long the loading screen stays on the first visit in a tab (Skip, Esc or a click end it sooner)
-const SPLASH_SECONDS = 15;
+// How long the loading screen stays on the first visit in a tab. Kept short: people
+// arriving from a shared link should see the page, not wait (Skip, Esc or a click end it sooner)
+const SPLASH_SECONDS = 1.5;
 const SPLASH_TIPS = [
   "10 lakh rows, searched and sorted in Rust, right in your browser.",
   "Ask this page: answers come with their source, and nothing is sent anywhere.",
@@ -25,6 +26,10 @@ import "@/styles/globals.css";
 export const metadata: Metadata = {
   title: { default: "YuktAI: docs, demos and guides for accessible, agent-ready web apps", template: `%s · ${config.title}` },
   description: config.description,
+  // Absolute links for the share preview (opengraph-image.png) on WhatsApp, LinkedIn and X
+  metadataBase: new URL("https://sandeep-miriyala.github.io"),
+  openGraph: { type: "website", siteName: "YuktAI", title: "YuktAI: web apps everyone can use, in Indian languages", description: config.description },
+  twitter: { card: "summary_large_image" },
   manifest: asset("/manifest.json"),
   icons: {
     icon: [
@@ -70,7 +75,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <main id="main" tabIndex={-1}>{children}</main>
           <footer className="footer">
             <div className="wrap footer-in">
-              <span>YuktAI {VERSIONS.yuktai} · Ask page {VERSIONS.askPage} · made with <code>npm create yuktai</code></span>
+              <span>YuktAI {VERSIONS.yuktai} · Assistant {VERSIONS.assistant} · Ask page {VERSIONS.askPage} · made with <code>npm create yuktai</code></span>
               <span>
                 <Link href="/about/">How this site is built</Link> · <a href={LINKS.github}>GitHub</a> · <a href={LINKS.npmYuktai}>npm</a> · <a href={LINKS.npmAsk}>Ask page on npm</a>
               </span>

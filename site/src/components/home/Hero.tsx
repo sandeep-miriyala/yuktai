@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 
 import { useState, type FormEvent } from "react";
 import { asset } from "@/lib/base";
@@ -40,7 +41,7 @@ export default function Hero() {
     </div>
     <section className="hero" aria-labelledby="hero-h">
       <div className="hero-copy">
-        <p className="hero-badge"><b>NEW</b> Ask page {VERSIONS.askPage} · WebMCP connects by itself</p>
+        <p className="hero-badge"><b>NEW</b> <Link href="/assistant/">YuktAI Assistant {VERSIONS.assistant}: accessibility, smart dark mode and Ask in one panel</Link></p>
         <h1 id="hero-h" lang={lang}>{t("h1a")}<span className="grad yk-shimmer">{t("h1b")}</span>{t("h1c")}</h1>
         <p className="lead" lang={lang}>{t("lead")}</p>
 

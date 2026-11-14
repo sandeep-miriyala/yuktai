@@ -83,7 +83,7 @@ section.wrap, .band { padding-block: 64px; }
 .chip:hover { border-color: var(--accent); transform: translateY(-1px); }
 .install { display: flex; align-items: center; gap: 12px; max-width: 520px; padding: 6px 6px 6px 16px; border-radius: 14px; background: var(--code-bg); color: var(--code-text); }
 .install > span { color: #a99ff0; font-family: var(--mono); }
-.install code { flex: 1; min-width: 0; overflow-x: auto; white-space: nowrap; font-size: .92rem; }
+.install code { flex: 1; min-width: 0; white-space: normal; overflow-wrap: anywhere; font-size: .92rem; }
 .install button { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 14px; border: 1px solid #3e3a63; border-radius: 10px; background: #1d1b3d; color: #fff; font: 700 .85rem var(--font); cursor: pointer; }
 
 .ask-card { flex: 1 1 380px; min-width: 0; border: 1px solid var(--line-soft); border-radius: 20px; background: var(--panel); box-shadow: var(--shadow); overflow: hidden; }
@@ -111,9 +111,10 @@ section.wrap, .band { padding-block: 64px; }
 .pkg p { margin: 0; color: var(--muted); }
 .pkg-head { display: flex; align-items: center; gap: 14px; }
 .pkg-head .iconbox { margin: 0; }
-.pkg-name { display: block; font: 700 1.1rem var(--mono); overflow-wrap: anywhere; }
+.pkg-name { display: block; font: 800 1.2rem var(--font); overflow-wrap: anywhere; }
+.pkg-ver code { font: inherit; }
 .pkg-ver { display: inline-block; margin-top: 2px; padding: 1px 9px; border-radius: 999px; background: var(--chip); color: var(--accent); font-size: .8rem; font-weight: 700; }
-.pkg-install { display: block; padding: 10px 14px; border-radius: 10px; background: var(--code-bg); color: var(--code-text); font-size: .88rem; overflow-x: auto; white-space: nowrap; }
+.pkg-install { display: block; padding: 10px 14px; border-radius: 10px; background: var(--code-bg); color: var(--code-text); font-size: .88rem; white-space: normal; overflow-wrap: anywhere; }
 .pkg-cli { grid-column: 1 / -1; }
 .pkg-steps { margin: 0; padding: 12px 16px; border-radius: 12px; background: var(--code-bg); color: var(--code-text); font-size: .9rem; overflow-x: auto; }
 .pkg .pkg-site { color: var(--text); font-size: .95rem; }
@@ -251,7 +252,7 @@ section.wrap, .band { padding-block: 64px; }
 
 /* code blocks written straight into a page (Create an app guide): scroll inside, never the page */
 .guide-body > pre { max-width: 100%; overflow-x: auto; margin: 0 0 18px; padding: 16px 18px; border-radius: 14px; background: var(--code-bg); color: var(--code-text); font-size: .88rem; line-height: 1.6; }
-.guide-body > pre code { background: none; padding: 0; color: inherit; white-space: pre; }
+.guide-body > pre code { background: none; padding: 0; color: inherit; white-space: pre-wrap; overflow-wrap: anywhere; }
 .guide-body code { overflow-wrap: anywhere; }
 
 /* YuktAI 5.3.14: the data grid and its AI Assistant follow the site colours */
@@ -334,3 +335,60 @@ body .yv-fab:focus-visible, .to-top:focus-visible { outline: 3px solid var(--foc
 .diagram { padding: 16px; }
 .diagram img { display: block; width: 100%; height: auto; border-radius: 12px; background: #fff; }
 .diagram figcaption { margin: 12px 0 0; }
+
+/* Code wraps instead of scrolling sideways: a scrolling box can't be reached
+   with the keyboard (WCAG 2.1.1) and makes phones scroll the whole page (1.4.10). */
+.guide-body > pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* ── The YuktAI family (home "npm packages") ── */
+.family { margin: 28px 0 8px; padding: 26px 18px; border: 1px solid var(--line); border-radius: 22px; background: var(--panel); text-align: center; }
+.fam-root { display: flex; justify-content: center; }
+.fam-root span { padding: 10px 26px; border-radius: 999px; background: var(--grad); color: var(--btn-text); font: 800 1.15rem var(--font); letter-spacing: .02em; }
+.fam-row { position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; max-width: 760px; margin: 0 auto; padding-top: 26px; }
+/* the lines: a stem from above, then a bar across the two boxes */
+.fam-row::before { content: ""; position: absolute; top: 0; left: 50%; width: 2px; height: 13px; background: var(--accent); transform-origin: top; }
+.fam-row::after { content: ""; position: absolute; top: 13px; left: 25%; right: 25%; height: 2px; background: var(--accent); transform-origin: center; }
+.fam-node { position: relative; display: flex; flex-direction: column; gap: 2px; padding: 14px 12px; border-radius: 16px; border: 2px solid var(--line); background: var(--bg); color: var(--text); text-decoration: none; min-height: 44px; }
+.fam-node::before { content: ""; position: absolute; top: -15px; left: 50%; width: 2px; height: 13px; background: var(--accent); }
+.fam-node strong { font-size: 1.02rem; }
+.fam-pkg { font: .8rem var(--mono); color: var(--muted); overflow-wrap: anywhere; }
+.fam-ver { align-self: center; margin-top: 4px; padding: 0 9px; border-radius: 999px; background: var(--chip); color: var(--accent); font-size: .78rem; font-weight: 700; }
+.fam-node.is-main { border: 2px solid transparent; background: linear-gradient(var(--bg), var(--bg)) padding-box, var(--grad) border-box; }
+.fam-node.is-main strong { font-size: 1.15rem; }
+.fam-node.is-start { border-style: dashed; }
+a.fam-node:hover { border-color: var(--accent); }
+.fam-label { margin: 14px 0 0; color: var(--muted); font-size: .85rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
+.pkg-group { margin-top: 34px; }
+.pkg-group h3 { margin: 0 0 4px; font-size: 1.25rem; }
+.pkg-group-text { margin: 0 0 14px; color: var(--muted); }
+.pkg .pkg-who { color: var(--accent); font-weight: 700; font-size: .95rem; }
+.pkg-engine, .pkg-start { box-shadow: none; background: linear-gradient(var(--panel), var(--panel)) padding-box, linear-gradient(var(--line), var(--line)) border-box; }
+@media (max-width: 560px) { .fam-row { grid-template-columns: 1fr; } .fam-row::after { display: none; } .fam-node::before { display: none; } .fam-row::before { height: 22px; } }
+
+/* Drawing in (only when the visitor allows motion; see Motion.tsx) */
+.family.will-draw .fam-root span,
+.family.will-draw .fam-row::before, .family.will-draw .fam-row::after,
+.family.will-draw .fam-node, .family.will-draw .fam-label { opacity: 0; }
+.family.is-in .fam-root span { animation: yk-pop .45s ease-out both; }
+.family.is-in .fam-row::before { animation: yk-grow-y .3s ease-out both; }
+.family.is-in .fam-row::after { animation: yk-grow-x .35s ease-out both; }
+.family.is-in .fam-node { animation: yk-rise .45s ease-out both; }
+.family.is-in .fam-label { animation: yk-fade .4s ease-out both; }
+.family.is-in .fam-main::before, .family.is-in .fam-main::after { animation-delay: .35s; }
+.family.is-in .fam-main .fam-node { animation-delay: .6s; }
+.family.is-in .fam-main .fam-node + .fam-node { animation-delay: .72s; }
+.family.is-in .fam-label:nth-of-type(1) { animation-delay: .9s; }
+.family.is-in .fam-engines::before, .family.is-in .fam-engines::after { animation-delay: 1s; }
+.family.is-in .fam-engines .fam-node { animation-delay: 1.2s; }
+.family.is-in .fam-engines .fam-node + .fam-node { animation-delay: 1.32s; }
+.family.is-in .fam-label:nth-of-type(2) { animation-delay: 1.45s; }
+.family.is-in .fam-start::before, .family.is-in .fam-start::after { animation-delay: 1.55s; }
+.family.is-in .fam-start .fam-node { animation-delay: 1.75s; }
+.family.is-in .fam-start .fam-node + .fam-node { animation-delay: 1.87s; }
+@keyframes yk-pop { from { opacity: 0; transform: scale(.6); } 70% { transform: scale(1.06); } to { opacity: 1; transform: scale(1); } }
+@keyframes yk-grow-y { from { opacity: 1; transform: scaleY(0); } to { opacity: 1; transform: scaleY(1); } }
+@keyframes yk-grow-x { from { opacity: 1; transform: scaleX(0); } to { opacity: 1; transform: scaleX(1); } }
+@keyframes yk-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes yk-fade { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .family .fam-root span, .family .fam-row::before, .family .fam-row::after, .family .fam-node, .family .fam-label { animation: none !important; opacity: 1 !important; } }
+:root[data-motion="off"] .family * , :root[data-motion="off"] .family *::before, :root[data-motion="off"] .family *::after { animation: none !important; opacity: 1 !important; }

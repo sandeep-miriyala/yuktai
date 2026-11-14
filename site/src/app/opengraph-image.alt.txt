@@ -1,0 +1,1 @@
+YuktAI: Web apps everyone can use, in Indian languages. Free, open source, for Next.js, React and plain HTML. WCAG 2.2, 10 lakh rows in Rust, Ask this page, 6 npm packages.

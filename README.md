@@ -8,8 +8,9 @@
 </p>
 
 <p align="center">
-  <strong>Accessible data grids and accessibility tools for Next.js, React and plain HTML.</strong><br>
-  Rust speed. Indian languages. One command.
+  <strong>Web apps everyone can use, in Indian languages.</strong><br>
+  Free, open-source toolkit for Next.js, React and plain HTML: WCAG 2.2 accessibility, a Rust-fast data grid for 10 lakh rows,<br>
+  and AI that answers from your own data, all in the browser, nothing sent anywhere. One command: <code>npm create yuktai@latest</code>
 </p>
 
 <p align="center">

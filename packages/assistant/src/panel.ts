@@ -12,7 +12,7 @@
 // follows the visitor's dark / high-contrast choice.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { contrastRatio, parseColor, primary, type Prefs, type Report } from "@yuktishaalaa/a11y"
+import { contrastRatio, message, parseColor, primary, type Prefs, type Report } from "@yuktishaalaa/a11y"
 import { LANG_NAMES, words, type UiLang, type Words } from "./i18n"
 
 export type PanelLang = "auto" | UiLang
@@ -105,6 +105,12 @@ select{width:100%;height:40px;border-radius:8px;border:1px solid var(--line);bac
 .counts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .counts div{border:1px solid var(--line);border-radius:10px;padding:8px 10px;display:flex;flex-direction:column}
 .counts strong{font-size:20px}
+.checks{margin-top:10px;border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+.checks summary{cursor:pointer;font-weight:600;font-size:13.5px;min-height:28px;display:flex;align-items:center}
+.checks ul{margin:8px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px}
+.checks li{display:flex;flex-direction:column;gap:2px;font-size:13px;line-height:1.4}
+.checks small{color:var(--muted)}
+.checks code{font-size:11.5px;color:var(--muted);overflow-wrap:anywhere}
 .ok{color:#17603C}.warn{color:#7A4700}.unk{color:var(--muted)}
 .wrap.dark .ok,.wrap.hc .ok{color:#7EE2A8}.wrap.dark .warn,.wrap.hc .warn{color:#FFC266}
 .foot{display:flex;gap:8px;padding:12px 18px 16px;border-top:1px solid var(--line)}
@@ -133,6 +139,8 @@ export class YuktaiAssistantElement extends HTMLElement {
   private styleEl: HTMLStyleElement | null = null
   private open = false
   private tab: Tab = "a11y"
+  /** "What to check" stays open across redraws */
+  private checksOpen = false
   private w: Words = words("en")
 
   constructor() {
@@ -159,6 +167,10 @@ export class YuktaiAssistantElement extends HTMLElement {
       this.root.addEventListener("change", (e) => this.onChange(e))
       this.root.addEventListener("input", (e) => this.onChange(e))
       this.root.addEventListener("keydown", (e) => this.onKey(e as KeyboardEvent))
+      this.root.addEventListener("toggle", (e) => {
+        const d = e.target as HTMLDetailsElement
+        if (d.id === "checks") this.checksOpen = d.open
+      }, true)
     }
     this.render()
   }
@@ -316,7 +328,10 @@ export class YuktaiAssistantElement extends HTMLElement {
         ${r ? `<div><span class="label">${esc(w.report)}</span><div class="counts">
           <div><strong class="ok">${r.fixed.length}</strong><small>${esc(w.fixed)}</small></div>
           <div><strong class="warn">${r.check.length}</strong><small>${esc(w.check)}</small></div>
-          <div><strong class="unk">${r.unknown.length}</strong><small>${esc(w.unknown)}</small></div></div></div>` : ""}`
+          <div><strong class="unk">${r.unknown.length}</strong><small>${esc(w.unknown)}</small></div></div>
+          ${r.check.length ? `<details class="checks" id="checks"${this.checksOpen ? " open" : ""}><summary>${esc(w.whatToCheck)} (${r.check.length})</summary><ul>
+            ${r.check.slice(0, 12).map((f) => `<li><span>${esc(message(f, ui === "te" ? "te" : "en"))}</span>${f.wcag ? `<small>WCAG ${esc(f.wcag)}</small>` : ""}<code>${esc(f.where)}</code></li>`).join("")}
+            ${r.check.length > 12 ? `<li><small>+${r.check.length - 12}</small></li>` : ""}</ul></details>` : ""}</div>` : ""}`
     } else if (this.tab === "colours") {
       const th = (v: string, label: string, fg: string, bg: string) =>
         `<button type="button" data-act="theme" data-v="${v}" id="theme-${v}" aria-pressed="${p.theme === v}"><span class="sw" style="color:${fg};background:${bg}" aria-hidden="true">Aa</span><span class="name">${esc(label)}</span></button>`

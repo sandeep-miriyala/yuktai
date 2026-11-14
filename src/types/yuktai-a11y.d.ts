@@ -8,4 +8,6 @@ declare module "@yuktishaalaa/a11y" {
     scope: "page" | "part"
   }
   export function annotateLanguages(doc: Document, opts?: { apply: boolean; root?: Element | ShadowRoot }): LangChange[]
+  export function enableDark(doc: Document, level?: "off" | "AA" | "AAA"): void
+  export function disableDark(doc: Document): void
 }

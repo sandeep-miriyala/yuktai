@@ -13,7 +13,7 @@ import { mountAskPage } from "@yuktishaalaa/ask-page"
 import { defineAssistant, YuktaiAssistantElement, type PanelLang } from "./panel"
 import { words } from "./i18n"
 
-export const VERSION = "6.0.3"
+export const VERSION = "6.0.4"
 
 export type Feature = "a11y" | "ask"
 

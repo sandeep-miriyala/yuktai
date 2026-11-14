@@ -1,5 +1,12 @@
 # Changelog
 
+## 6.0.3 (2026-11-14)
+
+Smart dark mode, found by scanning real pages:
+- **Icons drawn with CSS** (`::before` / `::after`: icon fonts, ★, bullets, badges) now get light colours and dark backgrounds too. They used to stay dark and almost disappear.
+- **Gradient text** (big numbers and headings painted with `background-clip: text`) keeps its gradient, with each colour made light, instead of turning into a dull solid colour.
+- Pages that keep changing (carousels, live counters) are re-read at most every 300 ms instead of 150 ms.
+
 ## 6.0.2 (2026-11-14)
 
 **Smart dark mode.** Dark mode no longer turns the whole page upside down with `filter: invert(1)`.

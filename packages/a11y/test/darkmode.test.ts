@@ -75,7 +75,7 @@ describe("smart dark mode (v6.0.2)", () => {
     p.style.color = "#333333"
     p.textContent = "Loaded later"
     document.getElementById("list")!.appendChild(p)
-    await new Promise((r) => setTimeout(r, 300))
+    await new Promise((r) => setTimeout(r, 500))
     expect(p.hasAttribute("data-yuktai-dk")).toBe(true)
   })
 

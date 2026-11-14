@@ -181,4 +181,27 @@ describe("mountAssistant", () => {
       expect(shadow().querySelector("[role=dialog]")!.getAttribute("lang")).toBe("te")
     })
   })
+
+  describe("v6.0.4", () => {
+    it("shows what to check, and the list stays open across redraws", () => {
+      document.body.innerHTML = `<main><h1>Hello</h1><button>❌</button><p>${"Some text here. ".repeat(8)}</p></main>`
+      const a = mountAssistant({ features: ["a11y"], mode: "check" })
+      a.open()
+      const d = shadow().querySelector("#checks") as HTMLDetailsElement | null
+      expect(d).not.toBeNull()
+      expect(d!.querySelectorAll("li").length).toBeGreaterThan(0)
+      d!.open = true
+      d!.dispatchEvent(new Event("toggle"))
+      a.element.update({})
+      expect((shadow().querySelector("#checks") as HTMLDetailsElement).open).toBe(true)
+    })
+
+    it("tab names are translated", () => {
+      document.documentElement.lang = "te"
+      document.body.innerHTML = `<main><h1>Hello</h1></main>`
+      const a = mountAssistant({ features: ["a11y"] })
+      a.open()
+      expect(shadow().querySelector("#tab-a11y")!.textContent).toBe("అందుబాటు")
+    })
+  })
 })

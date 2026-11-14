@@ -4,6 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ask page · yuktai</title>
+<meta property="og:title" content="Ask page: answers from the page itself">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="YuktAI">
+<meta property="og:image" content="https://sandeep-miriyala.github.io/yuktai/opengraph-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+
 <meta name="description" content="Ask any web page. Answers come from the page itself, with the source highlighted. Rust/WebAssembly search, on-device AI, nothing sent anywhere.">
 <meta name="theme-color" content="#001124">
 <link rel="icon" href="../vanilla/icons/favicon-32.png" type="image/png" sizes="32x32">
@@ -37,7 +45,7 @@ main{padding:32px 0 64px}
 h2{font-family:Georgia,"Times New Roman",serif;color:var(--navy);margin:36px 0 8px;font-size:1.55rem}
 h3{margin:22px 0 6px;font-size:1.12rem;color:var(--navy)}
 p,li{max-width:70ch}
-pre{background:var(--navy);color:#e6edf6;padding:14px 18px;border-radius:10px;overflow-x:auto;font-size:.92rem}
+pre{background:var(--navy);color:#e6edf6;padding:14px 18px;border-radius:10px;white-space:pre-wrap;overflow-wrap:anywhere;font-size:.92rem}
 code{font-family:ui-monospace,Menlo,Consolas,monospace}
 table{border-collapse:collapse;width:100%;background:var(--card);font-size:.95rem}
 .table{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
@@ -97,7 +105,7 @@ mountAskPage({ modes: ["fast", "balanced"] })</code></pre>
 
   <h2>Modes</h2>
   <p>Visitors choose how much work their device does. Site owners decide which modes are offered.</p>
-  <div class="table">
+  <div class="table" tabindex="0" role="region" aria-label="Ask page modes (scrolls sideways)">
   <table>
     <caption>Ask page modes</caption>
     <tr><th scope="col">Mode</th><th scope="col">Search</th><th scope="col">Answer</th><th scope="col">Download</th></tr>

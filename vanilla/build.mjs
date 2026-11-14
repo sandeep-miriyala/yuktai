@@ -30,3 +30,23 @@ const common = {
 
 await build({ ...common, outfile: join(here, "index.js") })
 await build({ ...common, outfile: join(here, "index.min.js"), minify: true })
+
+// The version shown in the demo, the offline cache name and the jQuery example
+// come from package.json, so they never fall behind a release again.
+{
+  const { readFileSync: read, writeFileSync: write } = await import("node:fs")
+  const version = JSON.parse(read(join(here, "..", "package.json"), "utf8")).version
+  const stamp = (file, pairs) => {
+    const before = read(file, "utf8")
+    let after = before
+    for (const [re, to] of pairs) after = after.replace(re, to)
+    if (after !== before) write(file, after)
+  }
+  stamp(join(here, "index.html"), [
+    [/plain HTML demo · v\d+\.\d+\.\d+/, `plain HTML demo · v${version}`],
+    [/plain HTML build \d+\.\d+\.\d+/, `plain HTML build ${version}`],
+  ])
+  stamp(join(here, "sw.js"), [[/yuktai-vanilla-v\d+\.\d+\.\d+/, `yuktai-vanilla-v${version}`]])
+  stamp(join(here, "..", "examples", "jquery", "index.html"), [[/@yuktishaalaa\/yuktai@\d+\.\d+\.\d+/g, `@yuktishaalaa/yuktai@${version}`]])
+  console.log(`vanilla: stamped version ${version}`)
+}
