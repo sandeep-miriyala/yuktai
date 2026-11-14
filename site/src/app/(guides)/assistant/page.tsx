@@ -19,7 +19,16 @@ const scriptCode = `<!-- before </body> -->
   window.YuktaiAssistantConfig = {
     features: ["ask", "a11y"],   // Ask this page + accessibility
     level: "AA",                 // "AA" | "AAA" | "off"
-    contrast: "check"            // "check" | "fix"
+    contrast: "check",           // "check" | "fix" (darken faint text)
+    mode: "auto",                // "auto" (safe fixes) | "check" (report only)
+    title: "YuktAI Assistant",   // panel name: your site's name
+    color: "#2F43C4",            // button colour: your brand colour
+    side: "right",               // "right" | "left"
+    offset: 20,                  // px from the corner, or { x: 20, y: 90 } above a chat button
+    panelLang: "auto",           // "auto" | "en" | "te" | "hi" (visitors can change it)
+    shortcut: true,              // Alt+Shift+Y opens and closes the panel
+    launcher: true,              // false: no ♿ button (open it from your own button)
+    ask: { modes: ["fast", "balanced"] }  // Ask this page options
   };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@yuktishaalaa/assistant@${v}/dist/assistant.global.js" defer></script>`;
@@ -32,7 +41,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html>
       <body>
         {children}
-        <YuktaiAssistant features={["ask", "a11y"]} level="AA" />
+        <YuktaiAssistant features={["ask", "a11y"]} level="AA" title="YuktAI Assistant" color="#2F43C4" />
       </body>
     </html>
   )
@@ -42,7 +51,7 @@ const reactCode = `import { useEffect } from "react"
 import { mountAssistant } from "@yuktishaalaa/assistant"
 
 useEffect(() => {
-  const assistant = mountAssistant({ features: ["ask", "a11y"], level: "AA" })
+  const assistant = mountAssistant({ features: ["ask", "a11y"], level: "AA", title: "YuktAI Assistant", color: "#2F43C4" })
   return () => assistant.destroy()
 }, [])`;
 

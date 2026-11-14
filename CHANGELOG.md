@@ -2,6 +2,10 @@
 
 All notable changes to `@yuktishaalaa/yuktai`. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow [Semantic Versioning](https://semver.org/).
 
+## 6.0.3 (2026-11-14)
+
+- **`@yuktishaalaa/assistant` 6.0.3**: new `panelLang` and `offset` options; wrong options and values are reported in the console instead of failing silently; Ask opens on the same side as the ♿ button; docs show every option (`title`, `color` and the rest).
+
 ## 6.0.2 (2026-11-14)
 
 - **`@yuktishaalaa/a11y` 6.0.2: smart dark mode.** Colours are changed one by one instead of inverting the page: photos, videos, emoji and brand colours keep their real colours, and text keeps WCAG AA/AAA contrast on the new dark backgrounds. New content is darkened as it arrives.

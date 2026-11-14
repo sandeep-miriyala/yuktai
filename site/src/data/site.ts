@@ -4,7 +4,7 @@
 export const VERSIONS = {
   yuktai: "6.0.2",
   a11y: "6.0.2",
-  assistant: "6.0.2",
+  assistant: "6.0.3",
   askPage: "1.0.2",
   cli: "1.4.0",
 } as const;

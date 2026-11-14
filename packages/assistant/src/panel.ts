@@ -68,7 +68,7 @@ button,input,select{font:inherit;color:inherit}
 :focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .wrap.hc :focus-visible{outline-color:#FFFF00}
 .launch{width:56px;height:56px;border-radius:999px;border:2px solid transparent;background:var(--accent);color:var(--on-accent);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 10px 24px -6px rgba(0,0,0,.35)}
-.panel{position:absolute;right:0;bottom:68px;width:min(380px,calc(100vw - 32px));max-height:min(640px,calc(100vh - 100px));display:flex;flex-direction:column;background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:16px;box-shadow:0 24px 48px -12px rgba(0,0,0,.3);overflow:hidden}
+.panel{position:absolute;right:0;bottom:68px;width:min(380px,calc(100vw - 32px));max-height:min(640px,calc(100vh - 88px - var(--yk-y,20px)));display:flex;flex-direction:column;background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:16px;box-shadow:0 24px 48px -12px rgba(0,0,0,.3);overflow:hidden}
 :host([side=left]) .panel{right:auto;left:0}
 .panel[hidden]{display:none}
 .head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 12px 8px 18px}
@@ -110,7 +110,7 @@ select{width:100%;height:40px;border-radius:8px;border:1px solid var(--line);bac
 .foot{display:flex;gap:8px;padding:12px 18px 16px;border-top:1px solid var(--line)}
 .foot .btn{flex:1}
 .status{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-@media (max-width:480px){.panel{max-height:min(70vh,560px)}}
+@media (max-width:480px){.panel{max-height:min(70vh,560px,calc(100vh - 88px - var(--yk-y,20px)))}}
 @media (forced-colors:active){
   .launch{border-color:ButtonText}
   .seg button[aria-pressed=true],.themes button[aria-pressed=true]{outline:3px solid Highlight;outline-offset:1px}

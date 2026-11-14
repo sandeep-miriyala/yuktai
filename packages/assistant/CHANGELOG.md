@@ -1,5 +1,13 @@
 # Changelog
 
+## 6.0.3 (2026-11-14)
+
+- **New options:** `panelLang` (the panel language new visitors start with) and `offset` (move the ♿ button, e.g. above a chat button).
+- **Config check:** a typo or a wrong value (`titel`, `level: "A"`, `color: "blu"`, an unknown feature) is reported in the browser console and the default is used, instead of failing silently. `checkConfig()` is exported.
+- **Ask opens on the same side** as the ♿ button (`side: "left"` now moves both).
+- The docs and the website show every option, including `title` and `color`.
+- The panel stays on screen when the button is moved up with `offset`.
+
 ## 6.0.2 (2026-11-14)
 
 - **Smart dark mode** from `@yuktishaalaa/a11y` 6.0.2: real dark colours instead of inverting the page; photos, emoji and brand colours stay right; text keeps AA/AAA contrast.

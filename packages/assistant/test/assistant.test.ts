@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest"
-import { mountAssistant } from "../src/index"
+import { checkConfig, mountAssistant } from "../src/index"
 
 const shadow = () => document.querySelector("yuktai-assistant")!.shadowRoot!
 const click = (sel: string) => (shadow().querySelector(sel) as HTMLElement).click()
@@ -149,6 +149,36 @@ describe("mountAssistant", () => {
       expect(a.element.isOpen).toBe(false)
       document.dispatchEvent(new KeyboardEvent("keydown", { code: "KeyY", key: "Y", altKey: true, shiftKey: true }))
       expect(a.element.isOpen).toBe(true)
+    })
+  })
+
+  describe("v6.0.3 config", () => {
+    it("checks the config: typos and bad values warn and fall back", () => {
+      const warns: string[] = []
+      const orig = console.warn
+      console.warn = (m: string) => warns.push(m)
+      try {
+        const c = checkConfig({ titel: "x", level: "A", contrast: "maybe", color: "notacolour", features: ["a11y", "chat"], side: "top" } as never)
+        expect(c.level).toBe("AA")
+        expect(c.contrast).toBe("check")
+        expect(c.color).toBeUndefined()
+        expect(c.features).toEqual(["a11y"])
+        expect(c.side).toBe("right")
+        expect(warns.join("\n")).toMatch(/unknown option "titel"/)
+        expect(warns.length).toBeGreaterThanOrEqual(6)
+      } finally {
+        console.warn = orig
+      }
+    })
+
+    it("offset moves the button; panelLang sets the starting panel language", () => {
+      document.body.innerHTML = `<main><h1>Hello</h1></main>`
+      const a = mountAssistant({ features: ["a11y"], offset: { x: 24, y: 96 }, panelLang: "te" })
+      const host = document.querySelector("yuktai-assistant") as HTMLElement
+      expect(host.style.right).toBe("24px")
+      expect(host.style.bottom).toBe("96px")
+      a.open()
+      expect(shadow().querySelector("[role=dialog]")!.getAttribute("lang")).toBe("te")
     })
   })
 })

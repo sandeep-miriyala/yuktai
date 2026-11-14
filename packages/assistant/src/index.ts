@@ -8,12 +8,12 @@
 // Runs in the browser only. Settings stay on the device (localStorage).
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { canSpeak, createA11y, loadPrefs, pageIsDark, pageLanguage, readTarget, savePrefs, speak, DEFAULT_PREFS, type A11y, type Prefs, type Report, type Speaker } from "@yuktishaalaa/a11y"
+import { canSpeak, createA11y, loadPrefs, pageIsDark, pageLanguage, parseColor, readTarget, savePrefs, speak, DEFAULT_PREFS, type A11y, type Prefs, type Report, type Speaker } from "@yuktishaalaa/a11y"
 import { mountAskPage } from "@yuktishaalaa/ask-page"
 import { defineAssistant, YuktaiAssistantElement, type PanelLang } from "./panel"
 import { words } from "./i18n"
 
-export const VERSION = "6.0.2"
+export const VERSION = "6.0.3"
 
 export type Feature = "a11y" | "ask"
 
@@ -40,6 +40,49 @@ export interface AssistantConfig {
   color?: string
   /** Alt+Shift+Y opens and closes the panel. Default true. */
   shortcut?: boolean
+  /** Panel language for new visitors: "auto" (the page's language), "en", "te" or "hi". Visitors can still change it. Default "auto". */
+  panelLang?: "auto" | "en" | "te" | "hi"
+  /** Move the ♿ button away from the corner (px), e.g. 90 or { x: 20, y: 90 } to sit above a chat button. Default 20. */
+  offset?: number | { x?: number; y?: number }
+}
+
+const KNOWN_KEYS = ["features", "level", "contrast", "mode", "side", "ask", "launcher", "storageKey", "title", "color", "shortcut", "panelLang", "offset"]
+
+/**
+ * Checks the site's config and says in the console what was wrong, so a typo
+ * ("titel", level: "A") doesn't fail silently. Bad values fall back to the default.
+ */
+export function checkConfig(config: AssistantConfig): AssistantConfig {
+  const c: AssistantConfig = { ...config }
+  const warn = (msg: string) => typeof console !== "undefined" && console.warn(`YuktAI Assistant: ${msg}`)
+  for (const k of Object.keys(config)) if (!KNOWN_KEYS.includes(k)) warn(`unknown option "${k}" (ignored). Options: ${KNOWN_KEYS.join(", ")}.`)
+  const oneOf = <K extends keyof AssistantConfig>(k: K, allowed: readonly unknown[], fallback: AssistantConfig[K]) => {
+    if (c[k] !== undefined && !allowed.includes(c[k])) {
+      warn(`${String(k)}: ${JSON.stringify(c[k])} is not one of ${allowed.map((a) => JSON.stringify(a)).join(" | ")}; using ${JSON.stringify(fallback)}.`)
+      c[k] = fallback
+    }
+  }
+  // WCAG has level A too, but AA is the legal minimum almost everywhere: "A" means AA here
+  if ((c.level as string) === "A") {
+    warn(`level "A" is below the legal minimum in most countries; using "AA".`)
+    c.level = "AA"
+  }
+  oneOf("level", ["off", "AA", "AAA"], "AA")
+  oneOf("contrast", ["check", "fix"], "check")
+  oneOf("mode", ["auto", "check"], "auto")
+  oneOf("side", ["right", "left"], "right")
+  oneOf("panelLang", ["auto", "en", "te", "hi"], "auto")
+  if (c.features !== undefined) {
+    const ok = Array.isArray(c.features) ? c.features.filter((f) => f === "a11y" || f === "ask") : []
+    if (!Array.isArray(c.features) || ok.length !== c.features.length) warn(`features: use ["a11y", "ask"], ["a11y"] or ["ask"].`)
+    c.features = ok.length ? ok : ["a11y", "ask"]
+  }
+  if (c.color !== undefined && !parseColor(String(c.color))) {
+    warn(`color: ${JSON.stringify(c.color)} is not a colour (try "#B3261E"); using the default blue.`)
+    delete c.color
+  }
+  if (c.title !== undefined) c.title = String(c.title).trim().slice(0, 60) || undefined
+  return c
 }
 
 export interface Assistant {
@@ -59,8 +102,9 @@ interface AskElement extends HTMLElement {
   openPanel?: () => void
 }
 
-export function mountAssistant(config: AssistantConfig = {}, parent: HTMLElement = document.body): Assistant {
+export function mountAssistant(input: AssistantConfig = {}, parent: HTMLElement = document.body): Assistant {
   defineAssistant()
+  const config = checkConfig(input)
   const existing = document.querySelector("yuktai-assistant") as (YuktaiAssistantElement & { _assistant?: Assistant }) | null
   if (existing?._assistant) return existing._assistant
 
@@ -82,16 +126,28 @@ export function mountAssistant(config: AssistantConfig = {}, parent: HTMLElement
 
   let askEl: AskElement | null = null
   if (features.includes("ask")) {
-    askEl = mountAskPage({ ...(config.ask ?? {}), launcher: false } as never) as AskElement
+    // Ask opens on the same side as the ♿ button unless the site says otherwise
+    askEl = mountAskPage({ side: config.side ?? "right", ...(config.ask ?? {}), launcher: false } as never) as AskElement
   }
 
   const el = document.createElement("yuktai-assistant") as YuktaiAssistantElement & { _assistant?: Assistant }
   if (config.side === "left") el.setAttribute("side", "left")
   if (config.launcher === false) el.style.display = "none"
+  if (config.offset !== undefined) {
+    const o = typeof config.offset === "number" ? { x: config.offset, y: config.offset } : config.offset
+    const px = (n: number | undefined) => (typeof n === "number" && isFinite(n) ? `${Math.max(0, Math.round(n))}px` : null)
+    const x = px(o.x), y = px(o.y)
+    if (x) el.style.setProperty(config.side === "left" ? "left" : "right", x)
+    if (y) {
+      el.style.setProperty("bottom", y)
+      // the panel opens above the button: keep its top on screen
+      el.style.setProperty("--yk-y", y)
+    }
+  }
   // Did the site say its language? (read before the engine may add lang itself)
   const declared = document.documentElement.lang
   const lang = () => document.documentElement.lang || pageLanguage(document).detected?.lang || "en"
-  let uiLang = (loadText(key + ":uiLang") ?? "auto") as PanelLang
+  let uiLang = (loadText(key + ":uiLang") ?? config.panelLang ?? "auto") as PanelLang
   let speaker: Speaker | null = null
   let readUrl = ""
   const stopReading = () => {

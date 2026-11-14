@@ -1,7 +1,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // assistant.global.js — the script for any website:
 //
-//   <script>window.YuktaiAssistantConfig = { features: ["ask", "a11y"], level: "AA" }</script>
+//   <script>window.YuktaiAssistantConfig = { features: ["ask", "a11y"], level: "AA", title: "My site", color: "#2F43C4" }</script>
 //   <script src="https://cdn.jsdelivr.net/npm/@yuktishaalaa/assistant@6/dist/assistant.global.js" defer></script>
 //
 // Starts after the page has loaded (and after React/Next.js hydration).
