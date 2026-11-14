@@ -1,6 +1,6 @@
 {
   "name": "@yuktishaalaa/assistant",
-  "version": "6.0.4",
+  "version": "6.0.5",
   "description": "YuktAI Assistant: add accessibility (safe ARIA, WCAG AA/AAA, read aloud, colours, smart dark mode) and Ask this page to any website, in one panel. A script for any site, npm for React and Next.js, a browser extension. Runs on the device.",
   "author": "Sandeep Miriyala — Yuktishaalaa AI Lab",
   "license": "GPL-3.0-only",
