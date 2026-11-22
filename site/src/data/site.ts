@@ -30,6 +30,37 @@ export const LINKS = {
   contributing: "https://github.com/sandeep-miriyala/yuktai/blob/main/CONTRIBUTING.md",
 } as const;
 
+// The person behind YuktAI (About page card and footer).
+// WhatsApp opens a chat; the number itself is never printed on the page.
+const WA_TEXT = "Hi Sandeep, I saw YuktAI and wanted to ask about ";
+export const AUTHOR = {
+  name: "Sandeep Miriyala",
+  nameTe: "సందీప్ మిరియాల",
+  // GitHub profile photo, so it changes when the GitHub photo changes.
+  // To use your own file instead: put it in site/public/brand/ and write "/brand/sandeep.jpg".
+  photo: "https://avatars.githubusercontent.com/u/3719057?s=256&v=4",
+  role: "Full-stack engineer and Technical Lead",
+  about: "I build .NET systems that run in production, and AI agents that work safely with them. I learn by doing: every idea I want to understand, I ship as a working product.",
+  facts: [
+    "13+ years of enterprise software in banking, healthcare, telecom and shipping",
+    "Technical Lead since 2021: API design, system design, reviews and mentoring",
+    "Led WCAG 2.1/2.2 AA work and built a shared accessibility library",
+    "Generative AI certification, IIT Patna (2026)",
+  ],
+  projects: [
+    { name: "YuktAI", href: "https://github.com/sandeep-miriyala/yuktai" },
+    { name: "AksharaTantra", href: "https://aksharatantra.miriyala.in/" },
+    { name: "Repo Sentinel", href: "https://github.com/sandeep-miriyala/repo-sentinel" },
+    { name: "Aksharadhara", href: "https://sandeep-miriyala.github.io/Aksharadhara/" },
+    { name: "AksharaChitra", href: "https://aksharachitra.netlify.app/" },
+    { name: "Ratnalabala", href: "https://ratnalabala.vercel.app/" },
+  ],
+  email: "vanisandeep@gmail.com",
+  whatsapp: `https://wa.me/919491163982?text=${encodeURIComponent(WA_TEXT)}`,
+  github: "https://github.com/sandeep-miriyala",
+  linkedin: "https://www.linkedin.com/in/sandeepmiriyala",
+} as const;
+
 export type IconKey =
   | "accessibility" | "grid" | "robot" | "chat" | "tools" | "code" | "hub"
   | "layout" | "wand" | "star" | "dataObject" | "speed" | "install";
@@ -274,6 +305,7 @@ export const NAV: NavItem[] = [
       { href: "/#packages", label: "Packages", key: "packages", hint: "yuktai CLI, @yuktishaalaa/yuktai, ask-page, shubhalekha" },
       { href: "/#why", label: "Why YuktAI", key: "whyYuktai", hint: "Where it fits, how it compares" },
       { href: "/about/", label: "How it's built", key: "howBuilt", hint: "The stack behind this site" },
+      { href: "/about/#author", label: "Made by", hint: "Sandeep Miriyala: email or WhatsApp" },
       { href: LINKS.github, label: "GitHub", key: "github", hint: "Source code, GPL-3.0" },
     ],
   },

@@ -4,6 +4,7 @@ import pkg from "../../../package.json";
 import StackTable, { type StackRow } from "@/components/about/StackTable";
 import LiveNpm from "@/components/about/LiveNpm";
 import EngineDemo from "@/components/ui/EngineDemo";
+import AuthorCard from "@/components/about/AuthorCard";
 
 export const metadata: Metadata = {
   title: "How this site is built",
@@ -56,6 +57,11 @@ export default function AboutPage() {
             </p>
           </div>
         </div>
+      </section>
+
+      <section className="wrap" id="author">
+        <p className="kicker">Made by</p>
+        <AuthorCard />
       </section>
 
       <section className="wrap">
