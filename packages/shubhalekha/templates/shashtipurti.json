@@ -1,0 +1,50 @@
+{
+  "type": "shashtipurti",
+  "languages": [
+    "en",
+    "te"
+  ],
+  "timezone": "Asia/Kolkata",
+  "theme": "traditional",
+  "kicker": {
+    "en": "Shashtipurti",
+    "te": "షష్టిపూర్తి"
+  },
+  "title": {
+    "en": "Celebrating 60 years of Nanna",
+    "te": "నాన్నగారి షష్టిపూర్తి"
+  },
+  "message": {
+    "en": "Join us to celebrate sixty blessed years.",
+    "te": "అరవై ఏళ్ళ శుభ సందర్భాన్ని కలిసి జరుపుకుందాం, విచ్చేయండి."
+  },
+  "events": [
+    {
+      "name": {
+        "en": "Shashtipurti",
+        "te": "షష్టిపూర్తి"
+      },
+      "date": "2027-05-02",
+      "time": "09:00",
+      "endTime": "13:00",
+      "venue": {
+        "en": "Function Hall",
+        "te": "ఫంక్షన్ హాల్"
+      },
+      "address": "Main Road, City",
+      "map": "https://maps.google.com/?q=City"
+    }
+  ],
+  "rsvp": {
+    "whatsapp": "+91 90000 00000"
+  },
+  "faq": [],
+  "assistant": {
+    "enabled": true,
+    "askPage": false
+  },
+  "site": {
+    "url": "https://example.com/",
+    "noindex": true
+  }
+}

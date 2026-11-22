@@ -1,0 +1,50 @@
+{
+  "type": "puja",
+  "languages": [
+    "en",
+    "te"
+  ],
+  "timezone": "Asia/Kolkata",
+  "theme": "traditional",
+  "kicker": {
+    "en": "Sri Satyanarayana Vratam",
+    "te": "శ్రీ సత్యనారాయణ వ్రతం"
+  },
+  "title": {
+    "en": "Satyanarayana Vratam at our home",
+    "te": "మా ఇంట శ్రీ సత్యనారాయణ వ్రతం"
+  },
+  "message": {
+    "en": "Please join us for the vratam and prasadam.",
+    "te": "వ్రతానికి, ప్రసాదానికి విచ్చేయండి."
+  },
+  "events": [
+    {
+      "name": {
+        "en": "Vratam",
+        "te": "వ్రతం"
+      },
+      "date": "2027-01-28",
+      "time": "17:30",
+      "endTime": "19:30",
+      "venue": {
+        "en": "Our home",
+        "te": "మా ఇల్లు"
+      },
+      "address": "Main Road, City",
+      "map": "https://maps.google.com/?q=City"
+    }
+  ],
+  "rsvp": {
+    "whatsapp": "+91 90000 00000"
+  },
+  "faq": [],
+  "assistant": {
+    "enabled": true,
+    "askPage": false
+  },
+  "site": {
+    "url": "https://example.com/",
+    "noindex": true
+  }
+}

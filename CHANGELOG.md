@@ -2,6 +2,14 @@
 
 All notable changes to `@yuktishaalaa/yuktai`. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow [Semantic Versioning](https://semver.org/).
 
+## Unreleased (2026-11-22)
+
+**New package**
+- **`@yuktishaalaa/shubhalekha` 1.0.0**: invitation pages for weddings, upanayanam, gruhapravesam and 12 more Indian celebrations, plus a digital business card. All 22 scheduled Indian languages and English, a no-code Studio, a 24×7 guest assistant that answers only from your details, WhatsApp or email RSVP, calendar, QR codes, photos resized to WebP, and a PWA that opens offline. 21 tests; 0 axe violations on all 15 templates in light and dark mode. See `packages/shubhalekha/CHANGELOG.md`.
+
+**Website**
+- New guide: `/shubhalekha/`. Home: seven packages, with a "Ready-made pages" group and Shubhalekha in the family diagram. Menu: Get started → Shubhalekha.
+
 ## 6.0.3 (2026-11-14)
 
 Fixes from a full scan of the website (18 pages, desktop and phone, light and dark) and the packages.

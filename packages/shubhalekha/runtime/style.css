@@ -1,0 +1,238 @@
+/* ఉత్సవ్: మూడు themes (traditional, modern, simple), light + dark. రంగులన్నీ variables లోనే. */
+
+:root {
+  --bg: #fffaf3;
+  --surface: #ffffff;
+  --ink: #2a1f17;
+  --muted: #6b5a4b;
+  --line: #ecdcc6;
+  --accent: #7a1f1f;
+  --accent-ink: #ffffff;
+  --accent-soft: #fbeee0;
+  --gold: #8a5a12;
+  --radius: 18px;
+  --font: "Mandali", "Noto Sans Telugu", "Noto Sans Kannada", "Noto Sans Devanagari", system-ui, sans-serif;
+  --display: "Suranna", "Noto Serif Telugu", Georgia, serif;
+}
+html[data-theme-name="modern"] {
+  --bg: #f6f8fb; --ink: #14213d; --muted: #52607a; --line: #dfe5ee;
+  --accent: #1e3a5f; --accent-soft: #e8eef7; --gold: #2f5d8a;
+  --display: var(--font);
+}
+html[data-theme-name="simple"] {
+  --bg: #ffffff; --ink: #1f1f1f; --muted: #5c5c5c; --line: #e5e5e5;
+  --accent: #333333; --accent-soft: #f2f2f2; --gold: #444444;
+  --display: var(--font);
+}
+@media (prefers-color-scheme: dark) {
+  :root, html[data-theme-name] {
+    --bg: #17120e; --surface: #221b15; --ink: #f4ebe0; --muted: #c2b19d; --line: #3b3027;
+    --accent: #f0b46d; --accent-ink: #1b130c; --accent-soft: #33261a; --gold: #f0b46d;
+  }
+  html[data-theme-name="modern"] { --bg: #0f1522; --surface: #172033; --line: #2b3850; --accent: #8db4e8; --accent-soft: #1d2a42; --gold: #8db4e8; }
+  html[data-theme-name="simple"] { --bg: #121212; --surface: #1c1c1c; --line: #333; --accent: #e6e6e6; --accent-soft: #262626; --gold: #e6e6e6; }
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 17px/1.65 var(--font);
+  -webkit-text-size-adjust: 100%;
+}
+img { max-width: 100%; height: auto; }
+a { color: var(--accent); }
+
+.skip { position: absolute; left: -999px; top: 8px; background: var(--surface); padding: 8px 14px; border-radius: 10px; z-index: 10; }
+.skip:focus { left: 8px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+
+/* ---- Hero ---- */
+.hero {
+  text-align: center;
+  padding: 20px 16px 36px;
+  background:
+    radial-gradient(circle at 50% 0%, var(--accent-soft), transparent 70%),
+    var(--bg);
+  border-bottom: 1px solid var(--line);
+}
+.hero-photo {
+  width: min(320px, 78vw);
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border-radius: 999px 999px var(--radius) var(--radius);
+  border: 4px solid var(--surface);
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.12);
+  margin-top: 12px;
+}
+.hero-mark { font-size: 56px; color: var(--gold); margin: 16px 0 0; }
+.kicker { margin: 18px 0 0; color: var(--gold); letter-spacing: 0.04em; font-weight: 600; }
+h1 {
+  font: 400 clamp(2.1rem, 8vw, 3.4rem)/1.15 var(--display);
+  margin: 6px 0 0;
+  color: var(--accent);
+}
+.message { max-width: 34rem; margin: 12px auto 0; color: var(--muted); }
+
+.langs { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+.langs button {
+  font: inherit; font-size: 15px;
+  border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+  padding: 6px 14px; border-radius: 99px; cursor: pointer; min-height: 40px;
+}
+.langs button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+
+/* ---- Main ---- */
+main { max-width: 44rem; margin: 0 auto; padding: 8px 16px 24px; }
+main > section { margin-top: 36px; }
+h2 { font: 400 1.7rem/1.2 var(--display); color: var(--accent); margin: 0 0 14px; }
+h3 { margin: 0; font-size: 1.15rem; }
+.muted { color: var(--muted); }
+
+/* ---- Countdown ---- */
+.countdown { text-align: center; }
+.cd-when { font-weight: 600; margin: 0 0 12px; }
+.cd-boxes { display: flex; justify-content: center; gap: 10px; }
+.cd-boxes > div {
+  min-width: 86px; padding: 12px 8px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+  display: flex; flex-direction: column;
+}
+.cd-n { font: 700 2rem/1 var(--font); color: var(--accent); }
+.cd-u { font-size: 14px; color: var(--muted); margin-top: 4px; }
+.cd-done { font-weight: 600; color: var(--accent); }
+
+/* ---- Events ---- */
+.events { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.event {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 16px 18px; border-left: 5px solid var(--gold);
+}
+.ev-when { margin: 4px 0 0; font-weight: 600; color: var(--gold); }
+.ev-venue { margin: 6px 0 0; }
+.ev-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 0; }
+
+/* ---- Buttons ---- */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  min-height: 44px; padding: 8px 16px;
+  font: inherit; font-size: 16px; font-weight: 600; text-decoration: none;
+  color: var(--accent-ink); background: var(--accent);
+  border: 1px solid var(--accent); border-radius: 12px; cursor: pointer;
+}
+.btn.ghost { background: transparent; color: var(--accent); }
+.btn.wide { width: 100%; justify-content: center; }
+.ic { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+/* ---- Rituals ---- */
+.rituals { margin: 0; display: grid; gap: 10px; }
+.rituals div { background: var(--accent-soft); border-radius: 14px; padding: 12px 16px; }
+.rituals dt { font-weight: 700; }
+.rituals dd { margin: 2px 0 0; color: var(--muted); }
+
+/* ---- RSVP ---- */
+.rsvp { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; }
+.rsvp label { display: block; font-weight: 600; margin-bottom: 4px; }
+.rsvp input[type="text"], .rsvp input:not([type]), .rsvp input[type="number"] {
+  width: 100%; font: inherit; color: var(--ink); background: var(--bg);
+  border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; min-height: 44px;
+}
+.rsvp input[aria-invalid="true"] { border-color: #b42318; }
+.rsvp fieldset { border: 0; padding: 0; margin: 12px 0 0; }
+.rsvp legend { font-weight: 600; margin-bottom: 6px; }
+.rsvp .check { display: flex; align-items: center; gap: 10px; font-weight: 400; min-height: 40px; }
+.rsvp .check input { width: 20px; height: 20px; accent-color: var(--accent); }
+.error { color: #b42318; min-height: 1.2em; margin: 8px 0 0; }
+@media (prefers-color-scheme: dark) { .error { color: #ff8a80; } }
+.rsvp-send { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 0; }
+
+/* ---- Album, contacts, QR ---- */
+.qr { margin: 14px auto 0; width: 168px; text-align: center; }
+
+.qr figcaption { font-size: 14px; color: var(--muted); margin-top: 6px; }
+.contacts { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.contacts li { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 12px 16px; }
+.contacts .row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+
+.foot { text-align: center; color: var(--muted); font-size: 14px; padding: 28px 16px 40px; border-top: 1px solid var(--line); margin-top: 40px; }
+
+/* ---- Business card ---- */
+.card-page main.card {
+  max-width: 26rem; margin: 24px auto; text-align: center;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 24px;
+  padding: 24px 20px; box-shadow: 0 12px 34px rgb(0 0 0 / 0.08);
+}
+.card-photo { width: 120px; height: 120px; object-fit: cover; border-radius: 50%; border: 4px solid var(--accent-soft); margin-top: 12px; }
+.card h1 { font-size: clamp(1.9rem, 7vw, 2.4rem); }
+.business { margin: 2px 0 0; font-weight: 600; }
+.card-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin: 18px 0 10px; }
+.card-actions .btn { justify-content: center; }
+.services { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.services li { background: var(--accent-soft); border-radius: 99px; padding: 4px 14px; font-size: 15px; }
+.card h2 { font-size: 1.3rem; margin-top: 20px; }
+
+@media (min-width: 760px) {
+  .events { grid-template-columns: 1fr 1fr; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .btn { transition: transform 0.15s ease; }
+  .btn:active { transform: scale(0.97); }
+}
+
+/* ---- పై వరుస: భాష + install ---- */
+.topbar { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px; }
+.langs select {
+  font: inherit; font-size: 16px; color: var(--ink); background: var(--surface);
+  border: 1px solid var(--line); border-radius: 99px; padding: 6px 14px; min-height: 40px;
+}
+.btn.small { min-height: 40px; padding: 6px 12px; font-size: 15px; }
+.ios-hint { font-size: 14px; color: var(--muted); margin: 8px auto 0; max-width: 22rem; }
+
+/* ---- 24×7 సహాయకుడు ---- */
+.ask-fab {
+  position: fixed; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom));
+  display: inline-flex; align-items: center; gap: 8px;
+  min-height: 52px; padding: 10px 18px;
+  font: inherit; font-weight: 700; font-size: 16px;
+  color: var(--accent-ink); background: var(--accent);
+  border: 0; border-radius: 99px; cursor: pointer;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.22); z-index: 5;
+}
+[dir="rtl"] .ask-fab { right: auto; left: 16px; }
+.ask {
+  width: min(28rem, calc(100vw - 24px)); max-height: min(36rem, calc(100vh - 48px));
+  padding: 0; border: 1px solid var(--line); border-radius: 20px;
+  background: var(--surface); color: var(--ink);
+  display: none; flex-direction: column;
+}
+.ask[open] { display: flex; }
+.ask::backdrop { background: rgb(0 0 0 / 0.4); }
+.ask-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 14px 16px 8px; }
+.ask-head h2 { font-size: 1.3rem; margin: 0; }
+.ask-x { background: none; border: 0; color: var(--ink); width: 44px; height: 44px; border-radius: 12px; cursor: pointer; display: grid; place-items: center; }
+.ask-chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 16px 8px; }
+.chip {
+  font: inherit; font-size: 15px; color: var(--accent); background: var(--accent-soft);
+  border: 1px solid transparent; border-radius: 99px; padding: 6px 12px; min-height: 40px; cursor: pointer;
+}
+.chip:hover { border-color: var(--accent); }
+.ask-log { flex: 1; overflow-y: auto; padding: 4px 16px 8px; min-height: 120px; }
+.ask-q { margin: 10px 0 4px; font-weight: 700; color: var(--gold); }
+.ask-a { background: var(--bg); border-radius: 14px; padding: 8px 12px; }
+.ask-a p { margin: 4px 0; }
+.ask-form { display: flex; gap: 8px; padding: 10px 16px 16px; border-top: 1px solid var(--line); }
+.ask-form input {
+  flex: 1; min-width: 0; font: inherit; color: var(--ink); background: var(--bg);
+  border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; min-height: 44px;
+}
+.ask-form .btn { padding: 8px 14px; }
+main, .foot { padding-bottom: 72px; } /* సహాయక బటన్ కింద content మూసుకుపోకుండా */
+
+/* ---- ఫోటోలు / ఆహ్వాన పత్రికలు ---- */
+.gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.gallery figure { margin: 0; }
+.gallery img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 14px; border: 1px solid var(--line); background: var(--accent-soft); }
+.gallery figcaption { font-size: 14px; color: var(--muted); margin-top: 4px; }
+.qr img { width: 168px; height: 168px; border-radius: 12px; border: 6px solid #fff; display: block; }

@@ -1,0 +1,50 @@
+{
+  "type": "housewarming",
+  "languages": [
+    "en",
+    "te"
+  ],
+  "timezone": "Asia/Kolkata",
+  "theme": "modern",
+  "kicker": {
+    "en": "Gruhapravesam",
+    "te": "గృహప్రవేశం"
+  },
+  "title": {
+    "en": "The Rao family's new home",
+    "te": "రావు గారి కుటుంబ నూతన గృహం"
+  },
+  "message": {
+    "en": "Please join us as we step into our new home.",
+    "te": "మా నూతన గృహప్రవేశానికి విచ్చేసి ఆశీర్వదించండి."
+  },
+  "events": [
+    {
+      "name": {
+        "en": "Gruhapravesam and puja",
+        "te": "గృహప్రవేశం, పూజ"
+      },
+      "date": "2027-01-20",
+      "time": "06:30",
+      "endTime": "09:00",
+      "venue": {
+        "en": "Our new home",
+        "te": "మా కొత్త ఇల్లు"
+      },
+      "address": "Main Road, City",
+      "map": "https://maps.google.com/?q=City"
+    }
+  ],
+  "rsvp": {
+    "whatsapp": "+91 90000 00000"
+  },
+  "faq": [],
+  "assistant": {
+    "enabled": true,
+    "askPage": false
+  },
+  "site": {
+    "url": "https://example.com/",
+    "noindex": true
+  }
+}

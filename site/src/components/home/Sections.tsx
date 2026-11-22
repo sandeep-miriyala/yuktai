@@ -181,10 +181,10 @@ export function Packages() {
         <CountUp value={PACKAGES.length} /> free packages, one family
       </h2>
       <p className="lead">
-        Two main products: the <strong>Toolkit</strong> for apps you build, the <strong>Assistant</strong> for websites you already have. Both run on the same two engines.
+        Two main products: the <strong>Toolkit</strong> for apps you build, the <strong>Assistant</strong> for websites you already have. Both run on the same two engines. And <strong>Shubhalekha</strong>, a ready-made invitation site for every Indian celebration.
       </p>
 
-      <InView className="family" label="The YuktAI family: YuktAI on top; the Toolkit and the Assistant under it; both use the accessibility engine, and the Assistant also uses the Ask engine. Two starters make a new app.">
+      <InView className="family" label="The YuktAI family: YuktAI on top; the Toolkit and the Assistant under it; both use the accessibility engine, and the Assistant also uses the Ask engine. Two starters make a new app, and Shubhalekha makes a ready invitation site.">
         <div className="fam-root"><span>YuktAI</span></div>
         <div className="fam-row fam-main">
           {node("@yuktishaalaa/yuktai", "is-main")}
@@ -199,6 +199,10 @@ export function Packages() {
         <div className="fam-row fam-start">
           {node("create-yuktai", "is-start")}
           {node("yuktai", "is-start")}
+        </div>
+        <p className="fam-label">or a ready-made site</p>
+        <div className="fam-row fam-start fam-sites">
+          {node("@yuktishaalaa/shubhalekha", "is-start")}
         </div>
       </InView>
 

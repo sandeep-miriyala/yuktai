@@ -8,6 +8,7 @@ export const VERSIONS = {
   askPage: "1.0.2",
   cli: "1.4.0",
   create: "1.0.0",
+  shubhalekha: "1.0.0",
 } as const;
 
 export const LINKS = {
@@ -18,6 +19,7 @@ export const LINKS = {
   npmA11y: "https://www.npmjs.com/package/@yuktishaalaa/a11y",
   npmCli: "https://www.npmjs.com/package/yuktai",
   npmCreate: "https://www.npmjs.com/package/create-yuktai",
+  npmShubhalekha: "https://www.npmjs.com/package/@yuktishaalaa/shubhalekha",
   w3techs: "https://w3techs.com/technologies/overview/javascript_library",
   site: "https://sandeep-miriyala.github.io/yuktai/",
   codespacesApp: "https://miriyalas.github.io/yuktai/",
@@ -36,6 +38,7 @@ export type IconKey =
 export const GUIDES: { href: string; title: string; text: string; icon: IconKey }[] = [
   { href: "/assistant/", title: "YuktAI Assistant (new in 6.0)", text: "Accessibility and Ask this page in one panel. Download the browser extension, paste one script, or npm install for React and Next.js.", icon: "accessibility" },
   { href: "/guide/", title: "End-to-end guide", text: "From an empty folder to a live site: create, build, test, publish on GitHub Pages or Vercel, and make it ready for AI browsers.", icon: "wand" },
+  { href: "/shubhalekha/", title: "Shubhalekha: invitation pages (new)", text: "Weddings, upanayanam, gruhapravesam and 12 more celebrations in all 22 Indian languages. One JSON file or a form, a 24×7 guest assistant, WhatsApp RSVP, offline.", icon: "layout" },
   { href: "/create/", title: "Create an app", text: "npm create yuktai@latest my-app: Next.js + Rust + Python, a 25 lakh row grid, LangGraph agents, RAG, QA report, icons and a PWA in one command.", icon: "install" },
   { href: "/accessibility/", title: "Accessibility", text: "Floating ♿ button: contrast, text size, dyslexia font, colour-blind filters, reduced motion, speak on focus.", icon: "accessibility" },
   { href: "/grid/", title: "Data grid", text: "Search, sort, pages, selection, CSV, five themes and keyboard navigation, with the engine and time shown.", icon: "grid" },
@@ -78,7 +81,7 @@ export const TESTS = [
 export const TEST_TOTAL = TESTS.reduce((n, t) => n + t.value, 0);
 
 export const STATS = [
-  { value: 6, label: "free npm packages, one family" },
+  { value: 7, label: "free npm packages, one family" },
   { value: STACKS.length, label: "languages and stacks" },
   { value: TEST_TOTAL, label: "automated tests per release" },
   { value: 163, label: "accessible icons" },
@@ -110,14 +113,15 @@ export const QUESTIONS = [
   { label: "Why Rust?", ask: "Why does YuktAI use Rust?" },
 ];
 
-// The npm packages: six, in one family. Two main products, the two engines
-// inside them, and two ways to start a new app.
-export type PackageGroup = "main" | "engine" | "start";
+// The npm packages: seven, in one family. Two main products, the two engines
+// inside them, two ways to start a new app, and one ready-made site.
+export type PackageGroup = "main" | "engine" | "start" | "sites";
 
 export const PACKAGE_GROUPS: { key: PackageGroup; title: string; text: string }[] = [
   { key: "main", title: "Main products", text: "Pick one. Each brings everything it needs." },
   { key: "engine", title: "Engines", text: "Inside both main products. Use one on its own if that is all you need." },
   { key: "start", title: "Start a new app", text: "One command makes a ready Next.js app with YuktAI set up." },
+  { key: "sites", title: "Ready-made pages", text: "Fill in one file or a form. Get a finished site to publish." },
 ];
 
 export const PACKAGES: readonly {
@@ -202,6 +206,18 @@ export const PACKAGES: readonly {
     guide: { href: "/create/", label: "Create an app" },
     icon: "tools",
   },
+  {
+    name: "@yuktishaalaa/shubhalekha",
+    short: "Shubhalekha",
+    version: VERSIONS.shubhalekha,
+    group: "sites",
+    who: "For families, event planners and small businesses",
+    text: "Invitation pages for 15 kinds of Indian celebrations and a digital business card, in all 22 Indian languages. One JSON file or a no-code form; a 24×7 guest assistant, WhatsApp or email RSVP, calendar, QR codes, and an app that opens offline at the venue.",
+    install: "npx @yuktishaalaa/shubhalekha init our-wedding --type wedding",
+    npm: LINKS.npmShubhalekha,
+    guide: { href: "/shubhalekha/", label: "Shubhalekha guide" },
+    icon: "layout",
+  },
 ];
 
 // The header menu (src/components/yuktai/Header.tsx). A group with `children` is a ▾ submenu.
@@ -218,6 +234,7 @@ export const NAV: NavItem[] = [
       { href: "/assistant/", label: "YuktAI Assistant", hint: "New in 6.0: download, script or npm" },
       { href: "/guide/", label: "End-to-end guide", hint: "Create, test, publish, AI-browser ready" },
       { href: "/create/", label: "Create an app", key: "createApp", hint: "npm create yuktai@latest my-app" },
+      { href: "/shubhalekha/", label: "Shubhalekha", hint: "Invitation pages in 22 Indian languages" },
       { href: "/nextjs/", label: "Next.js setup", hint: "YuktAIWrapper for the App Router" },
       { href: "/#start", label: "JavaScript / HTML", hint: "Two script tags on any site" },
       { href: "/jquery/", label: "jQuery", hint: "jQuery 1.12 to 4.0" },
@@ -254,7 +271,7 @@ export const NAV: NavItem[] = [
     children: [
       { href: "/#how", label: "How it works", hint: "Four diagrams, from the toolkit to your app" },
       { href: "/#demos", label: "Live demos", hint: "Sites made with YuktAI" },
-      { href: "/#packages", label: "Packages", key: "packages", hint: "yuktai CLI, @yuktishaalaa/yuktai, ask-page" },
+      { href: "/#packages", label: "Packages", key: "packages", hint: "yuktai CLI, @yuktishaalaa/yuktai, ask-page, shubhalekha" },
       { href: "/#why", label: "Why YuktAI", key: "whyYuktai", hint: "Where it fits, how it compares" },
       { href: "/about/", label: "How it's built", key: "howBuilt", hint: "The stack behind this site" },
       { href: LINKS.github, label: "GitHub", key: "github", hint: "Source code, GPL-3.0" },

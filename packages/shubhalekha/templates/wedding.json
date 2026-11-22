@@ -1,0 +1,199 @@
+{
+  "type": "wedding",
+  "languages": [
+    "en",
+    "te"
+  ],
+  "timezone": "Asia/Kolkata",
+  "theme": "traditional",
+  "kicker": {
+    "en": "With the blessings of our elders",
+    "te": "పెద్దల ఆశీస్సులతో"
+  },
+  "title": {
+    "en": "Priya & Arjun",
+    "te": "ప్రియ & అర్జున్"
+  },
+  "message": {
+    "en": "We warmly invite you and your family to bless us on our wedding.",
+    "te": "మా వివాహానికి మీరు సకుటుంబ సమేతంగా విచ్చేసి ఆశీర్వదించవలసిందిగా కోరుతున్నాము."
+  },
+  "events": [
+    {
+      "name": {
+        "en": "Haldi",
+        "te": "పసుపు కొట్టడం"
+      },
+      "date": "2027-02-12",
+      "time": "09:00",
+      "endTime": "12:00",
+      "venue": {
+        "en": "Bride's home",
+        "te": "వధువు ఇంటి వద్ద"
+      },
+      "address": "Main Road, City",
+      "map": "https://maps.google.com/?q=City"
+    },
+    {
+      "name": {
+        "en": "Wedding (Muhurtham)",
+        "te": "వివాహం (ముహూర్తం)"
+      },
+      "date": "2027-02-14",
+      "time": "10:30",
+      "endTime": "13:00",
+      "venue": {
+        "en": "Sri Kalyana Mandapam",
+        "te": "శ్రీ కళ్యాణ మండపం"
+      },
+      "address": "Main Road, City",
+      "map": "https://maps.google.com/?q=City",
+      "note": {
+        "en": "Lunch follows the muhurtham",
+        "te": "ముహూర్తం తర్వాత భోజనం"
+      }
+    },
+    {
+      "name": {
+        "en": "Reception",
+        "te": "విందు"
+      },
+      "date": "2027-02-14",
+      "time": "19:00",
+      "endTime": "22:00",
+      "venue": {
+        "en": "Same venue",
+        "te": "అదే మండపం"
+      },
+      "address": "Main Road, City",
+      "map": "https://maps.google.com/?q=City"
+    }
+  ],
+  "rsvp": {
+    "whatsapp": "+91 90000 00000",
+    "email": "family@example.com"
+  },
+  "faq": [
+    {
+      "q": {
+        "en": "Is there parking?",
+        "te": "Parking ఉందా?"
+      },
+      "a": {
+        "en": "Yes, free parking is available behind the mandapam.",
+        "te": "అవును, మండపం వెనుక ఉచిత parking ఉంది."
+      },
+      "keywords": [
+        "car",
+        "bike",
+        "vehicle",
+        "కారు",
+        "బండి"
+      ]
+    },
+    {
+      "q": {
+        "en": "What should I wear?",
+        "te": "ఏ దుస్తులు వేసుకోవాలి?"
+      },
+      "a": {
+        "en": "Traditional wear is welcome. Wear something comfortable.",
+        "te": "సంప్రదాయ దుస్తులు స్వాగతం. సౌకర్యంగా ఉండేవి వేసుకోండి."
+      },
+      "keywords": [
+        "dress",
+        "clothes",
+        "saree",
+        "దుస్తులు",
+        "చీర"
+      ]
+    },
+    {
+      "q": {
+        "en": "Will there be food?",
+        "te": "భోజనం ఉంటుందా?"
+      },
+      "a": {
+        "en": "Lunch after the muhurtham, and dinner at the reception.",
+        "te": "ముహూర్తం తర్వాత భోజనం, రాత్రి విందు ఉంటాయి."
+      },
+      "keywords": [
+        "lunch",
+        "dinner",
+        "meal",
+        "భోజనం",
+        "విందు"
+      ]
+    }
+  ],
+  "assistant": {
+    "enabled": true,
+    "askPage": false
+  },
+  "site": {
+    "url": "https://example.com/",
+    "noindex": true
+  },
+  "photo": "photos/couple.jpg",
+  "photoAlt": {
+    "en": "Priya and Arjun smiling together",
+    "te": "నవ్వుతూ ప్రియ, అర్జున్"
+  },
+  "gallery": [
+    {
+      "src": "photos/invite-1.jpg",
+      "alt": {
+        "en": "Wedding invitation card",
+        "te": "పెళ్ళి శుభలేఖ"
+      }
+    }
+  ],
+  "countdown": {
+    "event": 1
+  },
+  "rituals": [
+    {
+      "name": {
+        "en": "Jeelakarra-Bellam",
+        "te": "జీలకర్ర బెల్లం"
+      },
+      "text": {
+        "en": "At the muhurtham, the couple place a paste of cumin and jaggery on each other's head.",
+        "te": "ముహూర్త సమయంలో వధూవరులు ఒకరి తలపై ఒకరు జీలకర్ర, బెల్లం ముద్ద ఉంచుతారు."
+      }
+    },
+    {
+      "name": {
+        "en": "Talambralu",
+        "te": "తలంబ్రాలు"
+      },
+      "text": {
+        "en": "The couple shower each other with rice mixed with turmeric, a joyful moment.",
+        "te": "వధూవరులు పసుపు కలిపిన అక్షింతలు ఒకరిపై ఒకరు పోసుకునే సరదా ఘట్టం."
+      }
+    },
+    {
+      "name": {
+        "en": "Saptapadi",
+        "te": "సప్తపది"
+      },
+      "text": {
+        "en": "Seven steps taken together, each a promise for the life ahead.",
+        "te": "కలిసి వేసే ఏడు అడుగులు, ఒక్కొక్కటీ జీవితానికి ఒక ప్రమాణం."
+      }
+    }
+  ],
+  "album": "https://photos.example.com/our-wedding",
+  "contacts": {
+    "show": true,
+    "list": [
+      {
+        "name": {
+          "en": "Ravi (bride's brother)",
+          "te": "రవి (వధువు సోదరుడు)"
+        },
+        "phone": "+91 90000 00001"
+      }
+    ]
+  }
+}

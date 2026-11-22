@@ -1,0 +1,50 @@
+{
+  "type": "engagement",
+  "languages": [
+    "en",
+    "te"
+  ],
+  "timezone": "Asia/Kolkata",
+  "theme": "traditional",
+  "kicker": {
+    "en": "Nischitartham",
+    "te": "నిశ్చితార్థం"
+  },
+  "title": {
+    "en": "Sita & Ram are getting engaged",
+    "te": "సీత, రామ్ నిశ్చితార్థం"
+  },
+  "message": {
+    "en": "Please join us as two families come together.",
+    "te": "రెండు కుటుంబాలు ఒక్కటయ్యే ఈ శుభ సందర్భానికి విచ్చేయండి."
+  },
+  "events": [
+    {
+      "name": {
+        "en": "Engagement",
+        "te": "నిశ్చితార్థం"
+      },
+      "date": "2027-01-24",
+      "time": "11:00",
+      "endTime": "14:00",
+      "venue": {
+        "en": "Community Hall",
+        "te": "కమ్యూనిటీ హాల్"
+      },
+      "address": "Main Road, City",
+      "map": "https://maps.google.com/?q=City"
+    }
+  ],
+  "rsvp": {
+    "whatsapp": "+91 90000 00000"
+  },
+  "faq": [],
+  "assistant": {
+    "enabled": true,
+    "askPage": false
+  },
+  "site": {
+    "url": "https://example.com/",
+    "noindex": true
+  }
+}

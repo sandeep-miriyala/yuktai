@@ -1,0 +1,50 @@
+{
+  "type": "naming",
+  "languages": [
+    "en",
+    "te"
+  ],
+  "timezone": "Asia/Kolkata",
+  "theme": "traditional",
+  "kicker": {
+    "en": "Namakaranam",
+    "te": "నామకరణ మహోత్సవం"
+  },
+  "title": {
+    "en": "Welcoming our little one",
+    "te": "మా చిన్నారికి స్వాగతం"
+  },
+  "message": {
+    "en": "Join us as we name our baby and seek your blessings.",
+    "te": "మా బిడ్డ నామకరణానికి విచ్చేసి ఆశీర్వదించండి."
+  },
+  "events": [
+    {
+      "name": {
+        "en": "Naming ceremony",
+        "te": "నామకరణం"
+      },
+      "date": "2027-01-10",
+      "time": "10:00",
+      "endTime": "12:00",
+      "venue": {
+        "en": "Our home",
+        "te": "మా ఇల్లు"
+      },
+      "address": "Main Road, City",
+      "map": "https://maps.google.com/?q=City"
+    }
+  ],
+  "rsvp": {
+    "whatsapp": "+91 90000 00000"
+  },
+  "faq": [],
+  "assistant": {
+    "enabled": true,
+    "askPage": false
+  },
+  "site": {
+    "url": "https://example.com/",
+    "noindex": true
+  }
+}

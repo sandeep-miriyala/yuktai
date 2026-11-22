@@ -362,7 +362,7 @@ a.fam-node:hover { border-color: var(--accent); }
 .pkg-group h3 { margin: 0 0 4px; font-size: 1.25rem; }
 .pkg-group-text { margin: 0 0 14px; color: var(--muted); }
 .pkg .pkg-who { color: var(--accent); font-weight: 700; font-size: .95rem; }
-.pkg-engine, .pkg-start { box-shadow: none; background: linear-gradient(var(--panel), var(--panel)) padding-box, linear-gradient(var(--line), var(--line)) border-box; }
+.pkg-engine, .pkg-start, .pkg-sites { box-shadow: none; background: linear-gradient(var(--panel), var(--panel)) padding-box, linear-gradient(var(--line), var(--line)) border-box; }
 @media (max-width: 560px) { .fam-row { grid-template-columns: 1fr; } .fam-row::after { display: none; } .fam-node::before { display: none; } .fam-row::before { height: 22px; } }
 
 /* Drawing in (only when the visitor allows motion; see Motion.tsx) */
@@ -385,6 +385,10 @@ a.fam-node:hover { border-color: var(--accent); }
 .family.is-in .fam-start::before, .family.is-in .fam-start::after { animation-delay: 1.55s; }
 .family.is-in .fam-start .fam-node { animation-delay: 1.75s; }
 .family.is-in .fam-start .fam-node + .fam-node { animation-delay: 1.87s; }
+.family.is-in .fam-sites .fam-node { animation-delay: 2s; }
+/* ఒక్క package ఉన్న వరుస: మధ్యలో, అడ్డగీత లేకుండా */
+.fam-row.fam-sites { grid-template-columns: minmax(0, 1fr); max-width: 372px; }
+.fam-row.fam-sites::after { display: none; }
 @keyframes yk-pop { from { opacity: 0; transform: scale(.6); } 70% { transform: scale(1.06); } to { opacity: 1; transform: scale(1); } }
 @keyframes yk-grow-y { from { opacity: 1; transform: scaleY(0); } to { opacity: 1; transform: scaleY(1); } }
 @keyframes yk-grow-x { from { opacity: 1; transform: scaleX(0); } to { opacity: 1; transform: scaleX(1); } }

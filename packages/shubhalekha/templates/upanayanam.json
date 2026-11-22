@@ -1,0 +1,50 @@
+{
+  "type": "upanayanam",
+  "languages": [
+    "en",
+    "te"
+  ],
+  "timezone": "Asia/Kolkata",
+  "theme": "traditional",
+  "kicker": {
+    "en": "Upanayanam",
+    "te": "ఉపనయనం"
+  },
+  "title": {
+    "en": "Chi. Sai's Upanayanam",
+    "te": "చి. సాయి ఉపనయనం"
+  },
+  "message": {
+    "en": "Please bless our son on his upanayanam.",
+    "te": "మా అబ్బాయి ఉపనయనానికి విచ్చేసి ఆశీర్వదించండి."
+  },
+  "events": [
+    {
+      "name": {
+        "en": "Upanayanam",
+        "te": "ఉపనయనం"
+      },
+      "date": "2027-04-18",
+      "time": "07:30",
+      "endTime": "12:00",
+      "venue": {
+        "en": "Kalyana Mandapam",
+        "te": "కళ్యాణ మండపం"
+      },
+      "address": "Main Road, City",
+      "map": "https://maps.google.com/?q=City"
+    }
+  ],
+  "rsvp": {
+    "whatsapp": "+91 90000 00000"
+  },
+  "faq": [],
+  "assistant": {
+    "enabled": true,
+    "askPage": false
+  },
+  "site": {
+    "url": "https://example.com/",
+    "noindex": true
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "type": "aksharabhyasam",
+  "languages": [
+    "en",
+    "te"
+  ],
+  "timezone": "Asia/Kolkata",
+  "theme": "traditional",
+  "kicker": {
+    "en": "Aksharabhyasam",
+    "te": "అక్షరాభ్యాసం"
+  },
+  "title": {
+    "en": "Our child's first letters",
+    "te": "మా బిడ్డ అక్షరాభ్యాసం"
+  },
+  "message": {
+    "en": "Join us as our child writes the first letters.",
+    "te": "మా చిన్నారి మొదటి అక్షరాలు దిద్దే శుభ సందర్భానికి విచ్చేయండి."
+  },
+  "events": [
+    {
+      "name": {
+        "en": "Aksharabhyasam",
+        "te": "అక్షరాభ్యాసం"
+      },
+      "date": "2027-02-10",
+      "time": "09:30",
+      "endTime": "11:30",
+      "venue": {
+        "en": "Temple",
+        "te": "ఆలయం"
+      },
+      "address": "Main Road, City",
+      "map": "https://maps.google.com/?q=City"
+    }
+  ],
+  "rsvp": {
+    "whatsapp": "+91 90000 00000"
+  },
+  "faq": [],
+  "assistant": {
+    "enabled": true,
+    "askPage": false
+  },
+  "site": {
+    "url": "https://example.com/",
+    "noindex": true
+  }
+}

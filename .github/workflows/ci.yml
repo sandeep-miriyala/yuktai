@@ -36,6 +36,9 @@ jobs:
       - name: CLI tests
         working-directory: packages/yuktai-cli
         run: npm test
+      - name: Shubhalekha tests
+        working-directory: packages/shubhalekha
+        run: npm ci && npm test
 
   python-template:
     name: Python API template (pytest)

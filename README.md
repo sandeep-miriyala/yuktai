@@ -229,6 +229,7 @@ Everything else (grid options, styling, accessibility tools, jQuery, the CLI, ag
 | [`yuktai`](https://www.npmjs.com/package/yuktai) | Create a new app in one command |
 | [`create-yuktai`](https://www.npmjs.com/package/create-yuktai) | `npm create yuktai@latest` |
 | [`@yuktishaalaa/ask-page`](https://www.npmjs.com/package/@yuktishaalaa/ask-page) | "Ask this page" side panel |
+| [`@yuktishaalaa/shubhalekha`](https://www.npmjs.com/package/@yuktishaalaa/shubhalekha) | శుభలేఖ: invitation pages for 15 Indian celebrations in 22 Indian languages ([guide](https://sandeep-miriyala.github.io/yuktai/shubhalekha/)) |
 
 ## Compatibility
 

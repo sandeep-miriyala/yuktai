@@ -1,0 +1,50 @@
+{
+  "type": "opening",
+  "languages": [
+    "en",
+    "te"
+  ],
+  "timezone": "Asia/Kolkata",
+  "theme": "modern",
+  "kicker": {
+    "en": "Grand opening",
+    "te": "ప్రారంభోత్సవం"
+  },
+  "title": {
+    "en": "Lakshmi Stores opens!",
+    "te": "లక్ష్మి స్టోర్స్ ప్రారంభం!"
+  },
+  "message": {
+    "en": "Be with us as we open our doors.",
+    "te": "మా దుకాణ ప్రారంభోత్సవానికి విచ్చేయండి."
+  },
+  "events": [
+    {
+      "name": {
+        "en": "Opening",
+        "te": "ప్రారంభోత్సవం"
+      },
+      "date": "2027-02-15",
+      "time": "10:00",
+      "endTime": "12:00",
+      "venue": {
+        "en": "Lakshmi Stores",
+        "te": "లక్ష్మి స్టోర్స్"
+      },
+      "address": "Main Road, City",
+      "map": "https://maps.google.com/?q=City"
+    }
+  ],
+  "rsvp": {
+    "whatsapp": "+91 90000 00000"
+  },
+  "faq": [],
+  "assistant": {
+    "enabled": true,
+    "askPage": false
+  },
+  "site": {
+    "url": "https://example.com/",
+    "noindex": true
+  }
+}

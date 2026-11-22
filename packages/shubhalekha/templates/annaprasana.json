@@ -1,0 +1,50 @@
+{
+  "type": "annaprasana",
+  "languages": [
+    "en",
+    "te"
+  ],
+  "timezone": "Asia/Kolkata",
+  "theme": "traditional",
+  "kicker": {
+    "en": "Annaprasana",
+    "te": "అన్నప్రాశన"
+  },
+  "title": {
+    "en": "Our baby's first rice",
+    "te": "మా బిడ్డ అన్నప్రాశన"
+  },
+  "message": {
+    "en": "Bless our little one as they taste their first rice.",
+    "te": "మా చిన్నారి మొదటిసారి అన్నం తినే వేడుకకు విచ్చేసి ఆశీర్వదించండి."
+  },
+  "events": [
+    {
+      "name": {
+        "en": "Annaprasana",
+        "te": "అన్నప్రాశన"
+      },
+      "date": "2027-02-02",
+      "time": "10:00",
+      "endTime": "12:30",
+      "venue": {
+        "en": "Our home",
+        "te": "మా ఇల్లు"
+      },
+      "address": "Main Road, City",
+      "map": "https://maps.google.com/?q=City"
+    }
+  ],
+  "rsvp": {
+    "whatsapp": "+91 90000 00000"
+  },
+  "faq": [],
+  "assistant": {
+    "enabled": true,
+    "askPage": false
+  },
+  "site": {
+    "url": "https://example.com/",
+    "noindex": true
+  }
+}

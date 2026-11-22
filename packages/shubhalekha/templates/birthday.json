@@ -1,0 +1,50 @@
+{
+  "type": "birthday",
+  "languages": [
+    "en",
+    "te"
+  ],
+  "timezone": "Asia/Kolkata",
+  "theme": "modern",
+  "kicker": {
+    "en": "You're invited!",
+    "te": "మీకు ఆహ్వానం!"
+  },
+  "title": {
+    "en": "Aadya turns 1",
+    "te": "ఆద్య మొదటి పుట్టినరోజు"
+  },
+  "message": {
+    "en": "Come celebrate with cake, games and lots of smiles.",
+    "te": "కేక్, ఆటలు, నవ్వులతో కలిసి జరుపుకుందాం రండి."
+  },
+  "events": [
+    {
+      "name": {
+        "en": "Birthday party",
+        "te": "పుట్టినరోజు వేడుక"
+      },
+      "date": "2027-03-05",
+      "time": "18:00",
+      "endTime": "21:00",
+      "venue": {
+        "en": "Party Hall",
+        "te": "పార్టీ హాల్"
+      },
+      "address": "Main Road, City",
+      "map": "https://maps.google.com/?q=City"
+    }
+  ],
+  "rsvp": {
+    "whatsapp": "+91 90000 00000"
+  },
+  "faq": [],
+  "assistant": {
+    "enabled": true,
+    "askPage": false
+  },
+  "site": {
+    "url": "https://example.com/",
+    "noindex": true
+  }
+}

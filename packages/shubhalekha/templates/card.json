@@ -1,0 +1,47 @@
+{
+  "type": "card",
+  "languages": [
+    "en",
+    "te"
+  ],
+  "theme": "modern",
+  "name": "Lakshmi Photography",
+  "role": {
+    "en": "Wedding & event photographer",
+    "te": "వివాహ, వేడుకల ఫోటోగ్రాఫర్"
+  },
+  "business": "Lakshmi Studios",
+  "about": {
+    "en": "Candid wedding photography, pre-wedding shoots and family portraits.",
+    "te": "వివాహ, ప్రీ-వెడ్డింగ్, కుటుంబ ఫోటోలు."
+  },
+  "photo": "photos/logo.jpg",
+  "phone": "+91 90000 00000",
+  "whatsapp": "+91 90000 00000",
+  "email": "hello@example.com",
+  "website": "https://example.com/",
+  "address": "Shop 4, Main Road, City",
+  "map": "https://maps.google.com/?q=Main+Road",
+  "services": [
+    {
+      "en": "Weddings",
+      "te": "వివాహాలు"
+    },
+    {
+      "en": "Pre-wedding",
+      "te": "ప్రీ-వెడ్డింగ్"
+    },
+    {
+      "en": "Birthdays",
+      "te": "పుట్టినరోజులు"
+    },
+    {
+      "en": "Albums",
+      "te": "ఆల్బమ్‌లు"
+    }
+  ],
+  "site": {
+    "url": "https://example.com/card/",
+    "noindex": false
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "type": "memorial",
+  "languages": [
+    "en",
+    "te"
+  ],
+  "timezone": "Asia/Kolkata",
+  "theme": "simple",
+  "kicker": {
+    "en": "In loving memory",
+    "te": "స్మృత్యర్థం"
+  },
+  "title": {
+    "en": "Remembering Sri Rama Rao garu",
+    "te": "శ్రీ రామారావు గారి స్మరణ"
+  },
+  "message": {
+    "en": "Family and friends are invited to remember him with us.",
+    "te": "ఆయనను స్మరించుకోవడానికి బంధుమిత్రులకు ఆహ్వానం."
+  },
+  "events": [
+    {
+      "name": {
+        "en": "Smarana sabha",
+        "te": "స్మరణ సభ"
+      },
+      "date": "2027-03-01",
+      "time": "10:00",
+      "endTime": "12:00",
+      "venue": {
+        "en": "Our home",
+        "te": "మా ఇల్లు"
+      },
+      "address": "Main Road, City",
+      "map": "https://maps.google.com/?q=City"
+    }
+  ],
+  "faq": [],
+  "assistant": {
+    "enabled": true,
+    "askPage": false
+  },
+  "site": {
+    "url": "https://example.com/",
+    "noindex": true
+  },
+  "countdown": false
+}

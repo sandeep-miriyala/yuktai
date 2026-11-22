@@ -1,0 +1,60 @@
+{
+  "name": "@yuktishaalaa/shubhalekha",
+  "version": "1.0.0",
+  "description": "శుభలేఖ: invitation pages for every Indian celebration (weddings, upanayanam, gruhapravesam, birthdays and more) and business cards, in all 22 Indian languages. One JSON file or a no-code form. PWA, offline, 24×7 guest assistant, WhatsApp or email RSVP. No server.",
+  "author": "Sandeep Miriyala — Yuktishaalaa AI Lab",
+  "license": "GPL-3.0-only",
+  "homepage": "https://sandeep-miriyala.github.io/yuktai/shubhalekha/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sandeep-miriyala/yuktai.git",
+    "directory": "packages/shubhalekha"
+  },
+  "bugs": {
+    "url": "https://github.com/sandeep-miriyala/yuktai/issues"
+  },
+  "type": "module",
+  "bin": {
+    "shubhalekha": "bin/shubhalekha.js"
+  },
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "bin",
+    "src",
+    "runtime",
+    "templates",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test"
+  },
+  "dependencies": {
+    "qrcode": "1.5.4",
+    "sharp": "0.34.5"
+  },
+  "keywords": [
+    "shubhalekha",
+    "invitation",
+    "wedding",
+    "indian",
+    "telugu",
+    "hindi",
+    "indic",
+    "22-languages",
+    "rsvp",
+    "pwa",
+    "event",
+    "business-card",
+    "yuktai"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}

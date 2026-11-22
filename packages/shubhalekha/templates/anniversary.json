@@ -1,0 +1,50 @@
+{
+  "type": "anniversary",
+  "languages": [
+    "en",
+    "te"
+  ],
+  "timezone": "Asia/Kolkata",
+  "theme": "modern",
+  "kicker": {
+    "en": "25 years together",
+    "te": "పాతికేళ్ళ ప్రయాణం"
+  },
+  "title": {
+    "en": "Amma & Nanna's Silver Jubilee",
+    "te": "అమ్మానాన్నల వెండి పండుగ"
+  },
+  "message": {
+    "en": "Celebrate 25 years of love with us.",
+    "te": "పాతికేళ్ళ ప్రేమను మాతో కలిసి జరుపుకోండి."
+  },
+  "events": [
+    {
+      "name": {
+        "en": "Anniversary dinner",
+        "te": "వార్షికోత్సవ విందు"
+      },
+      "date": "2027-06-20",
+      "time": "19:00",
+      "endTime": "22:00",
+      "venue": {
+        "en": "Restaurant",
+        "te": "రెస్టారెంట్"
+      },
+      "address": "Main Road, City",
+      "map": "https://maps.google.com/?q=City"
+    }
+  ],
+  "rsvp": {
+    "whatsapp": "+91 90000 00000"
+  },
+  "faq": [],
+  "assistant": {
+    "enabled": true,
+    "askPage": false
+  },
+  "site": {
+    "url": "https://example.com/",
+    "noindex": true
+  }
+}

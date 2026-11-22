@@ -1,0 +1,50 @@
+{
+  "type": "seemantham",
+  "languages": [
+    "en",
+    "te"
+  ],
+  "timezone": "Asia/Kolkata",
+  "theme": "traditional",
+  "kicker": {
+    "en": "Seemantham",
+    "te": "సీమంతం"
+  },
+  "title": {
+    "en": "Lakshmi's Seemantham",
+    "te": "లక్ష్మి సీమంతం"
+  },
+  "message": {
+    "en": "Bless the mother-to-be with us.",
+    "te": "కాబోయే అమ్మను ఆశీర్వదించడానికి విచ్చేయండి."
+  },
+  "events": [
+    {
+      "name": {
+        "en": "Seemantham",
+        "te": "సీమంతం"
+      },
+      "date": "2027-03-12",
+      "time": "10:00",
+      "endTime": "13:00",
+      "venue": {
+        "en": "Our home",
+        "te": "మా ఇల్లు"
+      },
+      "address": "Main Road, City",
+      "map": "https://maps.google.com/?q=City"
+    }
+  ],
+  "rsvp": {
+    "whatsapp": "+91 90000 00000"
+  },
+  "faq": [],
+  "assistant": {
+    "enabled": true,
+    "askPage": false
+  },
+  "site": {
+    "url": "https://example.com/",
+    "noindex": true
+  }
+}

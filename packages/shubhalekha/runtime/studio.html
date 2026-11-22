@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="te">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shubhalekha Studio</title>
+<style>
+  :root {
+    --bg: #faf7f2; --surface: #fff; --ink: #2a1f17; --muted: #6b5a4b; --line: #e6d8c4;
+    --accent: #7a1f1f; --accent-ink: #fff; --soft: #fbeee0; --ok: #166534; --bad: #b42318;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #17120e; --surface: #221b15; --ink: #f4ebe0; --muted: #c2b19d; --line: #3b3027; --accent: #f0b46d; --accent-ink: #1b130c; --soft: #33261a; --ok: #4ade80; --bad: #ff8a80; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 "Noto Sans Telugu", system-ui, sans-serif; }
+  header { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
+  header h1 { margin: 0; font-size: 1.3rem; color: var(--accent); }
+  .layout { display: grid; grid-template-columns: 1fr; gap: 16px; padding: 16px; max-width: 1400px; margin: 0 auto; }
+  @media (min-width: 1000px) { .layout { grid-template-columns: minmax(0, 1fr) 420px; } .preview { position: sticky; top: 16px; height: calc(100vh - 100px); } }
+  fieldset { border: 1px solid var(--line); border-radius: 14px; background: var(--surface); margin: 0 0 14px; padding: 12px 14px; }
+  legend { font-weight: 700; padding: 0 6px; }
+  label { display: block; font-weight: 600; font-size: 14px; margin: 8px 0 3px; }
+  input, select, textarea {
+    width: 100%; font: inherit; color: var(--ink); background: var(--bg);
+    border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; min-height: 42px;
+  }
+  textarea { min-height: 70px; }
+  .row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0 10px; }
+  .item { border: 1px dashed var(--line); border-radius: 12px; padding: 4px 12px 12px; margin: 10px 0; }
+  .item-head { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; }
+  .langs { display: flex; flex-wrap: wrap; gap: 6px; }
+  .langs label { display: inline-flex; align-items: center; gap: 6px; font-weight: 400; margin: 0; padding: 4px 10px; border: 1px solid var(--line); border-radius: 99px; background: var(--bg); }
+  .langs input { width: 18px; min-height: 18px; accent-color: var(--accent); }
+  .langs .draft { font-size: 12px; color: var(--muted); }
+  button { font: inherit; cursor: pointer; border-radius: 10px; min-height: 42px; padding: 6px 14px; border: 1px solid var(--accent); }
+  .primary { background: var(--accent); color: var(--accent-ink); font-weight: 700; }
+  .ghost { background: transparent; color: var(--accent); }
+  .tiny { min-height: 34px; padding: 2px 10px; font-size: 14px; }
+  :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  .status { margin: 0; padding: 10px 12px; border-radius: 10px; }
+  .status.ok { background: color-mix(in srgb, var(--ok) 14%, transparent); color: var(--ok); }
+  .status.bad { background: color-mix(in srgb, var(--bad) 12%, transparent); color: var(--bad); }
+  .status ul { margin: 6px 0 0; padding-left: 20px; }
+  .preview { border: 1px solid var(--line); border-radius: 18px; overflow: hidden; background: var(--surface); display: flex; flex-direction: column; min-height: 520px; }
+  .preview iframe { flex: 1; border: 0; width: 100%; background: #fff; }
+  .preview p { margin: 0; padding: 8px 12px; font-size: 14px; color: var(--muted); border-bottom: 1px solid var(--line); }
+  .hint { font-size: 13px; color: var(--muted); margin: 2px 0 0; }
+  .thumb { max-width: 120px; border-radius: 10px; display: block; margin-top: 6px; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+</style>
+</head>
+<body>
+<header>
+  <h1>శుభలేఖ Studio</h1>
+  <div>
+    <button type="button" class="primary" id="save">సేవ్ చేసి page తయారుచేయండి / Save &amp; build</button>
+  </div>
+</header>
+<div class="layout">
+  <form id="form" novalidate aria-describedby="status">
+    <div id="status" role="status" aria-live="polite"></div>
+    <div id="fields"></div>
+  </form>
+  <section class="preview" aria-label="Preview">
+    <p>Preview: ఫోన్‌లో ఇలా కనిపిస్తుంది</p>
+    <iframe id="preview" title="Page preview" src="about:blank"></iframe>
+  </section>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var state = null, LANGS = {};
+  var fields = document.getElementById("fields");
+  var statusEl = document.getElementById("status");
+
+  var TYPES = { wedding: "వివాహం / Wedding", engagement: "నిశ్చితార్థం / Engagement", housewarming: "గృహప్రవేశం / Housewarming",
+    birthday: "పుట్టినరోజు / Birthday", naming: "నామకరణం / Naming", annaprasana: "అన్నప్రాశన / First rice",
+    aksharabhyasam: "అక్షరాభ్యాసం / First letters", upanayanam: "ఉపనయనం / Upanayanam", seemantham: "సీమంతం / Baby shower",
+    shashtipurti: "షష్టిపూర్తి / 60th birthday", anniversary: "వార్షికోత్సవం / Anniversary", puja: "పూజ, వ్రతం / Puja",
+    opening: "ప్రారంభోత్సవం / Shop opening", memorial: "స్మరణ / Memorial", event: "ఇతర వేడుక / Other event", card: "Business card" };
+
+  // ---- చిన్న helpers ----
+  function get(path) { return path.split(".").reduce(function (o, k) { return o == null ? undefined : o[k]; }, state); }
+  function set(path, value) {
+    var keys = path.split("."), o = state;
+    keys.slice(0, -1).forEach(function (k, i) {
+      if (o[k] == null) o[k] = /^\d+$/.test(keys[i + 1]) ? [] : {};
+      o = o[k];
+    });
+    var last = keys[keys.length - 1];
+    if (value === "" || value == null) delete o[last]; else o[last] = value;
+  }
+  var uid = 0;
+  function el(tag, attrs, kids) {
+    var e = document.createElement(tag);
+    Object.keys(attrs || {}).forEach(function (k) {
+      if (k === "text") e.textContent = attrs[k];
+      else if (k.indexOf("on") === 0) e.addEventListener(k.slice(2), attrs[k]);
+      else if (attrs[k] !== false && attrs[k] != null) e.setAttribute(k, attrs[k] === true ? "" : attrs[k]);
+    });
+    (kids || []).forEach(function (c) { if (c) e.appendChild(typeof c === "string" ? document.createTextNode(c) : c); });
+    return e;
+  }
+  /** ఒక input + label; path లో విలువ */
+  function input(label, path, opts) {
+    opts = opts || {};
+    var id = "f" + (++uid);
+    var tag = opts.multiline ? "textarea" : "input";
+    var v = get(path);
+    var box = el("div", {}, [
+      el("label", { for: id, text: label, lang: opts.lang }),
+      el(tag, {
+        id: id, type: opts.type || (opts.multiline ? null : "text"), lang: opts.lang, dir: opts.dir,
+        placeholder: opts.placeholder || "", inputmode: opts.inputmode,
+        oninput: function (e) { set(path, opts.type === "number" ? (e.target.value ? +e.target.value : "") : e.target.value); }
+      })
+    ]);
+    box.querySelector(tag).value = v == null ? "" : v;
+    if (opts.hint) box.appendChild(el("p", { class: "hint", text: opts.hint }));
+    return box;
+  }
+  /** బహుభాషా field: ఎంచుకున్న ప్రతి భాషకు ఒక input */
+  function multi(label, path, opts) {
+    opts = opts || {};
+    var cur = get(path);
+    if (typeof cur === "string") { var s = cur; set(path, {}); set(path + "." + state.languages[0], s); }
+    var wrap = el("div", { class: "row" });
+    state.languages.forEach(function (l) {
+      wrap.appendChild(input(label + " · " + LANGS[l].name, path + "." + l, {
+        lang: l, dir: (l === "ur" || l === "ks" || l === "sd") ? "rtl" : null, multiline: opts.multiline, placeholder: opts.placeholder
+      }));
+    });
+    return wrap;
+  }
+  function section(title, kids) { return el("fieldset", {}, [el("legend", { text: title })].concat(kids)); }
+  function list(title, path, makeItem, blank, addLabel) {
+    var arr = get(path) || [];
+    var items = arr.map(function (_, i) {
+      return el("div", { class: "item" }, [
+        el("div", { class: "item-head" }, [
+          el("strong", { text: title + " " + (i + 1) }),
+          el("button", { type: "button", class: "ghost tiny", text: "తీసేయండి / Remove", "aria-label": "Remove " + title + " " + (i + 1),
+            onclick: function () { arr.splice(i, 1); render(); } })
+        ])
+      ].concat(makeItem(path + "." + i, i)));
+    });
+    items.push(el("button", { type: "button", class: "ghost", text: "+ " + addLabel,
+      onclick: function () { set(path, (get(path) || []).concat([JSON.parse(JSON.stringify(blank))])); render(); } }));
+    return items;
+  }
+
+  function photoField(label, path) {
+    var id = "f" + (++uid);
+    var cur = get(path);
+    var box = el("div", {}, [
+      el("label", { for: id, text: label }),
+      el("input", { id: id, type: "file", accept: "image/jpeg,image/png,image/webp",
+        onchange: function (e) {
+          var f = e.target.files[0];
+          if (!f) return;
+          fetch("/api/photo?name=" + encodeURIComponent(f.name), { method: "POST", body: f, headers: { "x-shubhalekha-studio": "1" } })
+            .then(function (r) { return r.json(); })
+            .then(function (j) {
+              if (j.error) return showStatus(false, [j.error]);
+              set(path, j.path);
+              if (j.kb > 400) showStatus(true, [], [j.path + ": " + j.kb + " KB. 400 KB లోపు ఉంటే page వేగంగా తెరుచుకుంటుంది."]);
+              render();
+            });
+        } })
+    ]);
+    if (cur) box.appendChild(el("img", { class: "thumb", src: "/" + cur, alt: "" }));
+    box.appendChild(el("p", { class: "hint", text: "JPG / PNG / WebP, 400 KB లోపు మంచిది" }));
+    return box;
+  }
+
+  // ---- మొత్తం form ----
+  function render() {
+    fields.textContent = "";
+    state.languages = state.languages && state.languages.length ? state.languages : ["en"];
+    var isCard = state.type === "card";
+
+    var typeSel = el("select", { id: "f-type", onchange: function (e) { state.type = e.target.value; render(); } },
+      Object.keys(TYPES).map(function (k) { var o = el("option", { value: k, text: TYPES[k] }); if (k === state.type) o.selected = true; return o; }));
+    var themeSel = el("select", { id: "f-theme", onchange: function (e) { state.theme = e.target.value; } },
+      ["traditional", "modern", "simple"].map(function (k) { var o = el("option", { value: k, text: k }); if (k === (state.theme || "traditional")) o.selected = true; return o; }));
+
+    var langBox = el("div", { class: "langs", role: "group", "aria-label": "Languages" });
+    Object.keys(LANGS).forEach(function (l) {
+      var cb = el("input", { type: "checkbox", value: l, onchange: function (e) {
+        var cur = state.languages.slice();
+        if (e.target.checked) cur.push(l); else cur = cur.filter(function (x) { return x !== l; });
+        if (!cur.length) { e.target.checked = true; return; }
+        state.languages = cur; render();
+      } });
+      cb.checked = state.languages.indexOf(l) >= 0;
+      langBox.appendChild(el("label", { lang: l }, [cb, LANGS[l].name, LANGS[l].uiReady ? null : el("span", { class: "draft", text: "(UI: fallback)" })]));
+    });
+
+    fields.appendChild(section("1. ఏ వేడుక? / What is it?", [
+      el("div", { class: "row" }, [
+        el("div", {}, [el("label", { for: "f-type", text: "రకం / Type" }), typeSel]),
+        el("div", {}, [el("label", { for: "f-theme", text: "రూపం / Theme" }), themeSel]),
+        input("Timezone", "timezone", { placeholder: "Asia/Kolkata", hint: "విదేశాల్లో వేడుక అయితే: America/New_York, Europe/London..." })
+      ]),
+      el("p", { class: "hint", text: "భాషలు (మొదట ఎంచుకున్నది ముందు కనిపిస్తుంది) / Languages (the first one shows by default)" }),
+      langBox
+    ]));
+
+    if (isCard) {
+      fields.appendChild(section("2. Business card", [
+        multi("పేరు / Name", "name"), multi("పని / Role", "role"), multi("వ్యాపారం / Business", "business"),
+        multi("గురించి / About", "about", { multiline: true }), photoField("Logo / ఫోటో", "photo"),
+        el("div", { class: "row" }, [
+          input("Phone", "phone", { type: "tel", placeholder: "+91 98480 22338" }),
+          input("WhatsApp", "whatsapp", { type: "tel", placeholder: "+91 98480 22338" }),
+          input("Email", "email", { type: "email" }), input("Website", "website", { type: "url", placeholder: "https://" })
+        ]),
+        input("Address", "address"), input("Google Maps link", "map", { type: "url", placeholder: "https://maps.google.com/..." })
+      ]));
+      fields.appendChild(section("సేవలు / Services", list("Service", "services", function (p) { return [multi("సేవ / Service", p)]; }, {}, "సేవ చేర్చండి / Add service")));
+    } else {
+      fields.appendChild(section("2. శీర్షిక / Heading", [
+        multi("పై వాక్యం / Small line above", "kicker", { placeholder: "పెద్దల ఆశీస్సులతో" }),
+        multi("శీర్షిక / Title", "title", { placeholder: "ప్రియ & అర్జున్" }),
+        multi("ఆహ్వాన వాక్యం / Message", "message", { multiline: true }),
+        photoField("ముఖ్య ఫోటో / Main photo", "photo"),
+        el("p", { class: "hint", text: "ఈ ఫోటోనే WhatsApp preview (og.jpg) గా కూడా వస్తుంది" }),
+        multi("ఫోటో వివరణ (చూపులేని వారి కోసం) / Photo description", "photoAlt")
+      ]));
+      fields.appendChild(section("3. కార్యక్రమాలు / Events", list("కార్యక్రమం / Event", "events", function (p) {
+        return [
+          multi("పేరు / Name", p + ".name"),
+          el("div", { class: "row" }, [
+            input("తేదీ / Date", p + ".date", { type: "date" }),
+            input("మొదలు / Start", p + ".time", { type: "time" }),
+            input("ముగింపు / End", p + ".endTime", { type: "time" })
+          ]),
+          multi("వేదిక / Venue", p + ".venue"),
+          input("చిరునామా / Address", p + ".address"),
+          input("Google Maps link", p + ".map", { type: "url", placeholder: "https://maps.google.com/..." }),
+          multi("గమనిక / Note", p + ".note")
+        ];
+      }, { name: {}, date: "", time: "" }, "కార్యక్రమం చేర్చండి / Add event")));
+      fields.appendChild(section("ఆహ్వాన పత్రికలు, ఫోటోలు / Invitation cards & photos", list("ఫోటో / Photo", "gallery", function (p) {
+        return [photoField("ఫోటో / Photo", p + ".src"), multi("వివరణ / Description", p + ".alt")];
+      }, { src: "" }, "ఫోటో చేర్చండి / Add photo")));
+      fields.appendChild(section("4. హాజరు (RSVP)", [
+        el("p", { class: "hint", text: "రెండింటిలో ఏదైనా ఒకటి చాలు. రెండూ ఖాళీ అయితే RSVP ఉండదు." }),
+        el("div", { class: "row" }, [
+          input("WhatsApp నంబర్ (దేశ కోడ్‌తో)", "rsvp.whatsapp", { type: "tel", placeholder: "+91 98480 22338" }),
+          input("Email", "rsvp.email", { type: "email" })
+        ])
+      ]));
+      fields.appendChild(section("5. సహాయకుడికి ప్రశ్నలు, జవాబులు / Assistant FAQ", [
+        el("p", { class: "hint", text: "అతిథులు అడిగే ప్రశ్నలు: parking, దుస్తులు, భోజనం... సహాయకుడు 24×7 ఇవే జవాబులు చెబుతుంది." })
+      ].concat(list("ప్రశ్న / Question", "faq", function (p) {
+        return [multi("ప్రశ్న / Question", p + ".q"), multi("జవాబు / Answer", p + ".a", { multiline: true })];
+      }, { q: {}, a: {} }, "ప్రశ్న చేర్చండి / Add question"))));
+      fields.appendChild(section("6. సంప్రదాయాలు / Rituals", list("సంప్రదాయం / Ritual", "rituals", function (p) {
+        return [multi("పేరు / Name", p + ".name"), multi("వివరణ / About", p + ".text", { multiline: true })];
+      }, { name: {}, text: {} }, "సంప్రదాయం చేర్చండి / Add ritual")));
+      var showBox = el("input", { type: "checkbox", id: "f-cshow", onchange: function (e) { set("contacts.show", e.target.checked); } });
+      showBox.checked = !!get("contacts.show");
+      fields.appendChild(section("7. ఫోటోలు, సంప్రదింపులు / Album and contacts", [
+        input("Photo album link", "album", { type: "url", placeholder: "https://photos.app.goo.gl/..." }),
+        el("label", { for: "f-cshow" }, [showBox, " సంప్రదింపులు page లో చూపించాలి / Show contacts on the page"])
+      ].concat(list("సంప్రదింపు / Contact", "contacts.list", function (p) {
+        return [multi("పేరు / Name", p + ".name"), input("Phone", p + ".phone", { type: "tel" })];
+      }, { name: {}, phone: "" }, "సంప్రదింపు చేర్చండి / Add contact"))));
+    }
+    var noindex = el("input", { type: "checkbox", id: "f-noindex", onchange: function (e) { set("site.noindex", e.target.checked); } });
+    noindex.checked = get("site.noindex") !== false;
+    fields.appendChild(section("8. ప్రచురణ / Publishing", [
+      input("మీ site address", "site.url", { type: "url", placeholder: "https://our-wedding.vercel.app/", hint: "WhatsApp preview ఫోటో, QR code కోసం" }),
+      el("label", { for: "f-noindex" }, [noindex, " Google లో కనిపించకూడదు (వ్యక్తిగత వేడుకలకు సరైనది)"])
+    ]));
+  }
+
+  function showStatus(ok, errors, warnings) {
+    statusEl.textContent = "";
+    var p = el("div", { class: "status " + (ok ? "ok" : "bad") });
+    p.appendChild(document.createTextNode(ok ? "✓ సేవ్ అయింది, page సిద్ధం. dist/ folder ను ప్రచురించండి." : "✗ ఇవి సరిచేయండి:"));
+    var items = (errors || []).map(function (e) { return e.field ? e.field + ": " + e.message : e; }).concat(warnings || []);
+    if (items.length) p.appendChild(el("ul", {}, items.map(function (x) { return el("li", { text: x }); })));
+    statusEl.appendChild(p);
+  }
+
+  document.getElementById("save").addEventListener("click", function () {
+    fetch("/api/event", { method: "POST", body: JSON.stringify(state), headers: { "content-type": "application/json", "x-shubhalekha-studio": "1" } })
+      .then(function (r) { return r.json(); })
+      .then(function (j) {
+        showStatus(j.ok, j.errors, j.warnings);
+        if (j.ok) document.getElementById("preview").src = "/preview/?v=" + j.version;
+        else statusEl.scrollIntoView({ block: "start" });
+      })
+      .catch(function (e) { showStatus(false, [e.message]); });
+  });
+
+  fetch("/api/event").then(function (r) { return r.json(); }).then(function (j) {
+    state = j.config; LANGS = j.languages;
+    render();
+    document.getElementById("preview").src = "/preview/";
+  });
+})();
+</script>
+</body>
+</html>
