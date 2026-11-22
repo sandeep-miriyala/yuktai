@@ -73,6 +73,14 @@ const STATIC_DEMOS = ["/vanilla/", "/ask-page/"].filter((p) => existsSync(join(O
 
 const browser = await chromium.launch({ executablePath: process.env.CHROME || undefined })
 const page = await browser.newPage({ viewport: { width: 1280, height: 900 } })
+// The Shubhalekha Maker service is on Netlify and answers only the live site's origin.
+// Answer it here, so /shubhalekha/make/ is tested on its own and never depends on that service.
+await page.route(/^https:\/\/[^/]+\.netlify\.app\/api\//, (r) => r.fulfill({
+  status: 200,
+  contentType: "application/json",
+  headers: { "access-control-allow-origin": "*" },
+  body: JSON.stringify({ total: 4, left: 4, month: "", opensAgain: "" }),
+}))
 const axePath = require.resolve("axe-core/axe.min.js")
 
 const failures = []
