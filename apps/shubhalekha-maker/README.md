@@ -40,7 +40,7 @@ apps/shubhalekha-maker/
 
 ## Set up (once)
 
-1. **Use a separate Netlify account** for invitations, not the one with your other sites. On the free plan, when the monthly credits run out, every site on that account pauses.
+1. **Keep invitations in their own Netlify team** (same login is fine), not the team with your other sites. On the free plan, when a team's monthly credits run out, every site in that team pauses. Set `NETLIFY_TEAM` to that team's slug. The service only ever deletes sites it made itself.
 2. Publish the package first (`@yuktishaalaa/shubhalekha` 1.1.0 or newer). This service installs it from npm.
 3. On Netlify: **Add new project → Import from GitHub → sandeep-miriyala/yuktai**.
    - Base directory: `apps/shubhalekha-maker`
@@ -52,6 +52,7 @@ apps/shubhalekha-maker/
    | `NETLIFY_AUTH_TOKEN` | A personal access token of the invitations account (User settings → Applications → New access token) |
    | `GMAIL_USER` | The Gmail address the emails come from |
    | `GMAIL_APP_PASSWORD` | A Google app password for that address (Google Account → Security → 2-Step Verification → App passwords) |
+   | `NETLIFY_TEAM` | The team's slug (Team settings → Team details, or the part after `app.netlify.com/teams/`). Needed when the same login has more than one team, so invitations go only to this team |
    | `ALLOWED_ORIGINS` | Optional. Default `https://sandeep-miriyala.github.io` |
    | `SLOTS_PER_MONTH` | Optional. Default `4` |
 

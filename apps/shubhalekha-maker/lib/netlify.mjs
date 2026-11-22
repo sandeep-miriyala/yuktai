@@ -5,7 +5,7 @@ import { createHash } from "node:crypto";
 const API = "https://api.netlify.com/api/v1";
 const sha1 = (buf) => createHash("sha1").update(buf).digest("hex");
 
-export function netlifyClient({ token = process.env.NETLIFY_AUTH_TOKEN, fetch: f = globalThis.fetch } = {}) {
+export function netlifyClient({ token = process.env.NETLIFY_AUTH_TOKEN, team = process.env.NETLIFY_TEAM, fetch: f = globalThis.fetch } = {}) {
   if (!token) throw new Error("NETLIFY_AUTH_TOKEN is not set");
   const call = async (method, path, body, type = "application/json") => {
     const res = await f(`${API}${path}`, {
@@ -27,7 +27,8 @@ export function netlifyClient({ token = process.env.NETLIFY_AUTH_TOKEN, fetch: f
     async createSite(nameFn, tries = 4) {
       for (let i = 0; i < tries; i++) {
         try {
-          const s = await call("POST", "/sites", { name: nameFn() });
+          // NETLIFY_TEAM ఇస్తే ఆ team లోనే (ఒకే login కి చాలా teams ఉన్నప్పుడు)
+          const s = await call("POST", team ? `/${encodeURIComponent(team)}/sites` : "/sites", { name: nameFn() });
           return { id: s.id, name: s.name, url: s.ssl_url || s.url };
         } catch (e) {
           if (e.status !== 422 || i === tries - 1) throw e;

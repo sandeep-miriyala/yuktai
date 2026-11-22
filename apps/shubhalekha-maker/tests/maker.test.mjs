@@ -203,3 +203,10 @@ test("Netlify client: file digest deploy uploads only what Netlify asks for", as
   assert.ok(calls.includes("PUT /deploys/dep1/files/index.html"));
   assert.ok(!calls.some((c) => c.includes("img")));
 });
+
+test("Netlify client: NETLIFY_TEAM puts new sites in that team only", async () => {
+  const urls = [];
+  const fake = async (url) => { urls.push(url); return Response.json({ id: "s1", name: "a", ssl_url: "https://a.netlify.app" }); };
+  await netlifyClient({ token: "t", team: "shubhalekha-invites", fetch: fake }).createSite(() => "a");
+  assert.equal(urls[0], "https://api.netlify.com/api/v1/shubhalekha-invites/sites");
+});
