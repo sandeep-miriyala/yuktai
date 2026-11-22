@@ -93,6 +93,7 @@ const FIELDS: [string, string][] = [
   ["contacts", "{ \"show\": true, \"list\": [{ \"name\", \"role\", \"phone\" }] }"],
   ["site.url", "Your published address, for the WhatsApp preview and site-qr.png"],
   ["site.noindex", "true by default: search engines skip personal pages"],
+  ["fonts", "One font per language, for example { \"te\": \"Ramabhadra\" }. Only the letters on the page are downloaded"],
 ];
 
 function Code({ name, code }: { name: string; code: string }) {
@@ -119,6 +120,15 @@ export default function ShubhalekhaPage() {
         <h1>{"Shubhalekha: invitation pages"}</h1>
         <p className={"lead"}>
           {"శుభలేఖ for every Indian celebration, in all 22 Indian languages. Fill in one file or a simple form, run one command, and publish a fast page your guests can open on any phone. A 24×7 assistant answers their questions, RSVP comes to your WhatsApp, and nothing is sent anywhere else. Free."}
+        </p>
+      </div>
+
+      <div className={"callout"}>
+        <p>
+          <strong>{"Don't code? "}</strong>
+          {"Make an invitation on your phone, in Telugu, in 3 steps: "}
+          <a href={"make/"}>{"శుభలేఖ తయారీ"}</a>
+          {". Four a month, free; everything is deleted 7 days after the event."}
         </p>
       </div>
 
@@ -183,6 +193,9 @@ export default function ShubhalekhaPage() {
 
       <h2 id={"languages"} style={{ marginTop: "28px" }}>{"Languages"}</h2>
       <p>{"Your own text can be in any of the 23 languages. Buttons and labels are translated for 16: English, Assamese, Bengali, Gujarati, Hindi, Kannada, Konkani, Malayalam, Marathi, Nepali, Odia, Punjabi, Sanskrit, Tamil, Telugu and Urdu. Until native speakers review a translation, Bodo, Dogri and Maithili buttons use Hindi, Kashmiri and Sindhi use Urdu, and Manipuri and Santali use English."}</p>
+
+      <h3 id={"fonts"}>{"A font for each language"}</h3>
+      <p>{"Pick a well-known font for each script: Ramabhadra, Mandali, NTR or Suranna for Telugu, Tiro Devanagari Hindi or Mukta for Hindi, Meera Inimai for Tamil, and more (88 in all). The build downloads only the letters your page uses, so a font is often a few KB, keeps them next to the page, and guests' phones never contact Google."}</p>
 
       <h2 id={"rules"} style={{ marginTop: "28px" }}>{"Private by default"}</h2>
       <ul>

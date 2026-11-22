@@ -1,6 +1,7 @@
 // event.json సరిచూపు. తప్పులు English + తెలుగులో, ఏ field అనేది స్పష్టంగా.
 import { digits } from "./lib/contact.js";
 import { LANG_CODES } from "./locales.js";
+import { fontErrors } from "./fonts.js";
 
 export const LANGS = LANG_CODES;
 export const THEMES = ["traditional", "modern", "simple"];
@@ -49,6 +50,9 @@ export function validate(config) {
     if (new Set(config.languages).size !== config.languages.length) {
       err("languages", "A language is listed twice", "ఒక భాష రెండుసార్లు ఉంది");
     }
+  }
+  if (Array.isArray(config.languages)) {
+    for (const e of fontErrors(config.fonts, config.languages)) err(e.field, e.en, e.te);
   }
   if (!validTimeZone(config.timezone)) err("timezone", `Unknown timezone "${config.timezone}"`, "తెలియని timezone");
   if (!THEMES.includes(config.theme)) err("theme", `Theme must be one of ${THEMES.join(", ")}`, "theme తప్పు");

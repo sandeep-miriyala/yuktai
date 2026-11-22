@@ -8,7 +8,7 @@ export const VERSIONS = {
   askPage: "1.0.2",
   cli: "1.4.0",
   create: "1.0.0",
-  shubhalekha: "1.0.0",
+  shubhalekha: "1.1.0",
 } as const;
 
 export const LINKS = {
@@ -266,6 +266,7 @@ export const NAV: NavItem[] = [
       { href: "/guide/", label: "End-to-end guide", hint: "Create, test, publish, AI-browser ready" },
       { href: "/create/", label: "Create an app", key: "createApp", hint: "npm create yuktai@latest my-app" },
       { href: "/shubhalekha/", label: "Shubhalekha", hint: "Invitation pages in 22 Indian languages" },
+      { href: "/shubhalekha/make/", label: "శుభలేఖ తయారీ", hint: "No code: make an invitation on your phone" },
       { href: "/nextjs/", label: "Next.js setup", hint: "YuktAIWrapper for the App Router" },
       { href: "/#start", label: "JavaScript / HTML", hint: "Two script tags on any site" },
       { href: "/jquery/", label: "jQuery", hint: "jQuery 1.12 to 4.0" },

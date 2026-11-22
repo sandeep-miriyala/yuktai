@@ -97,6 +97,28 @@ Any text can be a plain string, or one value per language:
 | `site.noindex` | `true` by default |
 | `assistant` | `{ "enabled": true }` by default. `"askPage": true` also loads YuktAI ask-page |
 | `a11y` | `false` turns off the YuktAI accessibility script |
+| `fonts` | One font per language, for example `{ "te": "Ramabhadra", "en": "Playfair Display" }`. See below |
+
+## Fonts
+
+Each language can have its own font from a list of well-known Google Fonts for its script:
+
+| Script | Languages | Fonts |
+|---|---|---|
+| Telugu | te | Noto Sans Telugu, Noto Serif Telugu, Ramabhadra, Mandali, NTR, Gidugu, Gurajada, Suranna, Tenali Ramakrishna, Ramaraja, Mallanna, Peddana, Sree Krushnadevaraya, Timmana, Hind Guntur, Anek Telugu |
+| Devanagari | hi, mr, ne, sa, kok, mai, doi, brx | Noto Sans Devanagari, Noto Serif Devanagari, Hind, Mukta, Tiro Devanagari Hindi, Kalam, Martel, Baloo 2, Rozha One, Yatra One, Amita, Laila, Khand |
+| Tamil | ta | Noto Sans Tamil, Noto Serif Tamil, Mukta Malar, Catamaran, Hind Madurai, Meera Inimai, Arima, Baloo Thambi 2, Anek Tamil |
+| Kannada | kn | Noto Sans Kannada, Noto Serif Kannada, Baloo Tamma 2, Tiro Kannada, Anek Kannada, Hubballi |
+| Malayalam | ml | Noto Sans Malayalam, Noto Serif Malayalam, Manjari, Gayathri, Chilanka, Baloo Chettan 2, Anek Malayalam |
+| Bengali | bn, as | Noto Sans Bengali, Noto Serif Bengali, Hind Siliguri, Baloo Da 2, Tiro Bangla, Galada, Atma, Anek Bangla |
+| Gujarati | gu | Noto Sans Gujarati, Noto Serif Gujarati, Hind Vadodara, Mukta Vaani, Baloo Bhai 2, Rasa, Shrikhand, Anek Gujarati |
+| Gurmukhi | pa | Noto Sans Gurmukhi, Noto Serif Gurmukhi, Mukta Mahee, Baloo Paaji 2, Anek Gurmukhi |
+| Odia | or | Noto Sans Oriya, Noto Serif Oriya, Baloo Bhaina 2, Anek Odia |
+| Urdu script | ur, ks, sd | Noto Nastaliq Urdu, Gulzar, Noto Naskh Arabic, Lateef |
+| Meetei Mayek, Ol Chiki | mni, sat | Noto Sans Meetei Mayek, Noto Sans Ol Chiki |
+| Latin | en | Inter, Poppins, Lora, Playfair Display, Cormorant Garamond, Great Vibes |
+
+`npm run build` downloads only the letters your page uses, so a Telugu font is often a few KB. The files go in `dist/fonts/`; guests' phones never contact Google, and the fonts work offline. Without internet the build still finishes with a warning and the phone's own font is used.
 
 ## Use from code
 

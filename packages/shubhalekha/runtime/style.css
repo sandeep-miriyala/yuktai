@@ -11,6 +11,7 @@
   --accent-soft: #fbeee0;
   --gold: #8a5a12;
   --radius: 18px;
+  --base-font: system-ui, -apple-system, "Segoe UI", "Noto Sans", sans-serif;
   --font: "Mandali", "Noto Sans Telugu", "Noto Sans Kannada", "Noto Sans Devanagari", system-ui, sans-serif;
   --display: "Suranna", "Noto Serif Telugu", Georgia, serif;
 }

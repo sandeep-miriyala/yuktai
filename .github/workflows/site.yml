@@ -35,6 +35,8 @@ jobs:
     env:
       NEXT_TELEMETRY_DISABLED: "1"
       NEXT_PUBLIC_BASE_PATH: /yuktai
+      # Shubhalekha Maker service address (empty: https://shubhalekha-maker.netlify.app/api)
+      NEXT_PUBLIC_SHUBHALEKHA_API: ${{ vars.NEXT_PUBLIC_SHUBHALEKHA_API }}
       CHROME: /usr/bin/google-chrome
     steps:
       - uses: actions/checkout@v4

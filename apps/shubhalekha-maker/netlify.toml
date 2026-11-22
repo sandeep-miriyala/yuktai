@@ -1,0 +1,24 @@
+# Shubhalekha Maker: ఒక వేరే Netlify account లో పెట్టండి (మీ ముఖ్యమైన sites ఉన్న account లో కాదు).
+# Netlify లో: Base directory = apps/shubhalekha-maker. Secrets ఇక్కడ కాదు, Netlify dashboard లో:
+#   NETLIFY_AUTH_TOKEN, GMAIL_USER, GMAIL_APP_PASSWORD (ఐచ్ఛికం: ALLOWED_ORIGINS, SLOTS_PER_MONTH)
+
+[build]
+  publish = "public"
+  command = "echo 'no build: static page + functions'"
+  # ఈ folder లేదా shubhalekha package మారితేనే deploy. లేకపోతే ప్రతి yuktai push కి 15 credits పోతాయి.
+  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- . ../../packages/shubhalekha"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+[functions]
+  node_bundler = "esbuild"
+  # sharp కి native binary ఉంది; shubhalekha తన runtime/, templates/ files ను తన folder నుంచి చదువుతుంది.
+  # రెండింటినీ bundle చేయకుండా node_modules నుంచే వాడాలి.
+  external_node_modules = ["sharp", "@yuktishaalaa/shubhalekha"]
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "no-referrer"

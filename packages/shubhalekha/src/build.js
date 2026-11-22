@@ -12,6 +12,7 @@ import { buildIcs } from "./lib/ics.js";
 import { buildVcard } from "./lib/contact.js";
 import { pick } from "./lib/text.js";
 import { iconPng } from "./lib/png.js";
+import { fetchFonts } from "./fonts.js";
 
 const RUNTIME = new URL("../runtime/", import.meta.url);
 const IMG_MAX_WIDTH = 1600;
@@ -79,7 +80,7 @@ async function qrPng(text, file) {
   await QRCode.toFile(file, text, { type: "png", margin: 1, width: 512, errorCorrectionLevel: "M", color: { dark: "#000000", light: "#ffffff" } });
 }
 
-export async function build(projectDir, { outDir = join(projectDir, "dist"), now = new Date() } = {}) {
+export async function build(projectDir, { outDir = join(projectDir, "dist"), now = new Date(), fetch } = {}) {
   const configPath = findConfig(projectDir);
   const fileName = basename(configPath);
   let config;
@@ -159,6 +160,15 @@ export async function build(projectDir, { outDir = join(projectDir, "dist"), now
   }, null, 2);
 
   for (const f of ["app.js", "style.css"]) files[f] = readFileSync(new URL(f, RUNTIME), "utf8");
+
+  // భాషకు ఎంచుకున్న font: పేజీలో వాడిన అక్షరాలకే, dist/fonts/ లోకి
+  if (config.fonts && Object.keys(config.fonts).length) {
+    const got = await fetchFonts(config.fonts, files["index.html"], fetch ? { fetch } : {});
+    if (Object.keys(got.files).length) mkdirSync(join(outDir, "fonts"), { recursive: true });
+    Object.assign(files, got.files);
+    warnings.push(...got.warnings);
+    files["index.html"] = files["index.html"].replace("</head>", `<style>${got.css}</style>\n</head>`);
+  }
 
   // Service worker: ఈ build లోని files జాబితా + version (మార్పు వస్తేనే కొత్త cache)
   const extra = [...Object.values(photoMap), ...Object.values(page.qr)];

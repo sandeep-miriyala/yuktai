@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.1.0 (2026-11-22)
+
+- **A font for every language.** `"fonts": { "te": "Ramabhadra", "en": "Playfair Display" }`. Pick from well-known Google Fonts for each script (88 in all: Telugu, Devanagari, Tamil, Kannada, Malayalam, Bengali, Gujarati, Gurmukhi, Odia, Urdu, Meetei Mayek, Ol Chiki and Latin).
+- The build downloads only the letters the page uses (Google Fonts `text=`), saves them in `dist/fonts/` and adds them to the offline cache. Guests' phones never contact Google. With no internet the build still finishes and warns; the phone's own font is used.
+- `template(type)` returns a template as an object. `FONTS`, `SCRIPT_OF` and `fontsFor(lang)` are exported.
+- Used by the new Shubhalekha Maker (a form on the YuktAI site for people who don't code).
+
 ## 1.0.0 (2026-11-22)
 
 First release.

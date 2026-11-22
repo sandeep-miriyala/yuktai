@@ -1,0 +1,22 @@
+{
+  "name": "shubhalekha-maker",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Shubhalekha Maker: makes a Netlify invitation site from a simple form, for people who don't code. Four a month, deleted 7 days after the event.",
+  "author": "Sandeep Miriyala — Yuktishaalaa AI Lab",
+  "license": "GPL-3.0-only",
+  "type": "module",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "scripts": {
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@netlify/blobs": "11.1.6",
+    "@yuktishaalaa/shubhalekha": "^1.1.0",
+    "nodemailer": "10.3.1",
+    "qrcode": "1.5.4",
+    "sharp": "0.34.5"
+  }
+}

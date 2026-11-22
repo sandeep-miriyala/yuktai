@@ -39,6 +39,12 @@ jobs:
       - name: Shubhalekha tests
         working-directory: packages/shubhalekha
         run: npm ci && npm test
+      - name: Shubhalekha Maker tests (with this commit's package)
+        working-directory: apps/shubhalekha-maker
+        run: |
+          (cd ../../packages/shubhalekha && npm pack)
+          npm install --no-save --no-audit --no-fund ../../packages/shubhalekha/yuktishaalaa-shubhalekha-*.tgz
+          npm test
 
   python-template:
     name: Python API template (pytest)

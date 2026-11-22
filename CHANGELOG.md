@@ -2,6 +2,13 @@
 
 All notable changes to `@yuktishaalaa/yuktai`. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow [Semantic Versioning](https://semver.org/).
 
+## Unreleased (2026-11-22, Shubhalekha Maker)
+
+- **@yuktishaalaa/shubhalekha 1.1.0:** a font for every language (88 Google Fonts across 13 scripts), downloaded at build time for the page's letters only and kept in `dist/fonts/`.
+- **Shubhalekha Maker** (`apps/shubhalekha-maker/`): a Netlify service that builds an invitation from a form and publishes it as its own `*.netlify.app` site. Four a month, two edits, emails when ready, two days before deletion and when deleted; everything is deleted 7 days after the last event.
+- **Website:** new page `/shubhalekha/make/`, a three-step form in Telugu for people who don't code (22 languages, a font for each, photos resized in the phone, consent). Linked from the Shubhalekha guide and the Get started menu.
+- CI runs the Maker tests with this commit's package.
+
 ## Unreleased (2026-11-22)
 
 **New package**
