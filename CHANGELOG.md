@@ -2,6 +2,12 @@
 
 All notable changes to `@yuktishaalaa/yuktai`. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow [Semantic Versioning](https://semver.org/).
 
+## Unreleased (2026-11-23, Setu)
+
+- **Python `yuktai` 0.2.0: Setu (సేతు) for Streamlit.** `yuktai.setu.enable(lang="te", font="Ramabhadra")` adds YuktAI accessibility, page tools, language and font to a whole Streamlit app (components v2, no iframe). `python -m yuktai setu app.py` publishes the app as a static, offline, installable site with stlite: no server, never sleeps.
+- CI runs the Python package tests.
+- Website: the Python guide has Streamlit and "publish with no server" sections.
+
 ## Unreleased (2026-11-22, Shubhalekha Maker)
 
 - **@yuktishaalaa/shubhalekha 1.1.0:** a font for every language (88 Google Fonts across 13 scripts), downloaded at build time for the page's letters only and kept in `dist/fonts/`.

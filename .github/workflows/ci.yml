@@ -46,6 +46,20 @@ jobs:
           npm install --no-save --no-audit --no-fund ../../packages/shubhalekha/yuktishaalaa-shubhalekha-*.tgz
           npm test
 
+  python-package:
+    name: Python package yuktai + Setu (pytest)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: python
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -e ".[test,setu]"
+      - run: python -m pytest -q
+
   python-template:
     name: Python API template (pytest)
     runs-on: ubuntu-latest

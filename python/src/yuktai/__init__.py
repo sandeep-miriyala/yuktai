@@ -19,7 +19,7 @@ from typing import Any, Mapping, Optional
 
 __all__ = ["__version__", "YUKTAI_JS_VERSION", "cdn_url", "config_json", "script_tag", "Markup"]
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 #: The YuktAI (JavaScript) release these helpers load by default.
 YUKTAI_JS_VERSION = "5.5.3"

@@ -4,14 +4,14 @@ build-backend = "hatchling.build"
 
 [project]
 name = "yuktai"
-version = "0.1.1"
-description = "YuktAI for Python web apps: add the accessibility widget, page tools and data grid to Django, Flask and FastAPI pages in one line. Runs in the browser, no API keys."
+version = "0.2.0"
+description = "YuktAI for Python web apps: accessibility, page tools and data grid for Django, Flask, FastAPI and Streamlit in one line, and Setu: publish a Streamlit app with no server, offline and installable. Runs in the browser, no API keys."
 readme = "README.md"
 requires-python = ">=3.9"
 license = "GPL-3.0-only"
 license-files = ["LICENSE"]
 authors = [{ name = "Sandeep Miriyala" }]
-keywords = ["accessibility", "wcag", "a11y", "django", "flask", "fastapi", "telugu", "indic", "data-grid", "rag"]
+keywords = ["accessibility", "wcag", "a11y", "django", "flask", "fastapi", "streamlit", "stlite", "pwa", "offline", "telugu", "indic", "data-grid", "rag"]
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Framework :: Django",
@@ -27,7 +27,11 @@ classifiers = [
 dependencies = []
 
 [project.optional-dependencies]
+setu = ["streamlit>=1.51"]
 test = ["pytest>=8", "jinja2>=3.1", "django>=4.2"]
+
+[project.scripts]
+yuktai-setu = "yuktai.cli:setu_main"
 
 [project.urls]
 Documentation = "https://sandeep-miriyala.github.io/yuktai/"
