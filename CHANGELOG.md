@@ -2,9 +2,9 @@
 
 All notable changes to `@yuktishaalaa/yuktai`. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow [Semantic Versioning](https://semver.org/).
 
-## Unreleased (2026-11-24, Search and Setu page)
+## Unreleased (2026-11-24, Help 24×7 and Setu page)
 
-- **Website: Search and help, 24×7** (`/search/`). One box for every page of the site. The browser reads the site's own pages, matches whole words or the start of a word, and links to the right section; "Ask on this page" opens that page and asks the Ask page assistant there. Works offline after the first visit; nothing is sent anywhere. A search button in the header on every page.
+- **Website: Help, 24×7.** A panel on the right of every page (the "Help 24×7" tab, the 🔍 button in the header, or the / key). Type a topic and press Enter: you go straight to that section of the site, briefly highlighted. "Ask there" opens that page and asks the Ask page assistant. The browser reads the site's own pages and matches whole words or the start of a word; it works offline after the first visit and sends nothing anywhere.
 - **Website: Setu for Streamlit** (`/python/setu/`): every feature, option, check and limit of `yuktai[setu]` 0.2.0 on one page, with the 23 languages and 88 fonts. Linked from the Python guide and the Get started menu.
 - Any page opened with `?ask=question` asks it in the Ask page panel.
 

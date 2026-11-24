@@ -13,6 +13,7 @@ import InstallButton from "./InstallButton";
 import Logo from "./Logo";
 import ThemeToggle from "./ThemeToggle";
 import NavMenu from "./NavMenu";
+import SiteAssistant, { openHelp } from "@/components/search/SiteAssistant";
 
 export default function Header() {
   const path = usePathname();
@@ -56,9 +57,9 @@ export default function Header() {
         </nav>
         <div className="tools" lang={lang}>
           {config.features.pwa && <InstallButton />}
-          <Link href="/search/" className="icon-btn" aria-label={t("searchSite")} title={t("searchSite")} aria-current={here("/search/") ? "page" : undefined}>
+          <button type="button" className="icon-btn" onClick={openHelp} aria-label={`${t("searchSite")} /`} title={t("searchSite")} aria-keyshortcuts="/">
             <SearchIcon size={20} aria-hidden="true" />
-          </Link>
+          </button>
           {config.features.ask && (
             <button type="button" className="ask-btn" onClick={() => ask()} aria-keyshortcuts="Control+K" aria-label={`${t("askThisPage")} Ctrl K`}>
               <ChatIcon size={18} aria-hidden="true" />
@@ -71,6 +72,7 @@ export default function Header() {
           <ThemeToggle />
         </div>
       </div>
+      <SiteAssistant />
     </header>
   );
 }

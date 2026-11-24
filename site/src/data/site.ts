@@ -67,7 +67,6 @@ export type IconKey =
 
 // The guides (src/app/(guides)/<name>/page.tsx)
 export const GUIDES: { href: string; title: string; text: string; icon: IconKey }[] = [
-  { href: "/search/", title: "Search and help (24×7)", text: "One box for every page of this site. Find the part you need, then ask the assistant on that page.", icon: "search" },
   { href: "/assistant/", title: "YuktAI Assistant (new in 6.0)", text: "Accessibility and Ask this page in one panel. Download the browser extension, paste one script, or npm install for React and Next.js.", icon: "accessibility" },
   { href: "/guide/", title: "End-to-end guide", text: "From an empty folder to a live site: create, build, test, publish on GitHub Pages or Vercel, and make it ready for AI browsers.", icon: "wand" },
   { href: "/shubhalekha/", title: "Shubhalekha: invitation pages (new)", text: "Weddings, upanayanam, gruhapravesam and 12 more celebrations in all 22 Indian languages. One JSON file or a form, a 24×7 guest assistant, WhatsApp RSVP, offline.", icon: "layout" },
