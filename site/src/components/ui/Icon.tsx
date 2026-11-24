@@ -1,6 +1,6 @@
 import {
   AccessibilityIcon, GridIcon, RobotIcon, ChatIcon, ToolsIcon, CodeIcon, HubIcon,
-  LayoutIcon, WandIcon, StarIcon, DataObjectIcon, SpeedIcon, InstallIcon,
+  LayoutIcon, WandIcon, StarIcon, DataObjectIcon, SpeedIcon, InstallIcon, SearchIcon,
 } from "@yuktishaalaa/yuktai/icons";
 import type { IconKey } from "@/data/site";
 
@@ -8,7 +8,7 @@ import type { IconKey } from "@/data/site";
 const MAP = {
   accessibility: AccessibilityIcon, grid: GridIcon, robot: RobotIcon, chat: ChatIcon,
   tools: ToolsIcon, code: CodeIcon, hub: HubIcon, layout: LayoutIcon, wand: WandIcon,
-  star: StarIcon, dataObject: DataObjectIcon, speed: SpeedIcon, install: InstallIcon,
+  star: StarIcon, dataObject: DataObjectIcon, speed: SpeedIcon, install: InstallIcon, search: SearchIcon,
 };
 
 export function GuideIcon({ name, size = 22 }: { name: IconKey; size?: number }) {

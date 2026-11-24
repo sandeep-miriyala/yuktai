@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { ChatIcon, GlobeIcon } from "@yuktishaalaa/yuktai/icons";
+import { ChatIcon, GlobeIcon, SearchIcon } from "@yuktishaalaa/yuktai/icons";
 import { YuktaiPreferences, useUiText } from "@yuktishaalaa/yuktai/experience";
 import config from "@config";
 import { NAV, isGroup } from "@/data/site";
@@ -56,6 +56,9 @@ export default function Header() {
         </nav>
         <div className="tools" lang={lang}>
           {config.features.pwa && <InstallButton />}
+          <Link href="/search/" className="icon-btn" aria-label={t("searchSite")} title={t("searchSite")} aria-current={here("/search/") ? "page" : undefined}>
+            <SearchIcon size={20} aria-hidden="true" />
+          </Link>
           {config.features.ask && (
             <button type="button" className="ask-btn" onClick={() => ask()} aria-keyshortcuts="Control+K" aria-label={`${t("askThisPage")} Ctrl K`}>
               <ChatIcon size={18} aria-hidden="true" />

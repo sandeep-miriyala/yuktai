@@ -341,3 +341,24 @@ h1{letter-spacing:-.045em}
 /* answer preview: a typed question and a streamed answer, decorative */
 @media (prefers-reduced-motion:reduce){.card:hover,.chip:hover,.btn.primary:hover{transform:none}.ai-preview .caret{display:none}}
 @media (forced-colors:active){.hero-ask,.demo{border:2px solid CanvasText}.iconbox,.logo{border:1px solid CanvasText}}
+
+/* Search and help (/search/) */
+.site-search{margin:8px 0 28px}
+.ss-form{display:flex;align-items:center;gap:10px;padding:0 14px;border:2px solid var(--d-line);border-radius:14px;background:var(--d-panel)}
+.ss-form:focus-within{border-color:var(--d-accent)}
+.ss-form svg{flex:none;color:var(--d-accent)}
+.ss-form input{flex:1;min-width:0;min-height:54px;border:0;background:transparent;color:var(--d-text);font:500 1.08rem var(--d-font)}
+.ss-form input:focus{outline:none}
+.ss-status{margin:10px 2px;color:var(--d-muted);font-size:.95rem}
+.ss-ideas .btn{font-weight:600}
+.ss-results{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:12px}
+.ss-results li{border:1px solid var(--d-line);border-radius:var(--d-radius);background:var(--d-panel);padding:14px 16px;min-width:0}
+.ss-title{display:inline-block;font-weight:800;font-size:1.05rem;color:var(--d-link)}
+.ss-heading{font-weight:700}
+.ss-snippet{margin:6px 0 8px;color:var(--d-text);overflow-wrap:anywhere}
+.ss-snippet mark{background:var(--d-chip);color:var(--d-text);border-radius:4px;padding:0 2px;font-weight:700;box-shadow:inset 0 -2px var(--d-accent)}
+.ss-ask{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:6px 12px;border:1px solid var(--d-line);border-radius:10px;background:var(--d-panel2);color:var(--d-text);font:600 .93rem var(--d-font);cursor:pointer;text-align:left}
+.ss-ask:hover{border-color:var(--d-accent);text-decoration:underline}
+.ss-ask svg{flex:none;color:var(--d-accent)}
+.ss-none ul{margin:8px 0 0;padding-left:20px}
+.ss-none a{display:inline-flex;align-items:center;gap:6px;min-height:32px}

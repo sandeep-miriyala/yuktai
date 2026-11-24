@@ -63,10 +63,11 @@ export const AUTHOR = {
 
 export type IconKey =
   | "accessibility" | "grid" | "robot" | "chat" | "tools" | "code" | "hub"
-  | "layout" | "wand" | "star" | "dataObject" | "speed" | "install";
+  | "layout" | "wand" | "star" | "dataObject" | "speed" | "install" | "search";
 
 // The guides (src/app/(guides)/<name>/page.tsx)
 export const GUIDES: { href: string; title: string; text: string; icon: IconKey }[] = [
+  { href: "/search/", title: "Search and help (24×7)", text: "One box for every page of this site. Find the part you need, then ask the assistant on that page.", icon: "search" },
   { href: "/assistant/", title: "YuktAI Assistant (new in 6.0)", text: "Accessibility and Ask this page in one panel. Download the browser extension, paste one script, or npm install for React and Next.js.", icon: "accessibility" },
   { href: "/guide/", title: "End-to-end guide", text: "From an empty folder to a live site: create, build, test, publish on GitHub Pages or Vercel, and make it ready for AI browsers.", icon: "wand" },
   { href: "/shubhalekha/", title: "Shubhalekha: invitation pages (new)", text: "Weddings, upanayanam, gruhapravesam and 12 more celebrations in all 22 Indian languages. One JSON file or a form, a 24×7 guest assistant, WhatsApp RSVP, offline.", icon: "layout" },
@@ -78,6 +79,7 @@ export const GUIDES: { href: string; title: string; text: string; icon: IconKey 
   { href: "/page-tools/", title: "Page tools", text: "Copilot, QA report with 15 WCAG checks, form review, design review and voice commands.", icon: "tools" },
   { href: "/nextjs/", title: "Next.js setup", text: "Pick the buttons you want and copy a ready YuktAIWrapper layout for the App Router.", icon: "code" },
   { href: "/python/", title: "Python (pip)", text: "pip install yuktai adds the widget and page tools to Django, Flask and FastAPI.", icon: "hub" },
+  { href: "/python/setu/", title: "Setu for Streamlit (new)", text: "One line adds accessibility, read aloud and 23 languages to a Streamlit app; one command publishes it offline with no server.", icon: "hub" },
   { href: "/php/", title: "PHP (Composer)", text: "composer require yuktishaalaa/yuktai for plain PHP, Laravel and WordPress.", icon: "layout" },
   { href: "/jquery/", title: "jQuery", text: "Two script tags on any jQuery site. Live demo with jQuery 1.12 to 4.0.", icon: "wand" },
   { href: "/icons/", title: "Icon studio", text: "Every YuktAI icon at any size and colour. Copy React or HTML, download PNG or SVG.", icon: "star" },
@@ -271,6 +273,7 @@ export const NAV: NavItem[] = [
       { href: "/#start", label: "JavaScript / HTML", hint: "Two script tags on any site" },
       { href: "/jquery/", label: "jQuery", hint: "jQuery 1.12 to 4.0" },
       { href: "/python/", label: "Python (pip)", hint: "Django, Flask, FastAPI" },
+      { href: "/python/setu/", label: "Setu for Streamlit", hint: "Accessible, offline, no server" },
       { href: "/php/", label: "PHP (Composer)", hint: "Plain PHP, Laravel, WordPress" },
     ],
   },

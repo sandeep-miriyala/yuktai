@@ -2,6 +2,12 @@
 
 All notable changes to `@yuktishaalaa/yuktai`. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow [Semantic Versioning](https://semver.org/).
 
+## Unreleased (2026-11-24, Search and Setu page)
+
+- **Website: Search and help, 24×7** (`/search/`). One box for every page of the site. The browser reads the site's own pages, matches whole words or the start of a word, and links to the right section; "Ask on this page" opens that page and asks the Ask page assistant there. Works offline after the first visit; nothing is sent anywhere. A search button in the header on every page.
+- **Website: Setu for Streamlit** (`/python/setu/`): every feature, option, check and limit of `yuktai[setu]` 0.2.0 on one page, with the 23 languages and 88 fonts. Linked from the Python guide and the Get started menu.
+- Any page opened with `?ask=question` asks it in the Ask page panel.
+
 ## Unreleased (2026-11-23, Setu)
 
 - **Python `yuktai` 0.2.0: Setu (సేతు) for Streamlit.** `yuktai.setu.enable(lang="te", font="Ramabhadra")` adds YuktAI accessibility, page tools, language and font to a whole Streamlit app (components v2, no iframe). `python -m yuktai setu app.py` publishes the app as a static, offline, installable site with stlite: no server, never sleeps.

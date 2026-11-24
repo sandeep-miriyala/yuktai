@@ -24,6 +24,12 @@ export default function Providers({ children }: { children: ReactNode }) {
         // live demos hold sample inputs and outputs, not docs
         mountAskPage({ launcher: false, title: "Ask these docs", root: "main", exclude: [".no-ask", "[aria-hidden=true]", ".demo", ".out", "[aria-live]"] });
         theme();
+        // From the search page: /python/?ask=question opens the panel and asks it here.
+        const q = new URLSearchParams(location.search).get("ask")?.trim().slice(0, 300);
+        if (q) {
+          history.replaceState(history.state, "", location.pathname + location.hash);
+          setTimeout(() => ask(q), 400);
+        }
       });
     }
     const onKey = (e: KeyboardEvent) => {
