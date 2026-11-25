@@ -78,7 +78,17 @@ export default function SiteAssistant() {
   }, []);
 
   const result = useMemo(() => (index && q.trim() ? search(index, q, 8) : null), [index, q]);
-  const hits = result?.hits ?? [];
+  const hits = useMemo(() => result?.hits ?? [], [result]);
+  // One block per page, in the order of each page's best result; the keyboard still walks every result.
+  const groups = useMemo(() => {
+    const out: { page: string; title: string; n: number; hits: { hit: Hit; i: number }[] }[] = [];
+    hits.forEach((hit, i) => {
+      let g = out.find((x) => x.page === hit.page);
+      if (!g) out.push((g = { page: hit.page, title: hit.pageTitle, n: out.length, hits: [] }));
+      g.hits.push({ hit, i });
+    });
+    return out;
+  }, [hits]);
 
   function close() {
     dialog.current?.close();
@@ -120,7 +130,7 @@ export default function SiteAssistant() {
       : !result
         ? "Type a topic and press Enter to go straight there."
         : hits.length
-          ? `${hits.length} ${hits.length === 1 ? "place" : "places"}${result.all ? "" : " with some of the words"}. Enter opens the first.`
+          ? `${hits.length} ${hits.length === 1 ? "place" : "places"}${result.all ? "" : " with some of the words"}. Enter opens the highlighted one.`
           : "Nothing on this site has these words. Try fewer or simpler words.";
 
   return (
@@ -155,30 +165,38 @@ export default function SiteAssistant() {
           </form>
           <p id="sa-status" className="sa-status" role="status" aria-live="polite">{status}</p>
 
-          {!q.trim() && (
-            <div className="sa-topics">
-              {TOPICS.map((t) => (
-                <button key={t} type="button" onClick={() => { setQ(t); setActive(0); input.current?.focus(); }}>{t}</button>
-              ))}
-            </div>
-          )}
-
-          <ol id="sa-list" className="sa-list">
-            {hits.map((h, i) => (
-              <li key={`${h.page}#${h.id}#${h.heading}`} className={i === active ? "on" : undefined}>
-                <button type="button" className="sa-go" onClick={() => go(h)}>
-                  <span className="sa-where">{h.pageTitle}{h.heading !== h.pageTitle && <> › <strong>{h.heading}</strong></>}</span>
-                  <span className="sa-snip">
-                    {h.snippet.map((s, k) => (s.mark ? <mark key={k}>{s.text}</mark> : <span key={k}>{s.text}</span>))}
-                  </span>
-                </button>
-                <button type="button" className="sa-ask" onClick={() => askThere(h)}>
-                  <ChatIcon size={16} aria-hidden="true" />
-                  <span>Ask there<span className="sr-only">: {h.pageTitle}</span></span>
-                </button>
-              </li>
+          <div id="sa-list" className="sa-results">
+            {!q.trim() && (
+              <div className="sa-topics">
+                {TOPICS.map((t) => (
+                  <button key={t} type="button" onClick={() => { setQ(t); setActive(0); input.current?.focus(); }}>{t}</button>
+                ))}
+              </div>
+            )}
+            {groups.map((g) => (
+              <section key={g.page} className="sa-group" aria-labelledby={`sa-g-${g.n}`}>
+                <div className="sa-group-head">
+                  <h3 id={`sa-g-${g.n}`}>{g.title}</h3>
+                  <button type="button" className="sa-ask" onClick={() => askThere(g.hits[0].hit)} title="Ask the assistant on this page">
+                    <ChatIcon size={16} aria-hidden="true" />
+                    <span>Ask<span className="sr-only"> “{q.trim()}” on {g.title}</span></span>
+                  </button>
+                </div>
+                <ul>
+                  {g.hits.map(({ hit: h, i }) => (
+                    <li key={`${h.id}#${h.heading}`} className={i === active ? "on" : undefined}>
+                      <button type="button" className="sa-go" onClick={() => go(h)}>
+                        <span className="sa-sec">{h.heading === h.pageTitle ? "Overview" : h.heading}</span>
+                        <span className="sa-snip">
+                          {h.snippet.map((s, k) => (s.mark ? <mark key={k}>{s.text}</mark> : <span key={k}>{s.text}</span>))}
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </section>
             ))}
-          </ol>
+          </div>
 
           <p className="sa-foot">Runs in your browser. Nothing you type is sent anywhere. Ctrl K asks about the page you are on.</p>
         </div>

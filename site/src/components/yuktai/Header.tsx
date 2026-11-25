@@ -49,14 +49,14 @@ export default function Header() {
         <nav className="topnav" aria-label="Main" lang={lang}>
           {NAV.map((n) =>
             isGroup(n) ? (
-              <NavMenu key={n.key} group={n} t={t} current={here} />
+              <NavMenu key={`${n.key}${path}`} group={n} t={t} current={here} />
             ) : (
               <Link key={n.href} href={n.href} aria-current={here(n.href) ? "page" : undefined}>{n.key ? t(n.key) : n.label}</Link>
             ),
           )}
         </nav>
         <div className="tools" lang={lang}>
-          {config.features.pwa && <InstallButton />}
+          {config.features.pwa && <InstallButton key={path} />}
           <button type="button" className="icon-btn" onClick={openHelp} aria-label={`${t("searchSite")} /`} title={t("searchSite")} aria-keyshortcuts="/">
             <SearchIcon size={20} aria-hidden="true" />
           </button>

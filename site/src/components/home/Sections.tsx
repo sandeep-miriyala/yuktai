@@ -162,6 +162,41 @@ export function Start() {
   );
 }
 
+/** Every package in one grid: what it is, where it lives, the version, how to install it. */
+function AllPackages() {
+  const rows = [
+    ...PACKAGES.map((p) => ({ key: p.name, short: p.short, name: p.name, registry: "npm", version: p.version, who: p.who, install: p.install, links: [{ href: p.npm, label: "npm" }], guide: p.guide, anchor: `pkg-${p.name.replace(/[@/]/g, "")}` })),
+    ...MORE_PACKAGES.map((p) => ({ key: p.registry, short: p.short, name: p.name, registry: p.registry, version: p.version, who: p.who, install: p.install, links: p.links, guide: p.guide, anchor: `pkg-${p.registry.replace(/\W/g, "")}` })),
+  ];
+  return (
+    <div className="table-box pkg-table-box" tabIndex={0} role="region" aria-label="All packages (the table scrolls sideways)">
+      <table className="compare pkg-table">
+        <caption>All {rows.length} packages at a glance</caption>
+        <thead>
+          <tr><th scope="col">Package</th><th scope="col">Registry</th><th scope="col">Version</th><th scope="col">For</th><th scope="col">Install</th><th scope="col">Links</th></tr>
+        </thead>
+        <tbody>
+          {rows.map((r) => (
+            <tr key={r.key}>
+              <th scope="row"><a href={`#${r.anchor}`}>{r.short}</a><code className="pkg-table-name">{r.name}</code></th>
+              <td data-label="Registry">{r.registry}</td>
+              <td data-label="Version">{r.version}</td>
+              <td data-label="For">{r.who}</td>
+              <td data-label="Install"><code>{r.install}</code></td>
+              <td data-label="Links" className="pkg-table-links">
+                <span>
+                  {r.links.map((l) => <a key={l.href} href={l.href}>{l.label}<span className="sr-only">: {r.short}</span></a>)}
+                  {r.guide && <Link href={r.guide.href}>Guide<span className="sr-only">: {r.short}</span></Link>}
+                </span>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 export function Packages() {
   const byName = (n: string) => PACKAGES.find((p) => p.name === n)!;
   const node = (n: string, cls: string) => {
@@ -183,6 +218,8 @@ export function Packages() {
       <p className="lead">
         {PACKAGES.length} on npm, plus <strong>yuktai</strong> on PyPI for Python and on crates.io for Rust. Two main products: the <strong>Toolkit</strong> for apps you build, the <strong>Assistant</strong> for websites you already have. Both run on the same two engines. And <strong>Shubhalekha</strong>, a ready-made invitation site for every Indian celebration.
       </p>
+
+      <AllPackages />
 
       <InView className="family" label="The YuktAI family: YuktAI on top; the Toolkit and the Assistant under it; both use the accessibility engine, and the Assistant also uses the Ask engine. Two starters make a new app, and Shubhalekha makes a ready invitation site.">
         <div className="fam-root"><span>YuktAI</span></div>

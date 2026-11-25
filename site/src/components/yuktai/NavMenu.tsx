@@ -1,14 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useId, useRef, useState, type CSSProperties } from "react";
+import { useCallback, useEffect, useId, useRef, useState, type CSSProperties } from "react";
 import type { NavGroup } from "@/data/site";
+import { useAutoClose } from "./autoClose";
 
 /**
  * A main menu item with a submenu (disclosure pattern): a button that opens a list of links.
  * Keyboard: Enter or Space opens it, ↓ ↑ move between links, Esc closes and returns to the button.
  * The list is placed under the button with position: fixed, so it is never cut off by the
- * scrolling menu bar on phones.
+ * scrolling menu bar on phones. It closes by itself on a tap or click elsewhere, when focus
+ * leaves it, when another menu opens, on scroll or resize, and when the page changes.
  */
 export default function NavMenu({ group, t, current }: { group: NavGroup; t: (key: string) => string; current: (href: string) => boolean }) {
   const [open, setOpen] = useState(false);
@@ -17,6 +19,8 @@ export default function NavMenu({ group, t, current }: { group: NavGroup; t: (ke
   const list = useRef<HTMLUListElement>(null);
   const id = useId();
   const active = group.children.some((c) => current(c.href));
+  const close = useCallback(() => setOpen(false), []);
+  useAutoClose(open, close, [button, list]);
 
   const show = () => {
     const r = button.current?.getBoundingClientRect();
@@ -44,16 +48,11 @@ export default function NavMenu({ group, t, current }: { group: NavGroup; t: (ke
         links[(at - 1 + links.length) % links.length]?.focus();
       }
     };
-    const click = (e: MouseEvent) => {
-      if (!list.current?.contains(e.target as Node) && !button.current?.contains(e.target as Node)) setOpen(false);
-    };
     document.addEventListener("keydown", key);
-    document.addEventListener("mousedown", click);
     window.addEventListener("resize", close);
     window.addEventListener("scroll", close, { passive: true });
     return () => {
       document.removeEventListener("keydown", key);
-      document.removeEventListener("mousedown", click);
       window.removeEventListener("resize", close);
       window.removeEventListener("scroll", close);
     };

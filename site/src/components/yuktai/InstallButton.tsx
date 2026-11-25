@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { InstallIcon } from "@yuktishaalaa/yuktai/icons";
 import { useUiText } from "@yuktishaalaa/yuktai/experience";
+import { useAutoClose } from "./autoClose";
 
 type InstallPrompt = Event & { prompt: () => Promise<void>; userChoice: Promise<{ outcome: string }> };
 type InstallWindow = Window & { __yuktaiInstall?: InstallPrompt | null };
@@ -41,6 +42,9 @@ export default function InstallButton() {
   const [prompt, setPrompt] = useState<InstallPrompt | null>(null);
   const [steps, setSteps] = useState<string[] | null>(null);
   const button = useRef<HTMLButtonElement>(null);
+  const box = useRef<HTMLDivElement>(null);
+  const hide = useCallback(() => setSteps(null), []);
+  useAutoClose(Boolean(steps), hide, [box]);
 
   useEffect(() => {
     // The offer may have come before React started: INSTALL_SCRIPT (theme.ts) kept it.
@@ -70,7 +74,7 @@ export default function InstallButton() {
 
   if (!ready) return null;
   return (
-    <div className="install-wrap">
+    <div className="install-wrap" ref={box}>
       <button
         ref={button}
         type="button"

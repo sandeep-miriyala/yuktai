@@ -2,11 +2,18 @@
 
 All notable changes to `@yuktishaalaa/yuktai`. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow [Semantic Versioning](https://semver.org/).
 
+## 6.0.4 (2026-11-25): a clearer accessibility icon
+
+- **The ♿ accessibility icon is redrawn.** The old figure had two extra diagonal strokes beside the legs, so at button size it read as a figure with four legs. The new one is the familiar person with open arms (head, arms, body, two legs), the same shape the YuktAI Assistant already uses. It changes everywhere the icon is drawn: the floating ♿ button, `<AccessibilityIcon>`, `yuktai.icon("accessibility")` and the guides menu.
+- **Website: Help 24×7 panel, cleaner results.** Results are grouped by page: the page name once, then its sections, each with a two-line extract. One small "Ask" button per page instead of a large one under every result. Only the results scroll; the page behind no longer scrolls with them.
+
 ## Unreleased (2026-11-24, Help 24×7 and Setu page)
 
 - **Website: Help, 24×7.** A panel on the right of every page (the "Help 24×7" tab, the 🔍 button in the header, or the / key). Type a topic and press Enter: you go straight to that section of the site, briefly highlighted. "Ask there" opens that page and asks the Ask page assistant. The browser reads the site's own pages and matches whole words or the start of a word; it works offline after the first visit and sends nothing anywhere.
 - **Website: Setu for Streamlit** (`/python/setu/`): every feature, option, check and limit of `yuktai[setu]` 0.2.0 on one page, with the 23 languages and 88 fonts. Linked from the Python guide and the Get started menu.
 - Any page opened with `?ask=question` asks it in the Ask page panel.
+- **Website: all packages in one grid.** The home page opens its packages section with a table of all nine: name, registry, version, who it is for, the install line and links. On phones each package becomes a small card, with no sideways scrolling.
+- **Website: menus close by themselves.** The header menus and the install help now close when focus leaves them (Tab), when another menu opens (by mouse or keyboard), on a tap or click elsewhere, when the help panel opens and when the page changes (links, back, forward). Before, Tab and the keyboard left menus open, and several could be open at once. `scripts/site-e2e.mjs` now checks this on every build.
 - **Website: one place for every package.** The home page lists all nine: seven on npm, `yuktai` on PyPI (0.2.0) and `yuktai` on crates.io (0.1.1), with install lines and links (PyPI, crates.io, docs.rs). The Rust stack card says `cargo add yuktai`; the footer, the Rust guide and the README name all three registries. Version numbers fixed (a11y 6.0.4, 25 Rust tests).
 - **Website: floating buttons on the right.** ♿ and 🛠 moved to the right, under "back to top", so they never cover the guides menu, and 🛠 now looks like ♿ (the site's button styles never reached the widget, which sits outside `<body>`).
 - **Rust `yuktai` 0.1.1:** fixes the docs.rs build. Current nightly Rust removed `doc_auto_cfg` (it is part of `doc_cfg` now), so 0.1.0 had no documentation page. No code changes.

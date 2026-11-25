@@ -148,6 +148,43 @@ const manifest = JSON.parse(readFileSync(join(OUT, "manifest.json"), "utf8"))
 const badIcons = (manifest.icons || []).filter((i) => !fileFor(new URL(i.src, `${ORIGIN}${BASE}/manifest.json`).pathname))
 for (const i of badIcons) console.log(`✗ manifest icon not found: ${i.src}`)
 
+// Header menus close by themselves: click elsewhere, Tab out, another menu, back
+const menuFails = []
+{
+  const expanded = () => page.$$eval(".nav-menu__button[aria-expanded=true]", (b) => b.map((x) => x.textContent.replace("▾", "").trim()))
+  const menu = (name) => page.locator(".nav-menu__button", { hasText: name })
+  const expect = async (label, want) => {
+    const got = await expanded()
+    const ok = JSON.stringify(got) === JSON.stringify(want)
+    console.log(`${ok ? "✓" : "✗"} menu: ${label}${ok ? "" : ` (open: ${got.join(", ") || "none"})`}`)
+    if (!ok) menuFails.push(label)
+  }
+  await page.goto(ORIGIN + BASE + "/python/", { waitUntil: "load" })
+  await page.waitForTimeout(500)
+  await menu("Get started").click()
+  await expect("opens on click", ["Get started"])
+  await menu("Components").click()
+  await expect("opening another closes the first", ["Components"])
+  await page.mouse.click(640, 600)
+  await expect("click elsewhere closes it", [])
+  await menu("Get started").focus()
+  await page.keyboard.press("Enter")
+  for (let i = 0; i < 20; i++) await page.keyboard.press("Tab")
+  await expect("Tab out closes it", [])
+  await menu("Components").focus()
+  await page.keyboard.press("Enter")
+  await menu("Agentic").focus()
+  await page.keyboard.press("Enter")
+  await expect("keyboard: only one open", ["Agentic AI"])
+  await page.keyboard.press("Escape")
+  await page.goto(ORIGIN + BASE + "/grid/", { waitUntil: "load" })
+  await menu("Get started").click()
+  await page.goBack({ waitUntil: "load" })
+  await page.waitForTimeout(300)
+  await expect("browser back closes it", [])
+}
+if (menuFails.length) failures.push("header menus")
+
 await browser.close()
 server.close()
 
