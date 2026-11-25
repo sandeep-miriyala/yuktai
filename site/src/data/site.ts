@@ -289,7 +289,7 @@ export const MORE_PACKAGES: readonly {
 ];
 
 // The header menu (src/components/yuktai/Header.tsx). A group with `children` is a ▾ submenu.
-export type NavLink = { href: string; label: string; key?: string; hint?: string };
+export type NavLink = { href: string; label: string; key?: string; hint?: string; section?: string };
 export type NavGroup = { label: string; key: string; children: NavLink[] };
 export type NavItem = NavLink | NavGroup;
 export const isGroup = (n: NavItem): n is NavGroup => "children" in n;
@@ -299,17 +299,18 @@ export const NAV: NavItem[] = [
     label: "Get started",
     key: "getStarted",
     children: [
-      { href: "/assistant/", label: "YuktAI Assistant", hint: "New in 6.0: download, script or npm" },
-      { href: "/guide/", label: "End-to-end guide", hint: "Create, test, publish, AI-browser ready" },
-      { href: "/create/", label: "Create an app", key: "createApp", hint: "npm create yuktai@latest my-app" },
-      { href: "/shubhalekha/", label: "Shubhalekha", hint: "Invitation pages in 22 Indian languages" },
-      { href: "/shubhalekha/make/", label: "శుభలేఖ తయారీ", hint: "No code: make an invitation on your phone" },
-      { href: "/nextjs/", label: "Next.js setup", hint: "YuktAIWrapper for the App Router" },
-      { href: "/#start", label: "JavaScript / HTML", hint: "Two script tags on any site" },
-      { href: "/jquery/", label: "jQuery", hint: "jQuery 1.12 to 4.0" },
-      { href: "/python/", label: "Python (pip)", hint: "Django, Flask, FastAPI" },
-      { href: "/python/setu/", label: "Setu for Streamlit", hint: "Accessible, offline, no server" },
-      { href: "/php/", label: "PHP (Composer)", hint: "Plain PHP, Laravel, WordPress" },
+      { section: "Start here", href: "/assistant/", label: "YuktAI Assistant", hint: "New in 6.0: download, script or npm" },
+      { section: "Start here", href: "/guide/", label: "End-to-end guide", hint: "Create, test, publish, AI-browser ready" },
+      { section: "Start here", href: "/create/", label: "Create an app", key: "createApp", hint: "npm create yuktai@latest my-app" },
+      { section: "Ready-made", href: "/shubhalekha/", label: "Shubhalekha", hint: "Invitation pages in 22 Indian languages" },
+      { section: "Ready-made", href: "/shubhalekha/make/", label: "శుభలేఖ తయారీ", hint: "No code: make an invitation on your phone" },
+      { section: "Your language", href: "/#start", label: "JavaScript / HTML", hint: "Two script tags on any site" },
+      { section: "Your language", href: "/nextjs/", label: "Next.js / React", hint: "YuktAIWrapper for the App Router" },
+      { section: "Your language", href: "/jquery/", label: "jQuery", hint: "jQuery 1.12 to 4.0" },
+      { section: "Your language", href: "/python/", label: "Python (pip)", hint: "Django, Flask, FastAPI" },
+      { section: "Your language", href: "/python/setu/", label: "Setu for Streamlit", hint: "Accessible, offline, no server" },
+      { section: "Your language", href: "/php/", label: "PHP (Composer)", hint: "Plain PHP, Laravel, WordPress" },
+      { section: "Your language", href: "/rust/#crate", label: "Rust (cargo)", hint: "cargo add yuktai" },
     ],
   },
   {

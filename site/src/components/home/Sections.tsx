@@ -6,6 +6,7 @@ import {
 import { CountUp, InView } from "./Motion";
 import { GuideIcon } from "@/components/ui/Icon";
 import { asset } from "@/lib/base";
+import PackagesGrid, { type PackageRow } from "./PackagesGrid";
 
 function Kicker({ children }: { children: string }) {
   return <p className="kicker">{children}</p>;
@@ -164,11 +165,26 @@ export function Start() {
 
 /** Every package in one grid: what it is, where it lives, the version, how to install it. */
 function AllPackages() {
-  const rows = [
-    ...PACKAGES.map((p) => ({ key: p.name, short: p.short, name: p.name, registry: "npm", version: p.version, who: p.who, install: p.install, links: [{ href: p.npm, label: "npm" }], guide: p.guide, anchor: `pkg-${p.name.replace(/[@/]/g, "")}` })),
-    ...MORE_PACKAGES.map((p) => ({ key: p.registry, short: p.short, name: p.name, registry: p.registry, version: p.version, who: p.who, install: p.install, links: p.links, guide: p.guide, anchor: `pkg-${p.registry.replace(/\W/g, "")}` })),
+  const rows: (PackageRow & { key: string })[] = [
+    ...PACKAGES.map((p) => ({ id: p.name, key: p.name, short: p.short, name: p.name, registry: "npm", version: p.version, who: p.who, install: p.install, links: [{ href: p.npm, label: "npm" }], guide: p.guide, anchor: `pkg-${p.name.replace(/[@/]/g, "")}` })),
+    ...MORE_PACKAGES.map((p) => ({ id: `${p.registry}:${p.name}`, key: p.registry, short: p.short, name: p.name, registry: p.registry, version: p.version, who: p.who, install: p.install, links: p.links, guide: p.guide, anchor: `pkg-${p.registry.replace(/\W/g, "")}` })),
   ];
+  const count = (r: string) => rows.filter((x) => x.registry === r).length;
   return (
+    <div className="pkg-showcase">
+      <div className="pkg-showcase-head">
+        <div>
+          <p className="pkg-showcase-kicker">Live in the YuktAI data grid</p>
+          <h3>All {rows.length} packages at a glance</h3>
+          <p className="pkg-showcase-text">Search, sort, switch to cards, download as CSV, Excel, JSON or PDF. The same grid that handles 10 lakh rows, running in your browser.</p>
+        </div>
+        <ul className="pkg-reg" aria-label="Packages per registry">
+          <li><strong>{count("npm")}</strong> npm</li>
+          <li><strong>{count("PyPI")}</strong> PyPI</li>
+          <li><strong>{count("crates.io")}</strong> crates.io</li>
+        </ul>
+      </div>
+      <PackagesGrid rows={rows}>
     <div className="table-box pkg-table-box" tabIndex={0} role="region" aria-label="All packages (the table scrolls sideways)">
       <table className="compare pkg-table">
         <caption>All {rows.length} packages at a glance</caption>
@@ -193,6 +209,8 @@ function AllPackages() {
           ))}
         </tbody>
       </table>
+    </div>
+      </PackagesGrid>
     </div>
   );
 }

@@ -5,6 +5,8 @@ All notable changes to `@yuktishaalaa/yuktai`. The format follows [Keep a Change
 ## 6.0.4 (2026-11-25): a clearer accessibility icon
 
 - **The ♿ accessibility icon is redrawn.** The old figure had two extra diagonal strokes beside the legs, so at button size it read as a figure with four legs. The new one is the familiar person with open arms (head, arms, body, two legs), the same shape the YuktAI Assistant already uses. It changes everywhere the icon is drawn: the floating ♿ button, `<AccessibilityIcon>`, `yuktai.icon("accessibility")` and the guides menu.
+- **Website: the packages table is the YuktAI data grid itself.** All nine packages in `<YuktaiGrid>`: search, sort, cards on phones, CSV / Excel / JSON / PDF download and ⚙ settings, a copy button on every install line, coloured registry labels. The plain table stays as the first paint and for visitors without JavaScript. The section has a soft glow and dotted backdrop and a count per registry.
+- **Website: header submenus hang from their button.** A small pointer joins each submenu to its button with no gap. "Get started" had 11 links in one long list; it now has three named columns (Start here, Ready-made, Your language, now with Rust) and one column on phones, scrolling inside itself when the screen is short.
 - **Website: Help 24×7 panel, cleaner results.** Results are grouped by page: the page name once, then its sections, each with a two-line extract. One small "Ask" button per page instead of a large one under every result. Only the results scroll; the page behind no longer scrolls with them.
 
 ## Unreleased (2026-11-24, Help 24×7 and Setu page)
