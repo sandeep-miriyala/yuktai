@@ -7,7 +7,8 @@ All notable changes to `@yuktishaalaa/yuktai`. The format follows [Keep a Change
 - **Website: Help, 24×7.** A panel on the right of every page (the "Help 24×7" tab, the 🔍 button in the header, or the / key). Type a topic and press Enter: you go straight to that section of the site, briefly highlighted. "Ask there" opens that page and asks the Ask page assistant. The browser reads the site's own pages and matches whole words or the start of a word; it works offline after the first visit and sends nothing anywhere.
 - **Website: Setu for Streamlit** (`/python/setu/`): every feature, option, check and limit of `yuktai[setu]` 0.2.0 on one page, with the 23 languages and 88 fonts. Linked from the Python guide and the Get started menu.
 - Any page opened with `?ask=question` asks it in the Ask page panel.
-- **Rust crates ready for crates.io:** `yuktai-ask-core` (Telugu-aware tokenizer, BM25, int8 vectors, hybrid ranking) and `yuktai-grid-core` (stable sort with empty rows last, row search). Each has a README with a working example. `yuktai-rag-core` stays internal: it needs the TypeScript side.
+- **Rust: one `yuktai` crate for crates.io** (`rust/yuktai`, features `ask`, `grid`, `rag`, no dependencies, no `unsafe`). The engine code moved there unchanged; `grid-core`, `rag-core` and `ask-core` now compile the same files to WebAssembly and keep only their browser entry points, so the published crate and the browser engines can never drift. The README examples run as doc tests.
+- Python: the "Coming next: Rust engines in 0.3" note is gone. The Rust engines live in their own crate.
 
 ## Unreleased (2026-11-23, Setu)
 

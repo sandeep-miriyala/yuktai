@@ -1,0 +1,33 @@
+[package]
+name = "yuktai"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.73"
+license = "GPL-3.0-only"
+authors = ["Sandeep Miriyala"]
+description = "YuktAI's Rust engines: Telugu and Indic-aware search (BM25, int8 vectors, hybrid ranking) and a grid engine that sorts and searches 10 lakh rows. No dependencies; the same code runs in browsers as WebAssembly."
+repository = "https://github.com/sandeep-miriyala/yuktai"
+homepage = "https://sandeep-miriyala.github.io/yuktai/rust/"
+readme = "README.md"
+keywords = ["telugu", "indic", "bm25", "search", "wasm"]
+categories = ["text-processing", "algorithms", "wasm"]
+include = ["src/**/*.rs", "README.md", "Cargo.toml"]
+
+[features]
+default = ["ask", "grid", "rag"]
+# Search for a page or passages: Telugu-aware tokenizer, BM25, int8 vectors, hybrid ranking.
+ask = []
+# Sort and search for very large tables.
+grid = []
+# BM25 passage search for callers that tokenize themselves.
+rag = []
+
+[dependencies]
+# None, on purpose.
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ["cfg(docsrs)"] }

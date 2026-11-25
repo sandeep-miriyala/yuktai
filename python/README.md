@@ -115,10 +115,6 @@ Good for dashboards, calculators, reports and student projects. The first visit 
 
 Values are written as safe JSON, so they can't break out of the script tag.
 
-## Coming next
-
-v0.3 adds YuktAI's Rust engines to Python: fast grid search and the Telugu-aware BM25 index for RAG retrieval, with the same results as the browser.
-
 ## License
 
 GPL-3.0, same as YuktAI. © Sandeep Miriyala, Yuktishaalaa AI Lab.

@@ -40,6 +40,14 @@ export default function RustPage() {
 <div className={"card"}><h3><YuktaiIcon name="shieldCheck" className="i" size={24} aria-hidden="true" />{" Safe fallback"}</h3><p>{"Rust is the default since 5.3.11 ("}<code>{"engine: \"ts\""}</code>{" keeps TypeScript only). If WebAssembly is missing or blocked, TypeScript runs instead with the same results, and "}<code>{"grid.engine"}</code>{" says "}<code>{"\"ts\""}</code>{"."}</p></div>{" "}
 <div className={"card"}><h3><YuktaiIcon name="lock" className="i" size={24} aria-hidden="true" />{" Content Security Policy"}</h3><p>{"Sites with a CSP need "}<code>{"'wasm-unsafe-eval'"}</code>{" in "}<code>{"script-src"}</code>{" for the Rust engines. Apps made with "}<code>{"--host vercel"}</code>{" or "}<code>{"--host netlify"}</code>{" get a working policy in "}<code>{"vercel.json"}</code>{" / "}<code>{"netlify.toml"}</code>{". GitHub Pages cannot send headers."}</p></div>{" "}
 </div>{" "}
+<h2 id={"crate"}>{"Use the engines in Rust"}</h2>{" "}
+<p>{"The same engines are one crate on crates.io, "}<a href="https://crates.io/crates/yuktai" target="_blank" rel="noopener noreferrer">{"yuktai"}<span className="sr-only">{" (opens in a new tab)"}</span></a>{". No dependencies, no unsafe code, and the code the browser runs is compiled from these same files."}</p>{" "}
+<div className={"codetabs"}><div className={"codefile"}><div className={"codehead"}><span className={"file"} id={"rs-crate-name"}>{"Terminal"}</span><button type="button" className={"copy-btn"} data-what={"Terminal"}><YuktaiIcon name="copy" className="i" size={24} aria-hidden="true" /><span className={"copy-label"}>{"Copy"}</span><span className={"sr-only"}>{" Terminal"}</span></button></div><pre><code id={"rs-crate"}>{"cargo add yuktai\n# only the grid:\ncargo add yuktai --no-default-features --features grid"}</code></pre></div></div>{" "}
+<table className={"ref"}><caption>{"Features"}</caption><thead><tr><th scope={"col"}>{"Feature"}</th><th scope={"col"}>{"What it gives you"}</th></tr></thead><tbody>
+<tr><td>{"ask"}</td><td>{"Search a page or passages: a tokenizer that keeps Telugu and other Indian words whole, BM25 with prefix matching, int8 vectors, hybrid ranking and a confidence score"}</td></tr>
+<tr><td>{"grid"}</td><td>{"Sort (empty rows last, stable) and search for tables with 10 lakh rows"}</td></tr>
+<tr><td>{"rag"}</td><td>{"BM25 passage search for callers that tokenize themselves and want bit-for-bit scores"}</td></tr>
+</tbody></table>{" "}
 
       <GuideDemo page="rust" />
     </>

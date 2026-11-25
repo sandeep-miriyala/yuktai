@@ -122,7 +122,7 @@
     "build:vanilla": "node vanilla/build.mjs",
     "build:all": "npm run build && npm run build:vanilla",
     "build:rust": "node rust/build-wasm.mjs",
-    "test:rust": "cd rust/grid-core && cargo test && cd ../rag-core && cargo test && cd ../ask-core && cargo test",
+    "test:rust": "cd rust/yuktai && cargo test && cargo test --no-default-features --features grid && cd ../grid-core && cargo test && cd ../rag-core && cargo test && cd ../ask-core && cargo test",
     "lint": "oxlint src packages/ask-page/src packages/yuktai-cli/src packages/a11y/src packages/assistant/src",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",

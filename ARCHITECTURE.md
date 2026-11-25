@@ -85,6 +85,7 @@ page and publishes to GitHub Pages only when everything passed. It replaces yukt
 ## Rust engines
 
 - Stable Rust only, pinned in `rust-toolchain.toml` (target `wasm32-unknown-unknown`).
+- The engines live in one crate, `rust/yuktai` (published on crates.io as `yuktai`, features `ask`, `grid`, `rag`). `rust/grid-core`, `rust/rag-core` and `rust/ask-core` compile those same files to WebAssembly and add only the browser entry points, so crates.io and the browser never drift.
 - `npm run build:rust` builds each crate and embeds the `.wasm` in the package, so users install nothing extra.
 - Text is ranked once with the browser's collator, then sorted in Rust, so Telugu and other scripts keep the right order.
 

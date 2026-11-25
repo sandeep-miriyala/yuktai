@@ -60,8 +60,6 @@ export default function PythonPage() {
 <div className={"card"}><h3><YuktaiIcon name="lock" className="i" size={24} aria-hidden="true" />{" CSP ready"}</h3><p>{"Pass "}<code>{"nonce="}</code>{" and both script tags get it. Add "}<code>{"cdn.jsdelivr.net"}</code>{" to "}<code>{"script-src"}</code>{", and "}<code>{"'wasm-unsafe-eval'"}</code>{" for the Rust engines."}</p></div>{" "}
 <div className={"card"}><h3><YuktaiIcon name="code" className="i" size={24} aria-hidden="true" />{" Not escaped twice"}</h3><p>{"The tag is marked safe for Jinja2 and Django, so autoescaping does not turn it into text."}</p></div>{" "}
 </div>{" "}
-<h2 id={"next"}>{"Coming next"}</h2>{" "}
-<p>{"Version 0.3 brings YuktAI's "}<Link href={"/rust/"}>{"Rust engines"}</Link>{" to Python: fast grid search and the BM25 index for page RAG, with the same results as in the browser."}</p>{" "}
 
       <GuideDemo page="python" />
     </>
