@@ -5,7 +5,12 @@ edition = "2021"
 license = "GPL-3.0-only"
 description = "yuktai grid engine in Rust: the grid's existing search and number/date sort, compiled to WebAssembly."
 repository = "https://github.com/sandeep-miriyala/yuktai"
-publish = false
+homepage = "https://sandeep-miriyala.github.io/yuktai/rust/"
+readme = "README.md"
+keywords = ["grid", "sort", "search", "wasm", "no-std"]
+categories = ["algorithms", "wasm", "no-std"]
+authors = ["Sandeep Miriyala"]
+rust-version = "1.70"
 
 [lib]
 # cdylib = the .wasm file for the browser; rlib = `cargo test` on your machine.
