@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { CheckIcon, ArrowRightIcon } from "@yuktishaalaa/yuktai/icons";
 import {
-  COMPARE, GUIDES, LINKS, PACKAGE_GROUPS, PACKAGES, STACKS, STATS, STEPS, TESTS, TEST_TOTAL, VERSIONS, WEB_SHARE,
+  COMPARE, GUIDES, LINKS, MORE_PACKAGES, PACKAGE_GROUPS, PACKAGES, STACKS, STATS, STEPS, TESTS, TEST_TOTAL, VERSIONS, WEB_SHARE,
 } from "@/data/site";
 import { CountUp, InView } from "./Motion";
 import { GuideIcon } from "@/components/ui/Icon";
@@ -176,12 +176,12 @@ export function Packages() {
   };
   return (
     <section id="packages" className="wrap">
-      <Kicker>npm packages</Kicker>
+      <Kicker>Packages</Kicker>
       <h2>
-        <CountUp value={PACKAGES.length} /> free packages, one family
+        <CountUp value={PACKAGES.length + MORE_PACKAGES.length} /> free packages, one family
       </h2>
       <p className="lead">
-        Two main products: the <strong>Toolkit</strong> for apps you build, the <strong>Assistant</strong> for websites you already have. Both run on the same two engines. And <strong>Shubhalekha</strong>, a ready-made invitation site for every Indian celebration.
+        {PACKAGES.length} on npm, plus <strong>yuktai</strong> on PyPI for Python and on crates.io for Rust. Two main products: the <strong>Toolkit</strong> for apps you build, the <strong>Assistant</strong> for websites you already have. Both run on the same two engines. And <strong>Shubhalekha</strong>, a ready-made invitation site for every Indian celebration.
       </p>
 
       <InView className="family" label="The YuktAI family: YuktAI on top; the Toolkit and the Assistant under it; both use the accessibility engine, and the Assistant also uses the Ask engine. Two starters make a new app, and Shubhalekha makes a ready invitation site.">
@@ -203,6 +203,16 @@ export function Packages() {
         <p className="fam-label">or a ready-made site</p>
         <div className="fam-row fam-start fam-sites">
           {node("@yuktishaalaa/shubhalekha", "is-start")}
+        </div>
+        <p className="fam-label">and in other languages</p>
+        <div className="fam-row fam-start">
+          {MORE_PACKAGES.map((p) => (
+            <a key={p.registry} className="fam-node is-start" href={`#pkg-${p.registry.replace(/\W/g, "")}`}>
+              <strong>{p.short}</strong>
+              <span className="fam-pkg">{p.registry}: {p.name}</span>
+              <span className="fam-ver">v{p.version}</span>
+            </a>
+          ))}
         </div>
       </InView>
 
@@ -234,6 +244,33 @@ export function Packages() {
           </ul>
         </div>
       ))}
+
+      <div className="pkg-group">
+        <h3>Python and Rust</h3>
+        <p className="pkg-group-text">The same family outside npm. Same licence, same rules: nothing sent anywhere.</p>
+        <ul className="pkg-grid">
+          {MORE_PACKAGES.map((p) => (
+            <li key={p.registry} id={`pkg-${p.registry.replace(/\W/g, "")}`} className="pkg pkg-start yk-lift">
+              <div className="pkg-head">
+                <span className="iconbox"><GuideIcon name={p.icon} /></span>
+                <div>
+                  <strong className="pkg-name">{p.short}</strong>
+                  <span className="pkg-ver"><code>{p.name}</code> on {p.registry} · v{p.version} · GPL-3.0</span>
+                </div>
+              </div>
+              <p className="pkg-who">{p.who}</p>
+              <p>{p.text}</p>
+              <code className="pkg-install">{p.install}</code>
+              <p className="pkg-links">
+                {p.links.map((l) => (
+                  <a key={l.href} href={l.href}>{l.label} <span className="sr-only">: {p.short}</span><ArrowRightIcon size={16} aria-hidden="true" /></a>
+                ))}
+                <Link href={p.guide.href}>{p.guide.label} <ArrowRightIcon size={16} aria-hidden="true" /></Link>
+              </p>
+            </li>
+          ))}
+        </ul>
+      </div>
     </section>
   );
 }

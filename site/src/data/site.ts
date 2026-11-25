@@ -3,12 +3,14 @@
 
 export const VERSIONS = {
   yuktai: "6.0.3",
-  a11y: "6.0.3",
+  a11y: "6.0.4",
   assistant: "6.0.5",
   askPage: "1.0.2",
   cli: "1.4.0",
   create: "1.0.0",
   shubhalekha: "1.1.0",
+  python: "0.2.0", // PyPI: yuktai
+  rust: "0.1.1", // crates.io: yuktai
 } as const;
 
 export const LINKS = {
@@ -20,6 +22,9 @@ export const LINKS = {
   npmCli: "https://www.npmjs.com/package/yuktai",
   npmCreate: "https://www.npmjs.com/package/create-yuktai",
   npmShubhalekha: "https://www.npmjs.com/package/@yuktishaalaa/shubhalekha",
+  pypi: "https://pypi.org/project/yuktai/",
+  crates: "https://crates.io/crates/yuktai",
+  docsRs: "https://docs.rs/yuktai",
   w3techs: "https://w3techs.com/technologies/overview/javascript_library",
   site: "https://sandeep-miriyala.github.io/yuktai/",
   codespacesApp: "https://miriyalas.github.io/yuktai/",
@@ -93,7 +98,7 @@ export const STACKS = [
   { badge: "$", name: "jQuery 1.12 – 4.0", code: `yuktai.renderGrid($("#staff")[0], { data, columns })`, href: "/jquery/", tone: "jq" },
   { badge: "Py", name: "Python", code: "pip install yuktai", href: "/python/", tone: "py" },
   { badge: "PHP", name: "PHP / Laravel / WordPress", code: "composer require yuktishaalaa/yuktai", href: "/php/", tone: "php" },
-  { badge: "Rs", name: "Rust → WebAssembly", code: `engine: "rust"   // the default since 5.3.11`, href: "/rust/", tone: "rs" },
+  { badge: "Rs", name: "Rust (crates.io) + WebAssembly", code: "cargo add yuktai", href: "/rust/#crate", tone: "rs" },
 ] as const;
 
 // W3Techs, share of all websites (November 2026)
@@ -106,14 +111,14 @@ export const WEB_SHARE = [
 // Automated tests run before a release
 export const TESTS = [
   { name: "TypeScript unit (Vitest)", value: 315, tone: "c1" },
-  { name: "Rust (cargo)", value: 13, tone: "c2" },
+  { name: "Rust (cargo)", value: 25, tone: "c2" },
   { name: "Browser end-to-end", value: 37, tone: "c3" },
   { name: "Strict CSP + extension", value: 4, tone: "c4" },
 ] as const;
 export const TEST_TOTAL = TESTS.reduce((n, t) => n + t.value, 0);
 
 export const STATS = [
-  { value: 7, label: "free npm packages, one family" },
+  { value: 9, label: "free packages: 7 on npm, PyPI, crates.io" },
   { value: STACKS.length, label: "languages and stacks" },
   { value: TEST_TOTAL, label: "automated tests per release" },
   { value: 163, label: "accessible icons" },
@@ -249,6 +254,37 @@ export const PACKAGES: readonly {
     npm: LINKS.npmShubhalekha,
     guide: { href: "/shubhalekha/", label: "Shubhalekha guide" },
     icon: "layout",
+  },
+];
+
+// The same family outside npm: one package each for Python and Rust.
+export const MORE_PACKAGES: readonly {
+  name: string; short: string; version: string; registry: string; who: string; text: string; install: string;
+  links: { href: string; label: string }[]; guide: { href: string; label: string }; icon: IconKey;
+}[] = [
+  {
+    name: "yuktai",
+    short: "YuktAI for Python",
+    version: VERSIONS.python,
+    registry: "PyPI",
+    who: "For Django, Flask, FastAPI and Streamlit",
+    text: "One line adds the accessibility widget, page tools and data grid to Python web pages. Setu (సేతు) adds accessibility, read aloud and 23 languages to a Streamlit app, and publishes it offline with no server.",
+    install: 'pip install "yuktai[setu]"',
+    links: [{ href: LINKS.pypi, label: "PyPI" }],
+    guide: { href: "/python/setu/", label: "Python and Setu guides" },
+    icon: "hub",
+  },
+  {
+    name: "yuktai",
+    short: "YuktAI for Rust",
+    version: VERSIONS.rust,
+    registry: "crates.io",
+    who: "For Rust programs and WebAssembly",
+    text: "The engines behind the browser packages: Telugu and Indic-aware search (BM25, int8 vectors, hybrid ranking) and a grid engine that sorts and searches 10 lakh rows. No dependencies, no unsafe code.",
+    install: "cargo add yuktai",
+    links: [{ href: LINKS.crates, label: "crates.io" }, { href: LINKS.docsRs, label: "docs.rs" }],
+    guide: { href: "/rust/#crate", label: "Rust guide" },
+    icon: "speed",
   },
 ];
 

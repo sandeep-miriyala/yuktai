@@ -274,10 +274,10 @@ section.wrap, .band { padding-block: 64px; }
 .to-top { position: fixed; right: 24px; bottom: 24px; z-index: 50; display: grid; place-items: center; width: 56px; height: 56px; border: 2px solid #ffffff; border-radius: 50%; background: var(--fab-bg); color: #ffffff; box-shadow: var(--fab-shadow); cursor: pointer; transition: transform .15s; }
 /* Floating buttons (♿ 🛠 from the YuktAI widget, ↑ Back to top): one look, brand gradient, white ring */
 :root { --fab-bg: linear-gradient(135deg, #000633, #0053ed); --fab-shadow: 0 8px 24px rgba(0, 20, 90, .35); --yv-primary: #0038b4; }
-body .yv-fab { background: var(--fab-bg); color: #ffffff; border: 2px solid #ffffff; box-shadow: var(--fab-shadow); transition: transform .15s; }
-body .yv-fab.yv-fab-alt { background: #ffffff; color: #0038b4; border-color: #0038b4; }
-body .yv-fab:hover, .to-top:hover { transform: translateY(-2px); filter: none; }
-body .yv-fab:focus-visible, .to-top:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+:root .yv-fab { background: var(--fab-bg); color: #ffffff; border: 2px solid #ffffff; box-shadow: var(--fab-shadow); transition: transform .15s; }
+:root .yv-fabs .yv-fab.yv-fab-alt { background: var(--fab-bg); color: #ffffff; border-color: #ffffff; } /* 🛠 looks like ♿ (the widget sits outside <body>, so :root, not body) */
+:root .yv-fab:hover, .to-top:hover { transform: translateY(-2px); filter: none; }
+:root .yv-fab:focus-visible, .to-top:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
 .to-top:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
 @media (max-width: 640px) { .install-help { position: fixed; left: 16px; right: 16px; top: 72px; width: auto; } .to-top { right: 16px; bottom: 16px; } }
 @media print { .to-top { display: none; } }
@@ -544,3 +544,8 @@ a.fam-node:hover { border-color: var(--accent); }
 @keyframes sa-flash { 0%, 40% { background: var(--chip); box-shadow: 0 0 0 6px var(--chip); } 100% { background: transparent; box-shadow: none; } }
 @media print { .sa-launch { display: none; } }
 @media (forced-colors: active) { .sa-launch, .sa-panel { border: 2px solid CanvasText; } }
+
+/* All floating controls sit on the right: ♿ and 🛠 at the bottom, "back to top" just above them,
+   "Help 24×7" in the middle. The guides menu on the left is never covered. */
+body .to-top { right: 16px; bottom: calc(154px + env(safe-area-inset-bottom, 0px)); }
+@media (max-width: 640px) { body .to-top { right: 16px; bottom: calc(150px + env(safe-area-inset-bottom, 0px)); } }

@@ -5,7 +5,7 @@ import GuideDemo from "@/components/guides/GuideDemo";
 
 export const metadata: Metadata = {
   title: "Rust engines",
-  description: "YuktAI Rust/WebAssembly engines for grid search and page RAG: benchmark against TypeScript on your own data size.",
+  description: "YuktAI Rust engines: the yuktai crate on crates.io, and WebAssembly in the browser for grid search and page RAG. Benchmark against TypeScript on your own data size.",
 };
 
 export default function RustPage() {
@@ -14,7 +14,7 @@ export default function RustPage() {
       {" "}
 <div className={"page-head"}>{" "}
 <p className={"kicker"}><YuktaiIcon name="speed" className="i" size={24} aria-hidden="true" />{"Rust engines"}</p>{" "}
-<h1>{"Rust engines"}</h1><p className={"lead"}>{"YuktAI has two engines written in Rust and compiled to WebAssembly: grid search and number/date sorting, and the page RAG search. Since 5.3.11 they are the default. They return exactly the same results as TypeScript, only faster on big data. Time them here on your own sizes."}</p></div>{" "}
+<h1>{"Rust engines"}</h1><p className={"lead"}>{"YuktAI's engines are written in Rust: grid search and number/date sorting, the page RAG search, and the Telugu-aware Ask page search. In the browser they run as WebAssembly, the default since 5.3.11, with exactly the same results as TypeScript, only faster on big data. In Rust they are one crate, "}<a href="https://crates.io/crates/yuktai" target="_blank" rel="noopener noreferrer">{"yuktai on crates.io"}<span className="sr-only">{" (opens in a new tab)"}</span></a>{". Time them here on your own sizes."}</p></div>{" "}
 <ul className={"status-list"} id={"rs-support"} aria-live={"polite"}><li><YuktaiIcon name="info" className="i" size={24} aria-hidden="true" />{"Checking WebAssembly…"}</li></ul>{" "}
 <h2 id={"grid"}>{"1. Grid: TypeScript vs Rust"}</h2>{" "}
 <div className={"demo"}><p className={"demo-label"}><YuktaiIcon name="play" className="i" size={24} aria-hidden="true" />{"Benchmark"}</p>{" "}

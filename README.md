@@ -16,6 +16,8 @@
 <p align="center">
   <a href="https://www.npmjs.com/package/@yuktishaalaa/yuktai"><img src="https://img.shields.io/npm/v/@yuktishaalaa/yuktai" alt="npm version"></a>
   <a href="https://www.npmjs.com/package/@yuktishaalaa/yuktai"><img src="https://img.shields.io/npm/dm/@yuktishaalaa/yuktai" alt="npm downloads"></a>
+  <a href="https://pypi.org/project/yuktai/"><img src="https://img.shields.io/pypi/v/yuktai?label=PyPI" alt="PyPI version"></a>
+  <a href="https://crates.io/crates/yuktai"><img src="https://img.shields.io/crates/v/yuktai?label=crates.io" alt="crates.io version"></a>
   <a href="https://github.com/sandeep-miriyala/yuktai/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-blue" alt="License: GPL-3.0"></a>
   <a href="https://github.com/sandeep-miriyala/yuktai/actions/workflows/ci.yml"><img src="https://github.com/sandeep-miriyala/yuktai/actions/workflows/ci.yml/badge.svg" alt="CI status"></a>
   <a href="https://sandeep-miriyala.github.io/yuktai/"><img src="https://img.shields.io/badge/docs-live%20demos-0038b4" alt="Docs"></a>
@@ -223,12 +225,18 @@ Everything else (grid options, styling, accessibility tools, jQuery, the CLI, ag
 
 ## Packages
 
-| Package | |
-|---|---|
-| [`@yuktishaalaa/yuktai`](https://www.npmjs.com/package/@yuktishaalaa/yuktai) | This library |
-| [`yuktai`](https://www.npmjs.com/package/yuktai) | Create a new app in one command |
-| [`create-yuktai`](https://www.npmjs.com/package/create-yuktai) | `npm create yuktai@latest` |
-| [`@yuktishaalaa/ask-page`](https://www.npmjs.com/package/@yuktishaalaa/ask-page) | "Ask this page" side panel |
+Nine free packages, one family: seven on npm, one on PyPI, one on crates.io.
+
+| Package | Install | |
+|---|---|---|
+| [`@yuktishaalaa/yuktai`](https://www.npmjs.com/package/@yuktishaalaa/yuktai) | `npm i @yuktishaalaa/yuktai` | This library: data grid, accessibility copilot, page tools, icons |
+| [`@yuktishaalaa/assistant`](https://www.npmjs.com/package/@yuktishaalaa/assistant) | `npm i @yuktishaalaa/assistant` | Accessibility and Ask this page for any website ([guide](https://sandeep-miriyala.github.io/yuktai/assistant/)) |
+| [`@yuktishaalaa/a11y`](https://www.npmjs.com/package/@yuktishaalaa/a11y) | `npm i @yuktishaalaa/a11y` | The accessibility engine |
+| [`@yuktishaalaa/ask-page`](https://www.npmjs.com/package/@yuktishaalaa/ask-page) | `npm i @yuktishaalaa/ask-page` | "Ask this page" side panel |
+| [`create-yuktai`](https://www.npmjs.com/package/create-yuktai) | `npm create yuktai@latest` | Create a new app in one command |
+| [`yuktai`](https://www.npmjs.com/package/yuktai) (npm) | `npx yuktai init` | The command line inside every YuktAI app |
+| [`yuktai`](https://pypi.org/project/yuktai/) (PyPI) | `pip install "yuktai[setu]"` | Django, Flask, FastAPI and Streamlit (Setu: offline, no server) ([guide](https://sandeep-miriyala.github.io/yuktai/python/setu/)) |
+| [`yuktai`](https://crates.io/crates/yuktai) (crates.io) | `cargo add yuktai` | The Rust engines: Telugu-aware search and the 10 lakh row grid ([docs.rs](https://docs.rs/yuktai)) |
 | [`@yuktishaalaa/shubhalekha`](https://www.npmjs.com/package/@yuktishaalaa/shubhalekha) | శుభలేఖ: invitation pages for 15 Indian celebrations in 22 Indian languages ([guide](https://sandeep-miriyala.github.io/yuktai/shubhalekha/)) |
 
 ## Compatibility

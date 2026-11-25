@@ -75,9 +75,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <main id="main" tabIndex={-1}>{children}</main>
           <footer className="footer">
             <div className="wrap footer-in">
-              <span>YuktAI {VERSIONS.yuktai} · Assistant {VERSIONS.assistant} · Ask page {VERSIONS.askPage} · made with <code>npm create yuktai</code></span>
+              <span>YuktAI {VERSIONS.yuktai} · Assistant {VERSIONS.assistant} · Ask page {VERSIONS.askPage} · Python {VERSIONS.python} · Rust {VERSIONS.rust} · made with <code>npm create yuktai</code></span>
               <span>
-                Made by <Link href="/about/#author">Sandeep Miriyala</Link> · <Link href="/about/">How this site is built</Link> · <a href={LINKS.github}>GitHub</a> · <a href={LINKS.npmYuktai}>npm</a> · <a href={LINKS.npmAsk}>Ask page on npm</a>
+                Made by <Link href="/about/#author">Sandeep Miriyala</Link> · <Link href="/about/">How this site is built</Link> · <a href={LINKS.github}>GitHub</a> · <a href={LINKS.npmYuktai}>npm</a> · <a href={LINKS.pypi}>PyPI</a> · <a href={LINKS.crates}>crates.io</a>
               </span>
             </div>
           </footer>

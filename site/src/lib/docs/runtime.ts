@@ -2,6 +2,7 @@
 // YuktAI comes from npm (@yuktishaalaa/yuktai/vanilla, Rust engines built in): no CDN.
 import { iconSvg } from "@yuktishaalaa/yuktai/icons";
 import { VERSIONS } from "@/data/site";
+import config from "@config";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type Yuktai = any;
@@ -36,7 +37,7 @@ function widgetConfig() {
   let hasPrefs = false;
   try { hasPrefs = !!localStorage.getItem("yuktai-a11y-prefs"); } catch {}
   const base: Record<string, any> = {
-    position: "left",
+    position: config.widget.position, // yuktai.config.ts
     primaryColor: "#0038B4",
     title: "Accessibility",
     showPageTools: true,

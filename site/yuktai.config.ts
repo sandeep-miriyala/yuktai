@@ -22,7 +22,7 @@ const config = {
   // "rust": Rust compiled to WebAssembly (falls back to TypeScript if it is not built)
   engine: "rust" as "rust" | "ts",
 
-  widget: { position: "left" as "left" | "right" },
+  widget: { position: "right" as "left" | "right" }, // right: the guides menu on the left stays clear
 };
 
 export default config;
