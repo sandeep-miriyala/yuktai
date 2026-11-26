@@ -16,4 +16,4 @@ assert_eq!(mira::split("లక్ష్మి"), ["ల", "క్ష్మి"]);
 - `mira::akshara`: `split`, `count`, `truncate` (rules and tests from Ratnalabala).
 - The `mira` command: `mira build`, `mira check`, `mira fonts`, `mira split`, `mira count`.
 
-No dependencies, no unsafe code. GPL-3.0-only. Sandeep Miriyala, Yuktishaalaa AI Lab. See `packages/mira/README.md`.
+No dependencies, no unsafe code. GPL-3.0-only. Sandeep Miriyala, Yuktishaalaa AI Lab. Docs and a live playground: https://sandeep-miriyala.github.io/yuktai/mira/ · npm: `@yuktishaalaa/mira`.
