@@ -234,7 +234,7 @@ export function Packages() {
         <CountUp value={PACKAGES.length + MORE_PACKAGES.length} /> free packages, one family
       </h2>
       <p className="lead">
-        The <strong>Toolkit</strong> for apps you build, the <strong>Assistant</strong> for sites you already have, <strong>Shubhalekha</strong> for invitations, and <strong>yuktai</strong> for Python and Rust.
+        The <strong>Toolkit</strong> for apps you build, the <strong>Assistant</strong> for sites you already have, <strong>Shubhalekha</strong> for invitations, <strong>MiRa</strong> for Telugu fonts, and <strong>yuktai</strong> for Python and Rust.
       </p>
 
       <AllPackages />
@@ -244,7 +244,7 @@ export function Packages() {
           <span>How the packages fit together, and each one in detail</span>
           <span className="pkg-more-hint" aria-hidden="true">Show</span>
         </summary>
-      <InView className="family" label="The YuktAI family: YuktAI on top; the Toolkit and the Assistant under it; both use the accessibility engine, and the Assistant also uses the Ask engine. Two starters make a new app, and Shubhalekha makes a ready invitation site.">
+      <InView className="family" label="The YuktAI family: YuktAI on top; the Toolkit and the Assistant under it; both use the accessibility engine, and the Assistant also uses the Ask engine. Two starters make a new app, Shubhalekha makes a ready invitation site, and MiRa brings Telugu fonts to any page.">
         <div className="fam-root"><span>YuktAI</span></div>
         <div className="fam-row fam-main">
           {node("@yuktishaalaa/yuktai", "is-main")}
@@ -263,6 +263,10 @@ export function Packages() {
         <p className="fam-label">or a ready-made site</p>
         <div className="fam-row fam-start fam-sites">
           {node("@yuktishaalaa/shubhalekha", "is-start")}
+        </div>
+        <p className="fam-label">Telugu on any page</p>
+        <div className="fam-row fam-start fam-sites">
+          {node("@yuktishaalaa/mira", "is-start")}
         </div>
         <p className="fam-label">and in other languages</p>
         <div className="fam-row fam-start">

@@ -341,3 +341,20 @@ h1{letter-spacing:-.045em}
 /* answer preview: a typed question and a streamed answer, decorative */
 @media (prefers-reduced-motion:reduce){.card:hover,.chip:hover,.btn.primary:hover{transform:none}.ai-preview .caret{display:none}}
 @media (forced-colors:active){.hero-ask,.demo{border:2px solid CanvasText}.iconbox,.logo{border:1px solid CanvasText}}
+
+/* MiRa guide (/mira/) */
+.mira-dedication { color: var(--muted, inherit); font-size: .95rem; margin-top: .25rem; }
+.mira-examples { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 12px; }
+.mira-examples .btn[aria-pressed="true"] { outline: 2px solid currentColor; outline-offset: 1px; }
+.mira-panes { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.mira-panes .field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+/* monospace fonts have no Telugu: the page already loads Noto Sans Telugu through MiRa */
+.mira-panes textarea { min-height: 260px; font: 14px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, "Noto Sans Telugu", monospace; resize: vertical; width: 100%; box-sizing: border-box; }
+.mira-pane-label { font-weight: 600; }
+.mira-frame { width: 100%; min-height: 260px; height: 100%; border: 1px solid var(--line, #8884); border-radius: 8px; background: #fff; box-sizing: border-box; }
+.mira-out { margin-top: 12px; }
+.mira-out pre { max-height: 220px; overflow: auto; }
+.mira-out code, #mira-html, #mira-out, #mira-api { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Noto Sans Telugu", monospace; }
+.mira-fonts td:nth-child(2) { font-size: 1.15rem; white-space: nowrap; }
+.mira-thanks { line-height: 1.9; }
+@media (max-width: 760px) { .mira-panes { grid-template-columns: 1fr; } }

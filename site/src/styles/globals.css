@@ -358,7 +358,7 @@ a.fam-node:hover { border-color: var(--accent); }
 .pkg-group h3 { margin: 0 0 4px; font-size: 1.25rem; }
 .pkg-group-text { margin: 0 0 14px; color: var(--muted); }
 .pkg .pkg-who { color: var(--accent); font-weight: 700; font-size: .95rem; }
-.pkg-engine, .pkg-start, .pkg-sites { box-shadow: none; background: linear-gradient(var(--panel), var(--panel)) padding-box, linear-gradient(var(--line), var(--line)) border-box; }
+.pkg-engine, .pkg-start, .pkg-sites, .pkg-telugu { box-shadow: none; background: linear-gradient(var(--panel), var(--panel)) padding-box, linear-gradient(var(--line), var(--line)) border-box; }
 @media (max-width: 560px) { .fam-row { grid-template-columns: 1fr; } .fam-row::after { display: none; } .fam-node::before { display: none; } .fam-row::before { height: 22px; } }
 
 /* Drawing in (only when the visitor allows motion; see Motion.tsx) */

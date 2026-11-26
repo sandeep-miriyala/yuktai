@@ -11,6 +11,7 @@ export const VERSIONS = {
   shubhalekha: "1.1.0",
   python: "0.2.0", // PyPI: yuktai
   rust: "0.1.1", // crates.io: yuktai
+  mira: "1.0.0", // npm: @yuktishaalaa/mira
 } as const;
 
 export const LINKS = {
@@ -22,6 +23,8 @@ export const LINKS = {
   npmCli: "https://www.npmjs.com/package/yuktai",
   npmCreate: "https://www.npmjs.com/package/create-yuktai",
   npmShubhalekha: "https://www.npmjs.com/package/@yuktishaalaa/shubhalekha",
+  npmMira: "https://www.npmjs.com/package/@yuktishaalaa/mira",
+  siliconAndhra: "https://fonts.siliconandhra.org/",
   pypi: "https://pypi.org/project/yuktai/",
   crates: "https://crates.io/crates/yuktai",
   docsRs: "https://docs.rs/yuktai",
@@ -74,6 +77,7 @@ export type IconKey =
 export const GUIDES: { href: string; title: string; text: string; icon: IconKey }[] = [
   { href: "/assistant/", title: "YuktAI Assistant (new in 6.0)", text: "Accessibility and Ask this page in one panel. Download the browser extension, paste one script, or npm install for React and Next.js.", icon: "accessibility" },
   { href: "/guide/", title: "End-to-end guide", text: "From an empty folder to a live site: create, build, test, publish on GitHub Pages or Vercel, and make it ready for AI browsers.", icon: "wand" },
+  { href: "/mira/", title: "MiRa (మిరా): Telugu fonts (new)", text: "Write <mira h1 font=\"ntr\">మిరా</mira h1>: any HTML element in one of 22 free Telugu fonts, with lang=\"te\". One script tag, Rust/WebAssembly, try it live.", icon: "star" },
   { href: "/shubhalekha/", title: "Shubhalekha: invitation pages (new)", text: "Weddings, upanayanam, gruhapravesam and 12 more celebrations in all 22 Indian languages. One JSON file or a form, a 24×7 guest assistant, WhatsApp RSVP, offline.", icon: "layout" },
   { href: "/create/", title: "Create an app", text: "npm create yuktai@latest my-app: Next.js + Rust + Python, a 25 lakh row grid, LangGraph agents, RAG, QA report, icons and a PWA in one command.", icon: "install" },
   { href: "/accessibility/", title: "Accessibility", text: "Floating ♿ button: contrast, text size, dyslexia font, colour-blind filters, reduced motion, speak on focus.", icon: "accessibility" },
@@ -118,7 +122,7 @@ export const TESTS = [
 export const TEST_TOTAL = TESTS.reduce((n, t) => n + t.value, 0);
 
 export const STATS = [
-  { value: 9, label: "free packages: 7 on npm, PyPI, crates.io" },
+  { value: 10, label: "free packages: 8 on npm, PyPI, crates.io" },
   { value: STACKS.length, label: "languages and stacks" },
   { value: TEST_TOTAL, label: "automated tests per release" },
   { value: 163, label: "accessible icons" },
@@ -150,15 +154,16 @@ export const QUESTIONS = [
   { label: "Why Rust?", ask: "Why does YuktAI use Rust?" },
 ];
 
-// The npm packages: seven, in one family. Two main products, the two engines
-// inside them, two ways to start a new app, and one ready-made site.
-export type PackageGroup = "main" | "engine" | "start" | "sites";
+// The npm packages: eight, in one family. Two main products, the two engines
+// inside them, two ways to start a new app, one ready-made site and MiRa for Telugu.
+export type PackageGroup = "main" | "engine" | "start" | "sites" | "telugu";
 
 export const PACKAGE_GROUPS: { key: PackageGroup; title: string; text: string }[] = [
   { key: "main", title: "Main products", text: "Pick one. Each brings everything it needs." },
   { key: "engine", title: "Engines", text: "Inside both main products. Use one on its own if that is all you need." },
   { key: "start", title: "Start a new app", text: "One command makes a ready Next.js app with YuktAI set up." },
   { key: "sites", title: "Ready-made pages", text: "Fill in one file or a form. Get a finished site to publish." },
+  { key: "telugu", title: "Telugu", text: "Telugu letters and fonts on any web page, with one script tag." },
 ];
 
 export const PACKAGES: readonly {
@@ -255,6 +260,19 @@ export const PACKAGES: readonly {
     guide: { href: "/shubhalekha/", label: "Shubhalekha guide" },
     icon: "layout",
   },
+  {
+    name: "@yuktishaalaa/mira",
+    short: "MiRa (మిరా)",
+    version: VERSIONS.mira,
+    group: "telugu",
+    who: "For any web page with Telugu",
+    text: "Telugu for every HTML element: <mira h1 font=\"ntr\">మిరా</mira h1> becomes a real <h1 lang=\"te\"> in one of 22 free Telugu fonts, loaded only for Telugu letters. Rust/WebAssembly, one script tag, nothing sent to Google. Named after Dr. Miriyala Ramakrishna.",
+    install: `npm i @yuktishaalaa/mira@${VERSIONS.mira}`,
+    npm: LINKS.npmMira,
+    cdn: `https://cdn.jsdelivr.net/npm/@yuktishaalaa/mira@${VERSIONS.mira}`,
+    guide: { href: "/mira/", label: "MiRa guide" },
+    icon: "star",
+  },
 ];
 
 // The same family outside npm: one package each for Python and Rust.
@@ -304,6 +322,7 @@ export const NAV: NavItem[] = [
       { section: "Start here", href: "/create/", label: "Create an app", key: "createApp", hint: "npm create yuktai@latest my-app" },
       { section: "Ready-made", href: "/shubhalekha/", label: "Shubhalekha", hint: "Invitation pages in 22 Indian languages" },
       { section: "Ready-made", href: "/shubhalekha/make/", label: "శుభలేఖ తయారీ", hint: "No code: make an invitation on your phone" },
+      { section: "Ready-made", href: "/mira/", label: "MiRa (మిరా)", hint: "22 Telugu fonts for every HTML tag" },
       { section: "Your language", href: "/#start", label: "JavaScript / HTML", hint: "Two script tags on any site" },
       { section: "Your language", href: "/nextjs/", label: "Next.js / React", hint: "YuktAIWrapper for the App Router" },
       { section: "Your language", href: "/jquery/", label: "jQuery", hint: "jQuery 1.12 to 4.0" },
@@ -349,4 +368,30 @@ export const NAV: NavItem[] = [
       { href: LINKS.github, label: "GitHub", key: "github", hint: "Source code, GPL-3.0" },
     ],
   },
+];
+
+// MiRa's fonts (packages/mira, rust/mira/src/fonts.rs). Designers as listed on fonts.siliconandhra.org.
+export const MIRA_FONTS: readonly { key: string; family: string; designer: string; suits: string }[] = [
+  { key: "telugu", family: "Noto Sans Telugu", designer: "Noto Project (Google)", suits: "plain, every letter (the default)" },
+  { key: "noto-serif-telugu", family: "Noto Serif Telugu", designer: "Noto Project (Google)", suits: "book style, long reading" },
+  { key: "mandali", family: "Mandali", designer: "Purushoth Kumar Guthula", suits: "plain and clear: paragraphs" },
+  { key: "mallanna", family: "Mallanna", designer: "Purushoth Kumar Guthula", suits: "plain: paragraphs" },
+  { key: "suravaram", family: "Suravaram", designer: "Purushoth Kumar Guthula", suits: "traditional: paragraphs" },
+  { key: "hind-guntur", family: "Hind Guntur", designer: "Indian Type Foundry", suits: "modern: buttons, forms, menus" },
+  { key: "ramabhadra", family: "Ramabhadra", designer: "Purushoth Kumar Guthula", suits: "strong: headings" },
+  { key: "ntr", family: "NTR", designer: "Purushoth Kumar Guthula", suits: "strong: headings" },
+  { key: "gurajada", family: "Gurajada", designer: "Purushoth Kumar Guthula", suits: "strong: headings" },
+  { key: "ravi-prakash", family: "Ravi Prakash", designer: "Appaji Ambarisha Darbha", suits: "bold display: posters" },
+  { key: "chathura", family: "Chathura", designer: "Appaji Ambarisha Darbha", suits: "thin and tall: headings" },
+  { key: "gidugu", family: "Gidugu", designer: "Purushoth Kumar Guthula", suits: "decorative: headings" },
+  { key: "dhurjati", family: "Dhurjati", designer: "Purushoth Kumar Guthula", suits: "decorative: headings" },
+  { key: "ponnala", family: "Ponnala", designer: "Appaji Ambarisha Darbha", suits: "decorative: headings" },
+  { key: "suranna", family: "Suranna", designer: "Purushoth Kumar Guthula", suits: "traditional: poems" },
+  { key: "peddana", family: "Peddana", designer: "Appaji Ambarisha Darbha", suits: "traditional: poems" },
+  { key: "ramaraja", family: "Ramaraja", designer: "Appaji Ambarisha Darbha", suits: "traditional: headings" },
+  { key: "sree-krushnadevaraya", family: "Sree Krushnadevaraya", designer: "Purushoth Kumar Guthula", suits: "traditional: invitations" },
+  { key: "sirivennela", family: "Sirivennela", designer: "Appaji Ambarisha Darbha", suits: "handwritten feel: songs, poems" },
+  { key: "timmana", family: "Timmana", designer: "Appaji Ambarisha Darbha", suits: "handwritten feel: letters" },
+  { key: "lakki-reddy", family: "Lakki Reddy", designer: "Appaji Ambarisha Darbha", suits: "playful: invitations" },
+  { key: "tenali-ramakrishna", family: "Tenali Ramakrishna", designer: "Appaji Ambarisha Darbha", suits: "playful: stories, children" },
 ];

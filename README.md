@@ -225,7 +225,7 @@ Everything else (grid options, styling, accessibility tools, jQuery, the CLI, ag
 
 ## Packages
 
-Nine free packages, one family: seven on npm, one on PyPI, one on crates.io.
+Ten free packages, one family: eight on npm, one on PyPI, one on crates.io.
 
 | Package | Install | |
 |---|---|---|
@@ -238,6 +238,7 @@ Nine free packages, one family: seven on npm, one on PyPI, one on crates.io.
 | [`yuktai`](https://pypi.org/project/yuktai/) (PyPI) | `pip install "yuktai[setu]"` | Django, Flask, FastAPI and Streamlit (Setu: offline, no server) ([guide](https://sandeep-miriyala.github.io/yuktai/python/setu/)) |
 | [`yuktai`](https://crates.io/crates/yuktai) (crates.io) | `cargo add yuktai` | The Rust engines: Telugu-aware search and the 10 lakh row grid ([docs.rs](https://docs.rs/yuktai)) |
 | [`@yuktishaalaa/shubhalekha`](https://www.npmjs.com/package/@yuktishaalaa/shubhalekha) | శుభలేఖ: invitation pages for 15 Indian celebrations in 22 Indian languages ([guide](https://sandeep-miriyala.github.io/yuktai/shubhalekha/)) |
+| [`@yuktishaalaa/mira`](https://www.npmjs.com/package/@yuktishaalaa/mira) | `<script src="https://cdn.jsdelivr.net/npm/@yuktishaalaa/mira" defer></script>` | MiRa (మిరా): `<mira h1 font="ntr">మిరా</mira h1>`, any HTML element in 22 free Telugu fonts ([guide](https://sandeep-miriyala.github.io/yuktai/mira/)) |
 
 ## Compatibility
 

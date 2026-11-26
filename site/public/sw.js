@@ -6,7 +6,7 @@
 //     release once and needed a refresh.)
 //   • the YuktAI script (jsDelivr or unpkg, a fixed version): cache first
 // Bump CACHE whenever you publish a change, so visitors get the new files.
-const CACHE = "yuktaidocs-v35"
+const CACHE = "yuktaidocs-v36"
 // The site may live under a base path (GitHub Pages: /yuktai/). Every path below is
 // relative to where this worker sits, so the same file works at / and at /yuktai/.
 const BASE = new URL("./", self.location.href).pathname.replace(/\/$/, "")
@@ -25,6 +25,7 @@ const CORE = [
   "/icons/",
   "/playground/",
   "/rust/",
+  "/mira/",
   "/about/",
   "/create/",
   "/guide/",
