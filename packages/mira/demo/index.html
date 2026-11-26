@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MiRa demo: Telugu for every HTML element</title>
+  <!-- From npm: <script src="https://cdn.jsdelivr.net/npm/@yuktishaalaa/mira" defer></script> -->
+  <script src="../mira.js" defer></script>
+  <style>
+    :root { color-scheme: light dark; --ink: #1d1b16; --bg: #fbf8f1; --line: #e2dccd; --soft: #6b6457; }
+    @media (prefers-color-scheme: dark) { :root { --ink: #eee8dc; --bg: #17150f; --line: #39342a; --soft: #a99f8c; } }
+    body { margin: 0; background: var(--bg); color: var(--ink); font: 17px/1.7 system-ui, sans-serif; }
+    main { max-width: 860px; margin: 0 auto; padding: 24px 16px 64px; }
+    section { border-top: 1px solid var(--line); padding: 12px 0; }
+    .note { color: var(--soft); font-size: 14px; }
+    code { font-size: 13px; }
+    table { border-collapse: collapse; } td, th { border: 1px solid var(--line); padding: 4px 10px; }
+    input, button, select, textarea { font-size: 16px; }
+  </style>
+</head>
+<body mira="mandali">
+<main>
+  <mira header font="ramabhadra">
+    <mira h1 font="ntr">మిరా</mira h1>
+    <p class="note">Telugu for every HTML element · డాక్టర్ శ్రీ మిరియాల రామకృష్ణ గారి (మిరా) స్మృతికి</p>
+    <mira nav font="hind-guntur"><a href="#fonts">fonts</a> · <a href="#all">అన్ని tags</a> · <a href="#form">ఫారం</a></mira nav>
+  </mira header>
+
+  <section id="fonts">
+    <h2>22 తెలుగు fonts</h2>
+    <mira p font="telugu">telugu: లక్ష్మి స్త్రీ కృష్ణ ర్ఘ్య శ్రీ క్ష్మ్య</mira p>
+    <mira p font="noto-serif-telugu">noto-serif-telugu: లక్ష్మి స్త్రీ కృష్ణ ర్ఘ్య శ్రీ క్ష్మ్య</mira p>
+    <mira p font="mandali">mandali: లక్ష్మి స్త్రీ కృష్ణ ర్ఘ్య శ్రీ క్ష్మ్య</mira p>
+    <mira p font="mallanna">mallanna: లక్ష్మి స్త్రీ కృష్ణ ర్ఘ్య శ్రీ క్ష్మ్య</mira p>
+    <mira p font="suravaram">suravaram: లక్ష్మి స్త్రీ కృష్ణ ర్ఘ్య శ్రీ క్ష్మ్య</mira p>
+    <mira p font="hind-guntur">hind-guntur: లక్ష్మి స్త్రీ కృష్ణ ర్ఘ్య శ్రీ క్ష్మ్య</mira p>
+    <mira p font="ramabhadra">ramabhadra: లక్ష్మి స్త్రీ కృష్ణ ర్ఘ్య శ్రీ క్ష్మ్య</mira p>
+    <mira p font="ntr">ntr: లక్ష్మి స్త్రీ కృష్ణ ర్ఘ్య శ్రీ క్ష్మ్య</mira p>
+    <mira p font="gurajada">gurajada: లక్ష్మి స్త్రీ కృష్ణ ర్ఘ్య శ్రీ క్ష్మ్య</mira p>
+    <mira p font="ravi-prakash">ravi-prakash: లక్ష్మి స్త్రీ కృష్ణ ర్ఘ్య శ్రీ క్ష్మ్య</mira p>
+    <mira p font="chathura">chathura: లక్ష్మి స్త్రీ కృష్ణ ర్ఘ్య శ్రీ క్ష్మ్య</mira p>
+    <mira p font="gidugu">gidugu: లక్ష్మి స్త్రీ కృష్ణ ర్ఘ్య శ్రీ క్ష్మ్య</mira p>
+    <mira p font="dhurjati">dhurjati: లక్ష్మి స్త్రీ కృష్ణ ర్ఘ్య శ్రీ క్ష్మ్య</mira p>
+    <mira p font="ponnala">ponnala: లక్ష్మి స్త్రీ కృష్ణ ర్ఘ్య శ్రీ క్ష్మ్య</mira p>
+    <mira p font="suranna">suranna: లక్ష్మి స్త్రీ కృష్ణ ర్ఘ్య శ్రీ క్ష్మ్య</mira p>
+    <mira p font="peddana">peddana: లక్ష్మి స్త్రీ కృష్ణ ర్ఘ్య శ్రీ క్ష్మ్య</mira p>
+    <mira p font="ramaraja">ramaraja: లక్ష్మి స్త్రీ కృష్ణ ర్ఘ్య శ్రీ క్ష్మ్య</mira p>
+    <mira p font="sree-krushnadevaraya">sree-krushnadevaraya: లక్ష్మి స్త్రీ కృష్ణ ర్ఘ్య శ్రీ క్ష్మ్య</mira p>
+    <mira p font="sirivennela">sirivennela: లక్ష్మి స్త్రీ కృష్ణ ర్ఘ్య శ్రీ క్ష్మ్య</mira p>
+    <mira p font="timmana">timmana: లక్ష్మి స్త్రీ కృష్ణ ర్ఘ్య శ్రీ క్ష్మ్య</mira p>
+    <mira p font="lakki-reddy">lakki-reddy: లక్ష్మి స్త్రీ కృష్ణ ర్ఘ్య శ్రీ క్ష్మ్య</mira p>
+    <mira p font="tenali-ramakrishna">tenali-ramakrishna: లక్ష్మి స్త్రీ కృష్ణ ర్ఘ్య శ్రీ క్ష్మ్య</mira p>
+  </section>
+
+  <section>
+    <mira h2 font="gurajada">పద్యం</mira h2>
+    <mira blockquote font="suranna">ఒక్క పద్యం చాలు <mira strong>మనసు నిండటానికి</mira strong></mira blockquote>
+    <mira p truncate="6">ఈ వాక్యం చాలా పొడవుగా ఉంది కాబట్టి ఆరు అక్షరాల దగ్గర ఆగుతుంది</mira p>
+    <mira ul font="mandali"><li>మామిడి</li><li>అరటి</li><li>జామ</li></mira ul>
+    <mira details font="hind-guntur"><mira summary>మరిన్ని</mira summary><p>లోపలి తెలుగు</p></mira details>
+    <h3 mira="tenali-ramakrishna">React లో: attribute రూపం</h3>
+    <p>మామూలు p: body mira వల్ల lang="te" వస్తుంది. English stays English.</p>
+    <p class="en">This line is English only, so it keeps the page font and gets no lang.</p>
+  </section>
+
+  <section id="all">
+    <h2>అన్ని HTML tags</h2>
+    <p class="note">Every element below is written as &lt;mira TAG font="…"&gt;. Tables use &lt;table mira="…"&gt;.</p>
+
+    <mira h3 font="ntr">అక్షరాలు, పదాలు</mira h3>
+    <mira p font="suranna"><mira strong>బలం</mira strong> · <mira em>ఒత్తు</mira em> · <mira b>బోల్డ్</mira b> · <mira i>వాలు</mira i> · <mira u>గీత</mira u> · <mira s>కొట్టివేత</mira s> · <mira small>చిన్న</mira small> · <mira mark>గుర్తు</mira mark> · <mira abbr title="తెలుగు">తె</mira abbr> · <mira cite>పుస్తకం</mira cite> · <mira q>మాట</mira q> · <mira dfn>నిర్వచనం</mira dfn> · <mira code>కోడ్</mira code> · <mira kbd>కీ</mira kbd> · <mira samp>నమూనా</mira samp> · <mira var>చరం</mira var> · H<mira sub>2</mira sub>O · x<mira sup>2</mira sup> · <mira del>పాత</mira del> <mira ins>కొత్త</mira ins> · <mira bdi>పేరు</mira bdi> · <mira bdo dir="ltr">దిశ</mira bdo> · <mira time datetime="2026-11-26">నవంబర్ 26</mira time> · <mira data value="1">ఒకటి</mira data> · <mira a href="#all">లింక్</mira a> · <mira span>వాక్యం</mira span><mira br>కొత్త లైను<mira wbr></mira p>
+    <mira ruby font="ntr">తె<rp>(</rp><rt>te</rt><rp>)</rp></mira ruby>
+
+    <mira h3 font="ntr">విభాగాలు</mira h3>
+    <mira article font="mandali">
+      <mira hgroup><mira h4>వ్యాసం శీర్షిక</mira h4><mira p>ఉపశీర్షిక</mira p></mira hgroup>
+      <mira section><mira h5>భాగం</mira h5><mira h6>ఉప భాగం</mira h6><mira div>ఒక div</mira div></mira section>
+      <mira aside>పక్కన ఒక మాట</mira aside>
+      <mira blockquote font="sirivennela">పాట పాడితే మనసు నిండుతుంది</mira blockquote>
+      <mira pre>  ముందే  అమర్చిన  పాఠం</mira pre>
+      <mira address>చిరునామా: గుంటూరు</mira address>
+      <mira hr>
+      <mira figure><mira img alt="మిరా గారి బొమ్మ" width="32" height="32" src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2232%22 height=%2232%22%3E%3Ccircle cx=%2216%22 cy=%2216%22 r=%2214%22 fill=%22%23c8a24a%22/%3E%3C/svg%3E"><mira figcaption>బొమ్మ వివరణ</mira figcaption></mira figure>
+      <mira search><mira label>వెతుకు <mira input type="search" placeholder="పదం"></mira label></mira search>
+    </mira article>
+
+    <mira h3 font="ntr">జాబితాలు</mira h3>
+    <mira ol font="mallanna"><li>ఒకటి</li><mira li>రెండు</mira li></mira ol>
+    <mira menu font="mallanna"><li>మెనూ అంశం</li></mira menu>
+    <mira dl font="mallanna"><mira dt>పద్యం</mira dt><mira dd>ఛందస్సుతో రాసిన కవిత</mira dd></mira dl>
+
+    <mira h3 font="ntr">ఫారం</mira h3>
+    <mira fieldset font="hind-guntur">
+      <mira legend>వివరాలు</mira legend>
+      <mira label>ఊరు <mira input list="ooru" placeholder="ఊరు పేరు"></mira label>
+      <mira datalist id="ooru"><option value="గుంటూరు"></option><option value="విజయవాడ"></option></mira datalist>
+      <mira output>ఫలితం</mira output>
+      <mira meter value="0.6" aria-label="మీటర్">60%</mira meter>
+      <mira progress value="6" max="10" aria-label="ప్రగతి">6/10</mira progress>
+    </mira fieldset>
+
+    <mira h3 font="ntr">పట్టిక</mira h3>
+    <table mira="mandali">
+      <caption mira="ntr">కవులు</caption>
+      <thead><tr><th>పేరు</th><th>రచన</th></tr></thead>
+      <tbody><tr><td>శ్రీశ్రీ</td><td>మహాప్రస్థానం</td></tr></tbody>
+    </table>
+
+    <mira h3 font="ntr">మీడియా</mira h3>
+    <mira audio font="ntr" controls aria-label="తెలుగు పాట"></mira audio>
+    <mira canvas font="ntr" width="40" height="20" aria-label="బొమ్మ">కాన్వాస్</mira canvas>
+    <mira details font="hind-guntur"><mira summary>ఇంకా చూడండి</mira summary><p>దాచిన తెలుగు</p></mira details>
+    <mira dialog font="ntr">డైలాగ్ (తెరిచినప్పుడు కనిపిస్తుంది)</mira dialog>
+  </section>
+
+  <section id="form">
+    <mira form font="hind-guntur" action="#">
+      <mira label font="hind-guntur" for="name">పేరు</mira label>
+      <mira input font="mandali" id="name" placeholder="మీ పేరు">
+      <mira textarea font="mandali" placeholder="మీ సందేశం" rows="2"></mira textarea>
+      <label mira="hind-guntur">ఎంపిక <select><option>ఒకటి</option><option>రెండు</option></select></label>
+      <mira button font="ramabhadra" type="button">పంపు</mira button>
+    </mira form>
+    <table>
+      <caption mira="ntr">పట్టిక</caption>
+      <tr><th mira="hind-guntur">పేరు</th><td mira="mandali">మిరా</td></tr>
+    </table>
+    <mira img font="ntr" alt="మిరా గారి చిత్రం" src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2248%22 height=%2248%22%3E%3Ccircle cx=%2224%22 cy=%2224%22 r=%2220%22 fill=%22%23c8a24a%22/%3E%3C/svg%3E" width="48" height="48">
+  </section>
+
+  <mira footer font="telugu" class="note">
+    <p>సందీప్ మిరియాల · యుక్తిశాల AI Lab</p>
+    <p>ఫాంట్లు: <a href="https://fonts.siliconandhra.org/">సిలికానాంధ్ర</a>. మన తెలుగు లిపికి ఆధునిక యూనికోడ్ ఓపెన్‌టైప్ (OpenType) సాంకేతికతను జోడించి, ఎంతో ఓపికతో, శ్రమతో అందమైన ఫాంట్లను రూపొందించి ఉచితంగా అందిస్తున్న <strong>శ్రీ అప్పాజీ అంబరీష దర్భ గారికి</strong>, <strong>శ్రీ పురుషోత్ కుమార్ గుత్తుల గారికి</strong> మనస్ఫూర్తిగా ధన్యవాదాలు. తెలుగు భాషను డిజిటల్ రూపంలో ముందుకు తీసుకెళ్తున్న మీ సేవలు ఎప్పటికీ గుర్తుండిపోతాయి!</p>
+  </mira footer>
+</main>
+</body>
+</html>

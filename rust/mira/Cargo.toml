@@ -1,0 +1,25 @@
+[package]
+name = "yuktai-mira"
+version = "1.0.0"
+edition = "2021"
+rust-version = "1.73"
+license = "GPL-3.0-only"
+authors = ["Sandeep Miriyala"]
+description = "MiRa: Telugu for every HTML element. Write <mira h1 font=\"ntr\">మిరా</mira h1> and MiRa gives the real tag, lang=\"te\" and a free Telugu font. Akshara-aware split, count and truncate. No dependencies."
+repository = "https://github.com/sandeep-miriyala/yuktai"
+readme = "README.md"
+keywords = ["telugu", "fonts", "html", "akshara", "indic"]
+categories = ["text-processing", "web-programming", "internationalization"]
+include = ["src/**/*.rs", "README.md", "Cargo.toml"]
+# Named after Dr. Miriyala Ramakrishna (మిరా). Publish when the npm package is out.
+publish = false
+
+[lib]
+name = "mira"
+
+[[bin]]
+name = "mira"
+path = "src/bin/mira.rs"
+
+[dependencies]
+# None, on purpose.

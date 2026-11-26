@@ -1,0 +1,32 @@
+[package]
+name = "yuktai-mira-web"
+version = "1.0.0"
+edition = "2021"
+license = "GPL-3.0-only"
+description = "MiRa in the browser: the same Rust rules as `mira build`, run on the live DOM as WebAssembly."
+repository = "https://github.com/sandeep-miriyala/yuktai"
+publish = false
+
+[lib]
+# cdylib = the .wasm for the browser (rust/build-mira.mjs); rlib = cargo test / check.
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+mira = { package = "yuktai-mira", path = "../mira" }
+wasm-bindgen = "=0.2.130"
+js-sys = "0.3.107"
+
+[dependencies.web-sys]
+version = "0.3.107"
+features = [
+  "console", "Window", "Document", "Node", "NodeList", "Element", "HtmlElement",
+  "Text", "NamedNodeMap", "Attr", "DomTokenList", "CssStyleDeclaration", "HtmlStyleElement", "HtmlHeadElement", "HtmlCollection",
+  "MutationObserver", "EventTarget", "Event", "MutationObserverInit", "MutationRecord", "HtmlScriptElement",
+]
+
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true

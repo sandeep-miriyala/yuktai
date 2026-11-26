@@ -41,7 +41,7 @@ const columns: GridColumn<PackageRow>[] = [
     key: "short", label: "Package", width: "22%",
     render: (_v, r) => (
       <span className="pg-name">
-        <a href={`#${r.anchor}`}>{r.short}</a>
+        {r.guide ? <Link href={r.guide.href}>{r.short}</Link> : <a href={`#${r.anchor}`}>{r.short}</a>}
         <code>{r.name}</code>
       </span>
     ),

@@ -130,7 +130,7 @@ section.wrap, .band { padding-block: 64px; }
 .stack.is-rust { border: 2px solid var(--accent); }
 .stack a { display: flex; align-items: center; gap: 10px; color: var(--text); text-decoration: none; font-size: 1.1rem; }
 .stack a svg { margin-left: auto; color: var(--accent); }
-.stack code { display: block; padding: 10px 12px; border-radius: 10px; background: var(--code-bg); color: var(--code-text); font-size: .8rem; overflow-x: auto; white-space: nowrap; }
+.stack code { display: block; padding: 10px 12px; border-radius: 10px; background: var(--code-bg); color: var(--code-text); font-size: .8rem; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .badge { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 10px; font-weight: 800; font-size: .85rem; flex: none; }
 .t-js { background: #fff3c4; color: #5c4400; } .t-ts { background: #dbeafe; color: #1e3a8a; } .t-jq { background: #e0f2fe; color: #075985; }
 .t-py { background: #dcfce7; color: #14532d; } .t-php { background: #ede9fe; color: #4c1d95; } .t-rs { background: #ffedd5; color: #7a3209; }
@@ -622,3 +622,21 @@ body .to-top { right: 16px; bottom: calc(154px + env(safe-area-inset-bottom, 0px
 :root[data-theme="dark"] .pg-reg-pypi { background: #10264a; color: #bfdbfe; }
 :root[data-theme="dark"] .pg-reg-cratesio { background: #3a2a10; color: #fde3b0; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .pg-reg { background: #3b1616; color: #fecaca; } :root:not([data-theme="light"]) .pg-reg-pypi { background: #10264a; color: #bfdbfe; } :root:not([data-theme="light"]) .pg-reg-cratesio { background: #3a2a10; color: #fde3b0; } }
+
+/* Packages: the grid first; the family picture and detail cards fold away */
+.pkg-more { margin-top: 8px; border: 1px solid var(--line-soft); border-radius: 18px; background: var(--panel); }
+.pkg-more > summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 56px; padding: 14px 20px; cursor: pointer; font-weight: 800; font-size: 1.05rem; list-style: none; }
+.pkg-more > summary::-webkit-details-marker { display: none; }
+.pkg-more-hint { flex: none; padding: 4px 14px; border: 1px solid var(--line); border-radius: 999px; color: var(--accent); font-size: .85rem; }
+.pkg-more[open] .pkg-more-hint { font-size: 0; }
+.pkg-more[open] .pkg-more-hint::after { content: "Hide"; font-size: .85rem; }
+.pkg-more > summary:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 18px; }
+.pkg-more[open] { padding: 0 20px 20px; }
+.pkg-more[open] > summary { margin: 0 -20px; }
+
+/* Guides (home): compact cards, icon beside the title, two lines of text */
+.guide-grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 12px; }
+.guide { display: grid; grid-template-columns: 42px 1fr; grid-template-rows: auto auto; column-gap: 14px; row-gap: 2px; align-items: start; padding: 16px 18px; }
+.guide .iconbox { grid-row: 1 / span 2; margin: 0; }
+.guide strong { font-size: 1rem; line-height: 1.35; }
+.guide span:last-child { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: .9rem; line-height: 1.45; }

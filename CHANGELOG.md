@@ -2,9 +2,19 @@
 
 All notable changes to `@yuktishaalaa/yuktai`. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow [Semantic Versioning](https://semver.org/).
 
+## MiRa 1.0.0 (2026-11-26): Telugu for every HTML element
+
+A new package, `@yuktishaalaa/mira` (`packages/mira`, Rust in `rust/mira` and `rust/mira-web`). Named after **Dr. Miriyala Ramakrishna (మిరా)**.
+
+- **`<mira h1 font="ntr">మిరా</mira h1>`** becomes `<h1 lang="te" class="mira-font-ntr">మిరా</h1>`: any HTML element, in one of 22 free Telugu fonts. `<h1 mira="ntr">` does the same in React or anywhere; `<body mira="mandali">` gives the whole page a font and marks every Telugu element `lang="te"`.
+- **22 OFL Telugu fonts** (most drawn for Silicon Andhra by Appaji Ambarisha Darbha and Purushoth Kumar Guthula), served unchanged (Telugu letters only) from the Fontsource npm packages through jsDelivr or your own server (`data-mira-fonts`). Only the fonts a page uses load. Nothing goes to Google.
+- **All in Rust.** One rule book (`mira::element::plan`) runs at build time (`mira build page.html`) and in the browser (WebAssembly that walks the live DOM, with a MutationObserver for elements added later). Tests check that both give the same page.
+- Akshara-aware `split`, `count` and `truncate` (`truncate="20"`), from Ratnalabala's rules and tests. Misspelt font names get a suggestion in Telugu and English.
+
 ## 6.0.4 (2026-11-25): a clearer accessibility icon
 
 - **The ♿ accessibility icon is redrawn.** The old figure had two extra diagonal strokes beside the legs, so at button size it read as a figure with four legs. The new one is the familiar person with open arms (head, arms, body, two legs), the same shape the YuktAI Assistant already uses. It changes everywhere the icon is drawn: the floating ♿ button, `<AccessibilityIcon>`, `yuktai.icon("accessibility")` and the guides menu.
+- **Website: a shorter, clearer home page** (12,445 → 8,546 px on a laptop). The order now follows what a visitor needs: what it is, your language, the packages, then demos and proof. The same nine packages were shown three times; the grid stays and the family picture and detail cards fold into "How the packages fit together". Guide cards are compact (icon beside the title, two lines). Stack cards end long code with "…" instead of a hidden scroll.
 - **Website: the packages table is the YuktAI data grid itself.** All nine packages in `<YuktaiGrid>`: search, sort, cards on phones, CSV / Excel / JSON / PDF download and ⚙ settings, a copy button on every install line, coloured registry labels. The plain table stays as the first paint and for visitors without JavaScript. The section has a soft glow and dotted backdrop and a count per registry.
 - **Website: header submenus hang from their button.** A small pointer joins each submenu to its button with no gap. "Get started" had 11 links in one long list; it now has three named columns (Start here, Ready-made, Your language, now with Rust) and one column on phones, scrolling inside itself when the screen is short.
 - **Website: Help 24×7 panel, cleaner results.** Results are grouped by page: the page name once, then its sections, each with a two-line extract. One small "Ask" button per page instead of a large one under every result. Only the results scroll; the page behind no longer scrolls with them.

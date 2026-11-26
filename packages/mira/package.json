@@ -1,0 +1,23 @@
+{
+  "name": "@yuktishaalaa/mira",
+  "version": "1.0.0",
+  "description": "MiRa: Telugu for every HTML element. <mira h1 font=\"ntr\">మిరా</mira h1> becomes a real <h1 lang=\"te\"> in a free Telugu font. Rust/WebAssembly, 22 OFL fonts, nothing sent to Google.",
+  "author": "Sandeep Miriyala — Yuktishaalaa AI Lab",
+  "license": "GPL-3.0-only",
+  "homepage": "https://github.com/sandeep-miriyala/yuktai/tree/main/packages/mira#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sandeep-miriyala/yuktai.git",
+    "directory": "packages/mira"
+  },
+  "bugs": {
+    "url": "https://github.com/sandeep-miriyala/yuktai/issues"
+  },
+  "keywords": ["telugu", "telugu-fonts", "fonts", "html", "akshara", "indic", "webassembly", "rust", "accessibility", "lang"],
+  "main": "./mira.js",
+  "browser": "./mira.js",
+  "unpkg": "./mira.js",
+  "jsdelivr": "./mira.js",
+  "files": ["mira.js", "README.md", "CREDITS.md"],
+  "sideEffects": true
+}

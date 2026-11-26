@@ -29,18 +29,18 @@ export function Stacks() {
   return (
     <section id="stacks" className="band">
       <div className="wrap">
-        <Kicker>Languages</Kicker>
-        <h2>One toolkit, six ways in</h2>
-        <p className="lead">The same core runs everywhere. Pick your stack and copy one line.</p>
+        <Kicker>Start in your language</Kicker>
+        <h2>Pick your stack, copy one line</h2>
+        <p className="lead">The same accessibility, grid and AI work in each of them. The arrow opens that guide.</p>
         <ul className="stack-grid">
           {STACKS.map((s) => (
-            <li key={s.name} className={`stack yk-lift ${s.tone === "rs" ? "is-rust" : ""}`}>
+            <li key={s.name} className="stack yk-lift">
               <Link href={s.href}>
                 <span className={`badge t-${s.tone}`} aria-hidden="true">{s.badge}</span>
                 <strong>{s.name}</strong>
                 <ArrowRightIcon size={18} aria-hidden="true" />
               </Link>
-              <code tabIndex={0}>{s.code}</code>
+              <code title={s.code}>{s.code}</code>
             </li>
           ))}
         </ul>
@@ -194,7 +194,7 @@ function AllPackages() {
         <tbody>
           {rows.map((r) => (
             <tr key={r.key}>
-              <th scope="row"><a href={`#${r.anchor}`}>{r.short}</a><code className="pkg-table-name">{r.name}</code></th>
+              <th scope="row">{r.guide ? <Link href={r.guide.href}>{r.short}</Link> : <a href={`#${r.anchor}`}>{r.short}</a>}<code className="pkg-table-name">{r.name}</code></th>
               <td data-label="Registry">{r.registry}</td>
               <td data-label="Version">{r.version}</td>
               <td data-label="For">{r.who}</td>
@@ -234,11 +234,16 @@ export function Packages() {
         <CountUp value={PACKAGES.length + MORE_PACKAGES.length} /> free packages, one family
       </h2>
       <p className="lead">
-        {PACKAGES.length} on npm, plus <strong>yuktai</strong> on PyPI for Python and on crates.io for Rust. Two main products: the <strong>Toolkit</strong> for apps you build, the <strong>Assistant</strong> for websites you already have. Both run on the same two engines. And <strong>Shubhalekha</strong>, a ready-made invitation site for every Indian celebration.
+        The <strong>Toolkit</strong> for apps you build, the <strong>Assistant</strong> for sites you already have, <strong>Shubhalekha</strong> for invitations, and <strong>yuktai</strong> for Python and Rust.
       </p>
 
       <AllPackages />
 
+      <details className="pkg-more">
+        <summary>
+          <span>How the packages fit together, and each one in detail</span>
+          <span className="pkg-more-hint" aria-hidden="true">Show</span>
+        </summary>
       <InView className="family" label="The YuktAI family: YuktAI on top; the Toolkit and the Assistant under it; both use the accessibility engine, and the Assistant also uses the Ask engine. Two starters make a new app, and Shubhalekha makes a ready invitation site.">
         <div className="fam-root"><span>YuktAI</span></div>
         <div className="fam-row fam-main">
@@ -326,6 +331,7 @@ export function Packages() {
           ))}
         </ul>
       </div>
+      </details>
     </section>
   );
 }

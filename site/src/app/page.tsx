@@ -9,13 +9,14 @@ export default function Home() {
     <>
       <div className="wrap"><Hero /></div>
       <Reveal><Stats /></Reveal>
-      <Reveal><HowItWorks /></Reveal>
-      <Reveal><Demos /></Reveal>
-      <Reveal><Packages /></Reveal>
+      {/* What a visitor needs first: their language, then the packages, then proof */}
       <Reveal><Stacks /></Reveal>
-      <Reveal><Charts /></Reveal>
-      <Reveal><Pipeline /></Reveal>
+      <Reveal><Packages /></Reveal>
+      <Reveal><Demos /></Reveal>
       <Reveal><Compare /></Reveal>
+      <Reveal><Pipeline /></Reveal>
+      <Reveal><HowItWorks /></Reveal>
+      <Reveal><Charts /></Reveal>
       <Reveal><Guides /></Reveal>
       <Reveal><Start /></Reveal>
       <Reveal><Recognition /></Reveal>
