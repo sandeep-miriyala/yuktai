@@ -14,7 +14,12 @@
 #      Generate. Repository access: all (or the ones to watch). Permissions, all
 #      Read-only: Actions, Contents, Issues, Pull requests. Save it in this repo's
 #      Settings → Secrets and variables → Actions as WATCH_TOKEN. Skip for public repos only.
-#   3. Actions tab → "YuktAI watch" → Run workflow, to try it now.
+#   3. Your repos and websites (optional): this repo → Settings → Secrets and variables →
+#      Actions → Variables tab → New repository variable:
+#        WATCH_REPOS  one owner/repo per line   (empty: every repo of yours)
+#        WATCH_SITES  one https:// address per line
+#      Kept there, the lists are not in this public file.
+#   4. Actions tab → "YuktAI watch" → Run workflow, to try it now.
 #
 # Every 3 hours from 05:30 IST. GitHub may start a scheduled run a few minutes late.
 # In a public repo, private repo names are hidden on the Summary page.
@@ -61,11 +66,11 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
           WATCH_TOKEN: ${{ secrets.WATCH_TOKEN }}
           WATCH_REPO_PRIVATE: ${{ github.event.repository.private }}
-          # one per line; empty = every repo of the owner (private ones too when WATCH_TOKEN is set)
-          WATCH_REPOS: ""
-          WATCH_SITES: |
-            https://ratnalabala.vercel.app
-            https://vajasaneyasandhya.vercel.app
+          # Your lists live in Settings → Secrets and variables → Actions → Variables,
+          # not in this public file. One per line. WATCH_REPOS empty = every repo of the
+          # owner (private ones too when WATCH_TOKEN is set).
+          WATCH_REPOS: ${{ vars.WATCH_REPOS }}
+          WATCH_SITES: ${{ vars.WATCH_SITES }}
           WATCH_STATE: .watch-state.json
         run: node scripts/watch.mjs
 
