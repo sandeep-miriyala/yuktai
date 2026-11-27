@@ -1,15 +1,14 @@
 # YuktAI watch: every 3 hours, checks all your websites, GitHub repos (CI,
 # issues, stars) and npm, crates.io and PyPI packages.
 #
-#   Something needs a look (a site down, CI failing…) → this run fails →
-#   GitHub sends you an email, with a link to the full table (the run's Summary).
-#   All good → the run passes quietly, no email.
+#   The full report (all tables) goes into one issue, "YuktAI watch report".
+#   When something changes (a site goes down, CI fails, it is fixed, a new star or
+#   version), a new comment @mentions you and GitHub emails you the whole report.
+#   Nothing changed → no comment, no email.
 #
 # Setup (once):
-#   1. GitHub → your profile → Settings → Notifications → "Actions":
-#      turn on Email and "Only notify for failed workflows".
-#      (Emails for a scheduled run go to whoever last changed the cron line below:
-#      that is you, after you push this file.)
+#   1. GitHub → your profile → Settings → Notifications → "Participating, @mentions
+#      and custom": Email on (it is on by default).
 #   2. Private repos too: GitHub → Settings → Developer settings → Fine-grained tokens →
 #      Generate. Repository access: all (or the ones to watch). Permissions, all
 #      Read-only: Actions, Contents, Issues, Pull requests. Save it in this repo's
@@ -34,6 +33,7 @@ on:
 permissions:
   contents: read
   actions: read
+  issues: write
 
 concurrency:
   group: yuktai-watch
@@ -61,7 +61,7 @@ jobs:
           key: watch-state-${{ github.run_id }}
           restore-keys: watch-state-
 
-      - name: Check (fails when something needs a look, so GitHub emails you)
+      - name: Check and write the report issue
         env:
           GITHUB_TOKEN: ${{ github.token }}
           WATCH_TOKEN: ${{ secrets.WATCH_TOKEN }}

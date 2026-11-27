@@ -1,10 +1,10 @@
 // YuktAI watch: every website, npm package, crate and GitHub repo of the owner,
-// checked every few hours by GitHub Actions. When something needs a look the run
-// fails, and GitHub emails you (its own email, no setup). The detailed table is on
-// the run's Summary page.
+// checked every few hours by GitHub Actions. The full report goes into one GitHub
+// issue ("YuktAI watch report"); when something changes, a new comment @mentions
+// you and GitHub emails you the whole report. Nothing changed: no comment, no email.
 // No dependencies. Node 20+.
 //
-//   node scripts/watch.mjs              prints the report; exits 1 when something needs a look
+//   node scripts/watch.mjs              prints the report (the issue is written only in GitHub Actions)
 //
 // Env:
 //   WATCH_OWNER          GitHub user (default: GITHUB_REPOSITORY_OWNER, then sandeep-miriyala)
@@ -17,7 +17,9 @@
 //   WATCH_TOKEN          read-only token for private repos (GitHub secret); else GITHUB_TOKEN
 //   WATCH_REPO_PRIVATE   "true" when this workflow runs in a private repo; otherwise private repo
 //                        names are hidden in the Actions summary, because anyone can read that page
-//   GITHUB_STEP_SUMMARY  set by GitHub Actions; the detailed table goes there
+//   WATCH_NOTIFY         GitHub user to @mention (default: the repo owner)
+//   GITHUB_REPOSITORY    set by GitHub Actions; the report issue is written there
+//   GITHUB_STEP_SUMMARY  set by GitHub Actions; the detailed table goes there too
 
 import { readFileSync, writeFileSync, appendFileSync, existsSync } from "node:fs";
 
@@ -129,7 +131,6 @@ const now = {
   issues: Object.fromEntries(gr.items.map((r) => [r.name, r.issues])),
   versions: Object.fromEntries([...np.items, ...cr, ...py].filter((x) => x.version).map((x) => [x.name, x.version])),
 };
-if (env.WATCH_STATE) writeFileSync(env.WATCH_STATE, JSON.stringify(now, null, 1));
 
 const short = (u) => u.replace(/^https?:\/\//, "").replace(/\/$/, "");
 const down = st.filter((s) => !s.ok);
@@ -183,28 +184,71 @@ const hide = (t) => { for (const [a, b] of hidden) t = t.split(a).join(b); retur
 
 console.log(hide(msg));
 
-// detailed table for the Actions run page
-if (env.GITHUB_STEP_SUMMARY) {
-  const row = (...c) => `| ${c.join(" | ")} |`;
-  appendFileSync(env.GITHUB_STEP_SUMMARY, [
-    "## YuktAI watch", "", "```", hide(msg), "```", "",
-    "### Websites", row("Site", "Status", "Time"), row("---", "---", "---"),
-    ...st.map((s) => row(hide(s.url), `${s.ok ? "✅" : "❌"} ${s.status}`, `${(s.ms / 1000).toFixed(1)}s`)), "",
-    "### GitHub repos", row("Repo", "Stars", "Open issues", "Last push", "CI"), row("---", "---", "---", "---", "---"),
-    ...gr.items.map((r) => hidden.has(r.name) ? row(hidden.get(r.name), r.stars, r.issues, r.pushed, r.ci) : row(r.name, r.stars, r.issues, r.pushed, r.ciUrl ? `[${r.ci}](${r.ciUrl})` : r.ci)), "",
-    "### npm", row("Package", "Version", "Downloads last week"), row("---", "---", "---"),
-    ...np.items.map((p) => row(p.name, p.version, n(p.week))), "",
-    "### crates.io and PyPI", row("Name", "Version", "Downloads"), row("---", "---", "---"),
-    ...cr.map((c) => row(`crate ${c.name}`, c.version ?? c.error, `${n(c.total)} total, ${n(c.recent)} last 90 days`)),
-    ...py.map((p) => row(`pypi ${p.name}`, p.version ?? p.error, "")), "",
-  ].join("\n"));
+// the full report, as Markdown: for the run's Summary page and the report issue
+const row = (...c) => `| ${c.join(" | ")} |`;
+const report = [
+  "```", hide(msg), "```", "",
+  "### Websites", row("Site", "Status", "Time"), row("---", "---", "---"),
+  ...st.map((s) => row(hide(s.url), `${s.ok ? "✅" : "❌"} ${s.status}`, `${(s.ms / 1000).toFixed(1)}s`)), "",
+  "### GitHub repos", row("Repo", "Stars", "Open issues and PRs", "Last push", "CI"), row("---", "---", "---", "---", "---"),
+  ...gr.items.map((r) => hidden.has(r.name) ? row(hidden.get(r.name), r.stars, r.issues, r.pushed, r.ci) : row(r.name, r.stars, r.issues, r.pushed, r.ciUrl ? `[${r.ci}](${r.ciUrl})` : r.ci)), "",
+  "### npm", row("Package", "Version", "Downloads last week"), row("---", "---", "---"),
+  ...np.items.map((p) => row(p.name, p.version, n(p.week))), "",
+  "### crates.io and PyPI", row("Name", "Version", "Downloads"), row("---", "---", "---"),
+  ...cr.map((c) => row(`crate ${c.name}`, c.version ?? c.error, `${n(c.total)} total, ${n(c.recent)} last 90 days`)),
+  ...py.map((p) => row(`pypi ${p.name}`, p.version ?? p.error, "")), "",
+].join("\n");
+
+if (env.GITHUB_STEP_SUMMARY) appendFileSync(env.GITHUB_STEP_SUMMARY, `## YuktAI watch\n\n${report}`);
+for (const p of problems) console.log(`::warning title=YuktAI watch::${hide(p).replace(/[\r\n%]/g, " ")}`);
+
+// The report issue. A comment (and so an email) only when the problems or the news
+// changed since the last run; otherwise the issue body is refreshed quietly.
+const key = JSON.stringify({ problems: problems.map(hide), changes: changes.map(hide) });
+const changed = !prev || prev.key !== key;
+now.key = key;
+
+async function writeIssue() {
+  const repo = env.GITHUB_REPOSITORY;
+  if (!repo || !env.GITHUB_TOKEN) { console.log("\n(Not in GitHub Actions: no issue written.)"); return; }
+  const api = (path, method = "GET", body) =>
+    fetch(`https://api.github.com/repos/${repo}${path}`, {
+      method,
+      headers: { ...UA, accept: "application/vnd.github+json", authorization: `Bearer ${env.GITHUB_TOKEN}`, "content-type": "application/json" },
+      body: body ? JSON.stringify(body) : undefined,
+      signal: AbortSignal.timeout(20000),
+    }).then(async (r) => { if (!r.ok) throw new Error(`GitHub ${method} ${path}: ${r.status}`); return r.status === 204 ? null : r.json(); });
+
+  const LABEL = "yuktai-watch";
+  const TITLE = "YuktAI watch report";
+  const who = env.WATCH_NOTIFY || env.GITHUB_REPOSITORY_OWNER || OWNER;
+  const run = env.GITHUB_RUN_ID ? `${env.GITHUB_SERVER_URL || "https://github.com"}/${repo}/actions/runs/${env.GITHUB_RUN_ID}` : "";
+  const head = problems.length ? `❌ ${problems.length} thing(s) need a look` : "✅ All good";
+  const body = `**${head}** · ${ist} IST${run ? ` · [run](${run})` : ""}\n\n${report}\n_Updated by \`scripts/watch.mjs\` every 3 hours. A new comment (and an email) comes only when something changes._`;
+
+  try { await api("/labels", "POST", { name: LABEL, color: "0a4a85", description: "YuktAI watch reports" }); } catch { /* exists */ }
+  const open = await api(`/issues?state=all&labels=${LABEL}&per_page=10&sort=created&direction=asc`);
+  let issue = open.find((i) => !i.pull_request);
+  if (!issue) {
+    issue = await api("/issues", "POST", { title: TITLE, labels: [LABEL], body });
+    await api(`/issues/${issue.number}/comments`, "POST", { body: `@${who} ${head}. The full report is above.` });
+    console.log(`\nReport issue created: ${issue.html_url}`);
+    return;
+  }
+  await api(`/issues/${issue.number}`, "PATCH", { body, state: "open" });
+  if (changed) {
+    await api(`/issues/${issue.number}/comments`, "POST", { body: `@${who} **${head}** · ${ist} IST\n\n${report}` });
+    console.log(`\nSomething changed: comment added, GitHub will email you. ${issue.html_url}`);
+  } else {
+    console.log(`\nNothing changed since the last run: issue refreshed, no email. ${issue.html_url}`);
+  }
 }
 
-// Something needs a look: one annotation per problem, then fail the run, so GitHub
-// emails you. All good: the run passes quietly (no email).
-if (problems.length) {
-  for (const p of problems) console.log(`::error title=YuktAI watch::${hide(p).replace(/[\r\n%]/g, " ")}`);
-  console.error(`\n${problems.length} thing(s) need a look. GitHub will email you about this failed run.`);
-  process.exit(1);
+try {
+  await writeIssue();
+} catch (e) {
+  console.log(`::error title=YuktAI watch::Could not write the report issue: ${String(e.message).replace(/[\r\n%]/g, " ")}`);
+  process.exitCode = 1; // the run fails, so GitHub still emails you
 }
-console.log("\nAll good. No email.");
+// remember this run only after the issue was written, so a failed write is retried
+if (env.WATCH_STATE && !process.exitCode) writeFileSync(env.WATCH_STATE, JSON.stringify(now, null, 1));

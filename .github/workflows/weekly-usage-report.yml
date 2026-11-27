@@ -30,7 +30,7 @@ jobs:
         env:
           TRAFFIC_TOKEN: ${{ secrets.TRAFFIC_TOKEN }}
           NPM_PACKAGE: "@yuktishaalaa/yuktai"
-          NOTIFY_USER: "sandeepmiriyala03"
+          NOTIFY_USER: "sandeep-miriyala"
         with:
           script: |
             const { owner, repo } = context.repo;
