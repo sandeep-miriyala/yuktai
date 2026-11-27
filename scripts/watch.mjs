@@ -1,8 +1,10 @@
 // YuktAI watch: every website, npm package, crate and GitHub repo of the owner,
-// in one short WhatsApp message (CallMeBot) and one detailed table (Actions summary).
+// checked every few hours by GitHub Actions. When something needs a look the run
+// fails, and GitHub emails you (its own email, no setup). The detailed table is on
+// the run's Summary page.
 // No dependencies. Node 20+.
 //
-//   node scripts/watch.mjs              prints the message (nothing is sent without the two secrets)
+//   node scripts/watch.mjs              prints the report; exits 1 when something needs a look
 //
 // Env:
 //   WATCH_OWNER          GitHub user (default: GITHUB_REPOSITORY_OWNER, then sandeep-miriyala)
@@ -15,8 +17,6 @@
 //   WATCH_TOKEN          read-only token for private repos (GitHub secret); else GITHUB_TOKEN
 //   WATCH_REPO_PRIVATE   "true" when this workflow runs in a private repo; otherwise private repo
 //                        names are hidden in the Actions summary, because anyone can read that page
-//   CALLMEBOT_PHONE      your WhatsApp number with country code, e.g. +91…   (GitHub secret)
-//   CALLMEBOT_APIKEY     the key CallMeBot sent you on WhatsApp            (GitHub secret)
 //   GITHUB_STEP_SUMMARY  set by GitHub Actions; the detailed table goes there
 
 import { readFileSync, writeFileSync, appendFileSync, existsSync } from "node:fs";
@@ -174,16 +174,17 @@ const msg = [
   ...(problems.length ? ["", "Needs a look:", ...problems.slice(0, 10)] : ["", "All good 👍"]),
 ].join("\n");
 
-console.log(msg);
+// the Actions page of a public repo is public: keep private repo names out of it
+let k = 0;
+const hidden = new Map(gr.items.filter((r) => r.private && !LOG_PRIVATE).map((r) => [r.name, `🔒 private ${++k}`]));
+// a repo GitHub would not show us may be private too
+if (!LOG_PRIVATE) for (const e of gr.errors || []) hidden.set(e.split(" ").pop(), `🔒 repo ${++k}`);
+const hide = (t) => { for (const [a, b] of hidden) t = t.split(a).join(b); return t; };
+
+console.log(hide(msg));
 
 // detailed table for the Actions run page
 if (env.GITHUB_STEP_SUMMARY) {
-  // the Actions page of a public repo is public: keep private repo names out of it
-  let k = 0;
-  const hidden = new Map(gr.items.filter((r) => r.private && !LOG_PRIVATE).map((r) => [r.name, `🔒 private ${++k}`]));
-  // a repo GitHub would not show us may be private too
-  if (!LOG_PRIVATE) for (const e of gr.errors || []) hidden.set(e.split(" ").pop(), `🔒 repo ${++k}`);
-  const hide = (t) => { for (const [a, b] of hidden) t = t.split(a).join(b); return t; };
   const row = (...c) => `| ${c.join(" | ")} |`;
   appendFileSync(env.GITHUB_STEP_SUMMARY, [
     "## YuktAI watch", "", "```", hide(msg), "```", "",
@@ -199,12 +200,11 @@ if (env.GITHUB_STEP_SUMMARY) {
   ].join("\n"));
 }
 
-// WhatsApp, only when both secrets are set
-if (env.CALLMEBOT_PHONE && env.CALLMEBOT_APIKEY) {
-  const url = `https://api.callmebot.com/whatsapp.php?phone=${encodeURIComponent(env.CALLMEBOT_PHONE)}&text=${encodeURIComponent(msg)}&apikey=${encodeURIComponent(env.CALLMEBOT_APIKEY)}`;
-  const r = await get(url, { json: false, timeout: 60000 });
-  if (!r.ok) { console.error(`WhatsApp message was not sent (CallMeBot ${r.status}).`); process.exit(1); }
-  console.log("\nWhatsApp message sent.");
-} else {
-  console.log("\n(No CALLMEBOT_PHONE / CALLMEBOT_APIKEY, so nothing was sent.)");
+// Something needs a look: one annotation per problem, then fail the run, so GitHub
+// emails you. All good: the run passes quietly (no email).
+if (problems.length) {
+  for (const p of problems) console.log(`::error title=YuktAI watch::${hide(p).replace(/[\r\n%]/g, " ")}`);
+  console.error(`\n${problems.length} thing(s) need a look. GitHub will email you about this failed run.`);
+  process.exit(1);
 }
+console.log("\nAll good. No email.");
