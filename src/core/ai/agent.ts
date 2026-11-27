@@ -1,17 +1,16 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // src/core/ai/agent.ts
-// yuktai v3.1.0 — Yuktishaalaa AI Lab
+// Yuktishaalaa AI Lab
 //
-// Full DOM coverage — works on:
-//   ✅ React / Next.js / Vue / Angular (SPA)
-//   ✅ Static HTML pages
-//   ✅ WordPress / Drupal / Joomla
-//   ✅ Government portals (old HTML tables)
-//   ✅ Hospital / bank portals
-//   ✅ Plain HTML — no framework
+// Reads the visible text and form fields of the current page and suggests a
+// short plan for the reader's task. It only suggests: it never fills, clicks
+// or submits anything. Page text goes into the prompt fenced as untrusted data
+// (see ./untrusted.ts). Tested with ordinary HTML and React pages; complex
+// portals may need more work, so check the plan against the page.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { PROMPT_LANGUAGES } from "./promptOptions"
+import { clipUserText, fencePageText } from "./untrusted"
 
 export interface AgentStep {
   text: string
@@ -441,23 +440,35 @@ async function planWithGeminiNano(
   const API = w.LanguageModel || w.ai?.languageModel
   if (!API) throw new Error("Gemini Nano not available")
 
-  const session = await API.create({
-    ...PROMPT_LANGUAGES,
-    systemPrompt: `You are a helpful web accessibility agent.
+  const { system, user } = buildAgentPrompt(pageText, task, hasFields)
+  const session = await API.create({ ...PROMPT_LANGUAGES, systemPrompt: system })
+  const answer  = await session.prompt(user)
+  session.destroy()
+  return answer?.trim() || ""
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// buildAgentPrompt — page text fenced as data; the rule is repeated in the user
+// prompt so it still holds if a browser ignores the system prompt.
+// ─────────────────────────────────────────────────────────────────────────────
+export function buildAgentPrompt(
+  pageText:  string,
+  task:      string,
+  hasFields: boolean
+): { system: string; user: string } {
+  const page = fencePageText(pageText)
+  const system = `You are a helpful web accessibility agent.
 Create a simple action plan to help a user complete a task on a webpage.
+${page.rule}
 Rules:
 - Maximum 5 steps
 - Short and clear — no jargon
 - If filling a form — list each field and what to enter
 - No markdown — no asterisks, no bold, no headers
-- Number each step: 1. 2. 3.`,
-  })
-
+- Number each step: 1. 2. 3.`
   const formNote = hasFields ? `\nThe page has form fields the user may need to fill.` : ""
-  const prompt   = `Page content: ${pageText}${formNote}\n\nUser task: ${task}\n\nAction plan:`
-  const answer   = await session.prompt(prompt)
-  session.destroy()
-  return answer?.trim() || ""
+  const user = `${page.rule}\n\n${page.block}${formNote}\n\nUser task: ${clipUserText(task)}\n\nAction plan:`
+  return { system, user }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

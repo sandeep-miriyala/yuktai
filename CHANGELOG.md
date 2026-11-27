@@ -2,6 +2,11 @@
 
 All notable changes to `@yuktishaalaa/yuktai`. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow [Semantic Versioning](https://semver.org/).
 
+## 6.0.5 (2026-11-28): page text is data, never instructions
+
+- **Security: page text is fenced in every on-device prompt.** The page agent (`runAgent`) and page Q&A (`askPage`, `askWithContext`) put the page's text straight into the prompt, so a page could hide "ignore previous instructions" in its text, alt or meta tags and steer the answer. Page text now goes between tags with a random nonce the page cannot know, the prompt says it is data and never instructions, and the rule is repeated in the user prompt so it still holds when a browser rejects the system prompt. The reader's own question is limited to 500 characters. The same approach `@yuktishaalaa/ask-page` already uses; one helper, `src/core/ai/untrusted.ts`, with tests.
+- **Honest descriptions.** The page agent's header no longer claims it "works on hospital / bank portals"; it says what it does (suggests a plan, never fills, clicks or submits) and that complex portals may need more work. Old version numbers (3.0.13, 3.1.0) removed from file headers.
+
 ## MiRa 1.0.0 (2026-11-26): Telugu for every HTML element
 
 A new package, `@yuktishaalaa/mira` (`packages/mira`, Rust in `rust/mira` and `rust/mira-web`). Named after **Dr. Miriyala Ramakrishna (మిరా)**.

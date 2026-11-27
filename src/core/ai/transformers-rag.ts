@@ -1,6 +1,6 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // src/core/ai/transformers-rag.ts
-// yuktai v3.0.13 — Yuktishaalaa AI Lab
+// Yuktishaalaa AI Lab
 //
 // Fixes in v3.0.13:
 //   1. Mobile Safari "Out of memory" — switched to q4 quantized models

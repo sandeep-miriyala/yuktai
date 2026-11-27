@@ -1,0 +1,80 @@
+# YuktAI watch: every 3 hours, one WhatsApp message about all websites,
+# npm packages, crates, PyPI and GitHub repos. Free (GitHub Actions + CallMeBot).
+#
+# Setup (once):
+#   1. Open callmebot.com → "Free WhatsApp API" and add the bot's number shown there to your
+#      phone contacts as "CallMeBot" (the number changes now and then, so take it from that page).
+#      Free for personal use only.
+#   2. Send it this WhatsApp message:  I allow callmebot to send me messages
+#   3. It replies with your API key.
+#   4. GitHub → this repo → Settings → Secrets and variables → Actions → New repository secret:
+#        CALLMEBOT_PHONE   your WhatsApp number with country code (+91…)
+#        CALLMEBOT_APIKEY  the key from step 3
+#   5. Private repos: GitHub → Settings → Developer settings → Fine-grained tokens → Generate:
+#        Repository access: Only select repositories (pick yours)
+#        Permissions (all Read-only): Actions, Contents, Issues, Pull requests (Metadata is added by itself)
+#      Save it as the secret WATCH_TOKEN. Put this workflow in a PRIVATE repo if you can.
+#   6. Your repos and apps: edit WATCH_REPOS and WATCH_SITES below (names only, never a token).
+#   7. Actions tab → "YuktAI watch" → Run workflow, to try it now.
+#
+# The detailed table is on each run's page (Summary). Every 3 hours from 05:30 IST (8 messages a day).
+# GitHub may start a scheduled run a few minutes late.
+
+name: YuktAI watch
+
+on:
+  schedule:
+    - cron: "0 */3 * * *" # every 3 hours: 05:30, 08:30, 11:30 … 02:30 IST
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: yuktai-watch
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          sparse-checkout: scripts/watch.mjs
+          sparse-checkout-cone-mode: false
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      # remembers the last run, so the message can say what changed
+      - name: Last run
+        uses: actions/cache/restore@v4
+        with:
+          path: .watch-state.json
+          key: watch-state-${{ github.run_id }}
+          restore-keys: watch-state-
+
+      - name: Check and send
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          WATCH_TOKEN: ${{ secrets.WATCH_TOKEN }}
+          WATCH_REPO_PRIVATE: ${{ github.event.repository.private }}
+          # one per line; empty = every repo of the owner (private ones too when WATCH_TOKEN is set)
+          WATCH_REPOS: ""
+          WATCH_SITES: |
+            https://ratnalabala.vercel.app
+            https://vajasaneyasandhya.vercel.app
+          WATCH_STATE: .watch-state.json
+          CALLMEBOT_PHONE: ${{ secrets.CALLMEBOT_PHONE }}
+          CALLMEBOT_APIKEY: ${{ secrets.CALLMEBOT_APIKEY }}
+        run: node scripts/watch.mjs
+
+      - name: Save this run
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .watch-state.json
+          key: watch-state-${{ github.run_id }}

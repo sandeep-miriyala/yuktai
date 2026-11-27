@@ -3,6 +3,21 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { PROMPT_LANGUAGES } from "./promptOptions"
+import { clipUserText, fencePageText } from "./untrusted"
+
+const RAG_RULES = `Answer ONLY using page content.
+Keep answer short (2–3 sentences).
+If not found say: "I could not find that on this page."`
+
+/** Page text fenced as data; the rule is repeated in the user prompt so it
+ *  still holds when a browser rejects the system prompt (the fallback below). */
+export function buildRagPrompt(pageText: string, question: string, max = 6000): { system: string; user: string } {
+  const page = fencePageText(pageText, max)
+  return {
+    system: `${RAG_RULES}\n${page.rule}`,
+    user: `${page.rule}\n\n${page.block}\n\nQ: ${clipUserText(question)}`,
+  }
+}
 
 export interface RagResult {
   success: boolean
@@ -97,22 +112,16 @@ export async function askPage(question: string): Promise<RagResult> {
       }
     }
 
+    const { system, user } = buildRagPrompt(pageText, question)
     let session
 
     try {
-      session = await API.create({
-        systemPrompt: `Answer ONLY using page content.
-Keep answer short (2–3 sentences).
-If not found say: "I could not find that on this page."`,
-        ...PROMPT_LANGUAGES,
-      })
+      session = await API.create({ systemPrompt: system, ...PROMPT_LANGUAGES })
     } catch {
       session = await API.create({ ...PROMPT_LANGUAGES })
     }
 
-    const prompt = `Page:\n${pageText}\n\nQ: ${question}`
-
-    const answer = await session.prompt(prompt)
+    const answer = await session.prompt(user)
 
     if (session?.destroy) session.destroy()
 
@@ -143,18 +152,14 @@ export async function askWithContext(question: string, context: string): Promise
     const API = w.LanguageModel || w.ai?.languageModel
     if (!API) return { success: false, answer: "", error: "Gemini Nano not available." }
 
+    const { system, user } = buildRagPrompt(context, question, 3500)
     let session
     try {
-      session = await API.create({
-        systemPrompt: `Answer ONLY using page content.
-Keep answer short (2–3 sentences).
-If not found say: "I could not find that on this page."`,
-        ...PROMPT_LANGUAGES,
-      })
+      session = await API.create({ systemPrompt: system, ...PROMPT_LANGUAGES })
     } catch {
       session = await API.create({ ...PROMPT_LANGUAGES })
     }
-    const answer = await session.prompt(`Page:\n${context.slice(0, 3500)}\n\nQ: ${question}`)
+    const answer = await session.prompt(user)
     if (session?.destroy) session.destroy()
     return { success: true, answer: answer?.trim() || "No answer found." }
   } catch (e) {

@@ -1,6 +1,6 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // src/react/YuktAIWrapper.tsx
-// yuktai v3.1.0 — Yuktishaalaa AI Lab
+// Yuktishaalaa AI Lab
 //
 // Floating buttons, stacked vertically. v5.3.9: each one is turned on by
 // the developer, and an optional launcher shows/hides them all:

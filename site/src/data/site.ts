@@ -2,7 +2,7 @@
 // Change a release here and every page follows.
 
 export const VERSIONS = {
-  yuktai: "6.0.3",
+  yuktai: "6.0.5",
   a11y: "6.0.4",
   assistant: "6.0.5",
   askPage: "1.0.2",
